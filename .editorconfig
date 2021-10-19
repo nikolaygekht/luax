@@ -1,0 +1,10 @@
+﻿[*.cs]
+
+# RCS1194: Implement exception constructors.
+dotnet_diagnostic.RCS1194.severity = none
+
+# RCS1226: Add paragraph to documentation comment.
+dotnet_diagnostic.RCS1226.severity = none
+
+# IDE0090: Use 'new(...)'
+dotnet_diagnostic.IDE0090.severity = none

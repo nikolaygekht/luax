@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net50</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Hime.SDK" Version="3.5.1" />
+    <PackageReference Include="Hime.Build.Task" Version="0.1.6" IncludeAssets="build" />
+  </ItemGroup>
+
+  <Target Name="AddGrammarFiles" DependsOnTargets="CompileGrammar" BeforeTargets="PreBuildEvent">
+      <ItemGroup>
+          <Compile Include="$(IntermediateOutputPath)LuaXLexer.cs" />
+          <Compile Include="$(IntermediateOutputPath)LuaXParser.cs" />
+      </ItemGroup>
+
+      <ItemGroup>
+          <EmbeddedResource Include="$(IntermediateOutputPath)LuaXLexer.bin" Type="Non-Resx" WithCulture="false" />
+          <EmbeddedResource Include="$(IntermediateOutputPath)LuaXParser.bin" Type="Non-Resx" WithCulture="false" />
+      </ItemGroup>
+  </Target>
+
+  <Target Name="CompileGrammar" Inputs="../grammar/luax.gram" Outputs="$(IntermediateOutputPath)LuaXLexer.cs;$(IntermediateOutputPath)LuaXParser.cs;$(IntermediateOutputPath)LuaXLexer.bin;$(IntermediateOutputPath)LuaXParser.bin;">
+     <CompileGrammar GrammarName="LuaX" GrammarFile="../grammar/luax.gram" Namespace="Luax.Parser.Hime" OutputMode="Source" CodeAccess="Internal" OutputPath="$(IntermediateOutputPath)" />
+  </Target>
+</Project>

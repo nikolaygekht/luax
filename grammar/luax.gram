@@ -9,20 +9,20 @@ grammar LuaX
 
     terminals
     {
-        NEW_LINE        -> U+000D /* CR */
-                        |  U+000A /* LF */
-                        |  U+000D U+000A /* CR LF */
-                        |  U+0085 // Next line character
-                        |  U+2028 // Line separator character
-                        |  U+2029 ; //Paragraph separator character (U+2029)
+        NEW_LINE -> U+000D /* CR */
+                 |  U+000A /* LF */
+                 |  U+000D U+000A /* CR LF */
+                 |  U+0085 // Next line character
+                 |  U+2028 // Line separator character
+                 |  U+2029 ; //Paragraph separator character (U+2029)
 
         WHITE_SPACE -> U+0020 | U+0009 | U+000B | U+000C | U+000d | U+000a;
 
-        INTEGER -> [0-9] [0-9]*;
+        INTEGER -> [0-9] [0-9_]* [0-9]?;
 
-        REAL -> ('0' | [1-9] [0-9]*)? '.' [0-9]* ([eE] ('+'|'-')? ('0' | [1-9] [0-9]*))?
-                        |  ([0-9] [0-9]*) ([eE] ('+'|'-')? ('0' | [1-9] [0-9]*)) ?
-                        |  ([0-9] [0-9]*);
+        HEX_INTEGER -> '0' 'x' [0-9A-Fa-f] [0-9A-Fa-f_]* [0-9A-Fa-f]?;
+
+        REAL -> [0-9] [0-9_]* [0-9]? '.' [0-9]+ ([Ee] ('+'|'-')? [0-9] [0-9_]*)?; 
 
         STRINGDQ -> '"' ( (. - ('"' | '\\')) |
                                ('\\' ('"' | '\\' | 'r' | 'n' | 'b' | 't')) |
@@ -46,24 +46,28 @@ grammar LuaX
 
         STRING -> STRINGDQ;
 
-        NUMBER -> INTEGER | REAL;
+        NEGATIVE_INTEGER -> '-'! INTEGER;
+
+        NEGATIVE_REAL -> '-'! REAL;
 
         CONSTANT -> NIL |
                     BOOLEAN |
                     STRING |
                     INTEGER |
-                    REAL;
+                    HEX_INTEGER |
+                    NEGATIVE_INTEGER | 
+                    REAL |
+                    NEGATIVE_REAL;
 
         TYPE_NAME -> 'int' |
                      'real' |
                      'boolean' |
-                     'decimal' |
                      'string' |
                      IDENTIFIER;
 
-        DECL -> IDENTIFIER ':'! TYPE_DECL;
-
         TYPE_DECL -> TYPE_NAME ARRAY_DECL?;
+
+        DECL -> IDENTIFIER ':'! TYPE_DECL;
 
         DECL_LIST -> DECL (','! DECL)*;
 
@@ -77,13 +81,15 @@ grammar LuaX
 
         ASSIGN_TARGET -> VARIABLE | PROPERTY | ARRAY_ELEMENT;
 
-        ASSIGN_TARGET_LIST -> ASSIGN_TARGET (','! ASSIGN_TARGET) *;
-
         CALL_ARGS -> REXPR (','! REXPR)*;
 
         CALL_BRACKET -> '('! CALL_ARGS? ')'!;
 
-        CALL -> CALLABLE_EXPR CALL_BRACKET;
+        LOCAL_CALL -> IDENTIFIER CALL_BRACKET;
+
+        METHOD_CALL -> REXPR '.'^ IDENTIFIER CALL_BRACKET;
+
+        CALL -> LOCAL_CALL | METHOD_CALL;
 
         FIELD_ASSIGNMENT -> IDENTIFIER '='! REXPR;
 
@@ -92,8 +98,6 @@ grammar LuaX
         NEW_TABLE_EXPR -> 'new'! IDENTIFIER '('! ')'!;
 
         METHOD -> CALLABLE_EXPR ':'! IDENTIFIER;
-
-        LAMBDA_DECLARATION -> 'function'! FUNCTION_DECLARATION_ARGS STATEMENTS? 'end'!;
 
         CALLABLE_EXPR -> ASSIGN_TARGET |
                          METHOD |
@@ -105,14 +109,11 @@ grammar LuaX
                        CALLABLE_EXPR |
                        BRACKET_EXPR;
 
-        COUNT_OP -> '#'!;
-
         MINUS_OP -> '-'!;
 
         PLUS_OP -> '+'!;
 
         UNARY_EXPR -> SIMPLE_EXPR |
-                      COUNT_OP^ SIMPLE_EXPR |
                       MINUS_OP^ SIMPLE_EXPR |
                       PLUS_OP^ SIMPLE_EXPR;
 
@@ -170,7 +171,7 @@ grammar LuaX
 
         EOS -> ';'!;
 
-        NOP -> ';'!;
+        NOP -> EOS;
 
         REXPR -> EXPR | NEW_ARRAY_EXPR | NEW_TABLE_EXPR;
 
@@ -203,13 +204,15 @@ grammar LuaX
 
         FOR_STMT_LOOP -> IDENTIFIER '='! EXPR ','! EXPR (','! EXPR)?;
 
-        FOR_STMT -> ('for' | 'local')! FOR_STMT_LOOP 'do'! STATEMENTS 'end'!;
+        FOR_STMT -> 'for' FOR_STMT_LOOP 'do'! STATEMENTS 'end'!;
 
         FORIN_STMT_LOOP -> IDENTIFIER 'in'! EXPR;
 
         FOR_IN_STMT -> 'for'! FORIN_STMT_LOOP 'do'! STATEMENTS 'end'!;
 
         BREAK_STMT -> 'break'! EOS!;
+
+        CONTINUE_STMT -> 'continue'! EOS!;
 
         STATEMENT -> DECLARATION |
                      ASSIGN_STMT |
@@ -221,9 +224,9 @@ grammar LuaX
                      FOR_STMT |
                      FOR_IN_STMT |
                      BREAK_STMT |
+                     CONTINUE_STMT |
                      TRY_STMT |
-                     NOP |
-                     FUNCTION_DECLARATION;
+                     NOP;
 
         STATEMENTS -> STATEMENT* ;
 

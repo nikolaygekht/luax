@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31702.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Luax.Parser", "Luax.Parser\Luax.Parser.csproj", "{DFE10634-5714-4277-9290-2EF858CDB105}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5AD74AC6-65F0-4C99-AADB-F25D5D507CAE}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Luax.Parser.Test", "Luax.Parser.Test\Luax.Parser.Test.csproj", "{7C266BD7-2099-4DBD-98C4-92F43BDE4812}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DFE10634-5714-4277-9290-2EF858CDB105}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DFE10634-5714-4277-9290-2EF858CDB105}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DFE10634-5714-4277-9290-2EF858CDB105}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DFE10634-5714-4277-9290-2EF858CDB105}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C266BD7-2099-4DBD-98C4-92F43BDE4812}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C266BD7-2099-4DBD-98C4-92F43BDE4812}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C266BD7-2099-4DBD-98C4-92F43BDE4812}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C266BD7-2099-4DBD-98C4-92F43BDE4812}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		        SolutionGuid = {3943967B-7C5E-4DEC-ACC6-01AEEFB66889}
+		SolutionGuid = {6A6CDF6B-8A78-41BB-BE4A-663FCC587F3E}
+	EndGlobalSection
+EndGlobal
