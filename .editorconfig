@@ -8,3 +8,12 @@ dotnet_diagnostic.RCS1226.severity = none
 
 # IDE0090: Use 'new(...)'
 dotnet_diagnostic.IDE0090.severity = none
+
+# RCS1001: Add braces (when expression spans over multiple lines).
+dotnet_diagnostic.RCS1001.severity = none
+
+# RCS1003: Add braces to if-else (when expression spans over multiple lines).
+dotnet_diagnostic.RCS1003.severity = none
+
+# IDE0011: Add braces
+dotnet_diagnostic.IDE0011.severity = none

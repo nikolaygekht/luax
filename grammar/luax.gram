@@ -22,7 +22,7 @@ grammar LuaX
 
         HEX_INTEGER -> '0' 'x' [0-9A-Fa-f] [0-9A-Fa-f_]* [0-9A-Fa-f]?;
 
-        REAL -> [0-9] [0-9_]* [0-9]? '.' [0-9]+ ([Ee] ('+'|'-')? [0-9] [0-9_]*)?; 
+        REAL -> [0-9] [0-9_]* [0-9]? '.' [0-9_]* [0-9]? ([Ee] ('+'|'-')? [0-9] [0-9_]*)?; 
 
         STRINGDQ -> '"' ( (. - ('"' | '\\')) |
                                ('\\' ('"' | '\\' | 'r' | 'n' | 'b' | 't')) |
@@ -234,9 +234,7 @@ grammar LuaX
 
         CONSTANTS -> CONSTANT (','! CONSTANT)*;
 
-        ATTRIBUTE_ARGS -> '('! CONSTANTS? ')'!;
-
-        ATTRIBUTE -> '@'! IDENTIFIER ATTRIBUTE_ARGS? EOS;
+        ATTRIBUTE -> '@'! IDENTIFIER '('! CONSTANTS? ')'!;
 
         ATTRIBUTES -> ATTRIBUTE ATTRIBUTE*;
 
@@ -250,12 +248,8 @@ grammar LuaX
 
         CLASS_ELEMENT -> PROPERTY | FUNCTION_DECLARATION;
 
-        CLASS_ELEMENTS -> CLASS_ELEMENT CLASS_ELEMENT*;
-
-        CLASS_DECLARATION -> ATTRIBUTES? 'class' IDENTIFIER PARENT_CLASS? CLASS_ELEMENTS 'end';
+        CLASS_DECLARATION -> ATTRIBUTES? 'class'! IDENTIFIER PARENT_CLASS? CLASS_ELEMENT* 'end'!;
         
-        BODY_ITEMS -> CLASS_DECLARATION CLASS_DECLARATION*;
-
-        ROOT -> BODY_ITEMS;
+        ROOT -> CLASS_DECLARATION*;
     }
 }

@@ -13,7 +13,7 @@ namespace Luax.Parser.Ast
     /// The parser error is a Hime object.
     /// </summary>
     [Serializable]
-    public class LuaXAstGeneratorErrorCollection : LuaxAstCollection<LuaXParserError>, ISerializable
+    public class LuaXAstGeneratorErrorCollection : LuaXAstCollection<LuaXParserError>, ISerializable
     {
         internal LuaXAstGeneratorErrorCollection()
         {

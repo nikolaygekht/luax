@@ -29,6 +29,11 @@ namespace Luax.Parser.Ast
         {
         }
 
+        internal LuaXAstGeneratorException(string name, IAstNode node, string message)
+            : this(name, new LuaXParserError[] { new LuaXParserError(node.Line, node.Column, message) })
+        {
+        }
+
         internal LuaXAstGeneratorException(string name, IEnumerable<LuaXParserError> errors)
             : base(CreateMessage(name, errors))
         {

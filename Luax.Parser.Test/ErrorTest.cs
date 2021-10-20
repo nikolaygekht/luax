@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Hime.Redist;
 using Luax.Parser.Ast;
+using Luax.Parser.Test.Tools;
 using Moq;
 using Xunit;
 
@@ -39,7 +40,7 @@ namespace Luax.Parser.Test
             error.Column.Should().Be(2);
             error.Message.Should().Be(himeError.Message);
         }
-      
+
         [Fact]
         public void Error_Serialization()
         {
@@ -75,7 +76,7 @@ namespace Luax.Parser.Test
             var collection = new LuaXAstGeneratorErrorCollection();
             var o = new LuaXParserError(1, 2, "message");
             collection.Add(o);
-            
+
             using var stream = new MemoryStream();
             var formatter = new BinaryFormatter();
             formatter.Serialize(stream, collection);

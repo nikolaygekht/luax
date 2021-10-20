@@ -1,6 +1,9 @@
 ﻿namespace Luax.Parser.Ast
 {
-    public class LuaxClassCollection : LuaxAstCollection<LuaXClass>
+    /// <summary>
+    /// A collection of classes
+    /// </summary>
+    public class LuaXClassCollection : LuaXAstCollection<LuaXClass>
     {
     }
 }

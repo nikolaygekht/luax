@@ -1,0 +1,15 @@
+﻿class a
+end
+
+class a : b
+end
+
+@x()
+class a : b
+end
+
+
+@y(1, -5, nil)
+@z(true, "hello")
+class a 
+end

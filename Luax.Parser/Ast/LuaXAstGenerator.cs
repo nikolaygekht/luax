@@ -21,7 +21,8 @@ namespace Luax.Parser.Ast
             var r = parser.Parse();
             if (!r.IsSuccess)
                 throw new LuaXAstGeneratorException(name, r.Errors);
-            return LuaXAstTreeCreator.Create(r.Root);
+            var creator = new LuaXAstTreeCreator(name);
+            return creator.Create(r.Root);
         }
 
         /// <summary>

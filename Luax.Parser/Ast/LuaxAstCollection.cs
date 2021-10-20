@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Luax.Parser.Ast
 {
-    public class LuaxAstCollection<T> : IReadOnlyList<T>
+    public class LuaXAstCollection<T> : IReadOnlyList<T>
     {
         private readonly List<T> mList = new List<T>();
 
