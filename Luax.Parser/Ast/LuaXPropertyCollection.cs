@@ -1,9 +1,9 @@
 ﻿namespace Luax.Parser.Ast
 {
     /// <summary>
-    /// A collection of classes
+    /// The collection of the class properties
     /// </summary>
-    public class LuaXClassCollection : LuaXAstCollection<LuaXClass>
+    public class LuaXPropertyCollection : LuaXAstCollection<LuaXProperty>
     {
         /// <summary>
         /// Checks whether the property with the name specified already exists

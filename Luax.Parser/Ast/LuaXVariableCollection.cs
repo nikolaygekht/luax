@@ -1,19 +1,19 @@
 ﻿namespace Luax.Parser.Ast
 {
     /// <summary>
-    /// A collection of classes
+    /// Collection of variables
     /// </summary>
-    public class LuaXClassCollection : LuaXAstCollection<LuaXClass>
+    public class LuaXVariableCollection : LuaXAstCollection<LuaXVariable>
     {
         /// <summary>
-        /// Checks whether the property with the name specified already exists
+        /// Checks whether the variable with the name specified already exists
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
         public bool Contains(string name) => Find(name) >= 0;
 
         /// <summary>
-        /// Find the property by its name
+        /// Find the variable by its name
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>

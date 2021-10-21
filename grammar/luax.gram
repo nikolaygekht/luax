@@ -59,10 +59,24 @@ grammar LuaX
                     REAL |
                     NEGATIVE_REAL;
 
-        TYPE_NAME -> 'int' |
-                     'real' |
-                     'boolean' |
-                     'string' |
+        TYPE_INT -> 'int'!;
+
+        TYPE_REAL -> 'real'!;
+
+        TYPE_BOOLEAN -> 'boolean'!;
+
+        TYPE_STRING -> 'string'!;
+
+        TYPE_VOID -> 'void'!;
+
+        TYPE_CLASS -> IDENTIFIER;
+
+
+        TYPE_NAME -> TYPE_INT |
+                     TYPE_REAL |
+                     TYPE_BOOLEAN |
+                     TYPE_STRING |
+                     TYPE_VOID | 
                      IDENTIFIER;
 
         TYPE_DECL -> TYPE_NAME ARRAY_DECL?;
@@ -240,11 +254,17 @@ grammar LuaX
 
         STATIC -> 'static'!;
 
-        FUNCTION_DECLARATION -> ATTRIBUTES? STATIC? 'function'! IDENTIFIER FUNCTION_DECLARATION_ARGS ':'! TYPE_DECL STATEMENTS? 'end'!;
+        VISIBILITY_PUBLIC -> 'public'!;
+
+        VISIBILITY_PRIVATE -> 'private'!;
+
+        VISIBILITY -> VISIBILITY_PUBLIC | VISIBILITY_PRIVATE;
+
+        FUNCTION_DECLARATION -> ATTRIBUTES? VISIBILITY? STATIC? 'function'! IDENTIFIER FUNCTION_DECLARATION_ARGS ':'! TYPE_DECL STATEMENTS? 'end'!;
 
         PARENT_CLASS -> ':'! IDENTIFIER;
 
-        PROPERTY -> STATIC? DECLARATION;
+        PROPERTY -> VISIBILITY? STATIC? DECLARATION;
 
         CLASS_ELEMENT -> PROPERTY | FUNCTION_DECLARATION;
 

@@ -1,15 +1,15 @@
 ﻿class a
 end
 
-class a : b
+class b : a
 end
 
 @x()
-class a : b
+class c : b
 end
 
 
 @y(1, -5, nil)
 @z(true, "hello")
-class a 
+class d
 end

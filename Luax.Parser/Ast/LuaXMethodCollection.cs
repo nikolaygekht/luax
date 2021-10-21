@@ -1,19 +1,21 @@
-﻿namespace Luax.Parser.Ast
+﻿using System.Runtime.CompilerServices;
+
+namespace Luax.Parser.Ast
 {
     /// <summary>
-    /// A collection of classes
+    /// The collection of methods
     /// </summary>
-    public class LuaXClassCollection : LuaXAstCollection<LuaXClass>
+    public class LuaXMethodCollection : LuaXAstCollection<LuaXMethod>
     {
         /// <summary>
-        /// Checks whether the property with the name specified already exists
+        /// Checks whether the method with the name specified already exists
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
         public bool Contains(string name) => Find(name) >= 0;
 
         /// <summary>
-        /// Find the property by its name
+        /// Find the method by its name
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>

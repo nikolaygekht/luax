@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using Hime.Redist;
@@ -39,7 +40,10 @@ namespace Luax.Parser.Ast
             {
                 if (root.Children[i].Symbol != "CLASS_DECLARATION")
                     throw new LuaXAstGeneratorException(Name, root, $"Unexpected element {root.Symbol}. Class declaration is expected");
-                body.Classes.Add(ProcessClass(root.Children[i]));
+                var @class = ProcessClass(root.Children[i]);
+                if (body.Classes.Contains(@class.Name))
+                    throw new LuaXAstGeneratorException(Name, root, $"The class with the name {@class.Name} already defined");
+                body.Classes.Add(@class);
             }
             return body;
         }
@@ -66,16 +70,25 @@ namespace Luax.Parser.Ast
 
             name = astNode.Children[start].Value;
 
-            if (astNode.Children.Count >= start + 2)
+            LuaXClass cls = null;
+
+            for (int i = start + 1; i < astNode.Children.Count; i++)
             {
-                if (astNode.Children[start + 1].Symbol != "PARENT_CLASS" ||
-                    astNode.Children[start + 1].Children.Count < 1 ||
-                    astNode.Children[start + 1].Children[0].Symbol != "IDENTIFIER")
-                    throw new LuaXAstGeneratorException(Name, astNode.Children[start], "IDENTIFIER expected");
-                parent = astNode.Children[start + 1].Children[0].Value;
+                var child = astNode.Children[i];
+                if (i == start + 1 && child.Symbol == "PARENT_CLASS")
+                    parent = astNode.Children[start + 1].Children[0].Value;
+                else if (child.Symbol == "CLASS_ELEMENT")
+                {
+                    if (cls == null)
+                        cls = new LuaXClass(name, parent);
+                    ProcessClassElement(child, cls);
+                }
+                else
+                    throw new LuaXAstGeneratorException(Name, child, "A property or a function is expected here");
             }
 
-            LuaXClass cls = new LuaXClass(name, parent);
+            if (cls == null)
+                cls = new LuaXClass(name, parent);
 
             if (start == 1)
                 ProcessAttributes(astNode.Children[0].Children, cls.Attributes);
@@ -302,6 +315,248 @@ namespace Luax.Parser.Ast
                 v = sb.ToString();
             }
             return v;
+        }
+
+        /// <summary>
+        /// Processes a class element
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        public void ProcessClassElement(IAstNode node, LuaXClass @class)
+        {
+            if (node.Children.Count == 1)
+            {
+                node = node.Children[0];
+
+                if (node.Symbol == "PROPERTY")
+                {
+                    ProcessProperty(node, @class);
+                    return;
+                }
+                else if (node.Symbol == "FUNCTION_DECLARATION")
+                {
+                    ProcessFunction(node, @class);
+                    return;
+                }
+            }
+            throw new LuaXAstGeneratorException(Name, node, "A property or a function is expected here");
+        }
+
+        /// <summary>
+        /// Processes a PROPERTY node
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        public void ProcessProperty(IAstNode node, LuaXClass @class)
+        {
+            bool @static = false, @public = true;
+            LuaXPropertyFactory factory = null;
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "VISIBILITY")
+                {
+                    if (child.Children.Count != 1 ||
+                        (child.Children[0].Symbol != "VISIBILITY_PUBLIC" && child.Children[0].Symbol != "VISIBILITY_PRIVATE"))
+                        throw new LuaXAstGeneratorException(Name, child, "Visibility is expected here");
+                    @public = child.Children[0].Symbol == "VISIBILITY_PUBLIC";
+                }
+                else if (child.Symbol == "STATIC")
+                    @static = true;
+                else if (child.Symbol == "DECLARATION")
+                {
+                    if (child.Children.Count != 1 || child.Children[0].Symbol != "DECL_LIST")
+                        throw new LuaXAstGeneratorException(Name, child, "One or more DECL is expected here");
+                    if (factory == null)
+                        factory = new LuaXPropertyFactory(@static, @public);
+                    ProcessDeclarationList<LuaXProperty>(child.Children[0], factory, p =>
+                    {
+                        if (@class.Properties.Contains(p.Name))
+                            throw new LuaXAstGeneratorException(Name, child, $"The property {p.Name} already exists");
+                        @class.Properties.Add(p);
+                    });
+                }
+            }
+        }
+
+        /// <summary>
+        /// Processes a list of declaration
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="node"></param>
+        /// <param name="factory"></param>
+        /// <param name="addAction"></param>
+        public void ProcessDeclarationList<T>(IAstNode node, LuaXVariableFactory<T> factory, Action<T> addAction)
+            where T : LuaXVariable, new()
+        {
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "DECL")
+                    addAction(ProcessDeclaration<T>(child, factory));
+                else
+                    throw new LuaXAstGeneratorException(Name, child, "DECL is expected here");
+            }
+        }
+
+        /// <summary>
+        /// Processes a declaration part of a variable or a property
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="node"></param>
+        /// <param name="factory"></param>
+        /// <returns></returns>
+        public T ProcessDeclaration<T>(IAstNode node, LuaXVariableFactory<T> factory)
+            where T : LuaXVariable, new()
+        {
+            string name = null;
+            LuaXTypeDefinition type = null;
+
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "IDENTIFIER")
+                    name = child.Value;
+                else if (child.Symbol == "TYPE_DECL")
+                    type = ProcessTypeDecl(child, false);
+            }
+
+            if (name == null)
+                throw new LuaXAstGeneratorException(Name, node, "IDENTIFIER is expected");
+
+#pragma warning disable S2589 // Boolean expressions should not be gratuitous: NG: it is false positive
+            if (type == null)
+                throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected");
+#pragma warning restore S2589 
+
+            return factory.Create(name, type);
+        }
+
+        public LuaXTypeDefinition ProcessTypeDecl(IAstNode node, bool allowVoid)
+        {
+            LuaXType? type = null;
+            bool array = false;
+            string @class = null;
+
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "TYPE_NAME")
+                {
+                    if (child.Children.Count != 1)
+                        throw new LuaXAstGeneratorException(Name, node, "TYPE_NAME specification is expected here");
+
+                    var child1 = child.Children[0];
+                    if (child1.Symbol == "IDENTIFIER")
+                    {
+                        type = LuaXType.Class;
+                        @class = child1.Value;
+                    }
+                    else if (child1.Symbol == "TYPE_INT")
+                        type = LuaXType.Integer;
+                    else if (child1.Symbol == "TYPE_REAL")
+                        type = LuaXType.Real;
+                    else if (child1.Symbol == "TYPE_BOOLEAN")
+                        type = LuaXType.Boolean;
+                    else if (child1.Symbol == "TYPE_STRING")
+                        type = LuaXType.String;
+                    else if (child1.Symbol == "TYPE_VOID")
+                    {
+                        if (!allowVoid)
+                            throw new LuaXAstGeneratorException(Name, node, "TYPE_VOID cannot be used in the variable declaration");
+                        type = LuaXType.Void;
+                    }
+                }
+                else if (child.Symbol == "ARRAY_DECL")
+                    array = true;
+            }
+
+            if (type == null)
+                throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected");
+
+            return new LuaXTypeDefinition()
+            {
+                TypeId = type.Value,
+                Array = array,
+                Class = @class
+            };
+        }
+
+        /// <summary>
+        /// Processes a Function node
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        public void ProcessFunction(IAstNode node, LuaXClass @class)
+        {
+            bool @static = false, @public = true;
+            string name = null;
+            LuaXTypeDefinition returnType = null;
+
+            IAstNode attributes = null;
+            IAstNode arguments = null;
+            IAstNode body = null;
+
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "ATTRIBUTES")
+                    attributes = child;
+                else if (child.Symbol == "VISIBILITY")
+                {
+                    if (child.Children.Count != 1 ||
+                        (child.Children[0].Symbol != "VISIBILITY_PUBLIC" && child.Children[0].Symbol != "VISIBILITY_PRIVATE"))
+                        throw new LuaXAstGeneratorException(Name, child, "Visibility is expected here");
+                    @public = child.Children[0].Symbol == "VISIBILITY_PUBLIC";
+                }
+                else if (child.Symbol == "STATIC")
+                    @static = true;
+                else if (child.Symbol == "IDENTIFIER")
+                    name = child.Value;
+                else if (child.Symbol == "FUNCTION_DECLARATION_ARGS")
+                    arguments = child;
+                else if (child.Symbol == "TYPE_DECL")
+                    returnType = ProcessTypeDecl(child, true);
+                else if (child.Symbol == "STATEMENTS")
+                    body = child;
+            }
+
+            if (name == null)
+                throw new LuaXAstGeneratorException(Name, node, "IDENTIFIER is expected here");
+
+#pragma warning disable S2589 // Boolean expressions should not be gratuitous: NG: false positive here
+            if (returnType == null)
+                throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected here");
+#pragma warning restore S2589 
+
+            LuaXMethod method = new LuaXMethod()
+            {
+                Name = name,
+                Static = @static,
+                Public = @public,
+                ReturnType = returnType
+            };
+
+            if (attributes != null)
+                ProcessAttributes(attributes.Children, method.Attributes);
+
+            if (arguments?.Children.Count > 0 &&
+                arguments.Children[0].Symbol == "DECL_LIST")
+            {
+                ProcessDeclarationList(arguments.Children[0], new LuaXVariableFactory<LuaXVariable>(), v =>
+                {
+                    if (method.Arguments.Contains(v.Name))
+                        throw new LuaXAstGeneratorException(Name, node, $"The method already has argument with the name {v.Name}");
+                    method.Arguments.Add(v);
+                });
+            }
+
+            if (body != null)
+                throw new NotImplementedException();
+
+            if (@class.Methods.Contains(method.Name))
+                throw new LuaXAstGeneratorException(Name, node, $"The method with the name {method.Name} already exists");
+            @class.Methods.Add(method);
         }
     }
 }

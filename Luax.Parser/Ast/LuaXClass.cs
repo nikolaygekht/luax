@@ -24,7 +24,20 @@ namespace Luax.Parser.Ast
         /// </summary>
         public bool HasParent => !string.IsNullOrEmpty(Parent);
 
+        /// <summary>
+        /// The collection of class attributes
+        /// </summary>
         public LuaXAttributeCollection Attributes { get; } = new LuaXAttributeCollection();
+
+        /// <summary>
+        /// The collection of class properties
+        /// </summary>
+        public LuaXPropertyCollection Properties { get; } = new LuaXPropertyCollection();
+
+        /// <summary>
+        /// The collection of the class methods
+        /// </summary>
+        public LuaXMethodCollection Methods { get; } = new LuaXMethodCollection();
 
         internal LuaXClass(string name) : this(name, null)
         {

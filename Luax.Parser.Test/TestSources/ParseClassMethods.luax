@@ -1,0 +1,15 @@
+﻿class myclass
+   function f1() : void
+   end
+   
+   private static function f2() : void
+   end
+
+   static function f3() : void
+   end
+
+   @attr1()
+   @attr2(5)
+   public static function doit(x : int, y : string[], z : object) : tuple
+   end
+end
