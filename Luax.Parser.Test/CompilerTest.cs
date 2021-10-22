@@ -74,7 +74,7 @@ namespace Luax.Parser.Test
             a.Parameters.Should().HaveCount(3);
             a.Parameters[0].Value.Should().Be(1);
             a.Parameters[1].Value.Should().Be(-5);
-            a.Parameters[2].Should().BeSameAs(LuaXConstant.Nil);
+            a.Parameters[2].IsNil.Should().BeTrue();
 
             a = c.Attributes[1];
             a.Name.Should().Be("z");
@@ -131,7 +131,7 @@ namespace Luax.Parser.Test
 
             property = @class.Properties[5];
             property.Name.Should().Be("f");
-            property.LuaType.TypeId.Should().Be(LuaXType.Integer);
+            property.LuaType.TypeId.Should().Be(LuaXType.Datetime);
             property.LuaType.Array.Should().BeFalse();
             property.Static.Should().BeTrue();
             property.Public.Should().BeTrue();

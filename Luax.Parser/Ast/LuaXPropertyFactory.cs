@@ -14,7 +14,7 @@
             mPublic = @public;
         }
 
-        public override LuaXProperty Create(string name, LuaXTypeDefinition type)
+        public override LuaXProperty Create(string name, LuaXTypeDefinition type, LuaXElementLocation location)
         {
             return new LuaXProperty()
             {
@@ -22,6 +22,7 @@
                 Public = mPublic,
                 Name = name,
                 LuaType = type,
+                Location = location
             };
         }
     }

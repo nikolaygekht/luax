@@ -39,14 +39,20 @@ namespace Luax.Parser.Ast
         /// </summary>
         public LuaXMethodCollection Methods { get; } = new LuaXMethodCollection();
 
-        internal LuaXClass(string name) : this(name, null)
+        /// <summary>
+        /// The location of the element in the source
+        /// </summary>
+        public LuaXElementLocation Location { get; }
+
+        internal LuaXClass(string name, LuaXElementLocation location) : this(name, null, location)
         {
         }
 
-        internal LuaXClass(string name, string parent)
+        internal LuaXClass(string name, string parent, LuaXElementLocation location)
         {
             Name = name;
             Parent = parent;
+            Location = location;
         }
     }
 }

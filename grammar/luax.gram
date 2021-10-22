@@ -67,6 +67,8 @@ grammar LuaX
 
         TYPE_STRING -> 'string'!;
 
+        TYPE_DATETIME -> 'datetime'!;
+
         TYPE_VOID -> 'void'!;
 
         TYPE_CLASS -> IDENTIFIER;
@@ -76,6 +78,7 @@ grammar LuaX
                      TYPE_REAL |
                      TYPE_BOOLEAN |
                      TYPE_STRING |
+                     TYPE_DATETIME |
                      TYPE_VOID | 
                      IDENTIFIER;
 

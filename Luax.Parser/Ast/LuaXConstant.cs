@@ -23,39 +23,30 @@ namespace Luax.Parser.Ast
         public bool IsNil => ConstantType == LuaXType.Class && Value == null;
 
         /// <summary>
-        /// A `nil` value constant
+        /// The location of the element in the source
         /// </summary>
-        public static LuaXConstant Nil { get; } = new LuaXConstant(LuaXType.Class, null);
+        public LuaXElementLocation Location { get; }
 
-        /// <summary>
-        /// A `true` boolean constant
-        /// </summary>
-        public static LuaXConstant True { get; } = new LuaXConstant(LuaXType.Boolean, true);
-
-        /// <summary>
-        /// A `false` boolean constant
-        /// </summary>
-        public static LuaXConstant False { get; } = new LuaXConstant(LuaXType.Boolean, false);
-
-        internal LuaXConstant(LuaXType type, object value)
+        internal LuaXConstant(LuaXType type, object value, LuaXElementLocation location)
         {
             ConstantType = type;
             Value = value;
+            Location = location;
         }
 
-        internal LuaXConstant(int value) : this(LuaXType.Integer, value)
+        internal LuaXConstant(int value, LuaXElementLocation location) : this(LuaXType.Integer, value, location)
         {
         }
 
-        internal LuaXConstant(double value) : this(LuaXType.Real, value)
+        internal LuaXConstant(double value, LuaXElementLocation location) : this(LuaXType.Real, value, location)
         {
         }
 
-        internal LuaXConstant(string value) : this(LuaXType.String, value)
+        internal LuaXConstant(string value, LuaXElementLocation location) : this(LuaXType.String, value, location)
         {
         }
 
-        internal LuaXConstant(bool value) : this(LuaXType.Boolean, value)
+        internal LuaXConstant(bool value, LuaXElementLocation location) : this(LuaXType.Boolean, value, location)
         {
         }
 

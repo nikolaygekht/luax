@@ -80,7 +80,7 @@ namespace Luax.Parser.Ast
                 else if (child.Symbol == "CLASS_ELEMENT")
                 {
                     if (cls == null)
-                        cls = new LuaXClass(name, parent);
+                        cls = new LuaXClass(name, parent, new LuaXElementLocation(Name, astNode));
                     ProcessClassElement(child, cls);
                 }
                 else
@@ -88,7 +88,7 @@ namespace Luax.Parser.Ast
             }
 
             if (cls == null)
-                cls = new LuaXClass(name, parent);
+                cls = new LuaXClass(name, parent, new LuaXElementLocation(Name, astNode));
 
             if (start == 1)
                 ProcessAttributes(astNode.Children[0].Children, cls.Attributes);
@@ -127,7 +127,7 @@ namespace Luax.Parser.Ast
 
             string name = astNode.Children[0].Value;
 
-            var attribute = new LuaXAttribute(name);
+            var attribute = new LuaXAttribute(name, new LuaXElementLocation(Name, astNode));
 
             if (astNode.Children.Count == 2 && astNode.Children[1].Symbol == "CONSTANTS")
             {
@@ -155,23 +155,23 @@ namespace Luax.Parser.Ast
                 throw new LuaXAstGeneratorException(Name, astNode, "At least one child symbol is expected in a constant");
 
             var s = astNode.Children[0].Symbol;
-
+            var l = new LuaXElementLocation(Name, astNode);
             if (s == "INTEGER")
-                return new LuaXConstant(ProcessIntegerConstant(astNode.Children[0]));
+                return new LuaXConstant(ProcessIntegerConstant(astNode.Children[0]), l);
             else if (s == "HEX_INTEGER")
-                return new LuaXConstant(ProcessIntegerConstant(astNode.Children[0]));
+                return new LuaXConstant(ProcessIntegerConstant(astNode.Children[0]), l);
             if (s == "STRING")
-                return new LuaXConstant(ProcessStringConstant(astNode.Children[0]));
+                return new LuaXConstant(ProcessStringConstant(astNode.Children[0]), l);
             if (s == "BOOLEAN")
-                return ProcessBooleanConstant(astNode.Children[0]) ? LuaXConstant.True : LuaXConstant.False;
+                return new LuaXConstant(ProcessBooleanConstant(astNode.Children[0]), l);
             if (s == "NEGATIVE_INTEGER")
-                return new LuaXConstant(ProcessNegativeIntegerConstant(astNode.Children[0]));
+                return new LuaXConstant(ProcessNegativeIntegerConstant(astNode.Children[0]), l);
             if (s == "REAL")
-                return new LuaXConstant(ProcessRealConstant(astNode.Children[0]));
+                return new LuaXConstant(ProcessRealConstant(astNode.Children[0]), l);
             if (s == "NEGATIVE_REAL")
-                return new LuaXConstant(ProcessNegativeRealConstant(astNode.Children[0]));
+                return new LuaXConstant(ProcessNegativeRealConstant(astNode.Children[0]), l);
             if (s == "NIL")
-                return LuaXConstant.Nil;
+                return new LuaXConstant(LuaXType.Class, null, l);
             throw new LuaXAstGeneratorException(Name, astNode, $"Unexpected child symbol {s} is expected in a constant");
         }
 
@@ -411,6 +411,7 @@ namespace Luax.Parser.Ast
         {
             string name = null;
             LuaXTypeDefinition type = null;
+            var l = new LuaXElementLocation(Name, node);
 
             for (int i = 0; i < node.Children.Count; i++)
             {
@@ -429,7 +430,7 @@ namespace Luax.Parser.Ast
                 throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected");
 #pragma warning restore S2589 
 
-            return factory.Create(name, type);
+            return factory.Create(name, type, l);
         }
 
         public LuaXTypeDefinition ProcessTypeDecl(IAstNode node, bool allowVoid)
@@ -458,6 +459,8 @@ namespace Luax.Parser.Ast
                         type = LuaXType.Real;
                     else if (child1.Symbol == "TYPE_BOOLEAN")
                         type = LuaXType.Boolean;
+                    else if (child1.Symbol == "TYPE_DATETIME")
+                        type = LuaXType.Datetime;
                     else if (child1.Symbol == "TYPE_STRING")
                         type = LuaXType.String;
                     else if (child1.Symbol == "TYPE_VOID")
@@ -534,7 +537,8 @@ namespace Luax.Parser.Ast
                 Name = name,
                 Static = @static,
                 Public = @public,
-                ReturnType = returnType
+                ReturnType = returnType,
+                Location = new LuaXElementLocation(Name, node)
             };
 
             if (attributes != null)

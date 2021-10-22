@@ -3,5 +3,5 @@
     static var b : real, c : string[];
     public var d : boolean;
     private static var e : object;
-    public static var f : int;
+    public static var f : datetime;
 end

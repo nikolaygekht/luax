@@ -7,12 +7,13 @@
     internal class LuaXVariableFactory<T>
         where T : LuaXVariable, new()
     {
-        public virtual T Create(string name, LuaXTypeDefinition type)
+        public virtual T Create(string name, LuaXTypeDefinition type, LuaXElementLocation location)
         {
             return new T()
             {
                 Name = name,
-                LuaType = type
+                LuaType = type,
+                Location = location
             };
         }
     }
