@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using System.Security.Claims;
 using System.Text;
 using Hime.Redist;
-using Microsoft.VisualBasic;
 
 namespace Luax.Parser.Ast
 {
@@ -555,12 +553,43 @@ namespace Luax.Parser.Ast
                 });
             }
 
-            if (body != null)
-                throw new NotImplementedException();
-
             if (@class.Methods.Contains(method.Name))
                 throw new LuaXAstGeneratorException(Name, node, $"The method with the name {method.Name} already exists");
+
+            if (body != null)
+                ProcessBody(node, method);
+
             @class.Methods.Add(method);
+        }
+
+        /// <summary>
+        /// Processes the method body
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="method"></param>
+        public void ProcessBody(IAstNode node, LuaXMethod method)
+        {
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol != "STATEMENT" || child.Children.Count != 1)
+                    throw new LuaXAstGeneratorException(Name, child, "STATEMENT is expected");
+                child = child.Children[0];
+                if (child.Symbol == "DECLARATION")
+                {
+                    if (child.Children.Count != 1 || child.Children[0].Symbol != "DECL_LIST")
+                        throw new LuaXAstGeneratorException(Name, child, "One or more DECL is expected here");
+
+                    ProcessDeclarationList<LuaXVariable>(child.Children[0], new LuaXVariableFactory<LuaXVariable>(), v =>
+                    {
+                        if (method.Arguments.Contains(v.Name) || method.Variables.Contains(v.Name))
+                            throw new LuaXAstGeneratorException(Name, child, $"Variable {v.Name} already exists");
+                        method.Variables.Add(v);
+                    });
+                }
+                else
+                    throw new LuaXAstGeneratorException(Name, child, $"Unexpected symbol {child.Symbol}");
+            }
         }
     }
 }

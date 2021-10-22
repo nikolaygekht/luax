@@ -301,5 +301,48 @@ namespace Luax.Parser.Test
             var node = AstNodeExtensions.Parse("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[DECL_LIST[DECL[IDENTIFIER(x)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]][DECL[IDENTIFIER(x)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]");
             ((Action)(() => processor.ProcessFunction(node, @class))).Should().Throw<LuaXAstGeneratorException>();
         }
+
+        [Fact]
+        public void VariableDeclaration_Success()
+        {
+            var method = new LuaXMethod();
+            var processor = new LuaXAstTreeCreator("");
+            var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]]");
+            
+            processor.ProcessBody(node, method);
+            method.Variables.Should().HaveCount(1);
+            var v = method.Variables[0];
+            v.Name.Should().Be("i");
+            v.LuaType.TypeId.Should().Be(LuaXType.Integer);
+
+            node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[DECL_LIST[DECL[IDENTIFIER(j)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]]");
+            processor.ProcessBody(node, method);
+            method.Variables.Should().HaveCount(2);
+            v = method.Variables[1];
+            v.Name.Should().Be("j");
+            v.LuaType.TypeId.Should().Be(LuaXType.Integer);
+        }
+
+        [Fact]
+        public void VariableDeclaration_Fail_SameNameAsVar()
+        {
+            var processor = new LuaXAstTreeCreator("");
+            var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]]");
+            var method = new LuaXMethod();
+            processor.ProcessBody(node, method);
+            method.Variables.Add(new LuaXVariable() { Name = "i" });
+            ((Action)(() => processor.ProcessBody(node, method))).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void VariableDeclaration_Fail_SameNameAsArg()
+        {
+            var processor = new LuaXAstTreeCreator("");
+            var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]]");
+            var method = new LuaXMethod();
+            processor.ProcessBody(node, method);
+            method.Arguments.Add(new LuaXVariable() { Name = "i" });
+            ((Action)(() => processor.ProcessBody(node, method))).Should().Throw<LuaXAstGeneratorException>();
+        }
     }
 }
