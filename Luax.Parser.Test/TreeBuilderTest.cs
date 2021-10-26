@@ -15,10 +15,10 @@ namespace Luax.Parser.Test
         [InlineData("[CONSTANT[INTEGER(1_234)]]", LuaXType.Integer, 1234)]
         [InlineData("[CONSTANT[HEX_INTEGER(0x1bc)]]", LuaXType.Integer, 0x1bc)]
         [InlineData("[CONSTANT[HEX_INTEGER(0x1_bc)]]", LuaXType.Integer, 0x1bc)]
-        [InlineData("[CONSTANT[NEGATIVE_INTEGER[INTEGER(5)]]]", LuaXType.Integer, -5)]
+        [InlineData("[CONSTANT[NEGATIVE_INTEGER[MINUS_OP[-(-)]][INTEGER(5)]]]", LuaXType.Integer, -5)]
         [InlineData("[CONSTANT[REAL(5.1)]]", LuaXType.Real, 5.1)]
         [InlineData("[CONSTANT[REAL(1234_5678.1e22)]]", LuaXType.Real, 12345678.1e22)]
-        [InlineData("[CONSTANT[NEGATIVE_REAL[REAL(5.1)]]]", LuaXType.Real, -5.1)]
+        [InlineData("[CONSTANT[NEGATIVE_REAL[MINUS_OP[-(-)]][REAL(5.1)]]]", LuaXType.Real, -5.1)]
         [InlineData("[CONSTANT[BOOLEAN[BOOLEAN_TRUE]]]", LuaXType.Boolean, true)]
         [InlineData("[CONSTANT[BOOLEAN[BOOLEAN_FALSE]]]", LuaXType.Boolean, false)]
         [InlineData("[CONSTANT[STRING[STRINGDQ(\"abcd\")]]]", LuaXType.String, "abcd")]
@@ -48,9 +48,9 @@ namespace Luax.Parser.Test
         }
 
         [Theory]
-        [InlineData("[ATTRIBUTE[IDENTIFIER(abcd)]]", "abcd")]
-        [InlineData("[ATTRIBUTE[IDENTIFIER(abcd)][CONSTANTS[CONSTANT[INTEGER(5)]]]]]", "abcd", 5)]
-        [InlineData("[ATTRIBUTE[IDENTIFIER(abcd)][CONSTANTS[CONSTANT[INTEGER(5)]][CONSTANT[BOOLEAN[BOOLEAN_TRUE]]]]]]", "abcd", 5, true)]
+        [InlineData("[ATTRIBUTE[AT[@(@)]][IDENTIFIER(abcd)][L_ROUND_BRACKET][R_ROUND_BRACKET]]", "abcd")]
+        [InlineData("[ATTRIBUTE[AT[@(@)]][IDENTIFIER(abcd)][L_ROUND_BRACKET][CONSTANTS[CONSTANT[INTEGER(5)]]][R_ROUND_BRACKET]]", "abcd", 5)]
+        [InlineData("[ATTRIBUTE[AT[@(@)]][IDENTIFIER(abcd)][L_ROUND_BRACKET][CONSTANTS[CONSTANT[INTEGER(5)]][COMMA[,(,)]][CONSTANT[BOOLEAN[BOOLEAN_TRUE[true(true)]]]]][R_ROUND_BRACKET]]", "abcd", 5, true)]
         public void ParseAttribute(string tree, string name, params object[] parameters)
         {
             var node = AstNodeExtensions.Parse(tree);
@@ -66,7 +66,7 @@ namespace Luax.Parser.Test
         [Fact]
         public void ParseAttributes()
         {
-            const string tree = "[ATTRIBUTES[ATTRIBUTE[IDENTIFIER(a)]][ATTRIBUTE[IDENTIFIER(b)]]]";
+            const string tree = "[ATTRIBUTES[ATTRIBUTE[AT[@(@)]][IDENTIFIER(a)][L_ROUND_BRACKET][R_ROUND_BRACKET]][ATTRIBUTE[AT[@(@)]][IDENTIFIER(b)][L_ROUND_BRACKET][R_ROUND_BRACKET]]]";
             var node = AstNodeExtensions.Parse(tree);
             var processor = new LuaXAstTreeCreator("");
             var target = new LuaXAttributeCollection();
@@ -79,7 +79,7 @@ namespace Luax.Parser.Test
         [Fact]
         public void ParseClass1_Tree()
         {
-            const string tree = "[CLASS[IDENTIFIER(a)]]";
+            const string tree = "[CLASS_DECLARATION[CLASS[class(class)]][IDENTIFIER(a)][END[end(end)]]]";
             var node = AstNodeExtensions.Parse(tree);
             var processor = new LuaXAstTreeCreator("");
             var c = processor.ProcessClass(node);
@@ -92,7 +92,7 @@ namespace Luax.Parser.Test
         [Fact]
         public void ParseClass2_Tree()
         {
-            const string tree = "[CLASS[IDENTIFIER(a)][PARENT_CLASS[IDENTIFIER(b)]]]";
+            const string tree = "[CLASS_DECLARATION[CLASS[class(class)]][IDENTIFIER(a)][PARENT_CLASS[COLON[:(:)]][IDENTIFIER(b)]][END[end(end)]]]";
             var node = AstNodeExtensions.Parse(tree);
             var processor = new LuaXAstTreeCreator("");
             var c = processor.ProcessClass(node);
@@ -105,7 +105,7 @@ namespace Luax.Parser.Test
         [Fact]
         public void ParseClass3_Tree()
         {
-            const string tree = "[CLASS[ATTRIBUTES[ATTRIBUTE[IDENTIFIER(abc)]]][IDENTIFIER(a)][PARENT_CLASS[IDENTIFIER(b)]]]";
+            const string tree = "[CLASS_DECLARATION[ATTRIBUTES[ATTRIBUTE[AT[@(@)]][IDENTIFIER(abc)][L_ROUND_BRACKET][R_ROUND_BRACKET]]][CLASS[class(class)]][IDENTIFIER(a)][PARENT_CLASS[COLON[:(:)]][IDENTIFIER(b)]][END[end(end)]]]";
             var node = AstNodeExtensions.Parse(tree);
             var processor = new LuaXAstTreeCreator("");
             var c = processor.ProcessClass(node);
@@ -117,13 +117,13 @@ namespace Luax.Parser.Test
         }
 
         [Theory]
-        [InlineData("[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]", "i", LuaXType.Integer, false, null)]
-        [InlineData("[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]][ARRAY_DECL]]]", "i", LuaXType.Integer, true, null)]
-        [InlineData("[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_REAL]]]]", "i", LuaXType.Real, false, null)]
-        [InlineData("[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_DATETIME]]]]", "i", LuaXType.Datetime, false, null)]
-        [InlineData("[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_BOOLEAN]]]]", "i", LuaXType.Boolean, false, null)]
-        [InlineData("[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_STRING]]]]", "i", LuaXType.String, false, null)]
-        [InlineData("[DECL[IDENTIFIER(x)][TYPE_DECL[TYPE_NAME[IDENTIFIER(a)]][ARRAY_DECL]]]", "x", LuaXType.Class, true, "a")]
+        [InlineData("[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]", "i", LuaXType.Integer, false, null)]
+        [InlineData("[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]][ARRAY_DECL[L_SQUARE_BRACKET][R_SQUARE_BRACKET]]]]", "i", LuaXType.Integer, true, null)]
+        [InlineData("[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_REAL[real(real)]]]]]", "i", LuaXType.Real, false, null)]
+        [InlineData("[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_DATETIME[datetime(datetime)]]]]]", "i", LuaXType.Datetime, false, null)]
+        [InlineData("[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_BOOLEAN[boolean(boolean)]]]]]", "i", LuaXType.Boolean, false, null)]
+        [InlineData("[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_STRING[string(string)]]]]]", "i", LuaXType.String, false, null)]
+        [InlineData("[DECL[IDENTIFIER(x)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[IDENTIFIER(a)]][ARRAY_DECL[L_SQUARE_BRACKET][R_SQUARE_BRACKET]]]]", "x", LuaXType.Class, true, "a")]
         public void ParseDeclaration(string tree, string expectedName, LuaXType expectedType, bool expectedArray, string expectedClassName)
         {
             var node = AstNodeExtensions.Parse(tree);
@@ -143,22 +143,21 @@ namespace Luax.Parser.Test
         [Fact]
         public void ParseDeclaration_VoidType()
         {
-            var node = AstNodeExtensions.Parse("[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_VOID]]]]");
+            var node = AstNodeExtensions.Parse("[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_VOID[void(void)]]]]]");
             var processor = new LuaXAstTreeCreator("");
             ((Action)(() => processor.ProcessDeclaration<LuaXVariable>(node, new LuaXVariableFactory<LuaXVariable>()))).Should().Throw<LuaXAstGeneratorException>();
         }
 
         [Theory]
-        [InlineData("[PROPERTY[DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]", "i", LuaXType.Integer, null, false, true, false)]
-        [InlineData("[PROPERTY[DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]][ARRAY_DECL]]]]]]", "i", LuaXType.Integer, null, true, true, false)]
-        [InlineData("[PROPERTY[DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[IDENTIFIER(object)]]]]]]]", "i", LuaXType.Class, "object", false, true, false)]
-        [InlineData("[PROPERTY[STATIC][DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]", "i", LuaXType.Integer, null, false, true, true)]
-        [InlineData("[PROPERTY[STATIC][DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_DATETIME]]]]]]]", "i", LuaXType.Datetime, null, false, true, true)]
-        [InlineData("[PROPERTY[VISIBILITY[VISIBILITY_PRIVATE]][STATIC][DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]", "i", LuaXType.Integer, null, false, false, true)]
-        [InlineData("[PROPERTY[VISIBILITY[VISIBILITY_PRIVATE]][DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]", "i", LuaXType.Integer, null, false, false, false)]
-        [InlineData("[PROPERTY[VISIBILITY[VISIBILITY_PUBLIC]][STATIC][DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]", "i", LuaXType.Integer, null, false, true, true)]
+        [InlineData("[PROPERTY[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]", "i", LuaXType.Integer, null, false, LuaXVisibility.Private, false)]
+        [InlineData("[PROPERTY[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]][ARRAY_DECL[L_SQUARE_BRACKET][R_SQUARE_BRACKET]]]]][EOS[;(;)]]]]", "i", LuaXType.Integer, null, true, LuaXVisibility.Private, false)]
+        [InlineData("[PROPERTY[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[IDENTIFIER(object)]]]]][EOS[;(;)]]]]", "i", LuaXType.Class, "object", false, LuaXVisibility.Private, false)]
+        [InlineData("[PROPERTY[STATIC[static(static)]][DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]", "i", LuaXType.Integer, null, false, LuaXVisibility.Private, true)]
+        [InlineData("[PROPERTY[VISIBILITY[VISIBILITY_PRIVATE[private(private)]]][STATIC[static(static)]][DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]", "i", LuaXType.Integer, null, false, LuaXVisibility.Private, true)]
+        [InlineData("[PROPERTY[VISIBILITY[VISIBILITY_INTERNAL[internal(internal)]]][DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]", "i", LuaXType.Integer, null, false, LuaXVisibility.Internal, false)]
+        [InlineData("[PROPERTY[VISIBILITY[VISIBILITY_PUBLIC]][STATIC][DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]", "i", LuaXType.Integer, null, false, LuaXVisibility.Public, true)]
 
-        public void ParseProperty(string tree, string propertyName, LuaXType type, string className, bool isArray, bool isPublic, bool isStatic)
+        public void ParseProperty(string tree, string propertyName, LuaXType type, string className, bool isArray, LuaXVisibility visibility, bool isStatic)
         {
             var node = AstNodeExtensions.Parse(tree);
             var processor = new LuaXAstTreeCreator("");
@@ -174,18 +173,19 @@ namespace Luax.Parser.Test
                 property.LuaType.Class.Should().BeNullOrEmpty();
             else
                 property.LuaType.Class.Should().Be(className);
-            property.Public.Should().Be(isPublic);
+            property.Visibility.Should().Be(visibility);
             property.Static.Should().Be(isStatic);
         }
 
         [Theory]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[TYPE_STRING]]]]", "a", true, false, null)]
-        [InlineData("[FUNCTION_DECLARATION[VISIBILITY[VISIBILITY_PRIVATE]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[TYPE_STRING]]]]", "a", false, false, null)]
-        [InlineData("[FUNCTION_DECLARATION[VISIBILITY[VISIBILITY_PUBLIC]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[TYPE_STRING]]]]", "a", true, false, null)]
-        [InlineData("[FUNCTION_DECLARATION[STATIC][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[TYPE_STRING]]]]", "a", true, true, null)]
-        [InlineData("[FUNCTION_DECLARATION[VISIBILITY[VISIBILITY_PRIVATE]][STATIC][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[TYPE_STRING]]]]", "a", false, true, null)]
-        [InlineData("[FUNCTION_DECLARATION[ATTRIBUTES[ATTRIBUTE[IDENTIFIER(attr)]]][VISIBILITY[VISIBILITY_PRIVATE]][STATIC][IDENTIFIER(fn)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[TYPE_VOID]]]]", "fn", false, true, "attr")]
-        public void ParseFunction_Name_And_Modifiers(string tree, string name, bool @public, bool @static, string attributeName)
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_STRING[string(string)]]]]]", "a", LuaXVisibility.Private, false, null)]
+        [InlineData("[FUNCTION_DECLARATION[VISIBILITY[VISIBILITY_PRIVATE[private(private)]]][FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_STRING[string(string)]]]]]", "a", LuaXVisibility.Private, false, null)]
+        [InlineData("[FUNCTION_DECLARATION[VISIBILITY[VISIBILITY_PUBLIC[public(public)]]][FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_STRING[string(string)]]]]]", "a", LuaXVisibility.Public, false, null)]
+        [InlineData("[FUNCTION_DECLARATION[VISIBILITY[VISIBILITY_INTERNAL[internal(internal)]]][FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_STRING[string(string)]]]]]", "a", LuaXVisibility.Internal, false, null)]
+        [InlineData("[FUNCTION_DECLARATION[STATIC[static(static)]][FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_STRING[string(string)]]]]]", "a", LuaXVisibility.Private, true, null)]
+        [InlineData("[FUNCTION_DECLARATION[VISIBILITY[VISIBILITY_PUBLIC[public(public)]]][STATIC[static(static)]][FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_STRING[string(string)]]]]]", "a", LuaXVisibility.Public, true, null)]
+        [InlineData("[FUNCTION_DECLARATION[ATTRIBUTES[ATTRIBUTE[AT[@(@)]][IDENTIFIER(attr)][L_ROUND_BRACKET][R_ROUND_BRACKET]]][VISIBILITY[VISIBILITY_PUBLIC[public(public)]]][STATIC[static(static)]][FUNCTION[function(function)]][IDENTIFIER(fn)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_STRING[string(string)]]]]]", "fn", LuaXVisibility.Public, true, "attr")]
+        public void ParseFunction_Name_And_Modifiers(string tree, string name, LuaXVisibility visibility, bool @static, string attributeName)
         {
             var node = AstNodeExtensions.Parse(tree);
             var processor = new LuaXAstTreeCreator("");
@@ -196,7 +196,7 @@ namespace Luax.Parser.Test
             var method = @class.Methods[0];
 
             method.Name.Should().Be(name);
-            method.Public.Should().Be(@public);
+            method.Visibility.Should().Be(visibility);
             method.Static.Should().Be(@static);
 
             method.Arguments.Count.Should().Be(0);
@@ -212,14 +212,14 @@ namespace Luax.Parser.Test
         }
 
         [Theory]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[TYPE_VOID]]]]", LuaXType.Void, null, false)]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]", LuaXType.Integer, null, false)]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[TYPE_DATETIME]]]]", LuaXType.Datetime, null, false)]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[TYPE_REAL]]]]", LuaXType.Real, null, false)]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[TYPE_BOOLEAN]]]]", LuaXType.Boolean, null, false)]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[TYPE_STRING]]]]", LuaXType.String, null, false)]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[TYPE_INT]][ARRAY_DECL]]]", LuaXType.Integer, null, true)]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[IDENTIFIER(object)]]]]", LuaXType.Class, "object", false)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_VOID[void(void)]]]]]", LuaXType.Void, null, false)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]", LuaXType.Integer, null, false)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_DATETIME[datetime(datetime)]]]]]", LuaXType.Datetime, null, false)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_REAL[real(real)]]]]]", LuaXType.Real, null, false)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_BOOLEAN[boolean(boolean)]]]]]", LuaXType.Boolean, null, false)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_STRING[string(string)]]]]]", LuaXType.String, null, false)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]][ARRAY_DECL[L_SQUARE_BRACKET][R_SQUARE_BRACKET]]]]", LuaXType.Integer, null, true)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[IDENTIFIER(object)]]]]", LuaXType.Class, "object", false)]
         public void ParseFunction_ReturnValue(string tree, LuaXType type, string className, bool array)
         {
             var node = AstNodeExtensions.Parse(tree);
@@ -240,13 +240,13 @@ namespace Luax.Parser.Test
         }
 
         [Theory]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[DECL_LIST[DECL[IDENTIFIER(x)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]][TYPE_DECL[TYPE_NAME[TYPE_VOID]]]]", "x", LuaXType.Integer, null, false)]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[DECL_LIST[DECL[IDENTIFIER(x)][TYPE_DECL[TYPE_NAME[TYPE_REAL]]]]]][TYPE_DECL[TYPE_NAME[TYPE_VOID]]]]", "x", LuaXType.Real, null, false)]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[DECL_LIST[DECL[IDENTIFIER(x)][TYPE_DECL[TYPE_NAME[TYPE_DATETIME]]]]]][TYPE_DECL[TYPE_NAME[TYPE_VOID]]]]", "x", LuaXType.Datetime, null, false)]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[DECL_LIST[DECL[IDENTIFIER(x)][TYPE_DECL[TYPE_NAME[TYPE_STRING]]]]]][TYPE_DECL[TYPE_NAME[TYPE_VOID]]]]", "x", LuaXType.String, null, false)]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[DECL_LIST[DECL[IDENTIFIER(x)][TYPE_DECL[TYPE_NAME[TYPE_BOOLEAN]]]]]][TYPE_DECL[TYPE_NAME[TYPE_VOID]]]]", "x", LuaXType.Boolean, null, false)]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[DECL_LIST[DECL[IDENTIFIER(x)][TYPE_DECL[TYPE_NAME[IDENTIFIER(tuple)]]]]]][TYPE_DECL[TYPE_NAME[TYPE_VOID]]]]", "x", LuaXType.Class, "tuple", false)]
-        [InlineData("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[DECL_LIST[DECL[IDENTIFIER(x)][TYPE_DECL[TYPE_NAME[TYPE_INT]][ARRAY_DECL]]]]][TYPE_DECL[TYPE_NAME[TYPE_VOID]]]]", "x", LuaXType.Integer, null, true)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][DECL_LIST[DECL[IDENTIFIER(x)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_VOID[void(void)]]]]]", "x", LuaXType.Integer, null, false)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][DECL_LIST[DECL[IDENTIFIER(x)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_REAL[real(real)]]]]]][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_VOID[void(void)]]]]]", "x", LuaXType.Real, null, false)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][DECL_LIST[DECL[IDENTIFIER(x)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_DATETIME[datetime(datetime)]]]]]][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_VOID[void(void)]]]]]", "x", LuaXType.Datetime, null, false)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][DECL_LIST[DECL[IDENTIFIER(x)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_STRING[string(string)]]]]]][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_VOID[void(void)]]]]]", "x", LuaXType.String, null, false)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][DECL_LIST[DECL[IDENTIFIER(x)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_BOOLEAN[boolean(boolean)]]]]]][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_VOID[void(void)]]]]]", "x", LuaXType.Boolean, null, false)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][DECL_LIST[DECL[IDENTIFIER(x)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[IDENTIFIER(tuple)]]]]][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_VOID[void(void)]]]]]", "x", LuaXType.Class, "tuple", false)]
+        [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][DECL_LIST[DECL[IDENTIFIER(x)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]][ARRAY_DECL[L_SQUARE_BRACKET][R_SQUARE_BRACKET]]]]][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_VOID[void(void)]]]]]", "x", LuaXType.Integer, null, true)]
         public void ParseFunction_ArgumentType(string tree, string name, LuaXType type, string className, bool array)
         {
             var node = AstNodeExtensions.Parse(tree);
@@ -270,7 +270,7 @@ namespace Luax.Parser.Test
         [Fact]
         public void Error_ClassWithSameName()
         {
-            var node = AstNodeExtensions.Parse("[ROOT[CLASS_DECLARATION[IDENTIFIER(a)]][CLASS_DECLARATION[IDENTIFIER(a)]]]");
+            var node = AstNodeExtensions.Parse("[ROOT[CLASS_DECLARATION[CLASS[class(class)]][IDENTIFIER(a)][END[end(end)]]][CLASS_DECLARATION[CLASS[class(class)]][IDENTIFIER(a)][END[end(end)]]]]");
             var processor = new LuaXAstTreeCreator("");
             ((Action)(() => processor.Create(node))).Should().Throw<LuaXAstGeneratorException>();
         }
@@ -284,10 +284,10 @@ namespace Luax.Parser.Test
             @class.Properties.Add(new LuaXProperty() { Name = "a" });
             @class.Methods.Add(new LuaXMethod() { Name = "a" });
 
-            var node = AstNodeExtensions.Parse("[PROPERTY[DECLARATION[DECL_LIST[DECL[IDENTIFIER(a)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]");
+            var node = AstNodeExtensions.Parse("[PROPERTY[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(a)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]");
             ((Action)(() => processor.ProcessProperty(node, @class))).Should().Throw<LuaXAstGeneratorException>();
 
-            node = AstNodeExtensions.Parse("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]");
+            node = AstNodeExtensions.Parse("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]");
             ((Action)(() => processor.ProcessFunction(node, @class))).Should().Throw<LuaXAstGeneratorException>();
         }
 
@@ -298,7 +298,7 @@ namespace Luax.Parser.Test
             var processor = new LuaXAstTreeCreator("");
             var @class = new LuaXClass("a", null);
 
-            var node = AstNodeExtensions.Parse("[FUNCTION_DECLARATION[IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[DECL_LIST[DECL[IDENTIFIER(x)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]][DECL[IDENTIFIER(x)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]");
+            var node = AstNodeExtensions.Parse("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][DECL_LIST[DECL[IDENTIFIER(x)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]][COMMA[,(,)]][DECL[IDENTIFIER(x)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_REAL[real(real)]]]]]][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]");
             ((Action)(() => processor.ProcessFunction(node, @class))).Should().Throw<LuaXAstGeneratorException>();
         }
 
@@ -307,15 +307,15 @@ namespace Luax.Parser.Test
         {
             var method = new LuaXMethod();
             var processor = new LuaXAstTreeCreator("");
-            var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]]");
-            
+            var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]]");
+
             processor.ProcessBody(node, method);
             method.Variables.Should().HaveCount(1);
             var v = method.Variables[0];
             v.Name.Should().Be("i");
             v.LuaType.TypeId.Should().Be(LuaXType.Integer);
 
-            node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[DECL_LIST[DECL[IDENTIFIER(j)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]]");
+            node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(j)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]]");
             processor.ProcessBody(node, method);
             method.Variables.Should().HaveCount(2);
             v = method.Variables[1];
@@ -327,7 +327,7 @@ namespace Luax.Parser.Test
         public void VariableDeclaration_Fail_SameNameAsVar()
         {
             var processor = new LuaXAstTreeCreator("");
-            var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]]");
+            var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]]");
             var method = new LuaXMethod();
             processor.ProcessBody(node, method);
             method.Variables.Add(new LuaXVariable() { Name = "i" });
@@ -338,7 +338,7 @@ namespace Luax.Parser.Test
         public void VariableDeclaration_Fail_SameNameAsArg()
         {
             var processor = new LuaXAstTreeCreator("");
-            var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[DECL_LIST[DECL[IDENTIFIER(i)][TYPE_DECL[TYPE_NAME[TYPE_INT]]]]]]]]");
+            var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]]");
             var method = new LuaXMethod();
             processor.ProcessBody(node, method);
             method.Arguments.Add(new LuaXVariable() { Name = "i" });

@@ -1,8 +1,8 @@
 ﻿class a
 end
 
-class b : a
-end
+ class b : a
+ end
 
 @x()
 class c : b

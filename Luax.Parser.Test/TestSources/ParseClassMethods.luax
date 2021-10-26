@@ -5,7 +5,7 @@
    private static function f2() : void
    end
 
-   static function f3() : void
+   internal function f3() : void
    end
 
    @attr1()

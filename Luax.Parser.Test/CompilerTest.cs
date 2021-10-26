@@ -48,21 +48,34 @@ namespace Luax.Parser.Test
             c.HasParent.Should().BeFalse();
             c.Parent.Should().BeNullOrEmpty();
             c.Attributes.Should().BeEmpty();
+            c.Location.Source.Should().Be("ParseClass");
+            c.Location.Line.Should().Be(1);
+            c.Location.Column.Should().Be(1);
 
             c = root.Classes[1];
             c.Name.Should().Be("b");
             c.HasParent.Should().BeTrue();
             c.Parent.Should().Be("a");
             c.Attributes.Should().BeEmpty();
+            c.Location.Source.Should().Be("ParseClass");
+            c.Location.Line.Should().Be(4);
+            c.Location.Column.Should().Be(2);
 
             c = root.Classes[2];
             c.Name.Should().Be("c");
             c.HasParent.Should().BeTrue();
             c.Parent.Should().Be("b");
+            c.Location.Source.Should().Be("ParseClass");
+            c.Location.Line.Should().Be(8);
+            c.Location.Column.Should().Be(1);
+
             c.Attributes.Should().HaveCount(1);
             var a = c.Attributes[0];
             a.Name.Should().Be("x");
             a.Parameters.Should().BeEmpty();
+            a.Location.Source.Should().Be("ParseClass");
+            a.Location.Line.Should().Be(7);
+            a.Location.Column.Should().Be(1);
 
             c = root.Classes[3];
             c.Name.Should().Be("d");
@@ -98,28 +111,35 @@ namespace Luax.Parser.Test
             property.LuaType.TypeId.Should().Be(LuaXType.Integer);
             property.LuaType.Array.Should().BeFalse();
             property.Static.Should().BeFalse();
-            property.Public.Should().BeTrue();
+            property.Visibility.Should().Be(LuaXVisibility.Private);
+            property.Location.Line.Should().Be(2);
+            property.Location.Column.Should().Be(9);
 
             property = @class.Properties[1];
             property.Name.Should().Be("b");
             property.LuaType.TypeId.Should().Be(LuaXType.Real);
             property.LuaType.Array.Should().BeFalse();
             property.Static.Should().BeTrue();
-            property.Public.Should().BeTrue();
+            property.Visibility.Should().Be(LuaXVisibility.Private);
+            property.Location.Line.Should().Be(3);
+            property.Location.Column.Should().Be(16);
 
             property = @class.Properties[2];
             property.Name.Should().Be("c");
             property.LuaType.TypeId.Should().Be(LuaXType.String);
             property.LuaType.Array.Should().BeTrue();
             property.Static.Should().BeTrue();
-            property.Public.Should().BeTrue();
+            property.Visibility.Should().Be(LuaXVisibility.Private);
+            property.Location.Line.Should().Be(3);
+            property.Location.Column.Should().Be(26);
 
             property = @class.Properties[3];
             property.Name.Should().Be("d");
             property.LuaType.TypeId.Should().Be(LuaXType.Boolean);
             property.LuaType.Array.Should().BeFalse();
             property.Static.Should().BeFalse();
-            property.Public.Should().BeTrue();
+            property.Visibility.Should().Be(LuaXVisibility.Public);
+            property.Location.Line.Should().Be(4);
 
             property = @class.Properties[4];
             property.Name.Should().Be("e");
@@ -127,14 +147,16 @@ namespace Luax.Parser.Test
             property.LuaType.Class.Should().Be("object");
             property.LuaType.Array.Should().BeFalse();
             property.Static.Should().BeTrue();
-            property.Public.Should().BeFalse();
+            property.Visibility.Should().Be(LuaXVisibility.Private);
+            property.Location.Line.Should().Be(5);
 
             property = @class.Properties[5];
             property.Name.Should().Be("f");
             property.LuaType.TypeId.Should().Be(LuaXType.Datetime);
             property.LuaType.Array.Should().BeFalse();
             property.Static.Should().BeTrue();
-            property.Public.Should().BeTrue();
+            property.Visibility.Should().Be(LuaXVisibility.Internal);
+            property.Location.Line.Should().Be(6);
         }
 
         [Fact]
@@ -151,31 +173,34 @@ namespace Luax.Parser.Test
             method.Attributes.Should().HaveCount(0);
             method.Arguments.Should().HaveCount(0);
             method.Name.Should().Be("f1");
-            method.Public.Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Private);
             method.Static.Should().BeFalse();
             method.ReturnType.TypeId.Should().Be(LuaXType.Void);
+            method.Location.Line.Should().Be(2);
 
             method = @class.Methods[1];
             method.Attributes.Should().HaveCount(0);
             method.Arguments.Should().HaveCount(0);
             method.Name.Should().Be("f2");
-            method.Public.Should().BeFalse();
+            method.Visibility.Should().Be(LuaXVisibility.Private);
             method.Static.Should().BeTrue();
             method.ReturnType.TypeId.Should().Be(LuaXType.Void);
+            method.Location.Line.Should().Be(5);
 
             method = @class.Methods[2];
             method.Attributes.Should().HaveCount(0);
             method.Arguments.Should().HaveCount(0);
             method.Name.Should().Be("f3");
-            method.Public.Should().BeTrue();
-            method.Static.Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Internal);
+            method.Static.Should().BeFalse();
             method.ReturnType.TypeId.Should().Be(LuaXType.Void);
+            method.Location.Line.Should().Be(8);
 
             method = @class.Methods[3];
             method.Attributes.Should().HaveCount(2);
             method.Arguments.Should().HaveCount(3);
             method.Name.Should().Be("doit");
-            method.Public.Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
             method.Static.Should().BeTrue();
             method.ReturnType.TypeId.Should().Be(LuaXType.Class);
             method.ReturnType.Array.Should().BeFalse();
@@ -185,11 +210,15 @@ namespace Luax.Parser.Test
             arg.Name.Should().Be("x");
             arg.LuaType.TypeId.Should().Be(LuaXType.Integer);
             arg.LuaType.Array.Should().BeFalse();
+            arg.Location.Line.Should().Be(13);
+            arg.Location.Column.Should().Be(32);
 
             arg = method.Arguments[1];
             arg.Name.Should().Be("y");
             arg.LuaType.TypeId.Should().Be(LuaXType.String);
             arg.LuaType.Array.Should().BeTrue();
+            arg.Location.Line.Should().Be(13);
+            arg.Location.Column.Should().Be(41);
 
             arg = method.Arguments[2];
             arg.Name.Should().Be("z");

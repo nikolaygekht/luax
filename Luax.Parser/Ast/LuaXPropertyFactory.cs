@@ -6,12 +6,12 @@
     internal class LuaXPropertyFactory : LuaXVariableFactory<LuaXProperty>
     {
         private readonly bool mStatic;
-        private readonly bool mPublic;
+        private readonly LuaXVisibility mVisibility;
 
-        public LuaXPropertyFactory(bool @static, bool @public)
+        public LuaXPropertyFactory(bool @static, LuaXVisibility visibility)
         {
             mStatic = @static;
-            mPublic = @public;
+            mVisibility = visibility;
         }
 
         public override LuaXProperty Create(string name, LuaXTypeDefinition type, LuaXElementLocation location)
@@ -19,7 +19,7 @@
             return new LuaXProperty()
             {
                 Static = mStatic,
-                Public = mPublic,
+                Visibility = mVisibility,
                 Name = name,
                 LuaType = type,
                 Location = location

@@ -24,14 +24,17 @@ namespace Luax.Parser.Ast
         public string Message { get; }
 
         internal LuaXParserError(ParseError error)
-            : this(error.Position.Line, error.Position.Column, error.Message)
         {
+            Line = error.Position.Line;
+            Column = error.Position.Column;
+            Message = error.Message;
         }
 
-        internal LuaXParserError(int line, int column, string message)
+        internal LuaXParserError(IAstNode node, string message)
         {
-            Line = line;
-            Column = column;
+            LuaXElementLocation location = new LuaXElementLocation("", node);
+            Line = location.Line;
+            Column = location.Column;
             Message = message;
         }
 

@@ -24,7 +24,8 @@ namespace Luax.Parser.Test
         [Fact]
         public void ErrorConstructor_FromParams()
         {
-            var error = new LuaXParserError(1, 2, "message");
+            AstNodeWrapper w = new AstNodeWrapper(1, 2, "", "");
+            var error = new LuaXParserError(w, "message");
             error.Line.Should().Be(1);
             error.Column.Should().Be(2);
             error.Message.Should().Be("message");
@@ -44,7 +45,8 @@ namespace Luax.Parser.Test
         [Fact]
         public void Error_Serialization()
         {
-            var error = new LuaXParserError(1, 2, "message");
+            AstNodeWrapper w = new AstNodeWrapper(1, 2, "", "");
+            var error = new LuaXParserError(w, "message");
             using var stream = new MemoryStream();
             var formatter = new BinaryFormatter();
             formatter.Serialize(stream, error);
@@ -63,7 +65,8 @@ namespace Luax.Parser.Test
             collection.Count.Should().Be(0);
             collection.Should().HaveCount(0);
 
-            var o = new LuaXParserError(1, 2, "message");
+            AstNodeWrapper w = new AstNodeWrapper(1, 2, "", "");
+            var o = new LuaXParserError(w, "message");
             collection.Add(o);
             collection.Count.Should().Be(1);
             collection.Should().HaveCount(1);
@@ -74,7 +77,8 @@ namespace Luax.Parser.Test
         public void ErrorCollection_Serialize()
         {
             var collection = new LuaXAstGeneratorErrorCollection();
-            var o = new LuaXParserError(1, 2, "message");
+            AstNodeWrapper w = new AstNodeWrapper(1, 2, "", "");
+            var o = new LuaXParserError(w, "message");
             collection.Add(o);
 
             using var stream = new MemoryStream();

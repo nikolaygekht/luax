@@ -36,9 +36,9 @@
         public bool Static { get; internal init; }
 
         /// <summary>
-        /// The flag indicating whether the method is a public method
+        /// The method visibility
         /// </summary>
-        public bool Public { get; internal init; }
+        public LuaXVisibility Visibility { get; internal init; }
 
         /// <summary>
         /// The location of the element in the source

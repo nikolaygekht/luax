@@ -13,8 +13,8 @@ namespace Luax.Parser.Ast
         public bool Static { get; internal init; }
 
         /// <summary>
-        /// The flag indicating whether the property is a public property
+        /// The property visibility
         /// </summary>
-        public bool Public { get; internal init; }
+        public LuaXVisibility Visibility { get; internal init; }
     }
 }
