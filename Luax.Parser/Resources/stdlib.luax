@@ -1,4 +1,6 @@
-﻿-- standard library expected from the target platform
+﻿-- -------------------------------------------------------
+-- standard library expected from the target platform
+-- -------------------------------------------------------
 class stdlib
     -- -------------------------------------------------------
     -- string functions
@@ -10,6 +12,8 @@ class stdlib
     public static extern substring(s : string, from : int, length : int) : string;
     public static extern match(s : string, re : string) : boolean;
     public static extern parse(s : string, re : string) : string[];
+    public static extern unicode(s : string) : int;
+    public static extern char(unicode : int) : s;
 
     public static extern parseInt(s : string) : int;
     public static extern parseReal(s : string) : real;
@@ -53,6 +57,9 @@ class stdlib
     public static extern fromJdn(x : int) : datetime;
 end
 
+-- -------------------------------------------------------
+-- Filesystem functions
+-- -------------------------------------------------------
 class io
     public static extern exists(filename : string) : boolean;
     public static extern size(filename : string) : int;
@@ -61,12 +68,18 @@ class io
     public static extern open(filename : string, mode : string) : file;
 end
 
+-- ------------------------------------------------------- 
+-- Binary buffer
+-- -------------------------------------------------------
 class buffer
     public extern length() : int;
     public extern get(index : int) : int;
     public extern set(index : int, value : int) : void;
 end
 
+-- -------------------------------------------------------
+-- File i/o
+-- -------------------------------------------------------
 class file
     public extern length() : int;
     public extern getPosition() : int;
@@ -79,6 +92,9 @@ class file
     public extern writeBuffer(v : buffer) : int;
 end
 
+-- -------------------------------------------------------
+-- CSV file parser
+-- -------------------------------------------------------
 class csvParser
     public extern setSeparator(separator : string) : void;
     public extern getSeparator() : string;
@@ -95,6 +111,9 @@ class csvParser
     public static extern create() : csvParser;
 end
 
+-- -------------------------------------------------------
+-- XML node
+-- -------------------------------------------------------
 class xmlNode
     -- Get node type
     -- node could be element, text, comment, cdata, attribute
@@ -105,6 +124,9 @@ class xmlNode
     public extern getChild(index : int) : xmlNode;
 end
 
+-- -------------------------------------------------------
+-- XML parser
+-- -------------------------------------------------------
 class xmlParser
     public extern parse(xml : string) : xmlNode;
     public static extern create() : xmlParser;
