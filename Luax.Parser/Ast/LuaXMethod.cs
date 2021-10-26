@@ -51,5 +51,7 @@
         /// Extern methods are implemented in target platform natively.
         /// </summary>
         public bool Extern { get; internal init; }
+
+        internal IAstNode Body { get; init; }
     }
 }

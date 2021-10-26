@@ -54,5 +54,12 @@ namespace Luax.Parser.Ast
             Parent = parent;
             Location = location;
         }
+
+        internal void Pass2(LuaXAstTreeCreator creator)
+        {
+            for (int i = 0; i < Methods.Count; i++)
+                if (Methods[i].Body != null)
+                    creator.ProcessBody(Methods[i].Body, Methods[i]);
+        }
     }
 }

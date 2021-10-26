@@ -11,8 +11,11 @@ namespace Luax.Parser.Ast
     {
         public string Name { get; }
 
-        public LuaXAstTreeCreator(string name)
+        public LuaXClassCollection Metadata { get; }
+
+        public LuaXAstTreeCreator(string name, LuaXClassCollection metadata = null)
         {
+            Metadata = metadata;
             Name = name;
         }
 
@@ -616,7 +619,8 @@ namespace Luax.Parser.Ast
                 Visibility = visibility,
                 ReturnType = returnType,
                 Extern = false,
-                Location = new LuaXElementLocation(Name, node)
+                Location = new LuaXElementLocation(Name, node),
+                Body = body
             };
 
             if (attributes != null)
@@ -635,9 +639,6 @@ namespace Luax.Parser.Ast
 
             if (@class.Methods.Contains(method.Name))
                 throw new LuaXAstGeneratorException(Name, node, $"The method with the name {method.Name} already exists");
-
-            if (body != null)
-                ProcessBody(node, method);
 
             @class.Methods.Add(method);
         }
