@@ -36,19 +36,19 @@ grammar LuaX
     }
 
     rules {
-        NIL -> 'nil'!;
+        NIL -> 'nil';
 
-        BOOLEAN_TRUE -> 'true'!;
+        BOOLEAN_TRUE -> 'true';
 
-        BOOLEAN_FALSE -> 'false'!;
+        BOOLEAN_FALSE -> 'false';
 
         BOOLEAN -> BOOLEAN_TRUE | BOOLEAN_FALSE;
 
         STRING -> STRINGDQ;
 
-        NEGATIVE_INTEGER -> '-'! INTEGER;
+        NEGATIVE_INTEGER -> MINUS_OP INTEGER;
 
-        NEGATIVE_REAL -> '-'! REAL;
+        NEGATIVE_REAL -> MINUS_OP REAL;
 
         CONSTANT -> NIL |
                     BOOLEAN |
@@ -59,17 +59,17 @@ grammar LuaX
                     REAL |
                     NEGATIVE_REAL;
 
-        TYPE_INT -> 'int'!;
+        TYPE_INT -> 'int';
 
-        TYPE_REAL -> 'real'!;
+        TYPE_REAL -> 'real';
 
-        TYPE_BOOLEAN -> 'boolean'!;
+        TYPE_BOOLEAN -> 'boolean';
 
-        TYPE_STRING -> 'string'!;
+        TYPE_STRING -> 'string';
 
-        TYPE_DATETIME -> 'datetime'!;
+        TYPE_DATETIME -> 'datetime';
 
-        TYPE_VOID -> 'void'!;
+        TYPE_VOID -> 'void';
 
         TYPE_CLASS -> IDENTIFIER;
 
@@ -84,71 +84,90 @@ grammar LuaX
 
         TYPE_DECL -> TYPE_NAME ARRAY_DECL?;
 
-        DECL -> IDENTIFIER ':'! TYPE_DECL;
+        COLON -> ':';
+        COMMA -> ',';
 
-        DECL_LIST -> DECL (','! DECL)*;
+        DECL -> IDENTIFIER COLON TYPE_DECL;
 
-        ARRAY_DECL -> '['! ']'!;
+        DECL_LIST -> DECL (COMMA DECL)*;
+
+        L_SQUARE_BRACKET -> '['!;
+        R_SQUARE_BRACKET -> ']'!;
+
+        ARRAY_DECL -> L_SQUARE_BRACKET R_SQUARE_BRACKET;
 
         VARIABLE -> IDENTIFIER;
 
-        PROPERTY -> CALLABLE_EXPR '.'! IDENTIFIER;
+        PROPERTY_ACCESS -> '.';
 
-        ARRAY_ELEMENT -> CALLABLE_EXPR '['! EXPR ']'!;
+        PROPERTY -> CALLABLE_EXPR PROPERTY_ACCESS IDENTIFIER;
+
+        ARRAY_ELEMENT -> CALLABLE_EXPR L_SQUARE_BRACKET EXPR L_SQUARE_BRACKET;
 
         ASSIGN_TARGET -> VARIABLE | PROPERTY | ARRAY_ELEMENT;
 
         CALL_ARGS -> REXPR (','! REXPR)*;
 
-        CALL_BRACKET -> '('! CALL_ARGS? ')'!;
+        L_ROUND_BRACKET -> '('!;
+        R_ROUND_BRACKET -> ')'!;
+
+        CALL_BRACKET -> L_ROUND_BRACKET CALL_ARGS? R_ROUND_BRACKET;
 
         LOCAL_CALL -> IDENTIFIER CALL_BRACKET;
 
-        METHOD_CALL -> REXPR '.'^ IDENTIFIER CALL_BRACKET;
+        METHOD_CALL -> REXPR PROPERTY_ACCESS IDENTIFIER CALL_BRACKET;
 
         CALL -> LOCAL_CALL | METHOD_CALL;
 
-        FIELD_ASSIGNMENT -> IDENTIFIER '='! REXPR;
+        ASSIGN -> '=';
 
-        NEW_ARRAY_EXPR -> 'new'! TYPE_NAME '['! REXPR ']'!;
+        FIELD_ASSIGNMENT -> IDENTIFIER ASSIGN REXPR;
 
-        NEW_TABLE_EXPR -> 'new'! IDENTIFIER '('! ')'!;
+        NEW -> 'new';
 
-        METHOD -> CALLABLE_EXPR ':'! IDENTIFIER;
+        NEW_ARRAY_EXPR -> NEW TYPE_NAME L_SQUARE_BRACKET REXPR R_SQUARE_BRACKET;
+
+        NEW_TABLE_EXPR -> NEW IDENTIFIER L_ROUND_BRACKET R_ROUND_BRACKET;
+
+        METHOD -> CALLABLE_EXPR COLON IDENTIFIER;
 
         CALLABLE_EXPR -> ASSIGN_TARGET |
                          METHOD |
                          CALL;
 
-        BRACKET_EXPR -> '('! EXPR ')'!;
+        BRACKET_EXPR -> L_ROUND_BRACKET EXPR R_ROUND_BRACKET;
 
         SIMPLE_EXPR -> CONSTANT |
                        CALLABLE_EXPR |
                        BRACKET_EXPR;
 
-        MINUS_OP -> '-'!;
-
-        PLUS_OP -> '+'!;
+        MINUS_OP -> '-';
+        PLUS_OP -> '+';
+        CAST -> 'cast';
+        L_SHARP_BRACKET -> '<';
+        R_SHARP_BRACKET -> '>';
+        CAST_OP -> CAST L_SHARP_BRACKET TYPE_NAME R_SHARP_BRACKET;
 
         UNARY_EXPR -> SIMPLE_EXPR |
-                      MINUS_OP^ SIMPLE_EXPR |
-                      PLUS_OP^ SIMPLE_EXPR;
+                      CAST_OP^ L_ROUND_BRACKET REXPR R_ROUND_BRACKET |
+                      MINUS_OP^ REXPR |
+                      PLUS_OP^ REXPR;
 
-        POWER_OP -> '^'!;
+        POWER_OP -> '^';
 
         POWER_EXPR -> UNARY_EXPR |
                       POWER_EXPR POWER_OP^ UNARY_EXPR;
 
-        MUL_OP -> '*'!;
-        DIV_OP -> '/'!;
-        REM_OP -> '%'!;
+        MUL_OP -> '*';
+        DIV_OP -> '/';
+        REM_OP -> '%';
 
         MUL_EXPR -> POWER_EXPR |
                     MUL_EXPR MUL_OP^ POWER_EXPR |
                     MUL_EXPR DIV_OP^ POWER_EXPR |
                     MUL_EXPR REM_OP^ POWER_EXPR;
 
-        CONCAT_OP -> '..'!;
+        CONCAT_OP -> '..';
 
 
         ADD_EXPR -> MUL_EXPR |
@@ -156,12 +175,12 @@ grammar LuaX
                     ADD_EXPR PLUS_OP^ MUL_EXPR |
                     ADD_EXPR MINUS_OP^ MUL_EXPR;
 
-        EQ_OP -> '=='!;
-        NEQ_OP -> '~='!;
-        GT_OP -> '>'!;
-        GE_OP -> '>='!;
-        LT_OP -> '<'!;
-        LE_OP -> '<='!;
+        EQ_OP -> '==';
+        NEQ_OP -> '~=';
+        GT_OP -> '>';
+        GE_OP -> '>=';
+        LT_OP -> '<';
+        LE_OP -> '<=';
 
         REL_EXPR -> ADD_EXPR |
                     REL_EXPR EQ_OP^ ADD_EXPR |
@@ -171,9 +190,9 @@ grammar LuaX
                     REL_EXPR LT_OP^ ADD_EXPR |
                     REL_EXPR LE_OP^ ADD_EXPR;
 
-        NOT_OP -> 'not'!;
-        AND_OP -> 'and'!;
-        OR_OP -> 'or'!;
+        NOT_OP -> 'not';
+        AND_OP -> 'and';
+        OR_OP -> 'or';
 
         UX_BOOL_EXPR -> REL_EXPR |
                         NOT_OP^ REL_EXPR;
@@ -186,50 +205,78 @@ grammar LuaX
 
         EXPR -> OR_BOOL_EXPR;
 
-        EOS -> ';'!;
+        EOS -> ';';
 
         NOP -> EOS;
 
         REXPR -> EXPR | NEW_ARRAY_EXPR | NEW_TABLE_EXPR;
 
-        ASSIGN_STMT -> ASSIGN_TARGET '='! REXPR EOS!;
+        ASSIGN_STMT -> ASSIGN_TARGET ASSIGN REXPR EOS;
 
-        DECLARATION -> 'var'! DECL_LIST EOS!;
+        VAR -> 'var';
 
-        RETURN_STMT ->  'return'! REXPR? EOS!;
+        DECLARATION -> VAR DECL_LIST EOS;
 
-        CATCH -> 'catch'! IDENTIFIER STATEMENTS;
+        RETURN -> 'return';
 
-        TRY_STMT -> 'try'! STATEMENTS CATCH 'end'!;
+        RETURN_STMT ->  RETURN REXPR? EOS;
 
-        CALL_STMT -> CALL EOS!;
+        CATCH -> 'catch';
 
-        ELSEIF_CLAUSE -> 'elseif'! EXPR 'then'! STATEMENTS ;
+        END -> 'end';
 
-        ELSE_CLAUSE -> 'else'!  STATEMENTS ;
+        CATCH_STMT -> CATCH IDENTIFIER STATEMENTS;
 
-        IF_CLAUSE -> 'if'!  EXPR 'then'!  STATEMENTS ;
+        TRY -> 'try';
+
+        TRY_STMT -> TRY STATEMENTS CATCH_STMT END;
+
+        CALL_STMT -> CALL EOS;
+
+        IF -> 'if';
+        THEN -> 'then';
+        ELSE -> 'else';
+        ELSEIF -> 'elseif';
+
+        ELSEIF_CLAUSE -> ELSEIF EXPR THEN STATEMENTS ;
+
+        ELSE_CLAUSE -> ELSE STATEMENTS ;
+
+        IF_CLAUSE -> IF EXPR THEN STATEMENTS;
 
         IF_STMT ->  IF_CLAUSE
                     ELSEIF_CLAUSE*
                     ELSE_CLAUSE?
-                    'end'! EOS!;
+                    END EOS;
 
-        WHILE_STMT -> 'while'! EXPR 'do'! STATEMENTS 'end'!;
+        WHILE -> 'while';
+        DO -> 'do';
 
-        REPEAT_STMT -> 'repeat'!  STATEMENTS 'until'! EXPR;
+        WHILE_STMT -> WHILE EXPR DO STATEMENTS END;
 
-        FOR_STMT_LOOP -> IDENTIFIER '='! EXPR ','! EXPR (','! EXPR)?;
+        REPEAT -> 'repeat';
+        UNTIL -> 'until';
 
-        FOR_STMT -> 'for' FOR_STMT_LOOP 'do'! STATEMENTS 'end'!;
+        REPEAT_STMT -> REPEAT STATEMENTS UNTIL EXPR;
 
-        FORIN_STMT_LOOP -> IDENTIFIER 'in'! EXPR;
+        FOR_STMT_LOOP -> IDENTIFIER ASSIGN EXPR COMMA EXPR (COMMA EXPR)?;
 
-        FOR_IN_STMT -> 'for'! FORIN_STMT_LOOP 'do'! STATEMENTS 'end'!;
+        FOR -> 'for';
 
-        BREAK_STMT -> 'break'! EOS!;
+        FOR_STMT -> FOR FOR_STMT_LOOP DO STATEMENTS END;
 
-        CONTINUE_STMT -> 'continue'! EOS!;
+        IN -> 'in';
+
+        FORIN_STMT_LOOP -> IDENTIFIER IN EXPR;
+
+        FOR_IN_STMT -> FOR FORIN_STMT_LOOP DO STATEMENTS END;
+
+        BREAK -> 'break';
+        CONTINUTE -> 'continue';
+
+        BREAK_STMT -> BREAK EOS;
+
+        CONTINUE_STMT -> CONTINUTE EOS;
 
         STATEMENT -> DECLARATION |
                      ASSIGN_STMT |
@@ -247,31 +294,43 @@ grammar LuaX
 
         STATEMENTS -> STATEMENT* ;
 
-        FUNCTION_DECLARATION_ARGS -> '('! DECL_LIST? ')'!;
+        FUNCTION_DECLARATION_ARGS -> L_ROUND_BRACKET DECL_LIST? R_ROUND_BRACKET;
 
-        CONSTANTS -> CONSTANT (','! CONSTANT)*;
+        CONSTANTS -> CONSTANT (COMMA CONSTANT)*;
 
-        ATTRIBUTE -> '@'! IDENTIFIER '('! CONSTANTS? ')'!;
+        AT -> '@';
+
+        ATTRIBUTE -> AT IDENTIFIER L_ROUND_BRACKET CONSTANTS? R_ROUND_BRACKET;
 
         ATTRIBUTES -> ATTRIBUTE ATTRIBUTE*;
 
-        STATIC -> 'static'!;
+        STATIC -> 'static';
 
-        VISIBILITY_PUBLIC -> 'public'!;
+        VISIBILITY_PUBLIC -> 'public';
 
-        VISIBILITY_PRIVATE -> 'private'!;
+        VISIBILITY_PRIVATE -> 'private';
 
-        VISIBILITY -> VISIBILITY_PUBLIC | VISIBILITY_PRIVATE;
+        VISIBILITY_INTERNAL -> 'internal';
 
-        FUNCTION_DECLARATION -> ATTRIBUTES? VISIBILITY? STATIC? 'function'! IDENTIFIER FUNCTION_DECLARATION_ARGS ':'! TYPE_DECL STATEMENTS? 'end'!;
+        VISIBILITY -> VISIBILITY_PUBLIC | VISIBILITY_PRIVATE | VISIBILITY_INTERNAL;
 
-        PARENT_CLASS -> ':'! IDENTIFIER;
+        FUNCTION -> 'function';
+
+        FUNCTION_DECLARATION -> ATTRIBUTES? VISIBILITY? STATIC? FUNCTION IDENTIFIER FUNCTION_DECLARATION_ARGS ':'! TYPE_DECL STATEMENTS? 'end'!;
+
+        EXTERN -> 'extern';
+
+        EXTERN_DECLARATION -> VISIBILITY? STATIC? EXTERN IDENTIFIER FUNCTION_DECLARATION_ARGS ':'! TYPE_DECL EOS;
+
+        PARENT_CLASS -> COLON IDENTIFIER;
 
         PROPERTY -> VISIBILITY? STATIC? DECLARATION;
 
-        CLASS_ELEMENT -> PROPERTY | FUNCTION_DECLARATION;
+        CLASS_ELEMENT -> PROPERTY | FUNCTION_DECLARATION | EXTERN_DECLARATION;
 
-        CLASS_DECLARATION -> ATTRIBUTES? 'class'! IDENTIFIER PARENT_CLASS? CLASS_ELEMENT* 'end'!;
+        CLASS -> 'class';
+
+        CLASS_DECLARATION -> ATTRIBUTES? CLASS IDENTIFIER PARENT_CLASS? CLASS_ELEMENT* END;
         
         ROOT -> CLASS_DECLARATION*;
     }
