@@ -124,8 +124,10 @@ namespace Luax.Parser.Ast
                                 ProcessProperty(child1, @class);
                             else if (child1.Symbol == "FUNCTION_DECLARATION")
                                 ProcessFunction(child1, @class);
+                            else if (child1.Symbol == "EXTERN_DECLARATION")
+                                ProcessExtern(child1, @class);
                             else
-                                throw new LuaXAstGeneratorException(Name, astNode, $"Unexpected symbol {child.Symbol}");
+                                throw new LuaXAstGeneratorException(Name, astNode, $"Unexpected symbol {child1.Symbol}");
                         }
                     }
                 }
@@ -613,6 +615,7 @@ namespace Luax.Parser.Ast
                 Static = @static,
                 Visibility = visibility,
                 ReturnType = returnType,
+                Extern = false,
                 Location = new LuaXElementLocation(Name, node)
             };
 
@@ -635,6 +638,73 @@ namespace Luax.Parser.Ast
 
             if (body != null)
                 ProcessBody(node, method);
+
+            @class.Methods.Add(method);
+        }
+
+        /// <summary>
+        /// Processes a Extern node
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        public void ProcessExtern(IAstNode node, LuaXClass @class)
+        {
+            bool @static = false;
+            LuaXVisibility visibility = LuaXVisibility.Private;
+            string name = null;
+            LuaXTypeDefinition returnType = null;
+
+            IAstNode arguments = null;
+
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+
+                if (child.Symbol == "VISIBILITY")
+                    visibility = ProcessVisibility(child);
+                else if (child.Symbol == "STATIC")
+                    @static = true;
+                else if (child.Symbol == "IDENTIFIER")
+                    name = child.Value;
+                else if (child.Symbol == "FUNCTION_DECLARATION_ARGS")
+                    arguments = child;
+                else if (child.Symbol == "TYPE_DECL")
+                    returnType = ProcessTypeDecl(child, true);
+                else if (child.Symbol == "EOS")
+                    break;
+            }
+
+            if (name == null)
+                throw new LuaXAstGeneratorException(Name, node, "IDENTIFIER is expected here");
+
+#pragma warning disable S2589 // Boolean expressions should not be gratuitous: NG: false positive here
+            if (returnType == null)
+                throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected here");
+#pragma warning restore S2589 
+
+            LuaXMethod method = new LuaXMethod()
+            {
+                Name = name,
+                Static = @static,
+                Visibility = visibility,
+                ReturnType = returnType,
+                Extern = true,
+                Location = new LuaXElementLocation(Name, node)
+            };
+
+            if (arguments?.Children.Count > 1 &&
+                arguments.Children[1].Symbol == "DECL_LIST")
+            {
+                ProcessDeclarationList(arguments.Children[1], new LuaXVariableFactory<LuaXVariable>(), v =>
+                {
+                    if (method.Arguments.Contains(v.Name))
+                        throw new LuaXAstGeneratorException(Name, node, $"The method already has argument with the name {v.Name}");
+                    method.Arguments.Add(v);
+                });
+            }
+
+            if (@class.Methods.Contains(method.Name))
+                throw new LuaXAstGeneratorException(Name, node, $"The method with the name {method.Name} already exists");
 
             @class.Methods.Add(method);
         }

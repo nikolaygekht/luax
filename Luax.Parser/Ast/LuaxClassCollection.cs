@@ -1,4 +1,6 @@
-﻿namespace Luax.Parser.Ast
+﻿using System;
+
+namespace Luax.Parser.Ast
 {
     /// <summary>
     /// A collection of classes
@@ -23,6 +25,20 @@
                 if (this[i].Name == name)
                     return i;
             return -1;
+        }
+
+        /// <summary>
+        /// Finds the class object by its name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+
+        public LuaXClass Search(string name)
+        {
+            var index = Find(name);
+            if (index < 0)
+                return null;
+            return this[index];
         }
     }
 }

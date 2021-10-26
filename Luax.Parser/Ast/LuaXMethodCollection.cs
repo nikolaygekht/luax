@@ -26,5 +26,20 @@ namespace Luax.Parser.Ast
                     return i;
             return -1;
         }
+
+        /// <summary>
+        /// Finds the method object by its name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+
+        public LuaXMethod Search(string name)
+        {
+            var index = Find(name);
+            if (index < 0)
+                return null;
+            return this[index];
+        }
+
     }
 }

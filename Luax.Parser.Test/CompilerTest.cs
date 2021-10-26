@@ -236,5 +236,36 @@ namespace Luax.Parser.Test
             attr.Parameters[0].ConstantType.Should().Be(LuaXType.Integer);
             attr.Parameters[0].Value.Should().Be(5);
         }
+
+        [Fact]
+        public void Stdlib()
+        {
+            var body = StdlibHeader.ReadStdlib();
+
+            var csvParser = body.Classes.Search("csvParser");
+            csvParser.Should().NotBeNull();
+
+            var m = csvParser.Methods.Search("create");
+            m.Should().NotBeNull();
+            m.Extern.Should().BeTrue();
+            m.Static.Should().BeTrue();
+            m.Visibility.Should().Be(LuaXVisibility.Public);
+            m.Arguments.Should().BeEmpty();
+            m.ReturnType.TypeId.Should().Be(LuaXType.Class);
+            m.ReturnType.Class.Should().Be("csvParser");
+
+            m = csvParser.Methods.Search("splitLine");
+            m.Should().NotBeNull();
+            m.Extern.Should().BeTrue();
+            m.Static.Should().BeFalse();
+            m.Visibility.Should().Be(LuaXVisibility.Public);
+            m.Arguments.Should().HaveCount(1);
+            m.Arguments[0].LuaType.TypeId.Should().Be(LuaXType.String);
+            m.Arguments[0].LuaType.Array.Should().Be(false);
+            m.ReturnType.TypeId.Should().Be(LuaXType.String);
+            m.ReturnType.Array.Should().Be(true);
+
+
+        }
     }
 }
