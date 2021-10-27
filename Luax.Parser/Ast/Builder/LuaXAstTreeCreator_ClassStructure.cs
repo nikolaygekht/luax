@@ -549,7 +549,7 @@ namespace Luax.Parser.Ast.Builder
                     else if (child1.Symbol == "TYPE_VOID")
                     {
                         if (!allowVoid)
-                            throw new LuaXAstGeneratorException(Name, node, "TYPE_VOID cannot be used in the variable declaration");
+                            throw new LuaXAstGeneratorException(Name, node, "Type void cannot be used in this context");
                         type = LuaXType.Void;
                     }
                 }

@@ -32,7 +32,6 @@ namespace Luax.Parser.Ast
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-
         public LuaXMethod Search(string name)
         {
             var index = Find(name);
@@ -40,6 +39,5 @@ namespace Luax.Parser.Ast
                 return null;
             return this[index];
         }
-
     }
 }

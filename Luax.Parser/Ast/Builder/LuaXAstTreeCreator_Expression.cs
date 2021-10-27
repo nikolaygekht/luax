@@ -24,11 +24,244 @@ namespace Luax.Parser.Ast.Builder
                     return ProcessVariable(astNode, currentClass, currentMethod);
                 case "PROPERTY":
                     return ProcessProperty(astNode, currentClass, currentMethod);
+                case "CAST_OP":
+                    return ProcessCast(astNode, currentClass, currentMethod);
+                case "ARRAY_ACCESS":
+                    return ProcessArrayAccess(astNode, currentClass, currentMethod);
+                case "MINUS_OP":
+                    if (astNode.Children.Count == 2)
+                        return ProcessNegateOperator(astNode, currentClass, currentMethod);
+                    else
+                        return ProcessBinaryMathOperator(LuaXBinaryOperator.Subtract, astNode, currentClass, currentMethod);
+                case "PLUS_OP":
+                    if (astNode.Children.Count == 2)
+                        return ProcessExpression(astNode.Children[1], currentClass, currentMethod);
+                    else
+                        return ProcessBinaryMathOperator(LuaXBinaryOperator.Add, astNode, currentClass, currentMethod);
+                case "MUL_OP":
+                    return ProcessBinaryMathOperator(LuaXBinaryOperator.Multiply, astNode, currentClass, currentMethod);
+                case "DIV_OP":
+                    return ProcessBinaryMathOperator(LuaXBinaryOperator.Divide, astNode, currentClass, currentMethod);
+                case "REM_OP":
+                    return ProcessBinaryMathOperator(LuaXBinaryOperator.Reminder, astNode, currentClass, currentMethod);
+                case "CONCAT_OP":
+                    return ProcessConcatOperator(astNode, currentClass, currentMethod);
+                case "EQ_OP":
+                    return ProcessBinaryRelationalOperator(LuaXBinaryOperator.Equal, astNode, currentClass, currentMethod);
+                case "NEQ_OP":
+                    return ProcessBinaryRelationalOperator(LuaXBinaryOperator.NotEqual, astNode, currentClass, currentMethod);
+                case "GT_OP":
+                    return ProcessBinaryRelationalOperator(LuaXBinaryOperator.Greater, astNode, currentClass, currentMethod);
+                case "GE_OP":
+                    return ProcessBinaryRelationalOperator(LuaXBinaryOperator.GreaterOrEqual, astNode, currentClass, currentMethod);
+                case "LT_OP":
+                    return ProcessBinaryRelationalOperator(LuaXBinaryOperator.Less, astNode, currentClass, currentMethod);
+                case "LE_OP":
+                    return ProcessBinaryRelationalOperator(LuaXBinaryOperator.LessOrEqual, astNode, currentClass, currentMethod);
+                case "NOT_OP":
+                    return ProcessNotOperator(astNode, currentClass, currentMethod);
+                case "AND_OP":
+                    return ProcessBinaryLogicalOperator(LuaXBinaryOperator.And, astNode, currentClass, currentMethod);
+                case "OR_OP":
+                    return ProcessBinaryLogicalOperator(LuaXBinaryOperator.Or, astNode, currentClass, currentMethod);
                 case "BRACKET_EXPRESSION":
                     return ProcessBracket(astNode, currentClass, currentMethod);
                 default:
                     throw new LuaXAstGeneratorException(Name, astNode, $"Unexpected symbol {astNode.Symbol}");
             }
+        }
+
+        /// <summary>
+        /// Process a binary math operator
+        /// </summary>
+        /// <param name="operator"></param>
+        /// <param name="astNode"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessBinaryMathOperator(LuaXBinaryOperator @operator, IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            if (astNode.Children.Count < 3)
+                throw new LuaXAstGeneratorException(Name, astNode, "Two expressions are expected here");
+
+            var arg1 = ProcessExpression(astNode.Children[0], currentClass, currentMethod);
+            var arg2 = ProcessExpression(astNode.Children[2], currentClass, currentMethod);
+
+            if (!arg1.ReturnType.IsNumeric())
+                throw new LuaXAstGeneratorException(Name, astNode.Children[0], "A numeric expression is expected here");
+            if (!arg2.ReturnType.IsNumeric())
+                throw new LuaXAstGeneratorException(Name, astNode.Children[2], "A numeric expression is expected here");
+
+            return new LuaXBinaryOperatorExpression(@operator, arg1, arg2,
+                arg1.ReturnType.IsReal() || arg2.ReturnType.IsReal() ? LuaXTypeDefinition.Real : LuaXTypeDefinition.Integer,
+                new LuaXElementLocation(Name, astNode));
+        }
+
+        /// <summary>
+        /// Process a binary logical operator
+        /// </summary>
+        /// <param name="operator"></param>
+        /// <param name="astNode"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessBinaryLogicalOperator(LuaXBinaryOperator @operator, IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            if (astNode.Children.Count < 3)
+                throw new LuaXAstGeneratorException(Name, astNode, "Two expressions are expected here");
+
+            var arg1 = ProcessExpression(astNode.Children[0], currentClass, currentMethod);
+            var arg2 = ProcessExpression(astNode.Children[2], currentClass, currentMethod);
+
+            if (!arg1.ReturnType.IsBoolean())
+                throw new LuaXAstGeneratorException(Name, astNode.Children[0], "A boolean expression is expected here");
+            if (!arg2.ReturnType.IsBoolean())
+                throw new LuaXAstGeneratorException(Name, astNode.Children[2], "A boolean expression is expected here");
+
+            return new LuaXBinaryOperatorExpression(@operator, arg1, arg2, LuaXTypeDefinition.Boolean, new LuaXElementLocation(Name, astNode));
+        }
+
+        /// <summary>
+        /// Process a binary relational operator
+        /// </summary>
+        /// <param name="operator"></param>
+        /// <param name="astNode"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessBinaryRelationalOperator(LuaXBinaryOperator @operator, IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            if (astNode.Children.Count < 3)
+                throw new LuaXAstGeneratorException(Name, astNode, "Two expressions are expected here");
+            var arg1 = ProcessExpression(astNode.Children[0], currentClass, currentMethod);
+            var arg2 = ProcessExpression(astNode.Children[2], currentClass, currentMethod);
+
+            //check type compatibility
+            if (arg1.ReturnType.IsNumeric() && arg2.ReturnType.IsNumeric() ||
+                arg1.ReturnType.IsString() && arg2.ReturnType.IsString() ||
+                arg1.ReturnType.IsBoolean() && arg2.ReturnType.IsBoolean())
+            {
+                return new LuaXBinaryOperatorExpression(@operator, arg1, arg2, LuaXTypeDefinition.Boolean,
+                    new LuaXElementLocation(Name, astNode));
+            }
+            else
+                throw new LuaXAstGeneratorException(Name, astNode, "The relational operators must have compatible type on both side");
+        }
+
+        /// <summary>
+        /// Process a string concat operator
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessConcatOperator(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            if (astNode.Children.Count < 3)
+                throw new LuaXAstGeneratorException(Name, astNode, "Two expressions are expected here");
+
+            var arg1 = ProcessExpression(astNode.Children[0], currentClass, currentMethod);
+            var arg2 = ProcessExpression(astNode.Children[2], currentClass, currentMethod);
+
+            if (!arg1.ReturnType.IsString())
+                arg1 = arg1.CastTo(LuaXTypeDefinition.String);
+            if (!arg2.ReturnType.IsString())
+                arg2 = arg2.CastTo(LuaXTypeDefinition.String);
+
+            return new LuaXBinaryOperatorExpression(LuaXBinaryOperator.Concat, arg1, arg2, LuaXTypeDefinition.String,
+                new LuaXElementLocation(Name, astNode));
+        }
+
+        /// <summary>
+        /// Process an unary not operator
+        /// </summary>
+        /// <param name="astNode"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessNotOperator(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            if (astNode.Children.Count < 2)
+                throw new LuaXAstGeneratorException(Name, astNode, "The expression is expected here");
+            var arg = ProcessExpression(astNode.Children[1], currentClass, currentMethod);
+
+            if (!arg.ReturnType.IsBoolean())
+                throw new LuaXAstGeneratorException(Name, astNode, "The boolean expression is expected here");
+
+            return new LuaXUnaryOperatorExpression(LuaXUnaryOperator.Not, arg, LuaXTypeDefinition.Boolean, new LuaXElementLocation(Name, astNode));
+        }
+
+        /// <summary>
+        /// Process an unary negate operator
+        /// </summary>
+        /// <param name="astNode"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessNegateOperator(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            if (astNode.Children.Count < 2)
+                throw new LuaXAstGeneratorException(Name, astNode, "The expression is expected here");
+            var arg = ProcessExpression(astNode.Children[1], currentClass, currentMethod);
+
+            if (!arg.ReturnType.IsNumeric())
+                throw new LuaXAstGeneratorException(Name, astNode, "The numeric expression is expected here");
+
+            return new LuaXUnaryOperatorExpression(LuaXUnaryOperator.Minus, arg, arg.ReturnType, new LuaXElementLocation(Name, astNode));
+        }
+
+        /// <summary>
+        /// Processes array index operation
+        /// </summary>
+        /// <param name="astNode"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessArrayAccess(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            if (astNode.Children.Count != 4 ||
+                astNode.Children[0].Symbol != "REXPR" ||
+                astNode.Children[2].Symbol != "REXPR")
+                throw new LuaXAstGeneratorException(Name, astNode, "Type and expression are expected");
+
+            var arr = ProcessExpression(astNode.Children[0], currentClass, currentMethod);
+
+            if (!arr.ReturnType.Array)
+                throw new LuaXAstGeneratorException(Name, astNode, "[] operator can be applied to arrays only");
+
+            var location = new LuaXElementLocation(Name, astNode);
+
+            var index = ProcessExpression(astNode.Children[2], currentClass, currentMethod);
+            if (index.ReturnType.TypeId != LuaXType.Integer || index.ReturnType.Array)
+            {
+                if (index.ReturnType.TypeId == LuaXType.Real && !index.ReturnType.Array)
+                    index = new LuaXCastOperatorExpression(index, LuaXTypeDefinition.Integer, location);
+                else
+                    throw new LuaXAstGeneratorException(Name, astNode, "Index should be a numeric value");
+            }
+            return new LuaXArrayAccessExpression(arr, index, arr.ReturnType.ArrayElementType(), location);
+        }
+
+        /// <summary>
+        /// Process cast operator
+        /// </summary>
+        /// <param name="astNode"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessCast(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            if (astNode.Children.Count != 7 ||
+                astNode.Children[2].Symbol != "TYPE_NAME" ||
+                astNode.Children[5].Symbol != "REXPR")
+                throw new LuaXAstGeneratorException(Name, astNode, "Type and expression are expected");
+
+            var decl = new AstNodeWrapper();
+            decl.Add(astNode.Children[2]);
+            var type = ProcessTypeDecl(decl, false);
+            var arg = ProcessExpression(astNode.Children[5], currentClass, currentMethod);
+
+            return new LuaXCastOperatorExpression(arg, type, new LuaXElementLocation(Name, astNode));
         }
 
         /// <summary>
@@ -83,7 +316,7 @@ namespace Luax.Parser.Ast.Builder
                 {
                     if (name != "length")
                         throw new LuaXAstGeneratorException(Name, astNode, $"The array does not have the property {name}");
-                    return new LuaXArrayLengthExpression(leftSide, new LuaXTypeDefinition() { TypeId = LuaXType.Integer }, location);
+                    return new LuaXArrayLengthExpression(leftSide, LuaXTypeDefinition.Integer, location);
                 }
                 else if (leftSideType.TypeId == LuaXType.Object)
                 {
@@ -98,7 +331,7 @@ namespace Luax.Parser.Ast.Builder
                     return new LuaXPropertyExpression(leftSide, name, property.LuaType, location);
                 }
                 else
-                    throw new LuaXAstGeneratorException(Name, astNode, $"The left side argument of the property access expression is not a class or an array");
+                    throw new LuaXAstGeneratorException(Name, astNode, "The left side argument of the property access expression is not a class or an array");
             }
         }
 

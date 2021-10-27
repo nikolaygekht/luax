@@ -24,7 +24,7 @@ namespace Luax.Parser.Ast.LuaExpression
         Less,
         LessOrEqual,
         Greater,
-        GreatorOrEqual,
+        GreaterOrEqual,
         And,
         Or,
         Not,

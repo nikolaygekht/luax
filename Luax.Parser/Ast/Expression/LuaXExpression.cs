@@ -27,5 +27,8 @@ namespace Luax.Parser.Ast.LuaExpression
             ReturnType = returnType;
             Location = location;
         }
+
+        public LuaXExpression CastTo(LuaXTypeDefinition type)
+            => new LuaXCastOperatorExpression(this, type, this.Location);
     }
 }
