@@ -44,6 +44,8 @@ namespace Luax.Parser.Ast.Builder
                     return ProcessBinaryMathOperator(LuaXBinaryOperator.Divide, astNode, currentClass, currentMethod);
                 case "REM_OP":
                     return ProcessBinaryMathOperator(LuaXBinaryOperator.Reminder, astNode, currentClass, currentMethod);
+                case "POWER_OP":
+                    return ProcessBinaryMathOperator(LuaXBinaryOperator.Power, astNode, currentClass, currentMethod);
                 case "CONCAT_OP":
                     return ProcessConcatOperator(astNode, currentClass, currentMethod);
                 case "EQ_OP":
@@ -139,6 +141,7 @@ namespace Luax.Parser.Ast.Builder
             //check type compatibility
             if (arg1.ReturnType.IsNumeric() && arg2.ReturnType.IsNumeric() ||
                 arg1.ReturnType.IsString() && arg2.ReturnType.IsString() ||
+                arg1.ReturnType.IsDate() && arg2.ReturnType.IsDate() ||
                 arg1.ReturnType.IsBoolean() && arg2.ReturnType.IsBoolean())
             {
                 return new LuaXBinaryOperatorExpression(@operator, arg1, arg2, LuaXTypeDefinition.Boolean,
@@ -359,9 +362,10 @@ namespace Luax.Parser.Ast.Builder
                         Class = currentClass.Name
                     }, location);
 
-            LuaXVariable v2 = null;
-            if (currentMethod.Arguments.Search(name, out var v1) || currentMethod.Variables.Search(name, out v2))
-                return new LuaXVariableExpression(name, (v1 ?? v2).LuaType, location);
+            if (currentMethod.Arguments.Search(name, out var v1))
+                return new LuaXArgumentExpression(name, v1.LuaType, location);
+            if (currentMethod.Variables .Search(name, out var v2))
+                return new LuaXVariableExpression(name, v2.LuaType, location);
             if (currentClass.Properties.Search(name, out var p1))
             {
                 if (p1.Static)

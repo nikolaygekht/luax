@@ -38,13 +38,15 @@ namespace Luax.Parser.Ast
 
         internal bool IsString() => TypeId == LuaXType.String && !Array;
 
+        internal bool IsDate() => TypeId == LuaXType.Datetime && !Array;
+
         internal bool IsInteger() => TypeId == LuaXType.Integer && !Array;
 
         internal bool IsReal() => TypeId == LuaXType.Real && !Array;
 
         internal bool IsNumeric() => IsInteger() || IsReal();
 
-        internal bool IsBoolean() => TypeId == LuaXType.Real && !Array;
+        internal bool IsBoolean() => TypeId == LuaXType.Boolean && !Array;
 
         public LuaXTypeDefinition ArrayElementType() => new LuaXTypeDefinition()
         {

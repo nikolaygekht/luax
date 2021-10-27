@@ -53,8 +53,14 @@ class stdlib
     public static extern minute(x : datetime) : int;
     public static extern second(x : datetime) : int;
     public static extern seconds(x : datetime) : real;
-    public static extern toJdn(x : datetime) : int;
-    public static extern fromJdn(x : int) : datetime;
+    
+    -- JDN
+    -- Julian Day number
+    -- The integer part is Julian day number
+    -- https://en.wikipedia.org/wiki/Julian_day#Converting_Gregorian_calendar_date_to_Julian_Day_Number
+    -- The fractional part is the part of the day (hour * 3600 + minute * 60 + seconds) / 86400.0
+    public static extern toJdn(x : datetime) : real;
+    public static extern fromJdn(x : real) : datetime;
 end
 
 -- -------------------------------------------------------

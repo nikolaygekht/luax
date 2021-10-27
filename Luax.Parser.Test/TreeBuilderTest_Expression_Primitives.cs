@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using FluentAssertions;
@@ -267,8 +268,8 @@ namespace Luax.Parser.Test
             var node = AstNodeExtensions.Parse("[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(arg1)]]]]]]]]]]]]]]]");
             var processor = new LuaXAstTreeCreator("", metadata);
             var expression = processor.ProcessExpression(node, @class, method);
-            expression.Should().BeOfType<LuaXVariableExpression>();
-            var e = expression.As<LuaXVariableExpression>();
+            expression.Should().BeOfType<LuaXArgumentExpression>();
+            var e = expression.As<LuaXArgumentExpression>();
             e.Name.Should().Be("arg1");
             e.ReturnType.TypeId.Should().Be(LuaXType.Integer);
             e.ReturnType.Array.Should().BeFalse();
