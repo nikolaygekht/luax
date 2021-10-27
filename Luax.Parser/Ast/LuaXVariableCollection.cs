@@ -24,5 +24,23 @@
                     return i;
             return -1;
         }
+
+        /// <summary>
+        /// Searches for the variable
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="v"></param>
+        /// <returns></returns>
+        public bool Search(string name, out LuaXVariable v)
+        {
+            var ix = Find(name);
+            if (ix < 0)
+            {
+                v = null;
+                return false;
+            }
+            v = this[ix];
+            return true;
+        }
     }
 }

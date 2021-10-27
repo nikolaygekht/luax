@@ -137,9 +137,12 @@ grammar LuaX
 
         BRACKET_EXPR -> L_ROUND_BRACKET EXPR R_ROUND_BRACKET;
 
+        ARRAY_ACCESS -> REXPR L_SQUARE_BRACKET REXPR R_SQUARE_BRACKET;
+
         SIMPLE_EXPR -> CONSTANT |
                        CALLABLE_EXPR |
-                       BRACKET_EXPR;
+                       BRACKET_EXPR | 
+                       ARRAY_ACCESS;
 
         MINUS_OP -> '-';
         PLUS_OP -> '+';

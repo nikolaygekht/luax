@@ -32,13 +32,16 @@ namespace Luax.Parser.Ast
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-
-        public LuaXClass Search(string name)
+        public bool Search(string name, out LuaXClass @class)
         {
             var index = Find(name);
             if (index < 0)
-                return null;
-            return this[index];
+            {
+                @class = null;
+                return false;
+            }
+            @class = this[index];
+            return true;
         }
     }
 }

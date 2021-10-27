@@ -1,0 +1,18 @@
+﻿namespace Luax.Parser.Ast.LuaExpression
+{
+    /// <summary>
+    /// The constant expression.
+    /// </summary>
+    public class LuaXStaticPropertyExpression : LuaXExpression
+    {
+        public string ClassName { get; }
+        public string PropertyName { get; }
+
+        internal LuaXStaticPropertyExpression(string className, string propertyName, LuaXTypeDefinition type, LuaXElementLocation location)
+            : base(type, location)
+        {
+            ClassName = className;
+            PropertyName = propertyName;
+        }
+    }
+}

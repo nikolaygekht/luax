@@ -20,7 +20,7 @@ namespace Luax.Parser.Ast
         /// <summary>
         /// Checks whether the constant is a `nil` value.
         /// </summary>
-        public bool IsNil => ConstantType == LuaXType.Class && Value == null;
+        public bool IsNil => ConstantType == LuaXType.Object && Value == null;
 
         /// <summary>
         /// The location of the element in the source

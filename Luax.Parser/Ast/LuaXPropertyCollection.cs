@@ -24,5 +24,23 @@
                     return i;
             return -1;
         }
+
+        /// <summary>
+        /// Search for a property with the name specified.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="property"></param>
+        /// <returns></returns>
+        public bool Search(string name, out LuaXProperty property)
+        {
+            var ix = Find(name);
+            if (ix < 0)
+            {
+                property = null;
+                return false;
+            }
+            property = this[ix];
+            return true;
+        }
     }
 }

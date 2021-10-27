@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using Hime.Redist;
 
-namespace Luax.Parser.Ast
+namespace Luax.Parser.Ast.Builder
 {
-    internal class LuaXAstTreeCreator
+    internal partial class LuaXAstTreeCreator
     {
         public string Name { get; }
 
@@ -234,7 +233,7 @@ namespace Luax.Parser.Ast
             if (s == "NEGATIVE_REAL")
                 return new LuaXConstant(ProcessNegativeRealConstant(astNode.Children[0]), l);
             if (s == "NIL")
-                return new LuaXConstant(LuaXType.Class, null, l);
+                return new LuaXConstant(LuaXType.Object, null, l);
             throw new LuaXAstGeneratorException(Name, astNode, $"Unexpected child symbol {s} is expected in a constant");
         }
 
@@ -512,7 +511,7 @@ namespace Luax.Parser.Ast
 #pragma warning disable S2589 // Boolean expressions should not be gratuitous: NG: it is false positive
             if (type == null)
                 throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected");
-#pragma warning restore S2589 
+#pragma warning restore S2589
 
             return factory.Create(name, type, l);
         }
@@ -534,7 +533,7 @@ namespace Luax.Parser.Ast
                     var child1 = child.Children[0];
                     if (child1.Symbol == "IDENTIFIER")
                     {
-                        type = LuaXType.Class;
+                        type = LuaXType.Object;
                         @class = child1.Value;
                     }
                     else if (child1.Symbol == "TYPE_INT")
@@ -610,7 +609,7 @@ namespace Luax.Parser.Ast
 #pragma warning disable S2589 // Boolean expressions should not be gratuitous: NG: false positive here
             if (returnType == null)
                 throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected here");
-#pragma warning restore S2589 
+#pragma warning restore S2589
 
             LuaXMethod method = new LuaXMethod()
             {
@@ -681,7 +680,7 @@ namespace Luax.Parser.Ast
 #pragma warning disable S2589 // Boolean expressions should not be gratuitous: NG: false positive here
             if (returnType == null)
                 throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected here");
-#pragma warning restore S2589 
+#pragma warning restore S2589
 
             LuaXMethod method = new LuaXMethod()
             {

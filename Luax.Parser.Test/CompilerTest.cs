@@ -12,7 +12,7 @@ namespace Luax.Parser.Test
         [Theory]
         [InlineData("true", LuaXType.Boolean, true)]
         [InlineData("false", LuaXType.Boolean, false)]
-        [InlineData("nil", LuaXType.Class, null)]
+        [InlineData("nil", LuaXType.Object, null)]
         [InlineData("1", LuaXType.Integer, 1)]
         [InlineData("1_234", LuaXType.Integer, 1234)]
         [InlineData("0xa", LuaXType.Integer, 10)]
@@ -143,7 +143,7 @@ namespace Luax.Parser.Test
 
             property = @class.Properties[4];
             property.Name.Should().Be("e");
-            property.LuaType.TypeId.Should().Be(LuaXType.Class);
+            property.LuaType.TypeId.Should().Be(LuaXType.Object);
             property.LuaType.Class.Should().Be("object");
             property.LuaType.Array.Should().BeFalse();
             property.Static.Should().BeTrue();
@@ -202,7 +202,7 @@ namespace Luax.Parser.Test
             method.Name.Should().Be("doit");
             method.Visibility.Should().Be(LuaXVisibility.Public);
             method.Static.Should().BeTrue();
-            method.ReturnType.TypeId.Should().Be(LuaXType.Class);
+            method.ReturnType.TypeId.Should().Be(LuaXType.Object);
             method.ReturnType.Array.Should().BeFalse();
             method.ReturnType.Class.Should().Be("tuple");
 
@@ -222,7 +222,7 @@ namespace Luax.Parser.Test
 
             arg = method.Arguments[2];
             arg.Name.Should().Be("z");
-            arg.LuaType.TypeId.Should().Be(LuaXType.Class);
+            arg.LuaType.TypeId.Should().Be(LuaXType.Object);
             arg.LuaType.Class.Should().Be("object");
             arg.LuaType.Array.Should().BeFalse();
 
@@ -242,7 +242,7 @@ namespace Luax.Parser.Test
         {
             var body = StdlibHeader.ReadStdlib();
 
-            var csvParser = body.Classes.Search("csvParser");
+            body.Classes.Search("csvParser", out var csvParser).Should().BeTrue();
             csvParser.Should().NotBeNull();
 
             var m = csvParser.Methods.Search("create");
@@ -251,7 +251,7 @@ namespace Luax.Parser.Test
             m.Static.Should().BeTrue();
             m.Visibility.Should().Be(LuaXVisibility.Public);
             m.Arguments.Should().BeEmpty();
-            m.ReturnType.TypeId.Should().Be(LuaXType.Class);
+            m.ReturnType.TypeId.Should().Be(LuaXType.Object);
             m.ReturnType.Class.Should().Be("csvParser");
 
             m = csvParser.Methods.Search("splitLine");
@@ -264,8 +264,6 @@ namespace Luax.Parser.Test
             m.Arguments[0].LuaType.Array.Should().Be(false);
             m.ReturnType.TypeId.Should().Be(LuaXType.String);
             m.ReturnType.Array.Should().Be(true);
-
-
         }
     }
 }

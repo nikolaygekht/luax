@@ -6,6 +6,7 @@
 //Just close this file in visual studio and build the project.
 using System.IO;
 using Hime.Redist.Parsers;
+using Luax.Parser.Ast.Builder;
 using Luax.Parser.Hime;
 
 namespace Luax.Parser.Ast

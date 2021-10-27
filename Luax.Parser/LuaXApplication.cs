@@ -1,4 +1,5 @@
 ﻿using Luax.Parser.Ast;
+using Luax.Parser.Ast.Builder;
 
 namespace Luax.Parser
 {
@@ -23,7 +24,7 @@ namespace Luax.Parser
 
         /// <summary>
         /// Adds Lua source to the application
-        /// 
+        ///
         /// The method DO NOT compiles the method bodies.
         /// Use <see cref="Pass2"/> method to compile all bodies when all the sources are added.
         /// </summary>

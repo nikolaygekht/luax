@@ -18,6 +18,7 @@ namespace Luax.Parser.Ast
         Real,
         String,
         Datetime,
-        Class,
+        Object,
+        ClassName,
     }
 }
