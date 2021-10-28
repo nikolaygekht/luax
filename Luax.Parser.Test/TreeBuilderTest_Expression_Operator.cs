@@ -75,7 +75,6 @@ namespace Luax.Parser.Test
                     },
                 });
 
-
             method.Variables.Add(
                 new LuaXVariable()
                 {
@@ -85,7 +84,7 @@ namespace Luax.Parser.Test
                         TypeId = LuaXType.String
                     },
                 });
-            
+
             method.Variables.Add(
                 new LuaXVariable()
                 {
@@ -95,7 +94,6 @@ namespace Luax.Parser.Test
                         TypeId = LuaXType.Boolean
                     },
                 });
-
 
             method.Variables.Add(
                 new LuaXVariable()
@@ -117,7 +115,6 @@ namespace Luax.Parser.Test
                     },
                 });
 
-
             method.Variables.Add(
                 new LuaXVariable()
                 {
@@ -127,7 +124,6 @@ namespace Luax.Parser.Test
                         TypeId = LuaXType.Datetime
                     },
                 });
-
 
             method.Variables.Add(
                 new LuaXVariable()

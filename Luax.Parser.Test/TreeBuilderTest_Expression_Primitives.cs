@@ -65,7 +65,7 @@ namespace Luax.Parser.Test
             ce.ReturnType.Array.Should().BeFalse();
         }
 
-        private static void StageVariableAndProperty(out LuaXClassCollection metadata, out LuaXClass @class, out LuaXMethod method)
+        private static void StageVariableAndProperty(out LuaXClassCollection metadata, out LuaXClass @class, out LuaXMethod method, LuaXTypeDefinition methodArgType = null)
         {
             metadata = new LuaXClassCollection();
 
@@ -189,10 +189,7 @@ namespace Luax.Parser.Test
             method.Arguments.Add(new LuaXVariable()
             {
                 Name = "arg1",
-                LuaType = new LuaXTypeDefinition()
-                {
-                    TypeId = LuaXType.Integer
-                },
+                LuaType = methodArgType ?? LuaXTypeDefinition.Integer
             });
 
             method.Variables.Add(
@@ -259,6 +256,27 @@ namespace Luax.Parser.Test
                });
 
             @class.Methods.Add(method);
+
+            var method1 = new LuaXMethod()
+            {
+                Name = "staticMethod",
+                Static = true,
+                ReturnType = new LuaXTypeDefinition()
+                {
+                    TypeId = LuaXType.Void
+                }
+            };
+            @class.Methods.Add(method1);
+
+            var method2 = new LuaXMethod()
+            {
+                Name = "instanceMethod",
+                ReturnType = new LuaXTypeDefinition()
+                {
+                    TypeId = LuaXType.Void
+                }
+            };
+            @class.Methods.Add(method2);           
         }
 
         [Fact]
@@ -541,17 +559,26 @@ namespace Luax.Parser.Test
         public void Cast_ToClass_Success()
         {
             StageVariableAndProperty(out var metadata, out var @class, out var method);
-            var node = AstNodeExtensions.Parse("[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[CAST_OP[CAST[cast(cast)]][L_SHARP_BRACKET[<(<)]][TYPE_NAME[IDENTIFIER(tuple)]][R_SHARP_BRACKET[>(>)]][L_ROUND_BRACKET][REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(v1)]]]]]]]]]]]]]]][R_ROUND_BRACKET]]]]]]]]]]]");
+            var node = AstNodeExtensions.Parse("[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[CAST_OP[CAST[cast(cast)]][L_SHARP_BRACKET[<(<)]][TYPE_NAME[IDENTIFIER(lib)]][R_SHARP_BRACKET[>(>)]][L_ROUND_BRACKET][REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(v1)]]]]]]]]]]]]]]][R_ROUND_BRACKET]]]]]]]]]]]");
             var processor = new LuaXAstTreeCreator("", metadata);
             var expression = processor.ProcessExpression(node, @class, method);
             expression.Should().BeOfType<LuaXCastOperatorExpression>();
             var cast = expression.As<LuaXCastOperatorExpression>();
             cast.ReturnType.TypeId.Should().Be(LuaXType.Object);
-            cast.ReturnType.Class.Should().Be("tuple");
+            cast.ReturnType.Class.Should().Be("lib");
             cast.ReturnType.Array.Should().BeFalse();
             cast.Argument.Should().BeOfType<LuaXVariableExpression>();
             var arg = cast.Argument.As<LuaXVariableExpression>();
             arg.Name.Should().Be("v1");
+        }
+
+        [Fact]
+        public void Cast_ToClass_Failed()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[CAST_OP[CAST[cast(cast)]][L_SHARP_BRACKET[<(<)]][TYPE_NAME[IDENTIFIER(tuple)]][R_SHARP_BRACKET[>(>)]][L_ROUND_BRACKET][REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(v1)]]]]]]]]]]]]]]][R_ROUND_BRACKET]]]]]]]]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            ((Action)(() => processor.ProcessExpression(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
         }
 
         [Fact]
@@ -615,6 +642,251 @@ namespace Luax.Parser.Test
         {
             StageVariableAndProperty(out var metadata, out var @class, out var method);
             var node = AstNodeExtensions.Parse("[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[ARRAY_ACCESS[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(v1)]]]]]]]]]]]]]]][L_SQUARE_BRACKET][REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT[INTEGER(1)]]]]]]]]]]]]][R_SQUARE_BRACKET]]]]]]]]]]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            ((Action)(() => processor.ProcessExpression(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void NewArray_IntegerArg_Success()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[REXPR[NEW_ARRAY_EXPR[NEW[new(new)]][TYPE_NAME[TYPE_INT[int(int)]]][L_SQUARE_BRACKET][REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT[INTEGER(10)]]]]]]]]]]]]][R_SQUARE_BRACKET]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXNewArrayExpression>();
+            var array = expression.As<LuaXNewArrayExpression>();
+            array.ElementType.TypeId.Should().Be(LuaXType.Integer);
+            array.ElementType.Array.Should().BeFalse();
+
+            array.ReturnType.TypeId.Should().Be(LuaXType.Integer);
+            array.ReturnType.Array.Should().BeTrue();
+
+            array.SizeExpression.Should().BeOfType<LuaXConstantExpression>();
+            array.SizeExpression.As<LuaXConstantExpression>().Value.Value.Should().Be(10);
+        }
+
+        [Fact]
+        public void NewArray_RealArg_Success()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[REXPR[NEW_ARRAY_EXPR[NEW[new(new)]][TYPE_NAME[TYPE_INT[int(int)]]][L_SQUARE_BRACKET][REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT[REAL(10.0)]]]]]]]]]]]]][R_SQUARE_BRACKET]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXNewArrayExpression>();
+            var array = expression.As<LuaXNewArrayExpression>();
+            array.ElementType.TypeId.Should().Be(LuaXType.Integer);
+            array.ElementType.Array.Should().BeFalse();
+
+            array.ReturnType.TypeId.Should().Be(LuaXType.Integer);
+            array.ReturnType.Array.Should().BeTrue();
+
+            array.SizeExpression.Should().BeOfType<LuaXCastOperatorExpression>();
+            var cast = array.SizeExpression.As<LuaXCastOperatorExpression>();
+            cast.ReturnType.TypeId.Should().Be(LuaXType.Integer);
+            cast.ReturnType.Array.Should().BeFalse();
+            cast.Argument.Should().BeOfType<LuaXConstantExpression>();
+            cast.Argument.As<LuaXConstantExpression>().Value.Value.Should().Be(10.0);
+        }
+
+        [Fact]
+        public void NewArray_BooleanArg_Fail()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[REXPR[NEW_ARRAY_EXPR[NEW[new(new)]][TYPE_NAME[TYPE_INT[int(int)]]][L_SQUARE_BRACKET][REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT[BOOLEAN[BOOLEAN_TRUE]]]]]]]]]]]]]][R_SQUARE_BRACKET]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            ((Action)(() => processor.ProcessExpression(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void NewArray_OfObjects_Success()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[REXPR[NEW_ARRAY_EXPR[NEW[new(new)]][TYPE_NAME[IDENTIFIER(lib)]][L_SQUARE_BRACKET][REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT[INTEGER(10)]]]]]]]]]]]]][R_SQUARE_BRACKET]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXNewArrayExpression>();
+            var array = expression.As<LuaXNewArrayExpression>();
+            array.ElementType.TypeId.Should().Be(LuaXType.Object);
+            array.ElementType.Class.Should().Be("lib");
+            array.ElementType.Array.Should().BeFalse();
+
+            array.ReturnType.TypeId.Should().Be(LuaXType.Object);
+            array.ReturnType.Class.Should().Be("lib");
+            array.ReturnType.Array.Should().BeTrue();
+        }
+
+        [Fact]
+        public void NewArray_OfObjects_UnknownClass_Fail()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[REXPR[NEW_ARRAY_EXPR[NEW[new(new)]][TYPE_NAME[IDENTIFIER(tuple)]][L_SQUARE_BRACKET][REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT[INTEGER(10)]]]]]]]]]]]]][R_SQUARE_BRACKET]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            ((Action)(() => processor.ProcessExpression(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void NewObject_Success()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[REXPR[NEW_TABLE_EXPR[NEW[new(new)]][IDENTIFIER(lib)][L_ROUND_BRACKET][R_ROUND_BRACKET]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXNewObjectExpression>();
+            var newObject = expression.As<LuaXNewObjectExpression>();
+            newObject.Class.Should().Be("lib");
+            newObject.ReturnType.TypeId.Should().Be(LuaXType.Object);
+            newObject.ReturnType.Class.Should().Be("lib");
+            newObject.ReturnType.Array.Should().BeFalse();
+        }
+
+        [Fact]
+        public void NewObject_Failure()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[REXPR[NEW_TABLE_EXPR[NEW[new(new)]][IDENTIFIER(tuple)][L_ROUND_BRACKET][R_ROUND_BRACKET]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            ((Action)(() => processor.ProcessExpression(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void LocalCall_Static_Success()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[CALL[LOCAL_CALL[IDENTIFIER(staticMethod)][CALL_BRACKET[L_ROUND_BRACKET][R_ROUND_BRACKET]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXStaticCallExpression>();
+            var call = expression.As<LuaXStaticCallExpression>();
+            call.ClassName.Should().Be("class1");
+            call.MethodName.Should().Be("staticMethod");
+        }
+
+        [Fact]
+        public void LocalCall_Instance_Success()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[CALL[LOCAL_CALL[IDENTIFIER(instanceMethod)][CALL_BRACKET[L_ROUND_BRACKET][R_ROUND_BRACKET]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXInstanceCallExpression>();
+            var call = expression.As<LuaXInstanceCallExpression>();
+            call.Object.Should().BeOfType<LuaXVariableExpression>();
+            call.Object.ReturnType.TypeId.Should().Be(LuaXType.Object);
+            call.Object.ReturnType.Class.Should().Be("class1");
+            call.MethodName.Should().Be("instanceMethod");
+        }
+
+        [Fact]
+        public void LocalCall_UnknownMethod_Fail()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[CALL[LOCAL_CALL[IDENTIFIER(unknownMethod)][CALL_BRACKET[L_ROUND_BRACKET][R_ROUND_BRACKET]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            ((Action)(() => processor.ProcessExpression(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void LocalCall_WrongArgCount_Fail()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[CALL[LOCAL_CALL[IDENTIFIER(test)][CALL_BRACKET[L_ROUND_BRACKET][R_ROUND_BRACKET]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            ((Action)(() => processor.ProcessExpression(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void MethodCall_Static_Success()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[CALL[METHOD_CALL[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(class1)]]]]]]]]]]]]]]][PROPERTY_ACCESS[.(.)]][IDENTIFIER(staticMethod)][CALL_BRACKET[L_ROUND_BRACKET][R_ROUND_BRACKET]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXStaticCallExpression>();
+            var call = expression.As<LuaXStaticCallExpression>();
+            call.ClassName.Should().Be("class1");
+            call.MethodName.Should().Be("staticMethod");
+        }
+
+        [Fact]
+        public void MethodCall_Static_Fail()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[CALL[METHOD_CALL[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(class1)]]]]]]]]]]]]]]][PROPERTY_ACCESS[.(.)]][IDENTIFIER(instanceMethod)][CALL_BRACKET[L_ROUND_BRACKET][R_ROUND_BRACKET]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            ((Action)(() => processor.ProcessExpression(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void MethodCall_Instance_Success()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[CALL[METHOD_CALL[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(this)]]]]]]]]]]]]]]][PROPERTY_ACCESS[.(.)]][IDENTIFIER(instanceMethod)][CALL_BRACKET[L_ROUND_BRACKET][R_ROUND_BRACKET]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXInstanceCallExpression>();
+            var call = expression.As<LuaXInstanceCallExpression>();
+            call.Object.Should().BeOfType<LuaXVariableExpression>();
+            call.Object.ReturnType.TypeId.Should().Be(LuaXType.Object);
+            call.Object.ReturnType.Class.Should().Be("class1");
+            call.MethodName.Should().Be("instanceMethod");
+        }
+
+        [Fact]
+        public void MethodCall_Instance_Fail()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse("[CALL[METHOD_CALL[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(this)]]]]]]]]]]]]]]][PROPERTY_ACCESS[.(.)]][IDENTIFIER(staticMethod)][CALL_BRACKET[L_ROUND_BRACKET][R_ROUND_BRACKET]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            ((Action)(() => processor.ProcessExpression(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Theory]
+        [InlineData(LuaXType.Integer, "[INTEGER(10)]", 10)]
+        [InlineData(LuaXType.Real, "[REAL(10.0)]", 10.0)]
+        [InlineData(LuaXType.Boolean, "[BOOLEAN[BOOLEAN_TRUE]]", true)]
+        [InlineData(LuaXType.String, "[STRING[STRINGDQ(\"a\")]]", "a")]
+        public void MethodCall_Arguments_Match_Success(LuaXType argType, string constantText, object constantValue)
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method, new LuaXTypeDefinition() { TypeId = argType });
+            var node = AstNodeExtensions.Parse($"[LOCAL_CALL[IDENTIFIER(test)][CALL_BRACKET[L_ROUND_BRACKET][CALL_ARGS[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT{constantText}]]]]]]]]]]]]][R_ROUND_BRACKET]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXInstanceCallExpression>();
+            var call = expression.As<LuaXInstanceCallExpression>();
+            call.Arguments.Should().HaveCount(1);
+            call.Arguments[0].Should().BeOfType<LuaXConstantExpression>();
+            call.Arguments[0].As<LuaXConstantExpression>().Value.Value.Should().Be(constantValue);
+        }
+
+        [Theory]
+        [InlineData(LuaXType.Real, "[INTEGER(10)]", 10)]
+        [InlineData(LuaXType.Integer, "[REAL(10.0)]", 10.0)]
+        [InlineData(LuaXType.String, "[REAL(10.0)]", 10.0)]
+        [InlineData(LuaXType.String, "[INTEGER(10)]", 10)]
+        [InlineData(LuaXType.String, "[BOOLEAN[BOOLEAN_TRUE]]", true)]
+        public void MethodCall_Arguments_AutoCast_Success(LuaXType argType, string constantText, object constantValue)
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method, new LuaXTypeDefinition() { TypeId = argType });
+            var node = AstNodeExtensions.Parse($"[LOCAL_CALL[IDENTIFIER(test)][CALL_BRACKET[L_ROUND_BRACKET][CALL_ARGS[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT{constantText}]]]]]]]]]]]]][R_ROUND_BRACKET]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXInstanceCallExpression>();
+            var call = expression.As<LuaXInstanceCallExpression>();
+            call.Arguments.Should().HaveCount(1);
+            call.Arguments[0].Should().BeOfType<LuaXCastOperatorExpression>();
+            call.Arguments[0].As<LuaXCastOperatorExpression>().ReturnType.TypeId.Should().Be(argType);
+        }
+
+        [Theory]
+        [InlineData(LuaXType.Boolean, "[INTEGER(10)]")]
+        [InlineData(LuaXType.Datetime, "[REAL(10.0)]")]
+        [InlineData(LuaXType.ClassName, "[REAL(10.0)]")]
+        [InlineData(LuaXType.Integer, "[BOOLEAN[BOOLEAN_TRUE]]")]
+        [InlineData(LuaXType.Real, "[STRING[STRINGDQ(\"a\")]]")]
+        public void MethodCall_Arguments_Incompatible_Failed(LuaXType argType, string constantText)
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method, new LuaXTypeDefinition() { TypeId = argType });
+            var node = AstNodeExtensions.Parse($"[LOCAL_CALL[IDENTIFIER(test)][CALL_BRACKET[L_ROUND_BRACKET][CALL_ARGS[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT{constantText}]]]]]]]]]]]]][R_ROUND_BRACKET]]]");
             var processor = new LuaXAstTreeCreator("", metadata);
             ((Action)(() => processor.ProcessExpression(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
         }

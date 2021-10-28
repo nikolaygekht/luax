@@ -6,7 +6,7 @@ namespace Luax.Parser.Ast
     /// <summary>
     /// The definition of the Lua type
     /// </summary>
-    public class LuaXTypeDefinition
+    public sealed class LuaXTypeDefinition
     {
         public static LuaXTypeDefinition String { get; } = new LuaXTypeDefinition() { TypeId = LuaXType.String };
         public static LuaXTypeDefinition Integer { get; } = new LuaXTypeDefinition() { TypeId = LuaXType.Integer };
@@ -48,6 +48,10 @@ namespace Luax.Parser.Ast
 
         internal bool IsBoolean() => TypeId == LuaXType.Boolean && !Array;
 
+        internal bool Equals(LuaXTypeDefinition otherType) => TypeId == otherType.TypeId &&
+            (Class == otherType.Class || (string.IsNullOrEmpty(Class) && string.IsNullOrEmpty(otherType.Class))) &&
+            (Array == otherType.Array);
+
         public LuaXTypeDefinition ArrayElementType() => new LuaXTypeDefinition()
         {
             TypeId = this.TypeId,
@@ -61,6 +65,41 @@ namespace Luax.Parser.Ast
             Class = this.Class,
             Array = true
         };
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            switch (TypeId)
+            {
+                case LuaXType.Void:
+                    sb.Append("void");
+                    break;
+                case LuaXType.Integer:
+                    sb.Append("int");
+                    break;
+                case LuaXType.Real:
+                    sb.Append("real");
+                    break;
+                case LuaXType.String:
+                    sb.Append("string");
+                    break;
+                case LuaXType.Boolean:
+                    sb.Append("boolean");
+                    break;
+                case LuaXType.Object:
+                    sb.Append(Class ?? "object");
+                    break;
+                case LuaXType.Datetime:
+                    sb.Append("datetime");
+                    break;
+                case LuaXType.ClassName:
+                    sb.Append("typeof(").Append(Class ?? "object").Append(')');
+                    break;
+            }
+            if (Array)
+                sb.Append("[]");
+            return sb.ToString();
+        }
     }
 }
 

@@ -30,6 +30,13 @@ namespace Luax.Parser.Ast
             Message = error.Message;
         }
 
+        internal LuaXParserError(LuaXElementLocation location, string message)
+        {
+            Line = location.Line;
+            Column = location.Column;
+            Message = message;
+        }
+
         internal LuaXParserError(IAstNode node, string message)
         {
             LuaXElementLocation location = new LuaXElementLocation("", node);

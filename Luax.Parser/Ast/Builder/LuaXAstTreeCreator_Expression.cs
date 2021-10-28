@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Runtime.Intrinsics;
@@ -68,6 +69,14 @@ namespace Luax.Parser.Ast.Builder
                     return ProcessBinaryLogicalOperator(LuaXBinaryOperator.Or, astNode, currentClass, currentMethod);
                 case "BRACKET_EXPRESSION":
                     return ProcessBracket(astNode, currentClass, currentMethod);
+                case "NEW_ARRAY_EXPR":
+                    return ProcessNewArray(astNode, currentClass, currentMethod);
+                case "NEW_TABLE_EXPR":
+                    return ProcessNewTable(astNode);
+                case "LOCAL_CALL":
+                    return ProcessLocalCall(astNode, currentClass, currentMethod);
+                case "METHOD_CALL":
+                    return ProcessMethodCall(astNode, currentClass, currentMethod);
                 default:
                     throw new LuaXAstGeneratorException(Name, astNode, $"Unexpected symbol {astNode.Symbol}");
             }
@@ -262,6 +271,10 @@ namespace Luax.Parser.Ast.Builder
             var decl = new AstNodeWrapper();
             decl.Add(astNode.Children[2]);
             var type = ProcessTypeDecl(decl, false);
+
+            if (type.TypeId == LuaXType.Object && !Metadata.Search(type.Class, out _))
+                throw new LuaXAstGeneratorException(Name, astNode.Children[2], $"The class {type.Class} is not defined");
+
             var arg = ProcessExpression(astNode.Children[5], currentClass, currentMethod);
 
             return new LuaXCastOperatorExpression(arg, type, new LuaXElementLocation(Name, astNode));
@@ -345,7 +358,7 @@ namespace Luax.Parser.Ast.Builder
         /// <param name="currentClass"></param>
         /// <param name="currentMethod"></param>
         /// <returns></returns>
-        public LuaXExpression ProcessVariable(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        private LuaXExpression ProcessVariable(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
         {
             if (astNode.Children.Count != 1 || astNode.Children[0].Symbol != "IDENTIFIER")
                 throw new LuaXAstGeneratorException(Name, astNode, "Identifier is expected here");
@@ -391,7 +404,7 @@ namespace Luax.Parser.Ast.Builder
         /// </summary>
         /// <param name="astNode"></param>
         /// <returns></returns>
-        public bool IsPassTroughExpression(IAstNode astNode)
+        private bool IsPassTroughExpression(IAstNode astNode)
         {
             switch (astNode.Symbol)
             {
@@ -408,6 +421,7 @@ namespace Luax.Parser.Ast.Builder
                 case "UNARY_EXPR":
                 case "CALLABLE_EXPR":
                 case "ASSIGN_TARGET":
+                case "CALL":
                     if (astNode.Children.Count == 1 && string.IsNullOrEmpty(astNode.Value))
                         return true;
                     throw new LuaXAstGeneratorException(Name, astNode, $"The symbol {astNode.Symbol} is expected to have one child only and have no value");
@@ -421,6 +435,162 @@ namespace Luax.Parser.Ast.Builder
         /// </summary>
         /// <param name="astNode"></param>
         /// <returns></returns>
-        public LuaXExpression ProcessConstantExpression(IAstNode astNode) => new LuaXConstantExpression(ProcessConstant(astNode));
+        private LuaXExpression ProcessConstantExpression(IAstNode astNode) => new LuaXConstantExpression(ProcessConstant(astNode));
+
+        /// <summary>
+        /// Processes a new object/table operation
+        /// </summary>
+        /// <param name="astNode"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessNewTable(IAstNode astNode)
+        {
+            if (astNode.Children.Count < 2 || astNode.Children[1].Symbol != "IDENTIFIER")
+                throw new LuaXAstGeneratorException(Name, astNode, "The identifier is expected");
+
+            var @class = astNode.Children[1].Value;
+            if (!Metadata.Search(@class, out _))
+                throw new LuaXAstGeneratorException(Name, astNode, $"The class {@class} is not found");
+
+            return new LuaXNewObjectExpression(@class, new LuaXElementLocation(Name, astNode));
+        }
+
+        /// <summary>
+        /// Process new array operator
+        /// </summary>
+        /// <param name="astNode"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessNewArray(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            if (astNode.Children.Count < 2 || astNode.Children[1].Symbol != "TYPE_NAME")
+                throw new LuaXAstGeneratorException(Name, astNode, "The type is expected");
+            if (astNode.Children.Count < 4 || astNode.Children[3].Symbol != "REXPR")
+                throw new LuaXAstGeneratorException(Name, astNode, "The expression is expected");
+
+            var size = ProcessExpression(astNode.Children[3], currentClass, currentMethod);
+            if (!size.ReturnType.IsNumeric())
+                throw new LuaXAstGeneratorException(Name, astNode, "The expression should be a numeric expression");
+
+            if (!size.ReturnType.IsInteger())
+                size = size.CastTo(LuaXTypeDefinition.Integer);
+
+            var decl = new AstNodeWrapper();
+            decl.Add(astNode.Children[1]);
+            var type = ProcessTypeDecl(decl, false);
+
+            if (type.TypeId == LuaXType.Object && !Metadata.Search(type.Class, out _))
+                throw new LuaXAstGeneratorException(Name, astNode.Children[3], $"The class {type.Class} is not defined");
+
+            return new LuaXNewArrayExpression(type, size, new LuaXElementLocation(Name, astNode));
+        }
+
+        /// <summary>
+        /// Processes a local call
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <param name="callNode"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessLocalCall(IAstNode callNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            string identifier = null;
+            for (int i = 0; i < callNode.Children.Count; i++)
+            {
+                var child = callNode.Children[i];
+                if (child.Symbol == "IDENTIFIER")
+                    identifier = child.Value;
+            }
+
+            if (identifier == null)
+                throw new LuaXAstGeneratorException(Name, callNode, "The identifier is expected");
+
+            if (!currentClass.Methods.Search(identifier, out var method))
+                throw new LuaXAstGeneratorException(Name, callNode, $"There is no method {identifier} in the class {currentClass.Name}");
+
+            if (method.Static)
+                return ProcessCall(new LuaXClassNameExpression(currentClass.Name, new LuaXElementLocation(Name, callNode)), callNode, currentClass, currentMethod);
+            else
+                return ProcessCall(new LuaXVariableExpression("this", new LuaXTypeDefinition() { TypeId = LuaXType.Object, Class = currentClass.Name }, new LuaXElementLocation(Name, callNode)), callNode, currentClass, currentMethod);
+        }
+
+        private LuaXExpression ProcessMethodCall(IAstNode callNode, LuaXClass currentClass, LuaXMethod currentMethod)
+            => ProcessCall(ProcessExpression(callNode.Children[0], currentClass, currentMethod), callNode, currentClass, currentMethod);
+
+        /// <summary>
+        /// Processes call expression (method name and arguments)
+        /// </summary>
+        /// <param name="subject"></param>
+        /// <param name="callNode"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessCall(LuaXExpression subject, IAstNode callNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            string identifier = null;
+            IReadOnlyList<IAstNode> args = null;
+            for (int i = 0; i < callNode.Children.Count; i++)
+            {
+                var child = callNode.Children[i];
+                if (child.Symbol == "IDENTIFIER")
+                    identifier = child.Value;
+                if (child.Symbol == "CALL_BRACKET" && child.Children.Count > 2 && child.Children[1].Symbol == "CALL_ARGS")
+                    args = child.Children[1].Children;
+            }
+
+            if (identifier == null)
+                throw new LuaXAstGeneratorException(Name, callNode, "The identifier is expected");
+
+            LuaXCallExpression callExpression;
+            LuaXVariableCollection methodArguments;
+
+            if (subject.ReturnType.TypeId == LuaXType.ClassName)
+            {
+                Metadata.Search(subject.ReturnType.Class, out var @class);
+                if (!@class.Methods.Search(identifier, out var @method))
+                    throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not found");
+                if (!method.Static)
+                    throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not a static method");
+                callExpression = new LuaXStaticCallExpression(method.ReturnType, subject.ReturnType.Class, identifier, new LuaXElementLocation(Name, callNode));
+                methodArguments = method.Arguments;
+            }
+            else if (subject.ReturnType.TypeId == LuaXType.Object)
+            {
+                Metadata.Search(subject.ReturnType.Class, out var @class);
+                if (!@class.Methods.Search(identifier, out var @method))
+                    throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not found");
+                if (method.Static)
+                    throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is a static method");
+                callExpression = new LuaXInstanceCallExpression(method.ReturnType, subject, identifier, new LuaXElementLocation(Name, callNode));
+                methodArguments = method.Arguments;
+            }
+            else
+                throw new LuaXAstGeneratorException(Name, new LuaXParserError(subject.Location, "The class name or an object expression is expected here"));
+
+            if ((args?.Count ?? 0) != methodArguments.Count)
+                throw new LuaXAstGeneratorException(Name, callNode, $"The method {identifier} expects {methodArguments.Count} argument(s), but {args?.Count ?? 0} is provided");
+
+            if (args != null)
+            {
+                for (int i = 0; i < args.Count; i++)
+                {
+                    var argExpression = ProcessExpression(args[i], currentClass, currentMethod);
+                    if (!methodArguments[i].LuaType.Equals(argExpression.ReturnType))
+                    {
+                        if (methodArguments[i].LuaType.IsNumeric() && argExpression.ReturnType.IsNumeric())
+                            argExpression = argExpression.CastTo(methodArguments[i].LuaType);
+                        else if (methodArguments[i].LuaType.IsString() && !methodArguments[i].LuaType.Array)
+                            argExpression = argExpression.CastTo(LuaXTypeDefinition.String);
+                        else
+                            throw new LuaXAstGeneratorException(Name, callNode, $"The type of the {i + 1}th argument ({methodArguments[i].Name}) is not compatible with the expected type ({methodArguments[i].LuaType} is expected, {argExpression.ReturnType} is provided)");
+                    }
+                    callExpression.Arguments.Add(argExpression);
+                }
+            }
+            return callExpression;
+        }
     }
 }

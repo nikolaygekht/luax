@@ -8,9 +8,15 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5AD74AC6-65F0-4C99-AADB-F25D5D507CAE}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		tbd.md = tbd.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Luax.Parser.Test", "Luax.Parser.Test\Luax.Parser.Test.csproj", "{7C266BD7-2099-4DBD-98C4-92F43BDE4812}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grammar", "grammar", "{17DF906B-A0A0-45F8-969F-602EE28F2CF3}"
+	ProjectSection(SolutionItems) = preProject
+		grammar\luax.gram = grammar\luax.gram
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,8 +36,11 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{17DF906B-A0A0-45F8-969F-602EE28F2CF3} = {5AD74AC6-65F0-4C99-AADB-F25D5D507CAE}
+	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		        SolutionGuid = {3943967B-7C5E-4DEC-ACC6-01AEEFB66889}
 		SolutionGuid = {6A6CDF6B-8A78-41BB-BE4A-663FCC587F3E}
+		        SolutionGuid = {3943967B-7C5E-4DEC-ACC6-01AEEFB66889}
 	EndGlobalSection
 EndGlobal

@@ -1,9 +1,4 @@
-For tomorrow:
-
-expressions:
-  new class
-  new array
-  call
+TBD:
 
 statements
   assign

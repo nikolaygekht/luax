@@ -47,7 +47,7 @@
 
         /// <summary>
         /// The flag indicating that the method is an extern method
-        /// 
+        ///
         /// Extern methods are implemented in target platform natively.
         /// </summary>
         public bool Extern { get; internal init; }

@@ -245,7 +245,7 @@ namespace Luax.Parser.Test
             body.Classes.Search("csvParser", out var csvParser).Should().BeTrue();
             csvParser.Should().NotBeNull();
 
-            var m = csvParser.Methods.Search("create");
+            csvParser.Methods.Search("create", out var m).Should().BeTrue();
             m.Should().NotBeNull();
             m.Extern.Should().BeTrue();
             m.Static.Should().BeTrue();
@@ -254,7 +254,7 @@ namespace Luax.Parser.Test
             m.ReturnType.TypeId.Should().Be(LuaXType.Object);
             m.ReturnType.Class.Should().Be("csvParser");
 
-            m = csvParser.Methods.Search("splitLine");
+            csvParser.Methods.Search("splitLine", out m).Should().BeTrue();
             m.Should().NotBeNull();
             m.Extern.Should().BeTrue();
             m.Static.Should().BeFalse();
