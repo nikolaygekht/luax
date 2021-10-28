@@ -268,18 +268,19 @@ namespace Luax.Parser.Test
         [Fact]
         public void VariableDeclaration_Success()
         {
+            var @class = new LuaXClass("", null);
             var method = new LuaXMethod();
             var processor = new LuaXAstTreeCreator("");
             var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]]");
 
-            processor.ProcessBody(node, method);
+            processor.ProcessBody(node, @class, method);
             method.Variables.Should().HaveCount(1);
             var v = method.Variables[0];
             v.Name.Should().Be("i");
             v.LuaType.TypeId.Should().Be(LuaXType.Integer);
 
             node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(j)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]]");
-            processor.ProcessBody(node, method);
+            processor.ProcessBody(node, @class, method);
             method.Variables.Should().HaveCount(2);
             v = method.Variables[1];
             v.Name.Should().Be("j");
@@ -291,10 +292,11 @@ namespace Luax.Parser.Test
         {
             var processor = new LuaXAstTreeCreator("");
             var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]]");
+            var @class = new LuaXClass("", null);
             var method = new LuaXMethod();
-            processor.ProcessBody(node, method);
+            processor.ProcessBody(node, @class, method);
             method.Variables.Add(new LuaXVariable() { Name = "i" });
-            ((Action)(() => processor.ProcessBody(node, method))).Should().Throw<LuaXAstGeneratorException>();
+            ((Action)(() => processor.ProcessBody(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
         }
 
         [Fact]
@@ -303,9 +305,10 @@ namespace Luax.Parser.Test
             var processor = new LuaXAstTreeCreator("");
             var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]]");
             var method = new LuaXMethod();
-            processor.ProcessBody(node, method);
+            var @class = new LuaXClass("", null);
+            processor.ProcessBody(node, @class, method);
             method.Arguments.Add(new LuaXVariable() { Name = "i" });
-            ((Action)(() => processor.ProcessBody(node, method))).Should().Throw<LuaXAstGeneratorException>();
+            ((Action)(() => processor.ProcessBody(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
         }
     }
 }

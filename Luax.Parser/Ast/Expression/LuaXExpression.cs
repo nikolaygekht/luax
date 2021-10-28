@@ -30,5 +30,10 @@ namespace Luax.Parser.Ast.LuaExpression
 
         public LuaXExpression CastTo(LuaXTypeDefinition type)
             => new LuaXCastOperatorExpression(this, type, this.Location);
+
+        /// <summary>
+        /// Execution/conversion-level object associated with the expression
+        /// </summary>
+        public object Tag { get; set; }
     }
 }

@@ -250,7 +250,7 @@ grammar LuaX
         IF_STMT ->  IF_CLAUSE
                     ELSEIF_CLAUSE*
                     ELSE_CLAUSE?
-                    END EOS;
+                    END;
 
         WHILE -> 'while';
         DO -> 'do';

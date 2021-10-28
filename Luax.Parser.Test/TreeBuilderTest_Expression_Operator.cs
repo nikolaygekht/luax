@@ -152,7 +152,7 @@ namespace Luax.Parser.Test
             op.Operator.Should().Be(LuaXUnaryOperator.Minus);
             op.ReturnType.TypeId.Should().Be(type);
             op.Argument.Should().BeOfType<LuaXVariableExpression>();
-            op.Argument.As<LuaXVariableExpression>().Name.Should().Be(variable);
+            op.Argument.As<LuaXVariableExpression>().VariableName.Should().Be(variable);
         }
 
         [Theory]
@@ -180,7 +180,7 @@ namespace Luax.Parser.Test
             op.Operator.Should().Be(LuaXUnaryOperator.Not);
             op.ReturnType.TypeId.Should().Be(LuaXType.Boolean);
             op.Argument.Should().BeOfType<LuaXVariableExpression>();
-            op.Argument.As<LuaXVariableExpression>().Name.Should().Be(variable);
+            op.Argument.As<LuaXVariableExpression>().VariableName.Should().Be(variable);
         }
 
         [Theory]
@@ -230,9 +230,9 @@ namespace Luax.Parser.Test
             }
 
             a1.Should().BeOfType<LuaXVariableExpression>();
-            a1.As<LuaXVariableExpression>().Name.Should().Be(variable1);
+            a1.As<LuaXVariableExpression>().VariableName.Should().Be(variable1);
             a2.Should().BeOfType<LuaXVariableExpression>();
-            a2.As<LuaXVariableExpression>().Name.Should().Be(variable2);
+            a2.As<LuaXVariableExpression>().VariableName.Should().Be(variable2);
         }
 
         [Theory]
@@ -253,9 +253,9 @@ namespace Luax.Parser.Test
             var a2 = op.RightArgument;
 
             a1.Should().BeOfType<LuaXVariableExpression>();
-            a1.As<LuaXVariableExpression>().Name.Should().Be("vb1");
+            a1.As<LuaXVariableExpression>().VariableName.Should().Be("vb1");
             a2.Should().BeOfType<LuaXVariableExpression>();
-            a2.As<LuaXVariableExpression>().Name.Should().Be("vb2");
+            a2.As<LuaXVariableExpression>().VariableName.Should().Be("vb2");
         }
 
         [Theory]
@@ -299,9 +299,9 @@ namespace Luax.Parser.Test
             var a2 = op.RightArgument;
 
             a1.Should().BeOfType<LuaXVariableExpression>();
-            a1.As<LuaXVariableExpression>().Name.Should().Be(variable1);
+            a1.As<LuaXVariableExpression>().VariableName.Should().Be(variable1);
             a2.Should().BeOfType<LuaXVariableExpression>();
-            a2.As<LuaXVariableExpression>().Name.Should().Be(variable2);
+            a2.As<LuaXVariableExpression>().VariableName.Should().Be(variable2);
         }
 
         [Theory]
@@ -344,9 +344,9 @@ namespace Luax.Parser.Test
             var a2 = op.RightArgument;
 
             a1.Should().BeOfType<LuaXVariableExpression>();
-            a1.As<LuaXVariableExpression>().Name.Should().Be(variable1);
+            a1.As<LuaXVariableExpression>().VariableName.Should().Be(variable1);
             a2.Should().BeOfType<LuaXVariableExpression>();
-            a2.As<LuaXVariableExpression>().Name.Should().Be(variable2);
+            a2.As<LuaXVariableExpression>().VariableName.Should().Be(variable2);
         }
 
         [Theory]

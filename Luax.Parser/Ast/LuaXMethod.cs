@@ -1,4 +1,6 @@
-﻿namespace Luax.Parser.Ast
+﻿using Luax.Parser.Ast.Statement;
+
+namespace Luax.Parser.Ast
 {
     /// <summary>
     /// Definition of a class method
@@ -53,5 +55,10 @@
         public bool Extern { get; internal init; }
 
         internal IAstNode Body { get; init; }
+
+        /// <summary>
+        /// The method body.
+        /// </summary>
+        public LuaXStatementCollection Statements { get; }
     }
 }

@@ -5,12 +5,12 @@
     /// </summary>
     public class LuaXVariableExpression : LuaXExpression
     {
-        public string Name { get; }
+        public string VariableName { get; }
 
         internal LuaXVariableExpression(string name, LuaXTypeDefinition type, LuaXElementLocation location)
             : base(type, location)
         {
-            Name = name;
+            VariableName = name;
         }
     }
 }

@@ -276,7 +276,7 @@ namespace Luax.Parser.Test
                     TypeId = LuaXType.Void
                 }
             };
-            @class.Methods.Add(method2);           
+            @class.Methods.Add(method2);
         }
 
         [Fact]
@@ -302,7 +302,7 @@ namespace Luax.Parser.Test
             var expression = processor.ProcessExpression(node, @class, method);
             expression.Should().BeOfType<LuaXVariableExpression>();
             var e = expression.As<LuaXVariableExpression>();
-            e.Name.Should().Be("v2");
+            e.VariableName.Should().Be("v2");
             e.ReturnType.TypeId.Should().Be(LuaXType.Integer);
             e.ReturnType.Array.Should().BeTrue();
         }
@@ -316,7 +316,7 @@ namespace Luax.Parser.Test
             var expression = processor.ProcessExpression(node, @class, method);
             expression.Should().BeOfType<LuaXVariableExpression>();
             var e = expression.As<LuaXVariableExpression>();
-            e.Name.Should().Be("this");
+            e.VariableName.Should().Be("this");
             e.ReturnType.TypeId.Should().Be(LuaXType.Object);
             e.ReturnType.Class.Should().Be(@class.Name);
             e.ReturnType.Array.Should().BeFalse();
@@ -342,15 +342,15 @@ namespace Luax.Parser.Test
             var node = AstNodeExtensions.Parse("[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(privateProperty)]]]]]]]]]]]]]]]");
             var processor = new LuaXAstTreeCreator("", metadata);
             var expression = processor.ProcessExpression(node, @class, method);
-            expression.Should().BeOfType<LuaXPropertyExpression>();
-            var e = expression.As<LuaXPropertyExpression>();
+            expression.Should().BeOfType<LuaXInstancePropertyExpression>();
+            var e = expression.As<LuaXInstancePropertyExpression>();
             e.PropertyName.Should().Be("privateProperty");
             e.ReturnType.TypeId.Should().Be(LuaXType.Integer);
 
             e.Object.Should().BeOfType<LuaXVariableExpression>();
             e.Object.ReturnType.TypeId.Should().Be(LuaXType.Object);
             e.Object.ReturnType.Class.Should().Be(@class.Name);
-            e.Object.As<LuaXVariableExpression>().Name.Should().Be("this");
+            e.Object.As<LuaXVariableExpression>().VariableName.Should().Be("this");
         }
 
         [Fact]
@@ -412,8 +412,8 @@ namespace Luax.Parser.Test
             var node = AstNodeExtensions.Parse(PropertyAccessTree("this", "privateProperty"));
             var processor = new LuaXAstTreeCreator("", metadata);
             var expression = processor.ProcessExpression(node, @class, method);
-            expression.Should().BeOfType<LuaXPropertyExpression>();
-            var e = expression.As<LuaXPropertyExpression>();
+            expression.Should().BeOfType<LuaXInstancePropertyExpression>();
+            var e = expression.As<LuaXInstancePropertyExpression>();
             e.PropertyName.Should().Be("privateProperty");
             e.ReturnType.TypeId.Should().Be(LuaXType.Integer);
             e.Object.ReturnType.TypeId.Should().Be(LuaXType.Object);
@@ -427,8 +427,8 @@ namespace Luax.Parser.Test
             var node = AstNodeExtensions.Parse(PropertyAccessTree("v6", "publicProperty"));
             var processor = new LuaXAstTreeCreator("", metadata);
             var expression = processor.ProcessExpression(node, @class, method);
-            expression.Should().BeOfType<LuaXPropertyExpression>();
-            var e = expression.As<LuaXPropertyExpression>();
+            expression.Should().BeOfType<LuaXInstancePropertyExpression>();
+            var e = expression.As<LuaXInstancePropertyExpression>();
             e.PropertyName.Should().Be("publicProperty");
             e.ReturnType.TypeId.Should().Be(LuaXType.Integer);
             e.Object.ReturnType.TypeId.Should().Be(LuaXType.Object);
@@ -526,7 +526,7 @@ namespace Luax.Parser.Test
             var e = expression.As<LuaXArrayLengthExpression>();
             e.ReturnType.TypeId.Should().Be(LuaXType.Integer);
             e.ArrayExpression.Should().BeOfType<LuaXVariableExpression>();
-            e.ArrayExpression.As<LuaXVariableExpression>().Name.Should().Be("v2");
+            e.ArrayExpression.As<LuaXVariableExpression>().VariableName.Should().Be("v2");
         }
 
         [Fact]
@@ -552,7 +552,7 @@ namespace Luax.Parser.Test
             cast.ReturnType.Array.Should().BeFalse();
             cast.Argument.Should().BeOfType<LuaXVariableExpression>();
             var arg = cast.Argument.As<LuaXVariableExpression>();
-            arg.Name.Should().Be("v1");
+            arg.VariableName.Should().Be("v1");
         }
 
         [Fact]
@@ -569,7 +569,7 @@ namespace Luax.Parser.Test
             cast.ReturnType.Array.Should().BeFalse();
             cast.Argument.Should().BeOfType<LuaXVariableExpression>();
             var arg = cast.Argument.As<LuaXVariableExpression>();
-            arg.Name.Should().Be("v1");
+            arg.VariableName.Should().Be("v1");
         }
 
         [Fact]
@@ -859,12 +859,12 @@ namespace Luax.Parser.Test
         }
 
         [Theory]
-        [InlineData(LuaXType.Real, "[INTEGER(10)]", 10)]
-        [InlineData(LuaXType.Integer, "[REAL(10.0)]", 10.0)]
-        [InlineData(LuaXType.String, "[REAL(10.0)]", 10.0)]
-        [InlineData(LuaXType.String, "[INTEGER(10)]", 10)]
-        [InlineData(LuaXType.String, "[BOOLEAN[BOOLEAN_TRUE]]", true)]
-        public void MethodCall_Arguments_AutoCast_Success(LuaXType argType, string constantText, object constantValue)
+        [InlineData(LuaXType.Real, "[INTEGER(10)]")]
+        [InlineData(LuaXType.Integer, "[REAL(10.0)]")]
+        [InlineData(LuaXType.String, "[REAL(10.0)]")]
+        [InlineData(LuaXType.String, "[INTEGER(10)]")]
+        [InlineData(LuaXType.String, "[BOOLEAN[BOOLEAN_TRUE]]")]
+        public void MethodCall_Arguments_AutoCast_Success(LuaXType argType, string constantText)
         {
             StageVariableAndProperty(out var metadata, out var @class, out var method, new LuaXTypeDefinition() { TypeId = argType });
             var node = AstNodeExtensions.Parse($"[LOCAL_CALL[IDENTIFIER(test)][CALL_BRACKET[L_ROUND_BRACKET][CALL_ARGS[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT{constantText}]]]]]]]]]]]]][R_ROUND_BRACKET]]]");

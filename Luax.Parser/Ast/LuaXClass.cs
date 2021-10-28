@@ -71,7 +71,7 @@ namespace Luax.Parser.Ast
                 }
 
                 if (method.Body != null)
-                    creator.ProcessBody(method.Body, Methods[i]);
+                    creator.ProcessBody(method.Body, this, Methods[i]);
             }
         }
     }

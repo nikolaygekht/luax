@@ -344,7 +344,7 @@ namespace Luax.Parser.Ast.Builder
                         throw new LuaXAstGeneratorException(Name, astNode, $"Property {leftSideType.Class}.{name} is static");
                     if (property.Visibility == LuaXVisibility.Private && leftSideType.Class != currentClass.Name)
                         throw new LuaXAstGeneratorException(Name, astNode, $"Property {leftSideType.Class}.{name} is private and cannot be accessed");
-                    return new LuaXPropertyExpression(leftSide, name, property.LuaType, location);
+                    return new LuaXInstancePropertyExpression(leftSide, name, property.LuaType, location);
                 }
                 else
                     throw new LuaXAstGeneratorException(Name, astNode, "The left side argument of the property access expression is not a class or an array");
@@ -388,7 +388,7 @@ namespace Luax.Parser.Ast.Builder
                     if (currentMethod.Static)
                         throw new LuaXAstGeneratorException(Name, astNode, $"Can't access instance property {name} in a static method");
 
-                    return new LuaXPropertyExpression(new LuaXVariableExpression("this", new LuaXTypeDefinition() { TypeId = LuaXType.Object, Class = currentClass.Name }, location),
+                    return new LuaXInstancePropertyExpression(new LuaXVariableExpression("this", new LuaXTypeDefinition() { TypeId = LuaXType.Object, Class = currentClass.Name }, location),
                         name, p1.LuaType, location);
                 }
             }
@@ -580,12 +580,8 @@ namespace Luax.Parser.Ast.Builder
                     var argExpression = ProcessExpression(args[i], currentClass, currentMethod);
                     if (!methodArguments[i].LuaType.Equals(argExpression.ReturnType))
                     {
-                        if (methodArguments[i].LuaType.IsNumeric() && argExpression.ReturnType.IsNumeric())
-                            argExpression = argExpression.CastTo(methodArguments[i].LuaType);
-                        else if (methodArguments[i].LuaType.IsString() && !methodArguments[i].LuaType.Array)
-                            argExpression = argExpression.CastTo(LuaXTypeDefinition.String);
-                        else
-                            throw new LuaXAstGeneratorException(Name, callNode, $"The type of the {i + 1}th argument ({methodArguments[i].Name}) is not compatible with the expected type ({methodArguments[i].LuaType} is expected, {argExpression.ReturnType} is provided)");
+                        var argExpression1 = CastToCompatible(argExpression, methodArguments[i].LuaType);
+                        argExpression = argExpression1 ?? throw new LuaXAstGeneratorException(Name, callNode, $"The type of the {i + 1}th argument ({methodArguments[i].Name}) is not compatible with the expected type ({methodArguments[i].LuaType} is expected, {argExpression.ReturnType} is provided)");
                     }
                     callExpression.Arguments.Add(argExpression);
                 }

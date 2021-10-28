@@ -38,6 +38,8 @@ namespace Luax.Parser.Ast
 
         internal bool IsString() => TypeId == LuaXType.String && !Array;
 
+        internal bool IsObject() => TypeId == LuaXType.Object && !Array;
+
         internal bool IsDate() => TypeId == LuaXType.Datetime && !Array;
 
         internal bool IsInteger() => TypeId == LuaXType.Integer && !Array;
