@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Luax.Parser.Ast
 {
@@ -21,10 +22,24 @@ namespace Luax.Parser.Ast
         /// <returns></returns>
         public int Find(string name)
         {
-            for (int i = 0; i < Count; i++)
-                if (this[i].Name == name)
-                    return i;
+            if (mIndex.Count != Count)
+                UpdateIndex();
+
+            if (mIndex.TryGetValue(name, out var index))
+                return index;
             return -1;
+        }
+
+        private readonly Dictionary<string, int> mIndex = new Dictionary<string, int>();
+
+        private void UpdateIndex()
+        {
+            mIndex.Clear();
+
+            for (int i = 0; i < Count; i++)
+            {
+                mIndex[this[i].Name] = i;
+            }
         }
 
         /// <summary>
@@ -42,6 +57,27 @@ namespace Luax.Parser.Ast
             }
             @class = this[index];
             return true;
+        }
+
+        /// <summary>
+        /// The method checks whether an instance of a sourceClass may be assigned
+        /// to a targetClass.
+        ///
+        /// It is possible only if a sourceClass is a targetClass or a targetClass is one
+        /// of parents of the sourceClass.
+        /// </summary>
+        /// <param name="sourceClass"></param>
+        /// <param name="targetClass"></param>
+        /// <returns></returns>
+        public bool IsKindOf(string sourceClass, string targetClass)
+        {
+            if (sourceClass == targetClass)
+                return true;
+            if (!Search(sourceClass, out var @class))
+                return false;
+            if (string.IsNullOrEmpty(@class.Parent))
+                return false;
+            return IsKindOf(@class.Parent, targetClass);
         }
     }
 }

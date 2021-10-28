@@ -12,5 +12,7 @@
         {
             Argument = argument;
         }
+
+        public override string ToString() => $"cast<{ReturnType}>({Argument.ToString()})";
     }
 }

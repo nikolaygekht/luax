@@ -15,5 +15,7 @@
         {
             ClassName = className;
         }
+
+        public override string ToString() => $"call:{ClassName}::{MethodName}({Arguments.ToString()})";
     }
 }

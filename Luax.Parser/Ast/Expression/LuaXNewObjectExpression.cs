@@ -15,5 +15,7 @@
         {
             Class = @class;
         }
+
+        public override string ToString() => $"(new {Class})";
     }
 }

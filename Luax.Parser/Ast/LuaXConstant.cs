@@ -12,6 +12,8 @@ namespace Luax.Parser.Ast
         /// </summary>
         public LuaXType ConstantType { get; internal init; }
 
+        public LuaXTypeDefinition ConstantTypeFull => new LuaXTypeDefinition() { TypeId = ConstantType };
+
         /// <summary>
         /// The constant value.
         /// </summary>

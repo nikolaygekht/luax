@@ -18,6 +18,5 @@
         internal LuaXIfStatement(LuaXElementLocation location) : base(location)
         {
         }
-
     }
 }

@@ -1,0 +1,7 @@
+﻿class test
+   static function test1(arg : real) : real
+      var r : real;
+      r = stdlib.round(arg, 0);
+      return (stdlib.abs(arg) - r) * 2 + 5 * (arg / 2) ^ 2;
+   end
+end

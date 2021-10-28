@@ -12,5 +12,7 @@
         {
             Value = value;
         }
+
+        public override string ToString() => $"const:{Value.ConstantTypeFull}:{Value.Value}";
     }
 }

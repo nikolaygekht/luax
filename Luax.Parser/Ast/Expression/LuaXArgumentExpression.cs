@@ -12,5 +12,8 @@
         {
             Name = name;
         }
+
+        public override string ToString()
+            => $"arg:{Name}";
     }
 }

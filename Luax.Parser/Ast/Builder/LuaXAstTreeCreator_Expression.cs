@@ -67,7 +67,7 @@ namespace Luax.Parser.Ast.Builder
                     return ProcessBinaryLogicalOperator(LuaXBinaryOperator.And, astNode, currentClass, currentMethod);
                 case "OR_OP":
                     return ProcessBinaryLogicalOperator(LuaXBinaryOperator.Or, astNode, currentClass, currentMethod);
-                case "BRACKET_EXPRESSION":
+                case "BRACKET_EXPR":
                     return ProcessBracket(astNode, currentClass, currentMethod);
                 case "NEW_ARRAY_EXPR":
                     return ProcessNewArray(astNode, currentClass, currentMethod);
@@ -105,7 +105,7 @@ namespace Luax.Parser.Ast.Builder
 
             return new LuaXBinaryOperatorExpression(@operator, arg1, arg2,
                 arg1.ReturnType.IsReal() || arg2.ReturnType.IsReal() ? LuaXTypeDefinition.Real : LuaXTypeDefinition.Integer,
-                new LuaXElementLocation(Name, astNode));
+                new LuaXElementLocation(Name, astNode.Children[1]));
         }
 
         /// <summary>
@@ -129,7 +129,8 @@ namespace Luax.Parser.Ast.Builder
             if (!arg2.ReturnType.IsBoolean())
                 throw new LuaXAstGeneratorException(Name, astNode.Children[2], "A boolean expression is expected here");
 
-            return new LuaXBinaryOperatorExpression(@operator, arg1, arg2, LuaXTypeDefinition.Boolean, new LuaXElementLocation(Name, astNode));
+            return new LuaXBinaryOperatorExpression(@operator, arg1, arg2, LuaXTypeDefinition.Boolean,
+                new LuaXElementLocation(Name, astNode.Children[1]));
         }
 
         /// <summary>
@@ -154,7 +155,7 @@ namespace Luax.Parser.Ast.Builder
                 arg1.ReturnType.IsBoolean() && arg2.ReturnType.IsBoolean())
             {
                 return new LuaXBinaryOperatorExpression(@operator, arg1, arg2, LuaXTypeDefinition.Boolean,
-                    new LuaXElementLocation(Name, astNode));
+                    new LuaXElementLocation(Name, astNode.Children[1]));
             }
             else
                 throw new LuaXAstGeneratorException(Name, astNode, "The relational operators must have compatible type on both side");
@@ -181,7 +182,7 @@ namespace Luax.Parser.Ast.Builder
                 arg2 = arg2.CastTo(LuaXTypeDefinition.String);
 
             return new LuaXBinaryOperatorExpression(LuaXBinaryOperator.Concat, arg1, arg2, LuaXTypeDefinition.String,
-                new LuaXElementLocation(Name, astNode));
+                new LuaXElementLocation(Name, astNode.Children[1]));
         }
 
         /// <summary>

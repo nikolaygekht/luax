@@ -3,13 +3,15 @@
 namespace Luax.Parser.Ast.Statement
 {
     /// <summary>
-    /// The base class for all LuaX assignment statement
+    /// The return statement
     /// </summary>
-    public abstract class LuaXAssignStatement : LuaXStatement
+    public class LuaXReturnStatement : LuaXStatement
     {
+        public bool HasExpression => Expression != null;
+
         public LuaXExpression Expression { get; }
 
-        protected LuaXAssignStatement(LuaXExpression expression, LuaXElementLocation location)
+        internal LuaXReturnStatement(LuaXExpression expression, LuaXElementLocation location)
             : base(location)
         {
             Expression = expression;

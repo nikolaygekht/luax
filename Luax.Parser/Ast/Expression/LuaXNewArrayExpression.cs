@@ -21,5 +21,7 @@
             ElementType = elementType;
             SizeExpression = size;
         }
+
+        public override string ToString() => $"(new {ElementType}[{SizeExpression.ToString()}])";
     }
 }

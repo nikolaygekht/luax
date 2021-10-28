@@ -12,5 +12,7 @@
         {
             ArrayExpression = arrayExpression;
         }
+
+        public override string ToString() => $"{ArrayExpression.ToString()}.length";
     }
 }

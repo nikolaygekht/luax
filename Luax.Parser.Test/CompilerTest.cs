@@ -1,6 +1,9 @@
 ﻿using System;
+using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using FluentAssertions;
 using Luax.Parser.Ast;
+using Luax.Parser.Ast.LuaExpression;
+using Luax.Parser.Ast.Statement;
 using Luax.Parser.Test.Tools;
 using Luax.Parser.Test.Utils;
 using Xunit;
@@ -264,6 +267,57 @@ namespace Luax.Parser.Test
             m.Arguments[0].LuaType.Array.Should().Be(false);
             m.ReturnType.TypeId.Should().Be(LuaXType.String);
             m.ReturnType.Array.Should().Be(true);
+        }
+
+        [Fact]
+        public void Expression()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("Expression1");
+            app.Pass2();
+            app.Classes.Search("test", out var @class).Should().BeTrue();
+            @class.Methods.Search("test1", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(2);
+            method.Statements[1].Should().BeOfType<LuaXReturnStatement>();
+            var expr = method.Statements[1].As<LuaXReturnStatement>().Expression;
+            expr.Should().NotBeNull();
+
+            expr.Should().BeOfType<LuaXBinaryOperatorExpression>();
+            var expr1 = expr.As<LuaXBinaryOperatorExpression>();
+            expr1.Location.Line.Should().Be(5);
+            expr1.Location.Column.Should().Be(40);
+            expr1.ToString().Should().Be("(((call:stdlib::abs(arg:arg) Subtract var:r) Multiply const:int:2) Add (const:int:5 Multiply ((arg:arg Divide const:int:2) Power const:int:2)))");
+        }
+
+        [Fact]
+        public void If()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("If1");
+            app.Pass2();
+            app.Classes.Search("test", out var @class).Should().BeTrue();
+            @class.Methods.Search("test1", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(2);
+            method.Statements[0].Should().BeOfType<LuaXIfStatement>();
+            var @if = method.Statements[0].As<LuaXIfStatement>();
+            @if.Clauses.Should().HaveCount(2);
+            @if.Clauses[0].Condition.ToString().Should().Be("(arg:arg1 Greater const:int:0)");
+            @if.Clauses[0].Statements.Should().HaveCount(1);
+            @if.Clauses[0].Statements[0].Should().BeOfType<LuaXReturnStatement>();
+            @if.Clauses[0].Statements[0].As<LuaXReturnStatement>().Expression.ToString().Should().Be("const:int:1");
+
+            @if.Clauses[1].Condition.ToString().Should().Be("(arg:arg1 Less const:int:0)");
+            @if.Clauses[1].Statements.Should().HaveCount(1);
+            @if.Clauses[1].Statements[0].Should().BeOfType<LuaXReturnStatement>();
+            @if.Clauses[1].Statements[0].As<LuaXReturnStatement>().Expression.ToString().Should().Be("const:int:-1");
+
+            @if.ElseClause.Should().HaveCount(1);
+            @if.ElseClause[0].Should().BeOfType<LuaXReturnStatement>();
+            @if.ElseClause[0].As<LuaXReturnStatement>().Expression.ToString().Should().Be("cast<int>(const:real:0)");
+
+            @if = method.Statements[1].As<LuaXIfStatement>();
+            @if.Clauses.Should().HaveCount(1);
+            @if.ElseClause.Should().BeEmpty();
         }
     }
 }

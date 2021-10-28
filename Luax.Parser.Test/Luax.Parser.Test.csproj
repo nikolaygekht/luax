@@ -5,6 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestSources\Expression1.luax" />
+    <None Remove="TestSources\If1.luax" />
     <None Remove="TestSources\ParseClass.luax" />
     <None Remove="TestSources\ParseClassMethods.luax" />
     <None Remove="TestSources\ParseClassProperties.luax" />
@@ -12,8 +14,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\If1.luax" />
     <EmbeddedResource Include="TestSources\ParseClassMethods.luax" />
     <EmbeddedResource Include="TestSources\ParseClassProperties.luax" />
+    <EmbeddedResource Include="TestSources\Expression1.luax" />
     <EmbeddedResource Include="TestSources\ParseConstant.luax" />
     <EmbeddedResource Include="TestSources\ParseClass.luax" />
   </ItemGroup>

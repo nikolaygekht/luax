@@ -16,5 +16,7 @@
             LeftArgument = left;
             RightArgument = right;
         }
+
+        public override string ToString() => $"({LeftArgument.ToString()} {Operator} {RightArgument.ToString()})";
     }
 }

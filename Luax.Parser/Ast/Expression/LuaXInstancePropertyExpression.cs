@@ -14,5 +14,7 @@
             Object = @object;
             PropertyName = propertyName;
         }
+
+        public override string ToString() => $"property:({Object.ToString()}).{PropertyName}";
     }
 }

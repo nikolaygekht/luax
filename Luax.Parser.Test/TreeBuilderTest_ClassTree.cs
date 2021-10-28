@@ -310,5 +310,39 @@ namespace Luax.Parser.Test
             method.Arguments.Add(new LuaXVariable() { Name = "i" });
             ((Action)(() => processor.ProcessBody(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
         }
+
+        // a -> c
+        // b -> d -> e -> f
+        //           | -> i
+        [Theory]
+        [InlineData("a", "a", true)]
+        [InlineData("c", "a", true)]
+        [InlineData("b", "b", true)]
+        [InlineData("d", "b", true)]
+        [InlineData("e", "d", true)]
+        [InlineData("e", "b", true)]
+        [InlineData("i", "b", true)]
+        [InlineData("f", "d", true)]
+
+        [InlineData("a", "b", false)]
+        [InlineData("a", "c", false)]
+        [InlineData("c", "d", false)]
+        [InlineData("b", "d", false)]
+        [InlineData("b", "f", false)]
+        [InlineData("i", "f", false)]
+        public void IsKindOf(string source, string target, bool compatible)
+        {
+            var metadata = new LuaXClassCollection();
+            
+            metadata.Add(new LuaXClass("a", null));
+            metadata.Add(new LuaXClass("b", null));
+            metadata.Add(new LuaXClass("c", "a", null));
+            metadata.Add(new LuaXClass("d", "b", null));
+            metadata.Add(new LuaXClass("e", "d", null));
+            metadata.Add(new LuaXClass("f", "e", null));
+            metadata.Add(new LuaXClass("i", "e", null));
+
+            metadata.IsKindOf(source, target).Should().Be(compatible);
+        }
     }
 }

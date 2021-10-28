@@ -14,5 +14,7 @@
             ClassName = className;
             PropertyName = propertyName;
         }
+
+        public override string ToString() => $"property:{ClassName}::{PropertyName}";
     }
 }

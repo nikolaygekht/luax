@@ -1,4 +1,5 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Luax.Parser.Ast
 {
@@ -21,10 +22,24 @@ namespace Luax.Parser.Ast
         /// <returns></returns>
         public int Find(string name)
         {
-            for (int i = 0; i < Count; i++)
-                if (this[i].Name == name)
-                    return i;
+            if (mIndex.Count != Count)
+                UpdateIndex();
+
+            if (mIndex.TryGetValue(name, out var index))
+                return index;
             return -1;
+        }
+
+        private readonly Dictionary<string, int> mIndex = new Dictionary<string, int>();
+
+        private void UpdateIndex()
+        {
+            mIndex.Clear();
+
+            for (int i = 0; i < Count; i++)
+            {
+                mIndex[this[i].Name] = i;
+            }
         }
 
         /// <summary>

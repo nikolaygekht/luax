@@ -14,5 +14,7 @@
             ArrayExpression = arrayExpression;
             IndexExpression = indexExpression;
         }
+
+        public override string ToString() => $"({ArrayExpression.ToString()})[{IndexExpression.ToString()}]";
     }
 }

@@ -14,5 +14,7 @@
             Operator = @operator;
             Argument = argument;
         }
+
+        public override string ToString() => $"({Operator} {Argument.ToString()})";
     }
 }

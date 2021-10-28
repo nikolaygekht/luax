@@ -15,5 +15,7 @@
         {
             Object = @object;
         }
+
+        public override string ToString() => $"call:({Object.ToString()}).{MethodName}({Arguments.ToString()})";
     }
 }

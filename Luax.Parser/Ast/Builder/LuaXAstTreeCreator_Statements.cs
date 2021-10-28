@@ -18,7 +18,6 @@ namespace Luax.Parser.Ast.Builder
         /// </summary>
         /// <param name="node"></param>
         /// <param name="method"></param>
-        /// 
         public void ProcessBody(IAstNode node, LuaXClass @class, LuaXMethod method)
             => ProcessStatements(node.Children, @class, method, method.Statements);
 
@@ -43,6 +42,9 @@ namespace Luax.Parser.Ast.Builder
                         break;
                     case "IF_STMT":
                         ProcessesIfStatement(child, @class, method, statements);
+                        break;
+                    case "RETURN_STMT":
+                        ProcessesReturnStatement(child, @class, method, statements);
                         break;
                     default:
                         throw new LuaXAstGeneratorException(Name, child, $"Unexpected symbol {child.Symbol}");
@@ -117,31 +119,10 @@ namespace Luax.Parser.Ast.Builder
                 return expression.CastTo(targetType);
             else if (targetType.IsString() && !expression.ReturnType.Array)
                 return expression.CastTo(LuaXTypeDefinition.String);
-            else if (targetType.IsObject() && expression.ReturnType.IsObject() && IsKindOf(expression.ReturnType.Class, targetType.Class))
+            else if (targetType.IsObject() && expression.ReturnType.IsObject() && Metadata.IsKindOf(expression.ReturnType.Class, targetType.Class))
                 return expression.CastTo(targetType);
 
             return null;
-        }
-
-        /// <summary>
-        /// The method checks whether an instance of a sourceClass may be assigned
-        /// to a targetClass.
-        ///
-        /// It is possible only if a sourceClass is a targetClass or a targetClass is one
-        /// of parents of the sourceClass.
-        /// </summary>
-        /// <param name="sourceClass"></param>
-        /// <param name="targetClass"></param>
-        /// <returns></returns>
-        private bool IsKindOf(string sourceClass, string targetClass)
-        {
-            if (sourceClass == targetClass)
-                return true;
-            if (!Metadata.Search(sourceClass, out var @class))
-                return false;
-            if (string.IsNullOrEmpty(@class.Parent))
-                return false;
-            return IsKindOf(@class.Parent, targetClass);
         }
 
         /// <summary>
@@ -185,8 +166,11 @@ namespace Luax.Parser.Ast.Builder
 
             if (condition != null)
             {
+                if (!condition.ReturnType.IsBoolean())
+                    throw new LuaXAstGeneratorException(Name, new LuaXParserError(condition.Location, "The condition should be a boolean expression"));
                 var clause = new LuaXIfClause(condition, new LuaXElementLocation(Name, node));
                 target = clause.Statements;
+                stmt.Clauses.Add(clause);
             }
             else
                 target = stmt.ElseClause;
@@ -215,5 +199,32 @@ namespace Luax.Parser.Ast.Builder
             statements.Add(stmt);
         }
 
+        /// <summary>
+        /// Processes RETURN statement
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        /// <param name="method"></param>
+        /// <param name="statements"></param>
+        private void ProcessesReturnStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        {
+            LuaXExpression expression = null;
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "REXPR")
+                    expression = ProcessExpression(child, @class, method);
+            }
+            if (expression != null && method.ReturnType.TypeId == LuaXType.Void)
+                throw new LuaXAstGeneratorException(Name, node, "A void method should not return a value");
+            if (expression == null && method.ReturnType.TypeId != LuaXType.Void)
+                throw new LuaXAstGeneratorException(Name, node, "A non-void method should return a value");
+            if (expression != null && !expression.ReturnType.Equals(method.ReturnType))
+            {
+                expression = CastToCompatible(expression, method.ReturnType) ??
+                    throw new LuaXAstGeneratorException(Name, node, $"The return value type {expression.ReturnType} and the method type {method.ReturnType} are incompatible");
+            }
+            statements.Add(new LuaXReturnStatement(expression, new LuaXElementLocation(Name, node)));
+        }
     }
 }

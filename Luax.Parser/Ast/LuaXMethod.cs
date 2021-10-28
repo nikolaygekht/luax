@@ -59,6 +59,6 @@ namespace Luax.Parser.Ast
         /// <summary>
         /// The method body.
         /// </summary>
-        public LuaXStatementCollection Statements { get; }
+        public LuaXStatementCollection Statements { get; } = new LuaXStatementCollection();
     }
 }

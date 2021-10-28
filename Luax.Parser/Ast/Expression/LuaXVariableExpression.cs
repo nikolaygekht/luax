@@ -12,5 +12,7 @@
         {
             VariableName = name;
         }
+
+        public override string ToString() => $"var:{VariableName}";
     }
 }

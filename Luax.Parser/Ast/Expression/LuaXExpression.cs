@@ -35,5 +35,7 @@ namespace Luax.Parser.Ast.LuaExpression
         /// Execution/conversion-level object associated with the expression
         /// </summary>
         public object Tag { get; set; }
+
+        new public abstract string ToString();
     }
 }

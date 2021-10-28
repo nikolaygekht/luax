@@ -12,5 +12,7 @@
         {
             Name = name;
         }
+
+        public override string ToString() => $"typeof({Name})";
     }
 }
