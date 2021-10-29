@@ -34,6 +34,11 @@ namespace Luax.Parser.Ast
         {
         }
 
+        public LuaXAstGeneratorException(LuaXElementLocation location, string message)
+            : this(location.Source, new LuaXParserError[] { new LuaXParserError(location, message) })
+        {
+        }
+
         internal LuaXAstGeneratorException(string name, IEnumerable<LuaXParserError> errors)
             : base(CreateMessage(name, errors))
         {

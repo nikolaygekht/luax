@@ -41,22 +41,5 @@ namespace Luax.Parser.Ast
                 mIndex[this[i].Name] = i;
             }
         }
-
-        /// <summary>
-        /// Finds the method object by its name
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public bool Search(string name, out LuaXMethod method)
-        {
-            var index = Find(name);
-            if (index < 0)
-            {
-                method = null;
-                return false;
-            }
-            method = this[index];
-            return true;
-        }
     }
 }

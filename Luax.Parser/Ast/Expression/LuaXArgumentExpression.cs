@@ -5,15 +5,15 @@
     /// </summary>
     public class LuaXArgumentExpression : LuaXExpression
     {
-        public string Name { get; }
+        public string ArgumentName { get; }
 
         internal LuaXArgumentExpression(string name, LuaXTypeDefinition type, LuaXElementLocation location)
             : base(type, location)
         {
-            Name = name;
+            ArgumentName = name;
         }
 
         public override string ToString()
-            => $"arg:{Name}";
+            => $"arg:{ArgumentName}";
     }
 }

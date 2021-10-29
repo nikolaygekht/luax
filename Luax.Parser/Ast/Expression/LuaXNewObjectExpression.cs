@@ -8,14 +8,14 @@
         /// <summary>
         /// The class name to create
         /// </summary>
-        public string Class { get; }
+        public string ClassName { get; }
 
         internal LuaXNewObjectExpression(string @class, LuaXElementLocation location)
             : base(new LuaXTypeDefinition() { TypeId = LuaXType.Object, Class = @class }, location)
         {
-            Class = @class;
+            ClassName = @class;
         }
 
-        public override string ToString() => $"(new {Class})";
+        public override string ToString() => $"(new {ClassName})";
     }
 }

@@ -42,6 +42,9 @@ namespace Luax.Parser
         /// </summary>
         public void Pass2()
         {
+            //force indexing
+            Classes.Search("", out _);
+
             for (int i = 0; i < Classes.Count; i++)
             {
                 var parser = new LuaXAstTreeCreator(Classes[i].Location.Source, Classes);

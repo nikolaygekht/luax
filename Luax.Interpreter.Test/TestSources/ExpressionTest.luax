@@ -1,0 +1,12 @@
+﻿class a
+ public var p : int;
+end
+
+class b : a
+  public static var s : int;
+  public var i : int;
+  public function f() : $type
+    var x : string, arr : int[];
+	return $expression;
+  end
+end

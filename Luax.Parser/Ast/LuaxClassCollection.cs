@@ -37,9 +37,11 @@ namespace Luax.Parser.Ast
             mIndex.Clear();
 
             for (int i = 0; i < Count; i++)
-            {
                 mIndex[this[i].Name] = i;
-            }
+
+            for (int i = 0; i < Count; i++)
+                if (this[i].HasParent && mIndex.TryGetValue(this[i].Parent, out var parentClassIndex))
+                    this[i].ParentClass = this[parentClassIndex];
         }
 
         /// <summary>
@@ -71,13 +73,28 @@ namespace Luax.Parser.Ast
         /// <returns></returns>
         public bool IsKindOf(string sourceClass, string targetClass)
         {
-            if (sourceClass == targetClass)
+            if (!Search(sourceClass, out var s) || !Search(targetClass, out var t))
+                return false;
+            return IsKindOf(s, t);
+        }
+
+        /// <summary>
+        /// The method checks whether an instance of a sourceClass may be assigned
+        /// to a targetClass.
+        ///
+        /// It is possible only if a sourceClass is a targetClass or a targetClass is one
+        /// of parents of the sourceClass.
+        /// </summary>
+        /// <param name="sourceClass"></param>
+        /// <param name="targetClass"></param>
+        /// <returns></returns>
+        public bool IsKindOf(LuaXClass sourceClass, LuaXClass targetClass)
+        {
+            if (ReferenceEquals(sourceClass, targetClass))
                 return true;
-            if (!Search(sourceClass, out var @class))
-                return false;
-            if (string.IsNullOrEmpty(@class.Parent))
-                return false;
-            return IsKindOf(@class.Parent, targetClass);
+            if (sourceClass.Parent != null)
+                return IsKindOf(sourceClass.ParentClass, targetClass);
+            return false;
         }
     }
 }

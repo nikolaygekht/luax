@@ -26,6 +26,13 @@ namespace Luax.Parser.Ast
         public bool HasParent => !string.IsNullOrEmpty(Parent);
 
         /// <summary>
+        /// The reference to the parent class
+        /// </summary>
+        public LuaXClass ParentClass { get; internal set; }
+
+        public LuaXTypeDefinition TypeOf() => new LuaXTypeDefinition() { TypeId = LuaXType.Object, Class = Name };
+
+        /// <summary>
         /// The collection of class attributes
         /// </summary>
         public LuaXAttributeCollection Attributes { get; } = new LuaXAttributeCollection();
@@ -73,6 +80,38 @@ namespace Luax.Parser.Ast
                 if (method.Body != null)
                     creator.ProcessBody(method.Body, this, Methods[i]);
             }
+        }
+
+        public bool SearchProperty(string propertyName, out LuaXProperty property)
+        {
+            var propertyIndex = Properties.Find(propertyName);
+            if (propertyIndex < 0)
+            {
+                if (ParentClass == null)
+                {
+                    property = null;
+                    return false;
+                }
+                return ParentClass.SearchProperty(propertyName, out property);
+            }
+            property = this.Properties[propertyIndex];
+            return true;
+        }
+
+        public bool SearchMethod(string propertyName, out LuaXMethod method)
+        {
+            var methodIndex = Methods.Find(propertyName);
+            if (methodIndex < 0)
+            {
+                if (ParentClass == null)
+                {
+                    method = null;
+                    return false;
+                }
+                return ParentClass.SearchMethod(propertyName, out method);
+            }
+            method = this.Methods[methodIndex];
+            return true;
         }
     }
 }

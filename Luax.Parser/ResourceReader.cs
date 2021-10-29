@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -17,6 +18,23 @@ namespace Luax.Parser
         /// <returns></returns>
         public static string Read(Assembly assembly, string resourceName)
         {
+            if (assembly == null)
+            {
+                foreach (var assembly1 in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    if (assembly1.IsDynamic)
+                        continue;
+                    var names1 = assembly1.GetManifestResourceNames();
+                    if (names1.Any(s => s.EndsWith(resourceName)))
+                    {
+                        assembly = assembly1;
+                        break;
+                    }
+                }
+            }
+            if (assembly == null)
+                throw new ArgumentException("Assembly containing the resource specified is not found", nameof(assembly));
+
             var names = assembly.GetManifestResourceNames();
             string fullName = null;
             foreach (var name in names)

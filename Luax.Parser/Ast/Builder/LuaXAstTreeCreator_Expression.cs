@@ -148,18 +148,29 @@ namespace Luax.Parser.Ast.Builder
             var arg1 = ProcessExpression(astNode.Children[0], currentClass, currentMethod);
             var arg2 = ProcessExpression(astNode.Children[2], currentClass, currentMethod);
 
+            var t1 = arg1.ReturnType;
+            var t2 = arg2.ReturnType;
+            var n1 = arg1 is LuaXConstantExpression c1 && c1.Value.IsNil;
+            var n2 = arg1 is LuaXConstantExpression c2 && c2.Value.IsNil;
+
             //check type compatibility
-            if (arg1.ReturnType.IsNumeric() && arg2.ReturnType.IsNumeric() ||
-                arg1.ReturnType.IsString() && arg2.ReturnType.IsString() ||
-                arg1.ReturnType.IsDate() && arg2.ReturnType.IsDate() ||
-                arg1.ReturnType.IsBoolean() && arg2.ReturnType.IsBoolean())
-            {
+            if (CanCompare(t1, n1, t2, n2))
                 return new LuaXBinaryOperatorExpression(@operator, arg1, arg2, LuaXTypeDefinition.Boolean,
                     new LuaXElementLocation(Name, astNode.Children[1]));
-            }
             else
                 throw new LuaXAstGeneratorException(Name, astNode, "The relational operators must have compatible type on both side");
         }
+
+        private bool CanCompare(LuaXTypeDefinition t1, bool nil1, LuaXTypeDefinition t2, bool nil2)
+         => t1.IsNumeric() && t2.IsNumeric() ||  //numbers to numbers
+            t1.IsBoolean() && t2.IsBoolean() ||  //bools to bools
+            t1.IsDate() && t2.IsDate() ||        //dates to dates
+            t1.IsString() && t2.IsString() ||    //strings to strings
+            //nil to arrays, objects or strings
+            nil1 && (t2.Array || t2.IsObject() || t2.IsString()) ||
+            nil2 && (t1.Array || t1.IsObject() || t1.IsString()) ||
+            //objects if the classes from the same chain of hierarchy
+            t1.IsObject() && t2.IsObject() && (t1.Class == t2.Class || Metadata.IsKindOf(t1.Class, t2.Class) || Metadata.IsKindOf(t2.Class, t1.Class));
 
         /// <summary>
         /// Process a string concat operator
@@ -316,7 +327,7 @@ namespace Luax.Parser.Ast.Builder
                 //static property call
                 if (!Metadata.Search(classNameExpression.Name, out var leftSideClass))
                     throw new LuaXAstGeneratorException(Name, astNode, $"Class {classNameExpression.Name} is not found in metadata");
-                if (!leftSideClass.Properties.Search(name, out var property))
+                if (!leftSideClass.SearchProperty(name, out var property))
                     throw new LuaXAstGeneratorException(Name, astNode, $"Class {classNameExpression.Name} does not contain property {name}");
                 if (!property.Static)
                     throw new LuaXAstGeneratorException(Name, astNode, $"Property {classNameExpression.Name}.{name} is not static");
@@ -339,7 +350,7 @@ namespace Luax.Parser.Ast.Builder
                 {
                     if (!Metadata.Search(leftSideType.Class, out var leftSideClass))
                         throw new LuaXAstGeneratorException(Name, astNode, $"Class {leftSideType.Class} is not found in metadata");
-                    if (!leftSideClass.Properties.Search(name, out var property))
+                    if (!leftSideClass.SearchProperty(name, out var property))
                         throw new LuaXAstGeneratorException(Name, astNode, $"Class {leftSideType.Class} does not contain property {name}");
                     if (property.Static)
                         throw new LuaXAstGeneratorException(Name, astNode, $"Property {leftSideType.Class}.{name} is static");
@@ -376,11 +387,19 @@ namespace Luax.Parser.Ast.Builder
                         Class = currentClass.Name
                     }, location);
 
+            if (!currentMethod.Static && currentClass.HasParent && name == "super")
+                return new LuaXVariableExpression("super",
+                    new LuaXTypeDefinition()
+                    {
+                        TypeId = LuaXType.Object,
+                        Class = currentClass.ParentClass.Name,
+                    }, location);
+
             if (currentMethod.Arguments.Search(name, out var v1))
                 return new LuaXArgumentExpression(name, v1.LuaType, location);
             if (currentMethod.Variables .Search(name, out var v2))
                 return new LuaXVariableExpression(name, v2.LuaType, location);
-            if (currentClass.Properties.Search(name, out var p1))
+            if (currentClass.SearchProperty(name, out var p1))
             {
                 if (p1.Static)
                     return new LuaXStaticPropertyExpression(currentClass.Name, name, p1.LuaType, location);
@@ -509,7 +528,7 @@ namespace Luax.Parser.Ast.Builder
             if (identifier == null)
                 throw new LuaXAstGeneratorException(Name, callNode, "The identifier is expected");
 
-            if (!currentClass.Methods.Search(identifier, out var method))
+            if (!currentClass.SearchMethod(identifier, out var method))
                 throw new LuaXAstGeneratorException(Name, callNode, $"There is no method {identifier} in the class {currentClass.Name}");
 
             if (method.Static)
@@ -551,7 +570,7 @@ namespace Luax.Parser.Ast.Builder
             if (subject.ReturnType.TypeId == LuaXType.ClassName)
             {
                 Metadata.Search(subject.ReturnType.Class, out var @class);
-                if (!@class.Methods.Search(identifier, out var @method))
+                if (!@class.SearchMethod(identifier, out var @method))
                     throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not found");
                 if (!method.Static)
                     throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not a static method");
@@ -560,12 +579,16 @@ namespace Luax.Parser.Ast.Builder
             }
             else if (subject.ReturnType.TypeId == LuaXType.Object)
             {
+                string exactClass = null;
+                if (subject is LuaXVariableExpression ve && ve.VariableName == "super")
+                    exactClass = subject.ReturnType.Class;
+
                 Metadata.Search(subject.ReturnType.Class, out var @class);
-                if (!@class.Methods.Search(identifier, out var @method))
+                if (!@class.SearchMethod(identifier, out var @method))
                     throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not found");
                 if (method.Static)
                     throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is a static method");
-                callExpression = new LuaXInstanceCallExpression(method.ReturnType, subject, identifier, new LuaXElementLocation(Name, callNode));
+                callExpression = new LuaXInstanceCallExpression(method.ReturnType, subject, identifier, exactClass, new LuaXElementLocation(Name, callNode));
                 methodArguments = method.Arguments;
             }
             else
@@ -579,7 +602,7 @@ namespace Luax.Parser.Ast.Builder
                 for (int i = 0; i < args.Count; i++)
                 {
                     var argExpression = ProcessExpression(args[i], currentClass, currentMethod);
-                    if (!methodArguments[i].LuaType.Equals(argExpression.ReturnType))
+                    if (!methodArguments[i].LuaType.IsTheSame(argExpression.ReturnType))
                     {
                         var argExpression1 = CastToCompatible(argExpression, methodArguments[i].LuaType);
                         argExpression = argExpression1 ?? throw new LuaXAstGeneratorException(Name, callNode, $"The type of the {i + 1}th argument ({methodArguments[i].Name}) is not compatible with the expected type ({methodArguments[i].LuaType} is expected, {argExpression.ReturnType} is provided)");

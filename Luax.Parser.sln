@@ -18,6 +18,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "grammar", "grammar", "{17DF
 		grammar\luax.gram = grammar\luax.gram
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Luax.Interpreter", "Luax.Interpreter\Luax.Interpreter.csproj", "{A6EEC650-08BC-4D94-B15E-594AFD3594FA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Luax.Interpreter.Test", "Luax.Interpreter.Test\Luax.Interpreter.Test.csproj", "{DE19BA58-095D-4D53-A988-E4CC33C01F79}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +36,14 @@ Global
 		{7C266BD7-2099-4DBD-98C4-92F43BDE4812}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C266BD7-2099-4DBD-98C4-92F43BDE4812}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C266BD7-2099-4DBD-98C4-92F43BDE4812}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6EEC650-08BC-4D94-B15E-594AFD3594FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6EEC650-08BC-4D94-B15E-594AFD3594FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6EEC650-08BC-4D94-B15E-594AFD3594FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6EEC650-08BC-4D94-B15E-594AFD3594FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE19BA58-095D-4D53-A988-E4CC33C01F79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE19BA58-095D-4D53-A988-E4CC33C01F79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE19BA58-095D-4D53-A988-E4CC33C01F79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE19BA58-095D-4D53-A988-E4CC33C01F79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -40,7 +52,7 @@ Global
 		{17DF906B-A0A0-45F8-969F-602EE28F2CF3} = {5AD74AC6-65F0-4C99-AADB-F25D5D507CAE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {6A6CDF6B-8A78-41BB-BE4A-663FCC587F3E}
 		        SolutionGuid = {3943967B-7C5E-4DEC-ACC6-01AEEFB66889}
+		SolutionGuid = {6A6CDF6B-8A78-41BB-BE4A-663FCC587F3E}
 	EndGlobalSection
 EndGlobal

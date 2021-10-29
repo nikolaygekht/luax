@@ -9,6 +9,16 @@
         public LuaXExpression LeftArgument { get; }
         public LuaXExpression RightArgument { get; }
 
+        public bool IsMath => Operator == LuaXBinaryOperator.Add || Operator == LuaXBinaryOperator.Subtract ||
+            Operator == LuaXBinaryOperator.Multiply || Operator == LuaXBinaryOperator.Divide || Operator == LuaXBinaryOperator.Reminder ||
+            Operator == LuaXBinaryOperator.Power;
+
+        public bool IsRelational => Operator == LuaXBinaryOperator.Equal || Operator == LuaXBinaryOperator.NotEqual ||
+            Operator == LuaXBinaryOperator.Less || Operator == LuaXBinaryOperator.LessOrEqual ||
+            Operator == LuaXBinaryOperator.Greater || Operator == LuaXBinaryOperator.GreaterOrEqual;
+
+        public bool IsLogical => Operator == LuaXBinaryOperator.And || Operator == LuaXBinaryOperator.Or;
+
         internal LuaXBinaryOperatorExpression(LuaXBinaryOperator @operator, LuaXExpression left, LuaXExpression right, LuaXTypeDefinition type, LuaXElementLocation location)
             : base(type, location)
         {

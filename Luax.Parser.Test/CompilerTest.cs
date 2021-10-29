@@ -248,7 +248,7 @@ namespace Luax.Parser.Test
             body.Classes.Search("csvParser", out var csvParser).Should().BeTrue();
             csvParser.Should().NotBeNull();
 
-            csvParser.Methods.Search("create", out var m).Should().BeTrue();
+            csvParser.SearchMethod("create", out var m).Should().BeTrue();
             m.Should().NotBeNull();
             m.Extern.Should().BeTrue();
             m.Static.Should().BeTrue();
@@ -257,7 +257,7 @@ namespace Luax.Parser.Test
             m.ReturnType.TypeId.Should().Be(LuaXType.Object);
             m.ReturnType.Class.Should().Be("csvParser");
 
-            csvParser.Methods.Search("splitLine", out m).Should().BeTrue();
+            csvParser.SearchMethod("splitLine", out m).Should().BeTrue();
             m.Should().NotBeNull();
             m.Extern.Should().BeTrue();
             m.Static.Should().BeFalse();
@@ -276,7 +276,7 @@ namespace Luax.Parser.Test
             app.CompileResource("Expression1");
             app.Pass2();
             app.Classes.Search("test", out var @class).Should().BeTrue();
-            @class.Methods.Search("test1", out var method).Should().BeTrue();
+            @class.SearchMethod("test1", out var method).Should().BeTrue();
             method.Statements.Should().HaveCount(2);
             method.Statements[1].Should().BeOfType<LuaXReturnStatement>();
             var expr = method.Statements[1].As<LuaXReturnStatement>().Expression;
@@ -296,7 +296,7 @@ namespace Luax.Parser.Test
             app.CompileResource("If1");
             app.Pass2();
             app.Classes.Search("test", out var @class).Should().BeTrue();
-            @class.Methods.Search("test1", out var method).Should().BeTrue();
+            @class.SearchMethod("test1", out var method).Should().BeTrue();
             method.Statements.Should().HaveCount(2);
             method.Statements[0].Should().BeOfType<LuaXIfStatement>();
             var @if = method.Statements[0].As<LuaXIfStatement>();

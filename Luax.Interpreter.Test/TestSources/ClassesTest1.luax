@@ -1,0 +1,34 @@
+﻿class a
+  public var a1 : int;
+end
+
+class b : a
+  public var b1 : int;
+end
+
+class c : a
+  public var c1 : int;
+end
+
+class d : b
+  public var d1 : int;
+end
+
+class e : d
+  public var e1 : int;
+end
+
+class f
+  public var f1 : int;
+end
+
+class g
+  public static var s1 : int;
+  public var p1 : int;
+  public var p2 : real;
+  public var p3 : boolean;
+  public var p4 : string;
+  public var p5 : datetime;
+  public var p6 : a;
+  public var p7 : int[];
+end

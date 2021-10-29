@@ -80,7 +80,7 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, node, "A source expression is expected here");
             var source = ProcessExpression(node.Children[2], @class, method);
 
-            if (!target.ReturnType.Equals(source.ReturnType))
+            if (!target.ReturnType.IsTheSame(source.ReturnType))
             {
                 var source1 = CastToCompatible(source, target.ReturnType);
                 source = source1 ?? throw new LuaXAstGeneratorException(Name, node, $"The types are incompatible. The target is {target.ReturnType} and source is {source.ReturnType}");
@@ -112,7 +112,10 @@ namespace Luax.Parser.Ast.Builder
         /// <returns></returns>
         private LuaXExpression CastToCompatible(LuaXExpression expression, LuaXTypeDefinition targetType)
         {
-            if (expression.ReturnType.Equals(targetType))
+            if (expression.ReturnType.IsTheSame(targetType))
+                return expression;
+
+            if ((targetType.IsObject() || targetType.Array) && expression is LuaXConstantExpression c && c.Value.IsNil)
                 return expression;
 
             if (expression.ReturnType.IsNumeric() && targetType.IsNumeric())
@@ -219,7 +222,7 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, node, "A void method should not return a value");
             if (expression == null && method.ReturnType.TypeId != LuaXType.Void)
                 throw new LuaXAstGeneratorException(Name, node, "A non-void method should return a value");
-            if (expression != null && !expression.ReturnType.Equals(method.ReturnType))
+            if (expression?.ReturnType.IsTheSame(method.ReturnType) == false)
             {
                 expression = CastToCompatible(expression, method.ReturnType) ??
                     throw new LuaXAstGeneratorException(Name, node, $"The return value type {expression.ReturnType} and the method type {method.ReturnType} are incompatible");

@@ -332,17 +332,64 @@ namespace Luax.Parser.Test
         [InlineData("i", "f", false)]
         public void IsKindOf(string source, string target, bool compatible)
         {
-            var metadata = new LuaXClassCollection();
-            
-            metadata.Add(new LuaXClass("a", null));
-            metadata.Add(new LuaXClass("b", null));
-            metadata.Add(new LuaXClass("c", "a", null));
-            metadata.Add(new LuaXClass("d", "b", null));
-            metadata.Add(new LuaXClass("e", "d", null));
-            metadata.Add(new LuaXClass("f", "e", null));
-            metadata.Add(new LuaXClass("i", "e", null));
+            var metadata = new LuaXClassCollection
+            {
+                new LuaXClass("a", null),
+                new LuaXClass("b", null),
+                new LuaXClass("c", "a", null),
+                new LuaXClass("d", "b", null),
+                new LuaXClass("e", "d", null),
+                new LuaXClass("f", "e", null),
+                new LuaXClass("i", "e", null)
+            };
 
             metadata.IsKindOf(source, target).Should().Be(compatible);
+        }
+
+        [Fact]
+        public void SearchProperty()
+        {
+            var metadata = new LuaXClassCollection();
+            var a = new LuaXClass("a", null);
+            a.Properties.Add(new LuaXProperty() { Name = "pa" });
+            metadata.Add(a);
+            var b = new LuaXClass("b", "a", null);
+            metadata.Add(b);
+            b.Properties.Add(new LuaXProperty() { Name = "pb" });
+
+            metadata.Search("a", out _);    //force index to be build
+
+            b.SearchProperty("pb", out LuaXProperty p).Should().Be(true);
+            p.Name.Should().Be("pb");
+            b.SearchProperty("pa", out p).Should().Be(true);
+            p.Name.Should().Be("pa");
+
+            a.SearchProperty("pb", out _).Should().Be(false);
+            a.SearchProperty("pa", out p).Should().Be(true);
+            p.Name.Should().Be("pa");
+        }
+
+        [Fact]
+        public void SearchMethod()
+        {
+            var metadata = new LuaXClassCollection();
+            var a = new LuaXClass("a", null);
+            a.Methods.Add(new LuaXMethod() { Name = "pa" });
+            metadata.Add(a);
+            var b = new LuaXClass("b", "a", null);
+            metadata.Add(b);
+            b.Methods.Add(new LuaXMethod() { Name = "pb" });
+
+            metadata.Search("a", out _);    //force index to be build
+
+            b.SearchMethod("pb", out LuaXMethod p).Should().Be(true);
+            p.Name.Should().Be("pb");
+            b.SearchMethod("pa", out p).Should().Be(true);
+            p.Name.Should().Be("pa");
+
+            a.SearchMethod("pb", out _).Should().Be(false);
+            a.SearchMethod("pa", out p).Should().Be(true);
+            p.Name.Should().Be("pa");
         }
     }
 }

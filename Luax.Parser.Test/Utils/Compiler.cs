@@ -7,11 +7,11 @@ using Luax.Parser.Ast;
 
 namespace Luax.Parser.Test.Utils
 {
-    internal static class Compiler
+    public static class Compiler
     {
         private static string ReadSource(string resourceName, IEnumerable<Tuple<string, string>> substitutions = null)
         {
-            var source = ResourceReader.Read(typeof(Compiler).Assembly, resourceName + ".luax");
+            var source = ResourceReader.Read(null, resourceName + ".luax");
 
             if (substitutions != null)
                 foreach (var substitution in substitutions)

@@ -16,18 +16,18 @@ namespace Luax.Parser.Ast
         /// <summary>
         /// The lua type.
         /// </summary>
-        public LuaXType TypeId { get; internal set; }
+        public LuaXType TypeId { get; init; }
 
         /// <summary>
         /// The flag indicating whether the variable is an array
         /// </summary>
-        public bool Array { get; internal set; }
+        public bool Array { get; init; }
         /// <summary>
         /// The class name if LuaType is a class
         /// </summary>
-        public string Class { get; internal set; }
+        public string Class { get; init; }
 
-        internal bool IsArrayOf(LuaXType type, string className = null)
+        public bool IsArrayOf(LuaXType type, string className = null)
         {
             if (TypeId != type || !Array)
                 return false;
@@ -36,21 +36,21 @@ namespace Luax.Parser.Ast
             return true;
         }
 
-        internal bool IsString() => TypeId == LuaXType.String && !Array;
+        public bool IsString() => TypeId == LuaXType.String && !Array;
 
-        internal bool IsObject() => TypeId == LuaXType.Object && !Array;
+        public bool IsObject() => TypeId == LuaXType.Object && !Array;
 
-        internal bool IsDate() => TypeId == LuaXType.Datetime && !Array;
+        public bool IsDate() => TypeId == LuaXType.Datetime && !Array;
 
-        internal bool IsInteger() => TypeId == LuaXType.Integer && !Array;
+        public bool IsInteger() => TypeId == LuaXType.Integer && !Array;
 
-        internal bool IsReal() => TypeId == LuaXType.Real && !Array;
+        public bool IsReal() => TypeId == LuaXType.Real && !Array;
 
-        internal bool IsNumeric() => IsInteger() || IsReal();
+        public bool IsNumeric() => IsInteger() || IsReal();
 
-        internal bool IsBoolean() => TypeId == LuaXType.Boolean && !Array;
+        public bool IsBoolean() => TypeId == LuaXType.Boolean && !Array;
 
-        internal bool Equals(LuaXTypeDefinition otherType) => TypeId == otherType.TypeId &&
+        public bool IsTheSame(LuaXTypeDefinition otherType) => TypeId == otherType.TypeId &&
             (Class == otherType.Class || (string.IsNullOrEmpty(Class) && string.IsNullOrEmpty(otherType.Class))) &&
             (Array == otherType.Array);
 
@@ -67,6 +67,24 @@ namespace Luax.Parser.Ast
             Class = this.Class,
             Array = true
         };
+
+        public bool IsNullable() => Array || TypeId == LuaXType.String || TypeId == LuaXType.Object;
+
+        public object DefaultValue()
+        {
+            if (Array)
+                return null;
+
+            if (TypeId == LuaXType.Integer)
+                return 0;
+            if (TypeId == LuaXType.Real)
+                return 0.0;
+            if (TypeId == LuaXType.Boolean)
+                return false;
+            if (TypeId == LuaXType.Datetime)
+                return new DateTime(1900, 1, 1);
+            return null;
+        }
 
         public override string ToString()
         {
