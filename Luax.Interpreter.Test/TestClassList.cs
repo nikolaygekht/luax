@@ -166,6 +166,16 @@ namespace Luax.Interpreter.Test
         [InlineData("boolean", "cast<datetime>(\"2021-11-22\") ~= cast<datetime>(\"2021-11-22 01:00:00\")", true, typeof(bool))]
         [InlineData("boolean", "cast<datetime>(\"2021-11-22\") < cast<datetime>(\"2021-11-22 01:00:00\")", true, typeof(bool))]
         [InlineData("boolean", "cast<datetime>(\"2021-11-22\") > cast<datetime>(\"2021-11-22 01:00:00\")", false, typeof(bool))]
+        //typename
+        [InlineData("string", "typename(1)", "int", typeof(string))]
+        [InlineData("string", "typename(1.0)", "real", typeof(string))]
+        [InlineData("string", "typename(true)", "boolean", typeof(string))]
+        [InlineData("string", "typename(nil)", "nil", typeof(string))]
+        [InlineData("string", "typename(cast<datetime>(\"2021-11-22\"))", "datetime", typeof(string))]
+        [InlineData("string", "typename(arr)", "int[]", typeof(string))]
+        [InlineData("string", "typename(new a())", "a", typeof(string))]
+        [InlineData("string", "typename(cast<object>(new a()))", "a", typeof(string))]
+
         public void TestExpression_SimpleData_Success(string returnType, string expression, object expectedValue, Type expectedType)
         {
             var app = new LuaXApplication();
@@ -188,12 +198,11 @@ namespace Luax.Interpreter.Test
             var variables = new LuaXVariableInstanceSet();
             variables.Add(@class.LuaType.TypeOf(), "this", instance);
             variables.Add(LuaXTypeDefinition.String, "x", "abc");
-           
+
             var arr = new LuaXVariableInstanceArray(LuaXTypeDefinition.Integer.ArrayOf(), 10);
             for (int i = 0; i < 10; i++)
                 arr[i].Value = (i + 1) * 10;
             variables.Add(LuaXTypeDefinition.Integer.ArrayOf(), "arr", arr);
-
 
             @class.LuaType.SearchMethod("f", out var luaMethod);
             luaMethod.Should().NotBeNull();
@@ -279,7 +288,6 @@ namespace Luax.Interpreter.Test
         [InlineData("2010-11-15 12:22", typeof(string), LuaXType.Datetime, "2010-11-15 12:22:00", typeof(DateTime))]
         [InlineData("2010-11-15 12:22:55", typeof(string), LuaXType.Datetime, "2010-11-15 12:22:55", typeof(DateTime))]
         [InlineData("2010-11-15 12:22:55.123", typeof(string), LuaXType.Datetime, "2010-11-15 12:22:55.123", typeof(DateTime))]
-
         public void CastPrimitives_Success(object value, Type valueType, LuaXType luaType, object expectedValue, Type expectedValueType)
         {
             value = TestValue.Translate(valueType, value);
@@ -438,4 +446,5 @@ namespace Luax.Interpreter.Test
         }
     }
 }
+
 

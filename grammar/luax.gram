@@ -151,8 +151,13 @@ grammar LuaX
         R_SHARP_BRACKET -> '>';
         CAST_OP -> CAST L_SHARP_BRACKET TYPE_NAME R_SHARP_BRACKET;
 
+        TYPENAME -> 'typename';
+
+        TYPENAME_OP -> TYPENAME;
+
         UNARY_EXPR -> SIMPLE_EXPR |
                       CAST_OP^ L_ROUND_BRACKET REXPR R_ROUND_BRACKET |
+                      TYPENAME_OP^ L_ROUND_BRACKET REXPR R_ROUND_BRACKET |
                       MINUS_OP^ REXPR |
                       PLUS_OP^ REXPR;
 

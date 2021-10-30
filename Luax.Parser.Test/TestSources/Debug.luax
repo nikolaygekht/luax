@@ -1,0 +1,21 @@
+﻿class object
+end
+
+class a : object
+end
+
+class b : object
+end
+
+class c : object
+  public function x() : void
+     var o : object;
+     o = new a();
+     o = new b();
+     
+     var pa : a, pb : b;
+
+     pa = cast<a>(o);
+     pb = cast<b>(o);
+  end
+end

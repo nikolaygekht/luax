@@ -15,9 +15,6 @@ class stdlib
     public static extern unicode(s : string) : int;
     public static extern char(unicode : int) : string;
 
-    public static extern parseInt(s : string) : int;
-    public static extern parseReal(s : string) : real;
-
     -- -------------------------------------------------------
     -- integer functions
     -- -------------------------------------------------------
@@ -136,4 +133,43 @@ end
 class xmlParser
     public extern parse(xml : string) : xmlNode;
     public static extern create() : xmlParser;
+end
+
+-- -------------------------------------------------------
+-- object list
+-- -------------------------------------------------------
+class list
+    public extern length() : int;
+    public extern get(index : int) : object;
+    public extern set(index : int, value : object) : void;
+    public extern add(value : object) : void;
+    public extern insert(index : int, value : object) : void;
+    public extern remove(index : int) : void;
+    public extern clear() : void;
+end
+
+-- ----------------------------------------------------------
+-- int -> object map
+-- ----------------------------------------------------------
+class int_map 
+    public extern length() : int;
+    public extern contains(key : int) : boolean;
+    public extern get(key : int) : void;
+    public extern set(key : int, value : object) : void;
+    public extern remove(key : int) : void;
+    public extern keys() : int[];
+    public extern clear() : void;
+end
+
+-- ----------------------------------------------------------
+-- string -> object map
+-- ----------------------------------------------------------
+class string_map 
+    public extern length() : int;
+    public extern contains(key : string) : boolean;
+    public extern get(key : string) : void;
+    public extern set(key : string, value : object) : void;
+    public extern remove(key : string) : void;
+    public extern keys() : string[];
+    public extern clear() : void;
 end

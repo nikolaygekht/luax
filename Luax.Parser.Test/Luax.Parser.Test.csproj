@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestSources\Debug.luax" />
     <None Remove="TestSources\Expression1.luax" />
     <None Remove="TestSources\If1.luax" />
     <None Remove="TestSources\ParseClass.luax" />
@@ -14,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\Debug.luax" />
     <EmbeddedResource Include="TestSources\If1.luax" />
     <EmbeddedResource Include="TestSources\ParseClassMethods.luax" />
     <EmbeddedResource Include="TestSources\ParseClassProperties.luax" />

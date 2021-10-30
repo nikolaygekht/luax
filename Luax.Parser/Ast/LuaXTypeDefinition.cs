@@ -11,6 +11,7 @@ namespace Luax.Parser.Ast
         public static LuaXTypeDefinition String { get; } = new LuaXTypeDefinition() { TypeId = LuaXType.String };
         public static LuaXTypeDefinition Integer { get; } = new LuaXTypeDefinition() { TypeId = LuaXType.Integer };
         public static LuaXTypeDefinition Real { get; } = new LuaXTypeDefinition() { TypeId = LuaXType.Real };
+        public static LuaXTypeDefinition Datetime { get; } = new LuaXTypeDefinition() { TypeId = LuaXType.Datetime };
         public static LuaXTypeDefinition Boolean { get; } = new LuaXTypeDefinition() { TypeId = LuaXType.Boolean };
 
         /// <summary>

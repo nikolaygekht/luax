@@ -12,6 +12,8 @@ namespace Luax.Parser.Ast
     /// </summary>
     public class LuaXClass
     {
+        public static LuaXClass Object { get; } = new LuaXClass("object", null, new LuaXElementLocation("internal", new AstNodeWrapper()));
+
         /// <summary>
         /// The class name
         /// </summary>
@@ -52,7 +54,7 @@ namespace Luax.Parser.Ast
         /// </summary>
         public LuaXElementLocation Location { get; }
 
-        internal LuaXClass(string name, LuaXElementLocation location) : this(name, null, location)
+        internal LuaXClass(string name) : this(name, "object", new LuaXElementLocation("code", new AstNodeWrapper()))
         {
         }
 
@@ -68,12 +70,13 @@ namespace Luax.Parser.Ast
             for (int i = 0; i < Methods.Count; i++)
             {
                 var method = Methods[i];
-                if (method.ReturnType.TypeId == LuaXType.Object && creator.Metadata.Find(method.ReturnType.Class) < 0)
+                if (method.ReturnType.TypeId == LuaXType.Object && !creator.Metadata.Exists(method.ReturnType.Class))
                     throw new LuaXAstGeneratorException(method.Location.Source, new LuaXParserError(method.Location, $"Return type {method.ReturnType.Class} is not defined"));
+                
                 for (int j = 0; j < method.Arguments.Count; j++)
                 {
                     var arg = method.Arguments[j];
-                    if (arg.LuaType.TypeId == LuaXType.Object && creator.Metadata.Find(arg.LuaType.Class) < 0)
+                    if (arg.LuaType.TypeId == LuaXType.Object && !creator.Metadata.Exists(arg.LuaType.Class))
                         throw new LuaXAstGeneratorException(arg.Location.Source, new LuaXParserError(arg.Location, $"Argument type {arg.LuaType.Class} is not defined"));
                 }
 

@@ -13,7 +13,7 @@ namespace Luax.Parser.Test
         private static void StageVariableAndProperty(out LuaXClassCollection metadata, out LuaXClass @class, out LuaXMethod method)
         {
             metadata = new LuaXClassCollection();
-            @class = new LuaXClass("class1", null);
+            @class = new LuaXClass("class1");
             metadata.Add(@class);
 
             method = new LuaXMethod()

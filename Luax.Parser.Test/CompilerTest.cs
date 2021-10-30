@@ -48,8 +48,8 @@ namespace Luax.Parser.Test
 
             var c = root.Classes[0];
             c.Name.Should().Be("a");
-            c.HasParent.Should().BeFalse();
-            c.Parent.Should().BeNullOrEmpty();
+            c.HasParent.Should().BeTrue();
+            c.Parent.Should().Be("object");
             c.Attributes.Should().BeEmpty();
             c.Location.Source.Should().Be("ParseClass");
             c.Location.Line.Should().Be(1);
@@ -82,7 +82,8 @@ namespace Luax.Parser.Test
 
             c = root.Classes[3];
             c.Name.Should().Be("d");
-            c.HasParent.Should().BeFalse();
+            c.HasParent.Should().BeTrue();
+            c.Parent.Should().Be("object");
             c.Attributes.Should().HaveCount(2);
 
             a = c.Attributes[0];

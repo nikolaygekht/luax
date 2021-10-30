@@ -27,6 +27,8 @@ namespace Luax.Parser.Ast.Builder
                     return ProcessProperty(astNode, currentClass, currentMethod);
                 case "CAST_OP":
                     return ProcessCast(astNode, currentClass, currentMethod);
+                case "TYPENAME_OP":
+                    return ProcessTypename(astNode, currentClass, currentMethod);
                 case "ARRAY_ACCESS":
                     return ProcessArrayAccess(astNode, currentClass, currentMethod);
                 case "MINUS_OP":
@@ -290,6 +292,24 @@ namespace Luax.Parser.Ast.Builder
             var arg = ProcessExpression(astNode.Children[5], currentClass, currentMethod);
 
             return new LuaXCastOperatorExpression(arg, type, new LuaXElementLocation(Name, astNode));
+        }
+
+        /// <summary>
+        /// Process cast operator
+        /// </summary>
+        /// <param name="astNode"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessTypename(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            if (astNode.Children.Count != 4 ||
+                astNode.Children[2].Symbol != "REXPR")
+                throw new LuaXAstGeneratorException(Name, astNode, "Expression are expected");
+
+            var arg = ProcessExpression(astNode.Children[2], currentClass, currentMethod);
+
+            return new LuaXTypeNameOperatorExpression(arg, new LuaXElementLocation(Name, astNode));
         }
 
         /// <summary>

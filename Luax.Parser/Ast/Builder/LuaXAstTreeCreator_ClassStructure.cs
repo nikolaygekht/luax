@@ -110,7 +110,7 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, astNode, $"Unexpected symbol {child.Symbol}");
             }
 
-            var @class = new LuaXClass(name, parent, new LuaXElementLocation(Name, location));
+            var @class = new LuaXClass(name, parent ?? "object", new LuaXElementLocation(Name, location));
             if (attributes != null)
                 ProcessAttributes(attributes.Children, @class.Attributes);
 

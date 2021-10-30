@@ -47,8 +47,8 @@ namespace Luax.Parser.Test
             var processor = new LuaXAstTreeCreator("");
             var c = processor.ProcessClass(node);
             c.Name.Should().Be("a");
-            c.HasParent.Should().BeFalse();
-            c.Parent.Should().BeNullOrEmpty();
+            c.HasParent.Should().BeTrue();
+            c.Parent.Should().Be("object");
             c.Attributes.Should().BeEmpty();
         }
 
@@ -124,7 +124,7 @@ namespace Luax.Parser.Test
         {
             var node = AstNodeExtensions.Parse(tree);
             var processor = new LuaXAstTreeCreator("");
-            LuaXClass @class = new LuaXClass("a", null);
+            LuaXClass @class = new LuaXClass("a");
             processor.ProcessProperty(node, @class);
 
             @class.Properties.Should().HaveCount(1);
@@ -152,7 +152,7 @@ namespace Luax.Parser.Test
         {
             var node = AstNodeExtensions.Parse(tree);
             var processor = new LuaXAstTreeCreator("");
-            LuaXClass @class = new LuaXClass("a", null);
+            LuaXClass @class = new LuaXClass("a");
             processor.ProcessFunction(node, @class);
 
             @class.Methods.Should().HaveCount(1);
@@ -187,7 +187,7 @@ namespace Luax.Parser.Test
         {
             var node = AstNodeExtensions.Parse(tree);
             var processor = new LuaXAstTreeCreator("");
-            LuaXClass @class = new LuaXClass("a", null);
+            LuaXClass @class = new LuaXClass("a");
             processor.ProcessFunction(node, @class);
 
             @class.Methods.Should().HaveCount(1);
@@ -214,7 +214,7 @@ namespace Luax.Parser.Test
         {
             var node = AstNodeExtensions.Parse(tree);
             var processor = new LuaXAstTreeCreator("");
-            LuaXClass @class = new LuaXClass("a", null);
+            LuaXClass @class = new LuaXClass("a");
             processor.ProcessFunction(node, @class);
 
             var method = @class.Methods[0];
@@ -243,7 +243,7 @@ namespace Luax.Parser.Test
         public void Error_MethodOrPropertyWithSameName()
         {
             var processor = new LuaXAstTreeCreator("");
-            var @class = new LuaXClass("a", null);
+            var @class = new LuaXClass("a");
             @class.Properties.Add(new LuaXProperty() { Name = "a" });
             @class.Methods.Add(new LuaXMethod() { Name = "a" });
 
@@ -259,7 +259,7 @@ namespace Luax.Parser.Test
         public void Error_TwoArgsWithSameName()
         {
             var processor = new LuaXAstTreeCreator("");
-            var @class = new LuaXClass("a", null);
+            var @class = new LuaXClass("a");
 
             var node = AstNodeExtensions.Parse("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][DECL_LIST[DECL[IDENTIFIER(x)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]][COMMA[,(,)]][DECL[IDENTIFIER(x)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_REAL[real(real)]]]]]][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]");
             ((Action)(() => processor.ProcessFunction(node, @class))).Should().Throw<LuaXAstGeneratorException>();
@@ -268,7 +268,7 @@ namespace Luax.Parser.Test
         [Fact]
         public void VariableDeclaration_Success()
         {
-            var @class = new LuaXClass("", null);
+            var @class = new LuaXClass("");
             var method = new LuaXMethod();
             var processor = new LuaXAstTreeCreator("");
             var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]]");
@@ -292,7 +292,7 @@ namespace Luax.Parser.Test
         {
             var processor = new LuaXAstTreeCreator("");
             var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]]");
-            var @class = new LuaXClass("", null);
+            var @class = new LuaXClass("");
             var method = new LuaXMethod();
             processor.ProcessBody(node, @class, method);
             method.Variables.Add(new LuaXVariable() { Name = "i" });
@@ -305,7 +305,7 @@ namespace Luax.Parser.Test
             var processor = new LuaXAstTreeCreator("");
             var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]]");
             var method = new LuaXMethod();
-            var @class = new LuaXClass("", null);
+            var @class = new LuaXClass("");
             processor.ProcessBody(node, @class, method);
             method.Arguments.Add(new LuaXVariable() { Name = "i" });
             ((Action)(() => processor.ProcessBody(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
@@ -334,8 +334,8 @@ namespace Luax.Parser.Test
         {
             var metadata = new LuaXClassCollection
             {
-                new LuaXClass("a", null),
-                new LuaXClass("b", null),
+                new LuaXClass("a"),
+                new LuaXClass("b"),
                 new LuaXClass("c", "a", null),
                 new LuaXClass("d", "b", null),
                 new LuaXClass("e", "d", null),
@@ -350,7 +350,7 @@ namespace Luax.Parser.Test
         public void SearchProperty()
         {
             var metadata = new LuaXClassCollection();
-            var a = new LuaXClass("a", null);
+            var a = new LuaXClass("a");
             a.Properties.Add(new LuaXProperty() { Name = "pa" });
             metadata.Add(a);
             var b = new LuaXClass("b", "a", null);
@@ -373,7 +373,7 @@ namespace Luax.Parser.Test
         public void SearchMethod()
         {
             var metadata = new LuaXClassCollection();
-            var a = new LuaXClass("a", null);
+            var a = new LuaXClass("a");
             a.Methods.Add(new LuaXMethod() { Name = "pa" });
             metadata.Add(a);
             var b = new LuaXClass("b", "a", null);

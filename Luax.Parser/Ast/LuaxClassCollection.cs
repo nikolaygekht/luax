@@ -30,6 +30,8 @@ namespace Luax.Parser.Ast
             return -1;
         }
 
+        public bool Exists(string name) => name == "object" || Find(name) >= 0;
+
         private readonly Dictionary<string, int> mIndex = new Dictionary<string, int>();
 
         private void UpdateIndex()
@@ -40,8 +42,15 @@ namespace Luax.Parser.Ast
                 mIndex[this[i].Name] = i;
 
             for (int i = 0; i < Count; i++)
-                if (this[i].HasParent && mIndex.TryGetValue(this[i].Parent, out var parentClassIndex))
-                    this[i].ParentClass = this[parentClassIndex];
+            {
+                if (this[i].HasParent)
+                {
+                    if (this[i].Parent == "object")
+                        this[i].ParentClass = LuaXClass.Object;
+                    else if (mIndex.TryGetValue(this[i].Parent, out var parentClassIndex))
+                        this[i].ParentClass = this[parentClassIndex];
+                }
+            }
         }
 
         /// <summary>
@@ -51,6 +60,12 @@ namespace Luax.Parser.Ast
         /// <returns></returns>
         public bool Search(string name, out LuaXClass @class)
         {
+            if (name == "object")
+            {
+                @class = LuaXClass.Object;
+                return true;
+            }
+
             var index = Find(name);
             if (index < 0)
             {

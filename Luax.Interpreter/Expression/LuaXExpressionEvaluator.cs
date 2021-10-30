@@ -38,20 +38,23 @@ namespace Luax.Interpreter.Expression
                 return EvaluateStaticProperty(staticPropertyExpression, types);
             if (expression is LuaXInstancePropertyExpression instancePropertyExpression)
                 return EvaluateInstanceProperty(instancePropertyExpression, types, runningClass, variables);
-            if (expression is LuaXNewObjectExpression newObjectExpression)
-                return EvaluateNewObject(newObjectExpression, types);
-            if (expression is LuaXNewArrayExpression newArrayExpression)
-                return EvaluateNewArray(newArrayExpression, types, runningClass, variables);
-            if (expression is LuaXArrayAccessExpression arrayAccessExpression)
-                return EvaluateArrayAccess(arrayAccessExpression, types, runningClass, variables);
-            if (expression is LuaXCastOperatorExpression castOperatorExpression)
-                return EvaluateCast(castOperatorExpression, types, runningClass, variables);
             if (expression is LuaXUnaryOperatorExpression unaryExpression)
                 return EvaluateUnary(unaryExpression, types, runningClass, variables);
             if (expression is LuaXBinaryOperatorExpression binaryExpression)
                 return EvaluateBinary(binaryExpression, types, runningClass, variables);
             if (expression is LuaXArrayLengthExpression arrayLengthExpression)
                 return EvaluateArrayLength(arrayLengthExpression, types, runningClass, variables);
+            if (expression is LuaXArrayAccessExpression arrayAccessExpression)
+                return EvaluateArrayAccess(arrayAccessExpression, types, runningClass, variables);
+            if (expression is LuaXCastOperatorExpression castOperatorExpression)
+                return EvaluateCast(castOperatorExpression, types, runningClass, variables);
+            if (expression is LuaXNewObjectExpression newObjectExpression)
+                return EvaluateNewObject(newObjectExpression, types);
+            if (expression is LuaXNewArrayExpression newArrayExpression)
+                return EvaluateNewArray(newArrayExpression, types, runningClass, variables);
+            if (expression is LuaXTypeNameOperatorExpression typenameExpression)
+                return EvaluateTypename(typenameExpression, types, runningClass, variables);
+            
             throw new LuaXAstGeneratorException(expression.Location, $"Unexpected expression type {expression.GetType().Name}");
         }
 
@@ -61,6 +64,26 @@ namespace Luax.Interpreter.Expression
             if (!types.CastTo(expression.ReturnType, ref argument))
                 throw new LuaXAstGeneratorException(expression.Location, $"Cast to {expression.ReturnType} is not supported");
             return argument;
+        }
+
+        private static object EvaluateTypename(LuaXTypeNameOperatorExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
+        {
+            var argument = Evaluate(expression.Argument, types, runningClass, variables);
+            if (argument == null)
+                return "nil";
+            else if (argument is int)
+                return LuaXTypeDefinition.Integer.ToString();
+            else if (argument is double)
+                return LuaXTypeDefinition.Real.ToString();
+            else if (argument is DateTime)
+                return LuaXTypeDefinition.Datetime.ToString();
+            else if (argument is bool)
+                return LuaXTypeDefinition.Boolean.ToString();
+            else if (argument is LuaXObjectInstance obj)
+                return obj.Class.LuaType.TypeOf().ToString();
+            else if (argument is LuaXVariableInstanceArray arr)
+                return arr.ElementType.ToString() + "[]";
+            throw new LuaXAstGeneratorException(expression.Location, $"Unsupported type");
         }
 
         private static object EvaluateUnary(LuaXUnaryOperatorExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
