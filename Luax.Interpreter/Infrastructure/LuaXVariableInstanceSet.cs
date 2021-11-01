@@ -28,6 +28,25 @@ namespace Luax.Interpreter.Infrastructure
         }
 
         /// <summary>
+        /// Default constructor
+        /// </summary>
+        public LuaXVariableInstanceSet()
+        {
+        }
+
+        /// <summary>
+        /// Construct variable for the method
+        /// </summary>
+        /// <param name="method"></param>
+        public LuaXVariableInstanceSet(LuaXMethod method)
+        {
+            foreach (var arg in method.Arguments)
+                Add(arg.LuaType, arg.Name);
+            foreach (var var in method.Variables)
+                Add(var.LuaType, var.Name);
+        }
+
+        /// <summary>
         /// Adds a variable
         /// </summary>
         /// <param name="type"></param>

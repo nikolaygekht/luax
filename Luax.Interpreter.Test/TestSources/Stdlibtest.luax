@@ -1,0 +1,5 @@
+﻿class test
+  public static function f() : $return
+    return $expr;
+  end
+end

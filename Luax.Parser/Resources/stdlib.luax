@@ -41,6 +41,8 @@ class stdlib
     -- ---------------------------------------------------------
     -- date/time function
     -- ---------------------------------------------------------
+    public static extern mkdate(year : int, month : int, day : int) : datetime;
+    public static extern mkdatetime(year : int, month : int, day : int, hour : int, minute : int, second : int, milliseconds : int) : datetime;
     public static extern day(x : datetime) : int;
     public static extern dayOfWeek(x : datetime) : int;
     public static extern month(x : datetime) : int;
@@ -50,6 +52,8 @@ class stdlib
     public static extern minute(x : datetime) : int;
     public static extern second(x : datetime) : int;
     public static extern seconds(x : datetime) : real;
+    public static extern nowlocal() : datetime;
+    public static extern nowutc() : datetime;
     
     -- JDN
     -- Julian Day number

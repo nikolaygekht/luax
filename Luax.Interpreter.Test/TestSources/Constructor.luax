@@ -1,0 +1,17 @@
+﻿class a 
+    public var a : int, b : real, c : string, d : boolean, e : datetime, f : int[];
+end
+
+class b
+    public var a : int, b : real, c : string, d : boolean, e : datetime, f : int[];
+    public function b() : void
+        a = 1;
+        b = 2.0;
+        c = "hello";
+        d = true;
+        e = stdlib.nowlocal();
+        f = new int[2];
+        f[0] = 10;
+        f[1] = 20;
+    end
+end

@@ -8,6 +8,20 @@ namespace Luax.Parser.Ast
     public class LuaXMethod
     {
         /// <summary>
+        /// Class to which the method belongs to
+        /// </summary>
+        public LuaXClass Class { get; }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="methodClass"></param>
+        public LuaXMethod(LuaXClass methodClass)
+        {
+            Class = methodClass;
+        }
+
+        /// <summary>
         /// The name of the method
         /// </summary>
         public string Name { get; internal init; }

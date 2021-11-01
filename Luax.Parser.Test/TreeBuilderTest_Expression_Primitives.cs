@@ -178,7 +178,7 @@ namespace Luax.Parser.Test
             metadata.Add(lib);
             metadata.Add(@class);
 
-            method = new LuaXMethod()
+            method = new LuaXMethod(@class)
             {
                 Name = "test",
                 ReturnType = new LuaXTypeDefinition()
@@ -258,7 +258,7 @@ namespace Luax.Parser.Test
 
             @class.Methods.Add(method);
 
-            var method1 = new LuaXMethod()
+            var method1 = new LuaXMethod(@class)
             {
                 Name = "staticMethod",
                 Static = true,
@@ -269,7 +269,7 @@ namespace Luax.Parser.Test
             };
             @class.Methods.Add(method1);
 
-            var method2 = new LuaXMethod()
+            var method2 = new LuaXMethod(@class)
             {
                 Name = "instanceMethod",
                 ReturnType = new LuaXTypeDefinition()
@@ -329,7 +329,7 @@ namespace Luax.Parser.Test
         {
             StageVariableAndProperty(out var metadata, out var @class, out var _);
             var class1 = new LuaXClass("test2", @class.Name, null);
-            var method1 = new LuaXMethod() { Name = "test" };
+            var method1 = new LuaXMethod(@class1) { Name = "test" };
             class1.Methods.Add(method1);
             metadata.Add(class1);
             metadata.Search("xxx", out _);  //force index creation
@@ -350,7 +350,7 @@ namespace Luax.Parser.Test
         {
             StageVariableAndProperty(out var metadata, out var @class, out var method);
             var class1 = new LuaXClass("test2", @class.Name, null);
-            var method1 = new LuaXMethod() { Name = "test", Static = true };
+            var method1 = new LuaXMethod(@class1) { Name = "test", Static = true };
             class1.Methods.Add(method1);
             metadata.Add(class1);
             metadata.Search("xxx", out _);  //force index creation
@@ -365,7 +365,7 @@ namespace Luax.Parser.Test
         {
             StageVariableAndProperty(out var metadata, out var @class, out var method);
             var class1 = LuaXClass.Object;
-            var method1 = new LuaXMethod() { Name = "test", };
+            var method1 = new LuaXMethod(@class1) { Name = "test", };
             class1.Methods.Add(method1);
             metadata.Add(class1);
             metadata.Search("xxx", out _);  //force index creation
@@ -379,7 +379,7 @@ namespace Luax.Parser.Test
         public void Variable_AsVariable_This_FromStaticMethod_Failed()
         {
             StageVariableAndProperty(out var metadata, out var @class, out var method);
-            var method1 = new LuaXMethod()
+            var method1 = new LuaXMethod(@class)
             {
                 Static = true
             };
@@ -412,7 +412,7 @@ namespace Luax.Parser.Test
         {
             StageVariableAndProperty(out var metadata, out var @class, out var method);
 
-            var method1 = new LuaXMethod() { Static = true };
+            var method1 = new LuaXMethod(@class) { Static = true };
 
             var node = AstNodeExtensions.Parse("[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(privateProperty)]]]]]]]]]]]]]]]");
             var processor = new LuaXAstTreeCreator("", metadata);

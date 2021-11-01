@@ -615,7 +615,7 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected here");
 #pragma warning restore S2589
 
-            LuaXMethod method = new LuaXMethod()
+            LuaXMethod method = new LuaXMethod(@class)
             {
                 Name = name,
                 Static = @static,
@@ -686,7 +686,7 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected here");
 #pragma warning restore S2589
 
-            LuaXMethod method = new LuaXMethod()
+            LuaXMethod method = new LuaXMethod(@class)
             {
                 Name = name,
                 Static = @static,

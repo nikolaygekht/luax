@@ -42,6 +42,10 @@ namespace Luax.Interpreter.Expression
                 return EvaluateUnary(unaryExpression, types, runningClass, variables);
             if (expression is LuaXBinaryOperatorExpression binaryExpression)
                 return EvaluateBinary(binaryExpression, types, runningClass, variables);
+            if (expression is LuaXStaticCallExpression staticCallExpression)
+                return ExecuteStaticCall(staticCallExpression, types, runningClass, variables);
+            if (expression is LuaXInstanceCallExpression instanceCallExpression)
+                return ExecuteInstanceCall(instanceCallExpression, types, runningClass, variables);
             if (expression is LuaXArrayLengthExpression arrayLengthExpression)
                 return EvaluateArrayLength(arrayLengthExpression, types, runningClass, variables);
             if (expression is LuaXArrayAccessExpression arrayAccessExpression)
@@ -54,8 +58,44 @@ namespace Luax.Interpreter.Expression
                 return EvaluateNewArray(newArrayExpression, types, runningClass, variables);
             if (expression is LuaXTypeNameOperatorExpression typenameExpression)
                 return EvaluateTypename(typenameExpression, types, runningClass, variables);
-            
+
             throw new LuaXAstGeneratorException(expression.Location, $"Unexpected expression type {expression.GetType().Name}");
+        }
+
+        private static object ExecuteInstanceCall(LuaXInstanceCallExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
+        {
+            var args = CreateCallArgs(expression.Arguments, types, runningClass, variables);
+            var _this = Evaluate(expression.Object, types, runningClass, variables);
+            if (_this == null)
+                throw new LuaXAstGeneratorException(expression.Location, "The object is not initialized yet");
+            if (_this is not LuaXObjectInstance @this)
+                throw new LuaXAstGeneratorException(expression.Location, "The target is not an object");
+            if (!@this.Class.SearchMethod(expression.MethodName, expression.ExactClass, out var method))
+                throw new LuaXAstGeneratorException(expression.Location, "The method {expression.MethodName} is not found in class");
+            LuaXMethodExecutor.Execute(method, types, @this, args, out var r);
+            return r;
+        }
+
+        private static object ExecuteStaticCall(LuaXStaticCallExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
+        {
+            var args = CreateCallArgs(expression.Arguments, types, runningClass, variables);
+            if (!types.SearchClass(expression.ClassName, out var @class))
+                throw new LuaXAstGeneratorException(expression.Location, $"The class {expression.ClassName} is not found");
+            if (!@class.SearchMethod(expression.MethodName, expression.ClassName, out var method))
+                throw new LuaXAstGeneratorException(expression.Location, $"The method {expression.MethodName} is not found in class");
+            LuaXMethodExecutor.Execute(method, types, null, args, out var r);
+            return r;
+        }
+
+        private static object[] CreateCallArgs(LuaXExpressionCollection arguments, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
+        {
+            if (arguments == null || arguments.Count == 0)
+                return Array.Empty<object>();
+
+            var r = new object[arguments.Count];
+            for (int i = 0; i < arguments.Count; i++)
+                r[i] = Evaluate(arguments[i], types, runningClass, variables);
+            return r;
         }
 
         private static object EvaluateCast(LuaXCastOperatorExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
@@ -83,7 +123,7 @@ namespace Luax.Interpreter.Expression
                 return obj.Class.LuaType.TypeOf().ToString();
             else if (argument is LuaXVariableInstanceArray arr)
                 return arr.ElementType.ToString() + "[]";
-            throw new LuaXAstGeneratorException(expression.Location, $"Unsupported type");
+            throw new LuaXAstGeneratorException(expression.Location, "Unsupported type");
         }
 
         private static object EvaluateUnary(LuaXUnaryOperatorExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
@@ -276,7 +316,7 @@ namespace Luax.Interpreter.Expression
         {
             var array = Evaluate(expression.ArrayExpression, types, runningClass, variables);
             if (array is not LuaXVariableInstanceArray a)
-                throw new LuaXAstGeneratorException(expression.Location, $"The value is not an array or array is not initialized");
+                throw new LuaXAstGeneratorException(expression.Location, "The value is not an array or array is not initialized");
             return a.Length;
         }
 
@@ -314,8 +354,7 @@ namespace Luax.Interpreter.Expression
         {
             if (!types.SearchClass(expression.ClassName, out var @class))
                 throw new LuaXAstGeneratorException(expression.Location, $"Class {expression.ClassName} is not found");
-
-            return new LuaXObjectInstance(@class);
+            return @class.New(types);
         }
 
         /// <summary>

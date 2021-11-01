@@ -31,6 +31,8 @@ namespace Luax.Parser.Ast.Builder
                     return ProcessTypename(astNode, currentClass, currentMethod);
                 case "ARRAY_ACCESS":
                     return ProcessArrayAccess(astNode, currentClass, currentMethod);
+                case "ARRAY_ELEMENT":
+                    return ProcessArrayElement(astNode, currentClass, currentMethod);
                 case "MINUS_OP":
                     if (astNode.Children.Count == 2)
                         return ProcessNegateOperator(astNode, currentClass, currentMethod);
@@ -246,8 +248,8 @@ namespace Luax.Parser.Ast.Builder
         private LuaXExpression ProcessArrayAccess(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
         {
             if (astNode.Children.Count != 4 ||
-                astNode.Children[0].Symbol != "REXPR" ||
-                astNode.Children[2].Symbol != "REXPR")
+                (astNode.Children[0].Symbol != "REXPR" && astNode.Children[0].Symbol != "CALLABLE_EXPR") ||
+                 astNode.Children[2].Symbol != "REXPR")
                 throw new LuaXAstGeneratorException(Name, astNode, "Type and expression are expected");
 
             var arr = ProcessExpression(astNode.Children[0], currentClass, currentMethod);
@@ -267,6 +269,16 @@ namespace Luax.Parser.Ast.Builder
             }
             return new LuaXArrayAccessExpression(arr, index, arr.ReturnType.ArrayElementType(), location);
         }
+
+        /// <summary>
+        /// Processes array index operation on the left size of assign expression
+        /// </summary>
+        /// <param name="astNode"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessArrayElement(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
+            => ProcessArrayAccess(astNode, currentClass, currentMethod);
 
         /// <summary>
         /// Process cast operator

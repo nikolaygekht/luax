@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Luax.Interpreter.Expression;
 using Luax.Parser.Ast;
 
 namespace Luax.Interpreter.Infrastructure
@@ -22,13 +23,25 @@ namespace Luax.Interpreter.Infrastructure
         /// </summary>
         public LuaXVariableInstanceSet StaticProperties { get; }
 
+        private LuaXMethod Constructor { get; }
+
         internal LuaXClassInstance(LuaXClass classDefinition)
         {
             LuaType = classDefinition;
             StaticProperties = InitializeStatic(classDefinition);
+
+            if (SearchMethod(classDefinition.Name, null, out var constructor) &&
+                constructor.Arguments.Count == 0)
+                Constructor = constructor;
         }
 
-        public LuaXObjectInstance New() => new LuaXObjectInstance(this);
+        public LuaXObjectInstance New(LuaXTypesLibrary types)
+        {
+            var v = new LuaXObjectInstance(this);
+            if (Constructor != null)
+                LuaXMethodExecutor.Execute(Constructor, types, v, Array.Empty<object>(), out var _);
+            return v;
+        }
 
         internal static LuaXVariableInstanceSet InitializeStatic(LuaXClass definition)
             => InitializeProperties(definition, definition => definition.Properties.Where(p => p.Static));

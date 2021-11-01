@@ -16,7 +16,7 @@ namespace Luax.Parser.Test
             @class = new LuaXClass("class1");
             metadata.Add(@class);
 
-            method = new LuaXMethod()
+            method = new LuaXMethod(@class)
             {
                 Name = "test",
                 ReturnType = new LuaXTypeDefinition()

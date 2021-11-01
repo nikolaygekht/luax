@@ -5,11 +5,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestSources\AssignTest.luax" />
+    <None Remove="TestSources\CastTest.luax" />
     <None Remove="TestSources\ClassesTest1.luax" />
+    <None Remove="TestSources\Constructor.luax" />
     <None Remove="TestSources\ExpressionTest.luax" />
+    <None Remove="TestSources\Stdlibtest.luax" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\Constructor.luax" />
+    <EmbeddedResource Include="TestSources\AssignTest.luax" />
+    <EmbeddedResource Include="TestSources\Stdlibtest.luax" />
+    <EmbeddedResource Include="TestSources\CastTest.luax" />
     <EmbeddedResource Include="TestSources\ExpressionTest.luax" />
     <EmbeddedResource Include="TestSources\ClassesTest1.luax" />
   </ItemGroup>

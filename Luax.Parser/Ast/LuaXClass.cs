@@ -72,7 +72,7 @@ namespace Luax.Parser.Ast
                 var method = Methods[i];
                 if (method.ReturnType.TypeId == LuaXType.Object && !creator.Metadata.Exists(method.ReturnType.Class))
                     throw new LuaXAstGeneratorException(method.Location.Source, new LuaXParserError(method.Location, $"Return type {method.ReturnType.Class} is not defined"));
-                
+
                 for (int j = 0; j < method.Arguments.Count; j++)
                 {
                     var arg = method.Arguments[j];

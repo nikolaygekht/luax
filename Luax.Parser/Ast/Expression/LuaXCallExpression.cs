@@ -3,7 +3,6 @@
     /// <summary>
     /// The base method for all call expression
     /// </summary>
-
     public abstract class LuaXCallExpression : LuaXExpression
     {
         /// <summary>

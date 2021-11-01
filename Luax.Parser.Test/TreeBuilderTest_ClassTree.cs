@@ -245,7 +245,7 @@ namespace Luax.Parser.Test
             var processor = new LuaXAstTreeCreator("");
             var @class = new LuaXClass("a");
             @class.Properties.Add(new LuaXProperty() { Name = "a" });
-            @class.Methods.Add(new LuaXMethod() { Name = "a" });
+            @class.Methods.Add(new LuaXMethod(@class) { Name = "a" });
 
             var node = AstNodeExtensions.Parse("[PROPERTY[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(a)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]");
             ((Action)(() => processor.ProcessProperty(node, @class))).Should().Throw<LuaXAstGeneratorException>();
@@ -269,7 +269,7 @@ namespace Luax.Parser.Test
         public void VariableDeclaration_Success()
         {
             var @class = new LuaXClass("");
-            var method = new LuaXMethod();
+            var method = new LuaXMethod(@class);
             var processor = new LuaXAstTreeCreator("");
             var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]]");
 
@@ -293,7 +293,7 @@ namespace Luax.Parser.Test
             var processor = new LuaXAstTreeCreator("");
             var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]]");
             var @class = new LuaXClass("");
-            var method = new LuaXMethod();
+            var method = new LuaXMethod(@class);
             processor.ProcessBody(node, @class, method);
             method.Variables.Add(new LuaXVariable() { Name = "i" });
             ((Action)(() => processor.ProcessBody(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
@@ -304,8 +304,8 @@ namespace Luax.Parser.Test
         {
             var processor = new LuaXAstTreeCreator("");
             var node = AstNodeExtensions.Parse("[STATEMENTS[STATEMENT[DECLARATION[VAR[var(var)]][DECL_LIST[DECL[IDENTIFIER(i)][COLON[:(:)]][TYPE_DECL[TYPE_NAME[TYPE_INT[int(int)]]]]]][EOS[;(;)]]]]]");
-            var method = new LuaXMethod();
             var @class = new LuaXClass("");
+            var method = new LuaXMethod(@class);
             processor.ProcessBody(node, @class, method);
             method.Arguments.Add(new LuaXVariable() { Name = "i" });
             ((Action)(() => processor.ProcessBody(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
@@ -374,11 +374,11 @@ namespace Luax.Parser.Test
         {
             var metadata = new LuaXClassCollection();
             var a = new LuaXClass("a");
-            a.Methods.Add(new LuaXMethod() { Name = "pa" });
+            a.Methods.Add(new LuaXMethod(a) { Name = "pa" });
             metadata.Add(a);
             var b = new LuaXClass("b", "a", null);
             metadata.Add(b);
-            b.Methods.Add(new LuaXMethod() { Name = "pb" });
+            b.Methods.Add(new LuaXMethod(b) { Name = "pb" });
 
             metadata.Search("a", out _);    //force index to be build
 
