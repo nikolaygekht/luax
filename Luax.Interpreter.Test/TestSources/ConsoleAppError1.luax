@@ -1,0 +1,5 @@
+﻿class NoProgram
+    static function Main(args : string[]) : int
+       return args.length;
+    end
+end

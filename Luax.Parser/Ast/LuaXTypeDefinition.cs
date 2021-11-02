@@ -45,6 +45,8 @@ namespace Luax.Parser.Ast
 
         public bool IsInteger() => TypeId == LuaXType.Integer && !Array;
 
+        public bool IsVoid() => TypeId == LuaXType.Void && !Array;
+
         public bool IsReal() => TypeId == LuaXType.Real && !Array;
 
         public bool IsNumeric() => IsInteger() || IsReal();

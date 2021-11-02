@@ -1,0 +1,5 @@
+﻿class Program
+    static function Main(args : string) : void
+       return ;
+    end
+end

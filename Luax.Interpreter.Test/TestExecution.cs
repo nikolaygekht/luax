@@ -2,6 +2,7 @@
 using FluentAssertions;
 using Luax.Interpreter.Expression;
 using Luax.Interpreter.Infrastructure;
+using Luax.Interpreter.Infrastructure.Stdlib;
 using Luax.Parser;
 using Luax.Parser.Test.Utils;
 using Xunit;

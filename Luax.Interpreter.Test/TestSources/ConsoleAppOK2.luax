@@ -1,0 +1,5 @@
+﻿class Program
+    static function Main() : void
+       return ;
+    end
+end

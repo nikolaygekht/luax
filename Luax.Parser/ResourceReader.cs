@@ -45,7 +45,7 @@ namespace Luax.Parser
                     break;
                 }
             }
-            
+
             if (fullName == null)
                 throw new ArgumentException($"Resource with the name that ends with {resourceName} is not found in the assembly specified", nameof(resourceName));
 

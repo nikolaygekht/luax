@@ -16,5 +16,5 @@ namespace Luax.Interpreter.Infrastructure
     /// <param name="this"></param>
     /// <param name="args"></param>
     /// <returns></returns>
-    public delegate object LuaXExternMethodImplementationDelegate(LuaXObjectInstance @this, object[] args);
+    public delegate object LuaXExternMethodImplementationDelegate(LuaXElementLocation location, LuaXObjectInstance @this, object[] args);
 }

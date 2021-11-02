@@ -59,7 +59,7 @@ namespace Luax.Interpreter.Expression
         {
             if (!types.ExternMethods.Search(method.Class.Name, method.Name, out var @delegate))
                 throw new LuaXAstGeneratorException(method.Location, $"There is no native entry point defined for extern method {method.Class.Name}::{method.Name}");
-            result = @delegate.Invoke(@this, args);
+            result = @delegate.Invoke(method.Location, @this, args);
             return ResultType.Return;
         }
 
@@ -88,8 +88,16 @@ namespace Luax.Interpreter.Expression
                         break;
                     case LuaXReturnStatement @return:
                         {
-                            result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass, variables);
-                            return ResultType.Return;
+                            if (@return.Expression == null)
+                            {
+                                result = null;
+                                return ResultType.Default;
+                            }
+                            else
+                            {
+                                result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass, variables);
+                                return ResultType.Return;
+                            }
                         }
                 }
             }

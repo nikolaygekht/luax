@@ -8,12 +8,38 @@
     <None Remove="TestSources\AssignTest.luax" />
     <None Remove="TestSources\CastTest.luax" />
     <None Remove="TestSources\ClassesTest1.luax" />
+    <None Remove="TestSources\ConsoleAppError1.luax" />
+    <None Remove="TestSources\ConsoleAppError2.luax" />
+    <None Remove="TestSources\ConsoleAppError3.luax" />
+    <None Remove="TestSources\ConsoleAppError4.luax" />
+    <None Remove="TestSources\ConsoleAppError5.luax" />
+    <None Remove="TestSources\ConsoleAppOK1.luax" />
+    <None Remove="TestSources\ConsoleAppOK2.luax" />
     <None Remove="TestSources\Constructor.luax" />
     <None Remove="TestSources\ExpressionTest.luax" />
+    <None Remove="TestSources\Project1.ini" />
+    <None Remove="TestSources\Project2.ini" />
+    <None Remove="TestSources\Project3.ini" />
+    <None Remove="TestSources\Project4.ini" />
+    <None Remove="TestSources\Project5.ini" />
     <None Remove="TestSources\Stdlibtest.luax" />
+    <None Remove="TestSources\TestSuite.luax" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\ConsoleAppError5.luax" />
+    <EmbeddedResource Include="TestSources\TestSuite.luax" />
+    <EmbeddedResource Include="TestSources\ConsoleAppOK1.luax" />
+    <EmbeddedResource Include="TestSources\ConsoleAppError4.luax" />
+    <EmbeddedResource Include="TestSources\ConsoleAppError3.luax" />
+    <EmbeddedResource Include="TestSources\ConsoleAppError2.luax" />
+    <EmbeddedResource Include="TestSources\ConsoleAppError1.luax" />
+    <EmbeddedResource Include="TestSources\ConsoleAppOK2.luax" />
+    <EmbeddedResource Include="TestSources\Project5.ini" />
+    <EmbeddedResource Include="TestSources\Project4.ini" />
+    <EmbeddedResource Include="TestSources\Project3.ini" />
+    <EmbeddedResource Include="TestSources\Project2.ini" />
+    <EmbeddedResource Include="TestSources\Project1.ini" />
     <EmbeddedResource Include="TestSources\Constructor.luax" />
     <EmbeddedResource Include="TestSources\AssignTest.luax" />
     <EmbeddedResource Include="TestSources\Stdlibtest.luax" />

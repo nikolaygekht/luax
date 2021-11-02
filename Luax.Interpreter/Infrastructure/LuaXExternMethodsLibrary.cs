@@ -32,9 +32,10 @@ namespace Luax.Interpreter.Infrastructure
                 {
                     var args = method.GetParameters();
                     if (method.ReturnType != typeof(object) ||
-                        args.Length != 2 ||
-                        args[0].ParameterType != typeof(LuaXObjectInstance) ||
-                        args[1].ParameterType != typeof(object[]))
+                        args.Length != 3 ||
+                        args[0].ParameterType != typeof(LuaXElementLocation) ||
+                        args[1].ParameterType != typeof(LuaXObjectInstance) ||
+                        args[2].ParameterType != typeof(object[]))
                         throw new ArgumentException($"Type {type.Name} has method {attr.MethodName} that does not match {nameof(LuaXExternMethodImplementationDelegate)} prototype");
                     Add(attr.ClassName, attr.MethodName, method.CreateDelegate<LuaXExternMethodImplementationDelegate>());
                 }

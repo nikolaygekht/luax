@@ -5,7 +5,7 @@ namespace Luax.Parser.Test
 {
     public class Debug
     {
-        [Fact]
+        //[Fact]
         public void Test()
         {
             var app = new LuaXApplication();

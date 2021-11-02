@@ -177,3 +177,11 @@ class string_map
     public extern keys() : string[];
     public extern clear() : void;
 end
+
+-- -----------------------------------------------------------
+-- assertion class
+-- -----------------------------------------------------------
+class assert
+   public static extern isTrue(condition : boolean, message : string) : void;
+   public static extern isFalse(condition : boolean, message : string) : void;
+end

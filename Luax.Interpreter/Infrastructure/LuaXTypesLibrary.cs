@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json;
 using System.Threading;
@@ -26,7 +27,10 @@ namespace Luax.Interpreter.Infrastructure
                 mTypes.Add(@class.Name, new LuaXClassInstance(@class));
 
             ExternMethods.Add(typeof(StdlibDate));
+            ExternMethods.Add(typeof(StdlibAssert));
         }
+
+        public string[] GetClassNames() => mTypes.Keys.ToArray();
 
         public bool SearchClass(string className, out LuaXClassInstance @class)
             => mTypes.TryGetValue(className, out @class);

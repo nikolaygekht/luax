@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Luax.Interpreter\Luax.Interpreter.csproj" />
+    <ProjectReference Include="..\Luax.Parser\Luax.Parser.csproj" />
+  </ItemGroup>
+
+</Project>

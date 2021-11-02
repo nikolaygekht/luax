@@ -12,6 +12,13 @@ namespace Luax.Parser.Ast
         public int Line { get; }
         public int Column { get; }
 
+        public LuaXElementLocation(string source, int line, int column)
+        {
+            Source = source;
+            Line = line;
+            Column = column;
+        }
+
         public LuaXElementLocation(string source, IAstNode node)
         {
             Source = source;
