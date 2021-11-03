@@ -23,3 +23,7 @@ dotnet_diagnostic.RCS1123.severity = none
 
 # IDE0063: Use simple 'using' statement
 dotnet_diagnostic.IDE0063.severity = none
+
+# S2589: Boolean expressions should not be gratuitous 
+# too many false positives
+dotnet_diagnostic.S2589.severity = none

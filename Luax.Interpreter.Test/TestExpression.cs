@@ -339,6 +339,31 @@ namespace Luax.Interpreter.Test
             LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
             r.As<DateTime>().Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromMilliseconds(100));
         }
+
+        [Theory]
+        [InlineData("b.a1", 1)]
+        [InlineData("b.b1", 2)]
+        [InlineData("c1", 3)]
+        [InlineData("v1", 4)]
+        public void TestConstants(string constantName, int expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ConstTest", new Tuple<string, string>[]
+            {
+                new Tuple<string, string>("$const", constantName)
+            });
+
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("c", out var @class);
+            @class.Should().NotBeNull();
+            @class.SearchMethod("x", null, out var method);
+
+            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
+            r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
     }
 }
 

@@ -10,7 +10,7 @@ namespace Luax.Parser.Ast
     /// <summary>
     /// LuaX class declaration
     /// </summary>
-    public class LuaXClass
+    public class LuaXClass : ILuaXNamedObject
     {
         public static LuaXClass Object { get; } = new LuaXClass("object", null, new LuaXElementLocation("internal", new AstNodeWrapper()));
 
@@ -43,6 +43,11 @@ namespace Luax.Parser.Ast
         /// The collection of class properties
         /// </summary>
         public LuaXPropertyCollection Properties { get; } = new LuaXPropertyCollection();
+
+        /// <summary>
+        /// The collection of class properties
+        /// </summary>
+        public LuaXConstantVariableCollection Constants { get; } = new LuaXConstantVariableCollection();
 
         /// <summary>
         /// The collection of the class methods
@@ -98,6 +103,22 @@ namespace Luax.Parser.Ast
                 return ParentClass.SearchProperty(propertyName, out property);
             }
             property = this.Properties[propertyIndex];
+            return true;
+        }
+
+        public bool SearchConstant(string propertyName, out LuaXConstantVariable constant)
+        {
+            var constantIndex = Constants.Find(propertyName);
+            if (constantIndex < 0)
+            {
+                if (ParentClass == null)
+                {
+                    constant = null;
+                    return false;
+                }
+                return ParentClass.SearchConstant(propertyName, out constant);
+            }
+            constant = this.Constants[constantIndex];
             return true;
         }
 

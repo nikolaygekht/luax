@@ -223,7 +223,11 @@ grammar LuaX
 
         VAR -> 'var';
 
+        CONST_KW -> 'const';
+
         DECLARATION -> VAR DECL_LIST EOS;
+
+        CONST_DECLARATION -> CONST_KW IDENTIFIER ASSIGN CONSTANT EOS;
 
         RETURN -> 'return';
 
@@ -287,6 +291,7 @@ grammar LuaX
         CONTINUE_STMT -> CONTINUTE EOS;
 
         STATEMENT -> DECLARATION |
+                     CONST_DECLARATION | 
                      ASSIGN_STMT |
                      RETURN_STMT |
                      CALL_STMT |
@@ -334,7 +339,7 @@ grammar LuaX
 
         PROPERTY -> VISIBILITY? STATIC? DECLARATION;
 
-        CLASS_ELEMENT -> PROPERTY | FUNCTION_DECLARATION | EXTERN_DECLARATION;
+        CLASS_ELEMENT -> PROPERTY | CONST_DECLARATION | FUNCTION_DECLARATION | EXTERN_DECLARATION;
 
         CLASS -> 'class';
 

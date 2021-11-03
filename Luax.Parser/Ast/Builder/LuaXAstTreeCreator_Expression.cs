@@ -359,14 +359,19 @@ namespace Luax.Parser.Ast.Builder
                 //static property call
                 if (!Metadata.Search(classNameExpression.Name, out var leftSideClass))
                     throw new LuaXAstGeneratorException(Name, astNode, $"Class {classNameExpression.Name} is not found in metadata");
-                if (!leftSideClass.SearchProperty(name, out var property))
-                    throw new LuaXAstGeneratorException(Name, astNode, $"Class {classNameExpression.Name} does not contain property {name}");
-                if (!property.Static)
-                    throw new LuaXAstGeneratorException(Name, astNode, $"Property {classNameExpression.Name}.{name} is not static");
-                if (property.Visibility == LuaXVisibility.Private && classNameExpression.ReturnType.Class != currentClass.Name)
-                    throw new LuaXAstGeneratorException(Name, astNode, $"Property {classNameExpression.Name}.{name} is private and cannot be accessed");
+                if (leftSideClass.SearchProperty(name, out var property))
+                {
+                    if (!property.Static)
+                        throw new LuaXAstGeneratorException(Name, astNode, $"Property {classNameExpression.Name}.{name} is not static");
+                    if (property.Visibility == LuaXVisibility.Private && classNameExpression.ReturnType.Class != currentClass.Name)
+                        throw new LuaXAstGeneratorException(Name, astNode, $"Property {classNameExpression.Name}.{name} is private and cannot be accessed");
 
-                return new LuaXStaticPropertyExpression(classNameExpression.ReturnType.Class, name, property.LuaType, location);
+                    return new LuaXStaticPropertyExpression(classNameExpression.ReturnType.Class, name, property.LuaType, location);
+                }
+                else if (leftSideClass.SearchConstant(name, out var constant))
+                    return new LuaXConstantExpression(constant.Value, location);
+                
+                throw new LuaXAstGeneratorException(Name, astNode, $"Class {classNameExpression.Name} does not contain property {name}");
             }
             else
             {
@@ -429,8 +434,10 @@ namespace Luax.Parser.Ast.Builder
 
             if (currentMethod.Arguments.Search(name, out var v1))
                 return new LuaXArgumentExpression(name, v1.LuaType, location);
-            if (currentMethod.Variables .Search(name, out var v2))
+            if (currentMethod.Variables.Search(name, out var v2))
                 return new LuaXVariableExpression(name, v2.LuaType, location);
+            if (currentMethod.Constants.Search(name, out var c1))
+                return new LuaXConstantExpression(c1.Value, location);
             if (currentClass.SearchProperty(name, out var p1))
             {
                 if (p1.Static)
@@ -444,6 +451,8 @@ namespace Luax.Parser.Ast.Builder
                         name, p1.LuaType, location);
                 }
             }
+            if (currentClass.SearchConstant(name, out var c2))
+                return new LuaXConstantExpression(c2.Value, location);
 
             if (Metadata.Search(name, out _))
                 return new LuaXClassNameExpression(name, location);

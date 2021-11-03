@@ -6,40 +6,13 @@ namespace Luax.Parser.Ast
     /// <summary>
     /// A collection of classes
     /// </summary>
-    public class LuaXClassCollection : LuaXAstCollection<LuaXClass>
+    public class LuaXClassCollection : LuaXAstNamedCollection<LuaXClass>
     {
-        /// <summary>
-        /// Checks whether the property with the name specified already exists
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public bool Contains(string name) => Find(name) >= 0;
-
-        /// <summary>
-        /// Find the property by its name
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public int Find(string name)
-        {
-            if (mIndex.Count != Count)
-                UpdateIndex();
-
-            if (mIndex.TryGetValue(name, out var index))
-                return index;
-            return -1;
-        }
-
         public bool Exists(string name) => name == "object" || Find(name) >= 0;
 
-        private readonly Dictionary<string, int> mIndex = new Dictionary<string, int>();
-
-        private void UpdateIndex()
+        override protected void UpdateIndex()
         {
-            mIndex.Clear();
-
-            for (int i = 0; i < Count; i++)
-                mIndex[this[i].Name] = i;
+            base.UpdateIndex();
 
             for (int i = 0; i < Count; i++)
             {
@@ -58,7 +31,7 @@ namespace Luax.Parser.Ast
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public bool Search(string name, out LuaXClass @class)
+        override public bool Search(string name, out LuaXClass @class)
         {
             if (name == "object")
             {
@@ -66,14 +39,7 @@ namespace Luax.Parser.Ast
                 return true;
             }
 
-            var index = Find(name);
-            if (index < 0)
-            {
-                @class = null;
-                return false;
-            }
-            @class = this[index];
-            return true;
+            return base.Search(name, out @class);
         }
 
         /// <summary>

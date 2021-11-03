@@ -116,6 +116,12 @@ namespace Luax.Parser.Test
                 Visibility = LuaXVisibility.Private,
             });
 
+            lib.Constants.Add(new LuaXConstantVariable()
+            {
+                Name = "pi",
+                Value = new LuaXConstant(3.14, new LuaXElementLocation("", 0, 0))
+            });
+
             @class = new LuaXClass("class1");
 
             @class.Properties.Add(new LuaXProperty()
@@ -307,6 +313,52 @@ namespace Luax.Parser.Test
             e.VariableName.Should().Be("v2");
             e.ReturnType.TypeId.Should().Be(LuaXType.Integer);
             e.ReturnType.Array.Should().BeTrue();
+        }
+
+        [Fact]
+        public void Variable_AsMethodConstant_Success()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            method.Constants.Add(new LuaXConstantVariable() { Name = "c2", Value = new LuaXConstant(10, new LuaXElementLocation("", 0, 0)) });
+            var node = AstNodeExtensions.Parse("[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(c2)]]]]]]]]]]]]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXConstantExpression>();
+            var e = expression.As<LuaXConstantExpression>();
+            e.Value.ConstantType.Should().Be(LuaXType.Integer);
+            e.Value.Value.Should().Be(10);
+        }
+
+        [Fact]
+        public void Variable_AsClassConstant_Success()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            @class.Constants.Add(new LuaXConstantVariable() { Name = "c2", Value = new LuaXConstant(10, new LuaXElementLocation("", 0, 0)) });
+            var node = AstNodeExtensions.Parse("[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(c2)]]]]]]]]]]]]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXConstantExpression>();
+            var e = expression.As<LuaXConstantExpression>();
+            e.Value.ConstantType.Should().Be(LuaXType.Integer);
+            e.Value.Value.Should().Be(10);
+        }
+
+        [Fact]
+        public void Variable_AsSuperClassConstant_Success()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            @class.Constants.Add(new LuaXConstantVariable() { Name = "c2", Value = new LuaXConstant(10, new LuaXElementLocation("", 0, 0)) });
+            var @class1 = new LuaXClass("z", @class.Name, new LuaXElementLocation("", 0, 0));
+            class1.ParentClass = @class;
+            var method1 = new LuaXMethod(class1);
+
+            var node = AstNodeExtensions.Parse("[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(c2)]]]]]]]]]]]]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class1, method1);
+            expression.Should().BeOfType<LuaXConstantExpression>();
+            var e = expression.As<LuaXConstantExpression>();
+            e.Value.ConstantType.Should().Be(LuaXType.Integer);
+            e.Value.Value.Should().Be(10);
         }
 
         [Fact]
@@ -557,6 +609,18 @@ namespace Luax.Parser.Test
             var e = expression.As<LuaXStaticPropertyExpression>();
             e.PropertyName.Should().Be("publicStaticProperty");
             e.ClassName.Should().Be("lib");
+        }
+
+        [Fact]
+        public void Property_Constant_OtherClass_Success()
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse(PropertyAccessTree("lib", "pi"));
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXConstantExpression>();
+            var e = expression.As<LuaXConstantExpression>();
+            e.Value.Value.Should().Be(3.14);
         }
 
         [Fact]

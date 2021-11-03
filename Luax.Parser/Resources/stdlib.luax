@@ -158,7 +158,7 @@ end
 class int_map 
     public extern length() : int;
     public extern contains(key : int) : boolean;
-    public extern get(key : int) : void;
+    public extern get(key : int) : object;
     public extern set(key : int, value : object) : void;
     public extern remove(key : int) : void;
     public extern keys() : int[];
@@ -171,7 +171,7 @@ end
 class string_map 
     public extern length() : int;
     public extern contains(key : string) : boolean;
-    public extern get(key : string) : void;
+    public extern get(key : string) : object;
     public extern set(key : string, value : object) : void;
     public extern remove(key : string) : void;
     public extern keys() : string[];

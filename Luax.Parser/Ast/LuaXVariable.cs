@@ -1,9 +1,11 @@
-﻿namespace Luax.Parser.Ast
+﻿using System.Dynamic;
+
+namespace Luax.Parser.Ast
 {
     /// <summary>
     /// Definition of a variable or property
     /// </summary>
-    public class LuaXVariable
+    public class LuaXVariable : ILuaXNamedObject
     {
         /// <summary>
         /// The name of the variable

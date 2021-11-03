@@ -242,6 +242,37 @@ namespace Luax.Parser.Test
         }
 
         [Fact]
+        public void ParseClassConstants()
+        {
+            var root = Compiler.CompileResource("ParseClassConstants");
+
+            root.Classes.Should().HaveCount(1);
+            var @class = root.Classes[0];
+
+            @class.Constants.Should().HaveCount(4);
+
+            var property = @class.Constants[0];
+            property.Name.Should().Be("i");
+            property.Value.ConstantType.Should().Be(LuaXType.Integer);
+            property.Value.Value.Should().Be(10);
+
+            property = @class.Constants[1];
+            property.Name.Should().Be("pi");
+            property.Value.ConstantType.Should().Be(LuaXType.Real);
+            property.Value.Value.Should().Be(3.1415);
+
+            property = @class.Constants[2];
+            property.Name.Should().Be("name");
+            property.Value.ConstantType.Should().Be(LuaXType.String);
+            property.Value.Value.Should().Be("a");
+
+            property = @class.Constants[3];
+            property.Name.Should().Be("success");
+            property.Value.ConstantType.Should().Be(LuaXType.Boolean);
+            property.Value.Value.Should().Be(true);
+        }
+
+        [Fact]
         public void Stdlib()
         {
             var body = StdlibHeader.ReadStdlib();

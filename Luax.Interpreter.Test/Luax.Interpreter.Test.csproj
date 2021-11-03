@@ -16,6 +16,7 @@
     <None Remove="TestSources\ConsoleAppOK1.luax" />
     <None Remove="TestSources\ConsoleAppOK2.luax" />
     <None Remove="TestSources\Constructor.luax" />
+    <None Remove="TestSources\ConstTest.luax" />
     <None Remove="TestSources\ExpressionTest.luax" />
     <None Remove="TestSources\Project1.ini" />
     <None Remove="TestSources\Project2.ini" />
@@ -27,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\ConstTest.luax" />
     <EmbeddedResource Include="TestSources\ConsoleAppError5.luax" />
     <EmbeddedResource Include="TestSources\TestSuite.luax" />
     <EmbeddedResource Include="TestSources\ConsoleAppOK1.luax" />

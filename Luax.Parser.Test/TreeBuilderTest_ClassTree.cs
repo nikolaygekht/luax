@@ -140,6 +140,40 @@ namespace Luax.Parser.Test
             property.Static.Should().Be(isStatic);
         }
 
+        [Fact]
+        public void ParseConstDeclaration_Success()
+        {
+            var node = AstNodeExtensions.Parse("[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]");
+            var processor = new LuaXAstTreeCreator("");
+            LuaXClass @class = new LuaXClass("a");
+            processor.ProcessConstantDeclarationInClass(node, @class);
+
+            @class.Constants.Should().HaveCount(1);
+            var c = @class.Constants[0];
+            c.Name.Should().Be("y");
+            c.Value.Value.Should().Be(10);
+        }
+
+        [Fact]
+        public void ParseConstDeclaration_Fail_AlreadyExists()
+        {
+            var node = AstNodeExtensions.Parse("[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]");
+            var processor = new LuaXAstTreeCreator("");
+            LuaXClass @class = new LuaXClass("a");
+            @class.Constants.Add(new LuaXConstantVariable() { Name = "y" });
+            ((Action)(() => processor.ProcessConstantDeclarationInClass(node, @class))).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void ParseConstDeclaration_Fail_PropertyExists()
+        {
+            var node = AstNodeExtensions.Parse("[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]");
+            var processor = new LuaXAstTreeCreator("");
+            LuaXClass @class = new LuaXClass("a");
+            @class.Properties.Add(new LuaXProperty() { Name = "y" });
+            ((Action)(() => processor.ProcessConstantDeclarationInClass(node, @class))).Should().Throw<LuaXAstGeneratorException>();
+        }
+
         [Theory]
         [InlineData("[FUNCTION_DECLARATION[FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_STRING[string(string)]]]]]", "a", LuaXVisibility.Private, false, null)]
         [InlineData("[FUNCTION_DECLARATION[VISIBILITY[VISIBILITY_PRIVATE[private(private)]]][FUNCTION[function(function)]][IDENTIFIER(a)][FUNCTION_DECLARATION_ARGS[L_ROUND_BRACKET][R_ROUND_BRACKET]][TYPE_DECL[TYPE_NAME[TYPE_STRING[string(string)]]]]]", "a", LuaXVisibility.Private, false, null)]
@@ -370,6 +404,29 @@ namespace Luax.Parser.Test
         }
 
         [Fact]
+        public void SearchConstant()
+        {
+            var metadata = new LuaXClassCollection();
+            var a = new LuaXClass("a");
+            a.Constants.Add(new LuaXConstantVariable() { Name = "pa" });
+            metadata.Add(a);
+            var b = new LuaXClass("b", "a", null);
+            metadata.Add(b);
+            b.Constants.Add(new LuaXConstantVariable() { Name = "pb" });
+
+            metadata.Search("a", out _);    //force index to be build
+
+            b.SearchConstant("pb", out var p).Should().Be(true);
+            p.Name.Should().Be("pb");
+            b.SearchConstant("pa", out p).Should().Be(true);
+            p.Name.Should().Be("pa");
+
+            a.SearchConstant("pb", out _).Should().Be(false);
+            a.SearchConstant("pa", out p).Should().Be(true);
+            p.Name.Should().Be("pa");
+        }
+
+        [Fact]
         public void SearchMethod()
         {
             var metadata = new LuaXClassCollection();
@@ -390,6 +447,18 @@ namespace Luax.Parser.Test
             a.SearchMethod("pb", out _).Should().Be(false);
             a.SearchMethod("pa", out p).Should().Be(true);
             p.Name.Should().Be("pa");
+        }
+
+        [Fact]
+        public void ParseConstantDeclaration()
+        {
+            const string tree = "[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]";
+            var node = AstNodeExtensions.Parse(tree);
+            var processor = new LuaXAstTreeCreator("");
+            var decl = processor.ProcessConstantDeclaration(node);
+            decl.Name.Should().Be("y");
+            decl.Value.ConstantType.Should().Be(LuaXType.Integer);
+            decl.Value.Value.Should().Be(10);
         }
     }
 }

@@ -7,10 +7,15 @@
     {
         public LuaXConstant Value { get; }
 
-        internal LuaXConstantExpression(LuaXConstant value)
-            : base(new LuaXTypeDefinition() { TypeId = value.ConstantType }, value.Location)
+        internal LuaXConstantExpression(LuaXConstant value, LuaXElementLocation location)
+            : base(new LuaXTypeDefinition() { TypeId = value.ConstantType }, location)
         {
             Value = value;
+        }
+
+        internal LuaXConstantExpression(LuaXConstant value)
+            : this(value, value.Location)
+        {
         }
 
         public override string ToString() => $"const:{Value.ConstantTypeFull}:{Value.Value}";

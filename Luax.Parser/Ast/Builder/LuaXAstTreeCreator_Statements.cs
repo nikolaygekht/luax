@@ -34,6 +34,9 @@ namespace Luax.Parser.Ast.Builder
                     case "DECLARATION":
                         ProcessDeclarationStatement(child, method);
                         break;
+                    case "CONST_DECLARATION":
+                        ProcessConstantDeclarationInMethod(child, method);
+                        break;
                     case "CALL_STMT":
                         ProcessCallStatement(child, @class, method, statements);
                         break;
@@ -61,6 +64,8 @@ namespace Luax.Parser.Ast.Builder
             {
                 if (method.Arguments.Contains(v.Name) || method.Variables.Contains(v.Name))
                     throw new LuaXAstGeneratorException(Name, node, $"Variable {v.Name} already exists");
+                if (method.Constants.Contains(v.Name))
+                    throw new LuaXAstGeneratorException(Name, node, $"Constant {v.Name} already exists");
                 method.Variables.Add(v);
             });
         }
@@ -228,6 +233,22 @@ namespace Luax.Parser.Ast.Builder
                     throw new LuaXAstGeneratorException(Name, node, $"The return value type {expression.ReturnType} and the method type {method.ReturnType} are incompatible");
             }
             statements.Add(new LuaXReturnStatement(expression, new LuaXElementLocation(Name, node)));
+        }
+
+        public void ProcessConstantDeclarationInMethod(IAstNode node, LuaXMethod method)
+        {
+            var decl = ProcessConstantDeclaration(node);
+            
+            if (method.Constants.Contains(decl.Name))
+                throw new LuaXAstGeneratorException(Name, node, "The constant with the name specified is already defined");
+
+            if (method.Arguments.Contains(decl.Name))
+                throw new LuaXAstGeneratorException(Name, node, "The argument with the name specified is already defined");
+
+            if (method.Variables.Contains(decl.Name))
+                throw new LuaXAstGeneratorException(Name, node, "The variable with the name specified is already defined");
+
+            method.Constants.Add(decl);
         }
     }
 }

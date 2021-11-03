@@ -1,0 +1,16 @@
+﻿class a 
+    const a1 = 1;
+end
+
+class b : a
+    const b1 = 2;
+end
+
+class c
+    const c1 = 3;
+
+    public static function x() : int
+        const v1 = 4;
+        return $const;
+    end
+end

@@ -5,7 +5,7 @@ namespace Luax.Parser.Ast
     /// <summary>
     /// Definition of a class method
     /// </summary>
-    public class LuaXMethod
+    public class LuaXMethod : ILuaXNamedObject
     {
         /// <summary>
         /// Class to which the method belongs to
@@ -45,6 +45,11 @@ namespace Luax.Parser.Ast
         /// The method local variables
         /// </summary>
         public LuaXVariableCollection Variables { get; } = new LuaXVariableCollection();
+
+        /// <summary>
+        /// The method local constants
+        /// </summary>
+        public LuaXConstantVariableCollection Constants { get; } = new LuaXConstantVariableCollection();
 
         /// <summary>
         /// The flag indicating whether the method is a static method
