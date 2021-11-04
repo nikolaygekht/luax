@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "LuaX": {
+      "commandName": "Project",
+      "commandLineArgs": "project.ini",
+      "workingDirectory": "D:\\develop\\experiments\\luax\\LuaX.Test\\"
+    }
+  }
+}

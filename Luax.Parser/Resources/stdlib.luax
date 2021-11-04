@@ -52,6 +52,7 @@ class stdlib
     public static extern minute(x : datetime) : int;
     public static extern second(x : datetime) : int;
     public static extern seconds(x : datetime) : real;
+    public static extern millisecond(x : datetime) : int;
     public static extern nowlocal() : datetime;
     public static extern nowutc() : datetime;
     

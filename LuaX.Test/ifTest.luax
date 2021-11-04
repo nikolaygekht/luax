@@ -1,0 +1,45 @@
+@TestSuite()
+class ifTest
+    private static function fullStatementFunction(arg : int) : real
+       var r : real;
+       if arg == 1 then
+          r = 0.1;
+       elseif arg == 2 then
+          return 0.2;
+       elseif arg == 3 then
+          r = 0.3;
+       elseif arg == 0 then
+          return r;
+       else
+          r = -1;
+       end
+       return r;
+   end
+
+    @Theory()
+    @TheoryData(0, 0.0)
+    @TheoryData(1, 0.1)
+    @TheoryData(2, 0.2)
+    @TheoryData(3, 0.3)
+    @TheoryData(4, -1.0)
+    public function fullStatement(arg : int, expected : real) : void
+        assert.isTrue(fullStatementFunction(arg) == expected, "");
+    end
+
+    public static function factorial(a : int) : real
+      assert.isTrue(a >= 1, "The value must be greater than 0");
+      if a == 1 then
+         return 1;
+      end
+      return a * factorial(a - 1);
+    end
+
+    @Theory()
+    @TheoryData(1, 1.0)
+    @TheoryData(2, 2.0)
+    @TheoryData(3, 6.0)
+    @TheoryData(10, 3628800.0)
+    public function minimalStatement(arg : int, expected : real) : void
+        assert.isTrue(factorial(arg) == expected, "");
+    end
+end

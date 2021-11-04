@@ -48,7 +48,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("stdlib", "dayOfWeek")]
         public static object Extern_dayOfWeek(DateTime x)
         {
-            return x.DayOfWeek;
+            return (int)x.DayOfWeek;
         }
 
         //public static extern month(x : datetime) : int;
@@ -96,6 +96,13 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         public static object Extern_second(DateTime x)
         {
             return x.Second;
+        }
+
+        //public static extern second(x : datetime) : int;
+        [LuaXExternMethod("stdlib", "millisecond")]
+        public static object Extern_millisecond(DateTime x)
+        {
+            return x.Millisecond;
         }
 
         //public static extern seconds(x : datetime) : real;

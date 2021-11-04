@@ -1,0 +1,103 @@
+@TestSuite()
+class datetimeTest
+    @Fact()
+    public function mkdate() : void
+        var d : datetime;
+        d = stdlib.mkdate(2020, 5, 22);
+        assert.isTrue(stdlib.day(d) == 22, "");
+        assert.isTrue(stdlib.month(d) == 5, "");
+        assert.isTrue(stdlib.year(d) == 2020, "");
+    end
+
+    @Fact()
+    public function mkdatetime() : void
+        var d : datetime;
+        d = stdlib.mkdatetime(2020, 5, 22, 11, 46, 55, 123);
+        assert.isTrue(stdlib.millisecond(d) == 123, "");
+        assert.isTrue(stdlib.second(d) == 55, "");
+        assert.isTrue(stdlib.minute(d) == 46, "");
+        assert.isTrue(stdlib.hour(d) == 11, "");
+        assert.isTrue(stdlib.day(d) == 22, "");
+        assert.isTrue(stdlib.month(d) == 5, "");
+        assert.isTrue(stdlib.year(d) == 2020, "");
+    end
+
+    @Fact()
+    public function fromJdn1() : void
+        assert.isTrue(stdlib.fromJdn(2459517.5) == stdlib.mkdatetime(2021, 10, 29, 12, 0, 0, 0), "");
+    end
+
+    @Fact()
+    public function toJdn1() : void
+        assert.isTrue(stdlib.toJdn(stdlib.mkdatetime(2021, 10, 29, 12, 0, 0, 0)) == 2459517.5, "");
+    end
+    @Fact()
+
+    public function fromJdn2() : void
+        assert.isTrue(cast<datetime>(2459517.5) == stdlib.mkdatetime(2021, 10, 29, 12, 0, 0, 0), "");
+    end
+
+    @Fact()
+    public function toJdn2() : void
+        assert.isTrue(cast<real>(stdlib.mkdatetime(2021, 10, 29, 12, 0, 0, 0)) == 2459517.5, "");
+    end
+
+
+
+    @Fact()
+    public function year() : void
+        assert.isTrue(stdlib.year(cast<datetime>("2021-11-22")) == 2021, "");
+    end
+
+    @Fact()
+    public function month() : void
+        assert.isTrue(stdlib.month(cast<datetime>("2021-11-22")) == 11, "");
+    end
+
+    @Fact()
+    public function day() : void
+        assert.isTrue(stdlib.day(cast<datetime>("2021-11-22")) == 22, "");
+    end
+
+    @Fact()
+    public function hour() : void
+        assert.isTrue(stdlib.hour(cast<datetime>("2021-11-22 11:20")) == 11, "");
+    end
+
+    @Fact()
+    public function minute() : void
+        assert.isTrue(stdlib.minute(cast<datetime>("2021-11-22 11:20")) == 20, "");
+    end
+
+    @Fact()
+    public function second() : void
+        assert.isTrue(stdlib.second(cast<datetime>("2021-11-22 11:20:55.987")) == 55, "");
+    end
+
+    @Fact()
+    public function seconds() : void
+        assert.isTrue(stdlib.seconds(cast<datetime>("2021-11-22 11:20:55.987")) == 55.987, "");
+    end
+
+    @Fact()
+    public function milliseconds() : void
+        assert.isTrue(stdlib.millisecond(cast<datetime>("2021-11-22 11:20:55.987")) == 987, "");
+    end
+
+    @Theory()
+    @TheoryData(2021, false)
+    @TheoryData(2012, true)
+    @TheoryData(2000, true)
+    @TheoryData(1900, false)
+    public function leap(year : int, leap : boolean) : void
+        assert.isTrue(stdlib.leapYear(cast<datetime>(year .. "-11-22")) == leap, "");
+    end
+
+    @Theory()
+    @TheoryData(1, 5)
+    @TheoryData(2, 6)
+    @TheoryData(3, 0)
+    public function dow(day : int, dayOfWeek : int) : void
+        assert.isTrue(stdlib.dayOfWeek(cast<datetime>("2021-01-0" .. day)) == dayOfWeek, "");
+    end
+end

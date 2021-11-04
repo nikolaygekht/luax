@@ -42,7 +42,7 @@ namespace LuaX
             {
                 var errors = error.Errors;
                 foreach (var err in errors)
-                    Console.WriteLine($"{error.Source}({err.Line},{err.Column}) - {err.Message}");
+                    Console.WriteLine($"{error.SourceName}({err.Line},{err.Column}) - {err.Message}");
                 Environment.ExitCode = -3;
             }
             catch (LuaXExecutionException executionError)
