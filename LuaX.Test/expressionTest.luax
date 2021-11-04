@@ -1,0 +1,27 @@
+class expressionTestSubject
+    const c = 1;
+    public static function s() : string
+        return "2";
+    end
+end
+
+
+@TestSuite()
+class expressionTest
+    @Fact()
+    public function typeName() : void
+        assert.isTrue(typename(1) == "int", "int");
+        assert.isTrue(typename(1.0) == "real", "real");
+        assert.isTrue(typename(new int[1]) == "int[]", "primitves array");
+        assert.isTrue(typename(stdlib.nowutc()) == "datetime", "datetime");
+        assert.isTrue(typename(true) == "boolean", "boolean");
+        assert.isTrue(typename(this) == "expressionTest", "class");
+        assert.isTrue(typename(new expressionTest[1]) == "expressionTest[]", "primitves array");
+    end
+
+    @Fact()
+    public function callPriority() : void
+        assert.isTrue(2 .. expressionTestSubject.c == "21", "property");
+        assert.isTrue(2 .. expressionTestSubject.s() == "22", "method");
+    end
+end

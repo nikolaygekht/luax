@@ -17,6 +17,9 @@ namespace Luax.Interpreter.Execution
     {
         public event EventHandler<LuaXTestStatusEventArgs> OnTest;
 
+        public int TotalTests { get; private set;  } = 0;
+        public int SuccessfullTests { get; private set; } = 0;
+
         public LuaXTestExecutor(LuaXProject project) : base(project)
         {
             Initialize(project);
@@ -109,6 +112,7 @@ namespace Luax.Interpreter.Execution
 
         private bool RunFact(LuaXClassInstance @class, LuaXMethod method)
         {
+            
             if (method.Arguments.Count != 0 || !method.ReturnType.IsVoid() || method.Static)
             {
                 OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, LuaXTestStatus.Incorrect, "The fact method should be an instance method and should have void return type and no arguments"));
@@ -120,6 +124,7 @@ namespace Luax.Interpreter.Execution
 
         private bool RunCase(LuaXClassInstance @class, LuaXMethod method, object[] args, string argsText)
         {
+            TotalTests++;
             bool success = true;
 
             try
@@ -127,7 +132,8 @@ namespace Luax.Interpreter.Execution
                 var @this = @class.New(TypesLibrary);
                 LuaXMethodExecutor.Execute(method, TypesLibrary, @this, args, out var _);
                 OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.OK, ""));
-                success = false;
+                SuccessfullTests++;
+                success = true;
             }
             catch (LuaXAssertionException assertion)
             {
@@ -142,7 +148,7 @@ namespace Luax.Interpreter.Execution
                 }
                 else
                 {
-                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Assert, $"Exception: {executionException.Message}", executionException));
+                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Exception, $"Exception: {executionException.Message}", executionException));
                     success = false;
                 }
             }

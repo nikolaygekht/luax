@@ -13,7 +13,16 @@ namespace Luax.Interpreter.Execution
 
         public KeyValuePair<string, string> this[int index] => mFiles[index];
 
-        public KeyValuePair<string, string> this[string optionName] => mFiles.Find(p => p.Key == optionName);
+        public string this[string optionName]
+        {
+            get
+            {
+                for (int i = 0; i < mFiles.Count; i++)
+                    if (mFiles[i].Key == optionName)
+                        return mFiles[i].Value;
+                return null;
+            }
+        }
 
         public int Count => mFiles.Count;
 
