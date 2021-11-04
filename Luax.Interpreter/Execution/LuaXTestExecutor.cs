@@ -78,9 +78,11 @@ namespace Luax.Interpreter.Execution
                     args.Add(p.Value);
                 }
 
+                var argsText = sb.ToString();
+
                 if (args.Count != method.Arguments.Count)
                 {
-                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, sb.ToString(), LuaXTestStatus.Incorrect, "The theory data arguments count does not match to theory arguments count"));
+                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Incorrect, "The theory data arguments count does not match to theory arguments count"));
                     success = false;
                     continue;
                 }
@@ -92,31 +94,10 @@ namespace Luax.Interpreter.Execution
                           (args[i] is bool && method.Arguments[i].LuaType.IsBoolean()) ||
                           (args[i] is int && method.Arguments[i].LuaType.IsInteger()) ||
                           (args[i] is double && method.Arguments[i].LuaType.IsReal())))
-                        OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, sb.ToString(), LuaXTestStatus.Incorrect, $"The theory data {i + 1}th argument type is does not match to the theory argument type"));
+                        OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Incorrect, $"The theory data {i + 1}th argument type is does not match to the theory argument type"));
                 }
 
-                try
-                {
-                    var @this = @class.New(TypesLibrary);
-                    LuaXMethodExecutor.Execute(method, TypesLibrary, @this, args.ToArray(), out var _);
-                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, sb.ToString(), LuaXTestStatus.OK, ""));
-                    success = false;
-                }
-                catch (LuaXAssertionException assertion)
-                {
-                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, sb.ToString(), LuaXTestStatus.Assert, $"Assertion: {assertion.Message}"));
-                    success = false;
-                }
-                catch (LuaXAstGeneratorException error)
-                {
-                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, sb.ToString(), LuaXTestStatus.Incorrect, $"Unexpected exception {error.SourceName}({error.Errors[0].Line},{error.Errors[0].Column}) - {error.Errors[0].Message}"));
-                    success = false;
-                }
-                catch (Exception exception)
-                {
-                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, sb.ToString(), LuaXTestStatus.Exception, $"Unexpected exception {exception.GetType().Name}: {exception.Message}"));
-                    success = false;
-                }
+                success &= RunCase(@class, method, args.ToArray(), argsText);
             }
             return success;
         }
@@ -129,28 +110,49 @@ namespace Luax.Interpreter.Execution
                 return false;
             }
 
+            return RunCase(@class, method, Array.Empty<object>(), "");
+        }
+
+        private bool RunCase(LuaXClassInstance @class, LuaXMethod method, object[] args, string argsText)
+        {
+            bool success = true;
+
             try
             {
                 var @this = @class.New(TypesLibrary);
-                LuaXMethodExecutor.Execute(method, TypesLibrary, @this, Array.Empty<object>(), out var _);
-                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, LuaXTestStatus.OK, ""));
-                return true;
+                LuaXMethodExecutor.Execute(method, TypesLibrary, @this, args, out var _);
+                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.OK, ""));
+                success = false;
             }
             catch (LuaXAssertionException assertion)
             {
-                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, LuaXTestStatus.Assert, $"Assertion: {assertion.Message}"));
-                return false;
+                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Assert, $"Assertion: {assertion.Message}"));
+                success = false;
+            }
+            catch (LuaXExecutionException executionException)
+            {
+                if (executionException.InnerException is LuaXAssertionException assertionException1)
+                {
+                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Assert, $"Assertion: {assertionException1.Message}"));
+                }
+                else
+                {
+                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Assert, $"Exception: {executionException.Message}"));
+                    success = false;
+                }
             }
             catch (LuaXAstGeneratorException error)
             {
-                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, LuaXTestStatus.Incorrect, $"Unexpected exception {error.SourceName}({error.Errors[0].Line},{error.Errors[0].Column}) - {error.Errors[0].Message}"));
-                return false;
+                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Incorrect, $"Unexpected exception {error.SourceName}({error.Errors[0].Line},{error.Errors[0].Column}) - {error.Errors[0].Message}"));
+                success = false;
             }
             catch (Exception exception)
             {
-                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, LuaXTestStatus.Exception, $"Unexpected exception {exception.GetType().Name}: {exception.Message}"));
-                return false;
+                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Exception, $"Unexpected exception {exception.GetType().Name}: {exception.Message}"));
+                success = false;
             }
+
+            return success;
         }
     }
 }

@@ -76,6 +76,43 @@ namespace Luax.Interpreter.Test
             arr[0].Value.Should().Be(10);
             arr[1].Value.Should().Be(20);
         }
+
+        [Fact]
+        public void StackTrace()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ExceptionStackTraceTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("program", out var program).Should().BeTrue();
+            program.SearchMethod("main", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().BeEmpty();
+
+            bool thrown = false;
+            try
+            {
+                LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var _);
+            }
+            catch (LuaXExecutionException e)
+            {
+                e.InnerException.Should().NotBeNull();
+                e.InnerException.Should().BeOfType<LuaXAssertionException>();
+                e.Locations.Should().HaveCount(5);
+                e.Locations[0].Source.Should().Be("stdlib.luax");
+                e.Locations[1].Source.Should().Be("ExceptionStackTraceTest");
+                e.Locations[1].Line.Should().Be(15);
+                e.Locations[2].Source.Should().Be("ExceptionStackTraceTest");
+                e.Locations[2].Line.Should().Be(11);
+                e.Locations[3].Source.Should().Be("ExceptionStackTraceTest");
+                e.Locations[3].Line.Should().Be(7);
+                e.Locations[4].Source.Should().Be("ExceptionStackTraceTest");
+                e.Locations[4].Line.Should().Be(3);
+                thrown = true;
+            }
+            thrown.Should().BeTrue();
+        }
     }
 }
 

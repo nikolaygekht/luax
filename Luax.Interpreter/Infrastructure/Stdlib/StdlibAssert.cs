@@ -1,8 +1,8 @@
-﻿using Luax.Parser.Ast;
+﻿using System.Reflection;
+using Luax.Parser.Ast;
 
 #pragma warning disable S125                // Sections of code should not be commented out
 #pragma warning disable IDE1006             // Naming rule violation.
-#pragma warning disable RCS1163, IDE0060    // Unused parameters.
 
 namespace Luax.Interpreter.Infrastructure.Stdlib
 {
@@ -10,19 +10,27 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
     {
         //public static extern isTrue(condition : boolean, message : string) : void;
         [LuaXExternMethod("assert", "isTrue")]
-        public static object isTrue(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object isTrue(bool condition, string message)
         {
-            if (!(bool)args[0])
-                throw new LuaXAssertionException($"Expected the condition to be true but it is false because {(string)args[1]}");
+            if (!condition)
+            {
+                if (!string.IsNullOrEmpty(message))
+                    message = " because " + message;
+                throw new LuaXAssertionException("Expected the condition to be true but it is false" + (message ?? ""));
+            }
             return null;
         }
 
         //public static extern isTrue(condition : boolean, message : string) : void;
         [LuaXExternMethod("assert", "isFalse")]
-        public static object isFalse(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object isFalse(bool condition, string message)
         {
-            if ((bool)args[0])
-                throw new LuaXAssertionException($"Expected the condition to be false but it is false because {(string)args[1]}");
+            if (condition)
+            {
+                if (!string.IsNullOrEmpty(message))
+                    message = " because " + message;
+                throw new LuaXAssertionException("Expected the condition to be true but it is false" + (message ?? ""));
+            }
             return null;
         }
     }

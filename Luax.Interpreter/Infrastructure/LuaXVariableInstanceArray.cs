@@ -22,7 +22,6 @@ namespace Luax.Interpreter.Infrastructure
             Length = size;
         }
 
-
         /// <summary>
         /// Gets or sets the array item
         ///

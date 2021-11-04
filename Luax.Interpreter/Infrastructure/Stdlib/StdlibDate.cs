@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Luax.Parser.Ast;
 
 #pragma warning disable S125 // Sections of code should not be commented out
-#pragma warning disable RCS1163, IDE0060 // Unused parameter.
 
 namespace Luax.Interpreter.Infrastructure.Stdlib
 {
@@ -15,94 +15,101 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
     {
         //public static extern mkdate(year : int, month : int, day : int) : datetime;
         [LuaXExternMethod("stdlib", "mkdate")]
-        public static object Extern_mkdate(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_mkdate(int year, int month, int day)
         {
-            return new DateTime((int)args[0], (int)args[1], (int)args[2]);
+            return new DateTime(year, month, day);
         }
 
         //public static extern mkdatetime(year : int, month : int, day : int, int hour, int minute, int second, int milliseconds) : datetime
         [LuaXExternMethod("stdlib", "mkdatetime")]
-        public static object Extern_mkdatetime(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_mkdatetime(int year, int month, int day, int hour, int minute, int section, int milliseconds)
         {
-            return new DateTime((int)args[0], (int)args[1], (int)args[2], (int)args[3], (int)args[4], (int)args[5], (int)args[6]);
+            return new DateTime(year, month, day, hour, minute, section, milliseconds);
         }
         //public static extern toJdn(x : datetime) : real;
         [LuaXExternMethod("stdlib", "toJdn")]
-        public static object Extern_toJdn(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_toJdn(DateTime x)
         {
-            return DateToJDN((DateTime)args[0]);
+            return DateToJDN(x);
         }
         //public static extern fromJdn(x : real) : datetime;
         [LuaXExternMethod("stdlib", "fromJdn")]
-        public static object Extern_fromJdn(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_fromJdn(double x)
         {
-            return JdnToDate((double)args[0]);
+            return JdnToDate(x);
         }
         //public static extern day(x : datetime) : int;
         [LuaXExternMethod("stdlib", "day")]
-        public static object Extern_day(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_day(DateTime x)
         {
-            return ((DateTime)args[0]).Day;
+            return x.Day;
         }
         //public static extern dayOfWeek(x : datetime) : int;
         [LuaXExternMethod("stdlib", "dayOfWeek")]
-        public static object Extern_dayOfWeek(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_dayOfWeek(DateTime x)
         {
-            return ((DateTime)args[0]).DayOfWeek;
+            return x.DayOfWeek;
         }
+
         //public static extern month(x : datetime) : int;
         [LuaXExternMethod("stdlib", "month")]
-        public static object Extern_month(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_month(DateTime x)
         {
-            return ((DateTime)args[0]).Month;
+            return x.Month;
         }
+
         //public static extern year(x : datetime) : int;
         [LuaXExternMethod("stdlib", "year")]
-        public static object Extern_year(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_year(DateTime x)
         {
-            return ((DateTime)args[0]).Year;
+            return x.Year;
         }
+
         //public static extern leapYear(x : datetime) : boolean;
         [LuaXExternMethod("stdlib", "leapYear")]
-        public static object Extern_leapYear(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_leapYear(DateTime x)
         {
-            var year = ((DateTime)args[0]).Year;
+            var year = x.Year;
             if (year % 4 != 0)
                 return false;
             if (year % 400 == 0)
                 return true;
             return year % 100 != 0;
         }
+
         //public static extern hour(x : datetime) : int;
         [LuaXExternMethod("stdlib", "hour")]
-        public static object Extern_hour(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_hour(DateTime x)
         {
-            return ((DateTime)args[0]).Hour;
+            return x.Hour;
         }
+
         //public static extern minute(x : datetime) : int;
         [LuaXExternMethod("stdlib", "minute")]
-        public static object Extern_minute(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_minute(DateTime x)
         {
-            return ((DateTime)args[0]).Minute;
+            return x.Minute;
         }
+
         //public static extern second(x : datetime) : int;
         [LuaXExternMethod("stdlib", "second")]
-        public static object Extern_second(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_second(DateTime x)
         {
-            return ((DateTime)args[0]).Second;
+            return x.Second;
         }
+
         //public static extern seconds(x : datetime) : real;
         [LuaXExternMethod("stdlib", "seconds")]
 
-        public static object Extern_seconds(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_seconds(DateTime x)
         {
-            return ((DateTime)args[0]).Second + ((DateTime)args[0]).Millisecond / 1000.0;
+            return x.Second + x.Millisecond / 1000.0;
         }
 
         //public static extern nowlocal() : datetime;
         [LuaXExternMethod("stdlib", "nowlocal")]
 
-        public static object Extern_local(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_local()
         {
             return DateTime.Now;
         }
@@ -110,7 +117,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         //public static extern nowutc() : datetime;
         [LuaXExternMethod("stdlib", "nowutc")]
 
-        public static object Extern_utc(LuaXElementLocation location, LuaXObjectInstance _, object[] args)
+        public static object Extern_utc()
         {
             return DateTime.UtcNow;
         }

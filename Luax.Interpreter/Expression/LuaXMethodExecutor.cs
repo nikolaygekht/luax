@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Reflection;
 using Luax.Interpreter.Infrastructure;
+using Luax.Interpreter.Infrastructure.Stdlib;
 using Luax.Parser.Ast;
 using Luax.Parser.Ast.Statement;
 
@@ -59,7 +61,25 @@ namespace Luax.Interpreter.Expression
         {
             if (!types.ExternMethods.Search(method.Class.Name, method.Name, out var @delegate))
                 throw new LuaXAstGeneratorException(method.Location, $"There is no native entry point defined for extern method {method.Class.Name}::{method.Name}");
-            result = @delegate.Invoke(method.Location, @this, args);
+            try
+            {
+                if (!method.Static)
+                {
+                    var args1 = new object[args.Length + 1];
+                    args1[0] = @this;
+                    for (int i = 0; i < args.Length; i++)
+                        args1[i + 1] = args[i];
+                    result = @delegate.Invoke(null, args1);
+                    args = args1;
+                }
+                result = @delegate.Invoke(null, args);
+            }
+            catch (Exception e)
+            {
+                if (e.GetType() == typeof(TargetInvocationException) && e.InnerException != null)
+                    e = e.InnerException;
+                throw new LuaXExecutionException(method.Location, e.Message, e);
+            }
             return ResultType.Return;
         }
 
@@ -67,38 +87,50 @@ namespace Luax.Interpreter.Expression
         {
             foreach (var statement in collection)
             {
-                switch (statement)
+                try
                 {
-                    case LuaXAssignVariableStatement assignVariable:
-                        ExecuteAssignVariable(assignVariable, types, currentClass, variables);
-                        break;
-                    case LuaXAssignStaticPropertyStatement assignStaticProperty:
-                        ExecuteAssignStaticProperty(assignStaticProperty, types, currentClass, variables);
-                        break;
-                    case LuaXAssignInstancePropertyStatement assignInstanceProperty:
-                        ExecuteAssignInstanceProperty(assignInstanceProperty, types, currentClass, variables);
-                        break;
-                    case LuaXAssignArrayItemStatement assignArrayItem:
-                        ExecuteAssignArrayItem(assignArrayItem, types, currentClass, variables);
-                        break;
-                    case LuaXCallStatement callStatement:
-                        ExecuteCallStatement(callStatement, types, currentClass, variables);
-                        break;
-                    case LuaXIfStatement @if:
-                        break;
-                    case LuaXReturnStatement @return:
-                        {
-                            if (@return.Expression == null)
+                    switch (statement)
+                    {
+                        case LuaXAssignVariableStatement assignVariable:
+                            ExecuteAssignVariable(assignVariable, types, currentClass, variables);
+                            break;
+                        case LuaXAssignStaticPropertyStatement assignStaticProperty:
+                            ExecuteAssignStaticProperty(assignStaticProperty, types, currentClass, variables);
+                            break;
+                        case LuaXAssignInstancePropertyStatement assignInstanceProperty:
+                            ExecuteAssignInstanceProperty(assignInstanceProperty, types, currentClass, variables);
+                            break;
+                        case LuaXAssignArrayItemStatement assignArrayItem:
+                            ExecuteAssignArrayItem(assignArrayItem, types, currentClass, variables);
+                            break;
+                        case LuaXCallStatement callStatement:
+                            ExecuteCallStatement(callStatement, types, currentClass, variables);
+                            break;
+                        case LuaXIfStatement @if:
+                            break;
+                        case LuaXReturnStatement @return:
                             {
-                                result = null;
-                                return ResultType.Default;
+                                if (@return.Expression == null)
+                                {
+                                    result = null;
+                                    return ResultType.Default;
+                                }
+                                else
+                                {
+                                    result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass, variables);
+                                    return ResultType.Return;
+                                }
                             }
-                            else
-                            {
-                                result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass, variables);
-                                return ResultType.Return;
-                            }
-                        }
+                    }
+                }
+                catch (LuaXExecutionException e1)
+                {
+                    e1.Locations.Add(statement.Location);
+                    throw;
+                }
+                catch (Exception e2)
+                {
+                    throw new LuaXExecutionException(statement.Location, e2.Message, e2);
                 }
             }
             result = null;
@@ -125,9 +157,9 @@ namespace Luax.Interpreter.Expression
         {
             var target = LuaXExpressionEvaluator.Evaluate(assign.Object, types, currentClass, variables);
             if (target == null)
-                throw new LuaXAstGeneratorException(assign.Object.Location, "Object is not initialized yet");
+                throw new LuaXExecutionException(assign.Object.Location, "Object is not initialized yet");
             if (target is not LuaXObjectInstance @object)
-                throw new LuaXAstGeneratorException(assign.Object.Location, "The target is not an object");
+                throw new LuaXExecutionException(assign.Object.Location, "The target is not an object");
             var expr = LuaXExpressionEvaluator.Evaluate(assign.Expression, types, currentClass, variables);
             @object.Properties[assign.PropertyName].Value = expr;
         }
@@ -136,9 +168,9 @@ namespace Luax.Interpreter.Expression
         {
             var target = LuaXExpressionEvaluator.Evaluate(assign.Array, types, currentClass, variables);
             if (target == null)
-                throw new LuaXAstGeneratorException(assign.Array.Location, "Array is not initialized yet");
+                throw new LuaXExecutionException(assign.Array.Location, "Array is not initialized yet");
             if (target is not LuaXVariableInstanceArray array)
-                throw new LuaXAstGeneratorException(assign.Array.Location, "The target expression is not an array");
+                throw new LuaXExecutionException(assign.Array.Location, "The target expression is not an array");
 
             var _index = LuaXExpressionEvaluator.Evaluate(assign.Index, types, currentClass, variables);
 
@@ -148,13 +180,13 @@ namespace Luax.Interpreter.Expression
             else if (_index is double r)
                 index = (int)r;
             else
-                throw new LuaXAstGeneratorException(assign.Index.Location, "Index is not a number");
+                throw new LuaXExecutionException(assign.Index.Location, "Index is not a number");
 
             if (index < 0)
                 index = array.Length + index;
 
             if (index < 0 || index >= array.Length)
-                throw new LuaXAstGeneratorException(assign.Index.Location, "Index is out of range");
+                throw new LuaXExecutionException(assign.Index.Location, "Index is out of range");
 
             var expr = LuaXExpressionEvaluator.Evaluate(assign.Expression, types, currentClass, variables);
             array[index].Value = expr;

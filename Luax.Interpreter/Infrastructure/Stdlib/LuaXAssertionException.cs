@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using Luax.Parser.Ast;
 
 namespace Luax.Interpreter.Infrastructure.Stdlib
 {

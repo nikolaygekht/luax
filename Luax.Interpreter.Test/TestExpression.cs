@@ -259,7 +259,7 @@ namespace Luax.Interpreter.Test
             if (success)
                 action.Should().NotThrow($"{cause} should be possible");
             else
-                action.Should().Throw<LuaXAstGeneratorException>($"{cause} should not be possible");
+                action.Should().Throw<LuaXExecutionException>($"{cause} should not be possible");
         }
 
         [Theory]

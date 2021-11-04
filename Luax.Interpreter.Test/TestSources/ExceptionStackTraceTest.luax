@@ -1,0 +1,17 @@
+﻿class program
+   public static function main() : void
+       x();
+   end
+
+   static function x() : void
+       y();
+   end
+
+   static function y() : void
+       z();
+   end
+
+   static function z() : void
+		assert.isTrue(false, "throw!");
+   end
+end

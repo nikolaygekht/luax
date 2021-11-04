@@ -59,7 +59,7 @@ namespace Luax.Interpreter.Expression
             if (expression is LuaXTypeNameOperatorExpression typenameExpression)
                 return EvaluateTypename(typenameExpression, types, runningClass, variables);
 
-            throw new LuaXAstGeneratorException(expression.Location, $"Unexpected expression type {expression.GetType().Name}");
+            throw new LuaXExecutionException(expression.Location, $"Unexpected expression type {expression.GetType().Name}");
         }
 
         private static object ExecuteInstanceCall(LuaXInstanceCallExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
@@ -67,11 +67,11 @@ namespace Luax.Interpreter.Expression
             var args = CreateCallArgs(expression.Arguments, types, runningClass, variables);
             var _this = Evaluate(expression.Object, types, runningClass, variables);
             if (_this == null)
-                throw new LuaXAstGeneratorException(expression.Location, "The object is not initialized yet");
+                throw new LuaXExecutionException(expression.Location, "The object is not initialized yet");
             if (_this is not LuaXObjectInstance @this)
-                throw new LuaXAstGeneratorException(expression.Location, "The target is not an object");
+                throw new LuaXExecutionException(expression.Location, "The target is not an object");
             if (!@this.Class.SearchMethod(expression.MethodName, expression.ExactClass, out var method))
-                throw new LuaXAstGeneratorException(expression.Location, "The method {expression.MethodName} is not found in class");
+                throw new LuaXExecutionException(expression.Location, $"The method {expression.MethodName} is not found in class");
             LuaXMethodExecutor.Execute(method, types, @this, args, out var r);
             return r;
         }
@@ -80,9 +80,9 @@ namespace Luax.Interpreter.Expression
         {
             var args = CreateCallArgs(expression.Arguments, types, runningClass, variables);
             if (!types.SearchClass(expression.ClassName, out var @class))
-                throw new LuaXAstGeneratorException(expression.Location, $"The class {expression.ClassName} is not found");
+                throw new LuaXExecutionException(expression.Location, $"The class {expression.ClassName} is not found");
             if (!@class.SearchMethod(expression.MethodName, expression.ClassName, out var method))
-                throw new LuaXAstGeneratorException(expression.Location, $"The method {expression.MethodName} is not found in class");
+                throw new LuaXExecutionException(expression.Location, $"The method {expression.MethodName} is not found in class");
             LuaXMethodExecutor.Execute(method, types, null, args, out var r);
             return r;
         }
@@ -102,7 +102,7 @@ namespace Luax.Interpreter.Expression
         {
             var argument = Evaluate(expression.Argument, types, runningClass, variables);
             if (!types.CastTo(expression.ReturnType, ref argument))
-                throw new LuaXAstGeneratorException(expression.Location, $"Cast to {expression.ReturnType} is not supported");
+                throw new LuaXExecutionException(expression.Location, $"Cast to {expression.ReturnType} is not supported");
             return argument;
         }
 
@@ -123,7 +123,7 @@ namespace Luax.Interpreter.Expression
                 return obj.Class.LuaType.TypeOf().ToString();
             else if (argument is LuaXVariableInstanceArray arr)
                 return arr.ElementType.ToString() + "[]";
-            throw new LuaXAstGeneratorException(expression.Location, "Unsupported type");
+            throw new LuaXExecutionException(expression.Location, "Unsupported type");
         }
 
         private static object EvaluateUnary(LuaXUnaryOperatorExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
@@ -135,15 +135,15 @@ namespace Luax.Interpreter.Expression
                     return -i;
                 if (argument is double d)
                     return -d;
-                throw new LuaXAstGeneratorException(expression.Location, "Numeric argument is required for -");
+                throw new LuaXExecutionException(expression.Location, "Numeric argument is required for -");
             }
             else if (expression.Operator == LuaXUnaryOperator.Not)
             {
                 if (argument is bool b)
                     return !b;
-                throw new LuaXAstGeneratorException(expression.Location, "Boolean argument is required for not");
+                throw new LuaXExecutionException(expression.Location, "Boolean argument is required for not");
             }
-            throw new LuaXAstGeneratorException(expression.Location, "Unknown operator");
+            throw new LuaXExecutionException(expression.Location, "Unknown operator");
         }
 
         private static object MathOperation(LuaXExpression expression, object left, object right, Func<int, int, int> integerAction, Func<double, double, double> doubleAction)
@@ -158,14 +158,14 @@ namespace Luax.Interpreter.Expression
                 else if (left is double d1)
                     f1 = d1;
                 else
-                    throw new LuaXAstGeneratorException(expression.Location, "Left argument of math operation is not a number");
+                    throw new LuaXExecutionException(expression.Location, "Left argument of math operation is not a number");
 
                 if (right is int i4)
                     f2 = i4;
                 else if (right is double d2)
                     f2 = d2;
                 else
-                    throw new LuaXAstGeneratorException(expression.Location, "Left argument of math operation is not a number");
+                    throw new LuaXExecutionException(expression.Location, "Left argument of math operation is not a number");
 
                 return doubleAction(f1, f2);
             }
@@ -175,7 +175,7 @@ namespace Luax.Interpreter.Expression
         {
             if (left is bool i1 && right is bool i2)
                 return action(i1, i2);
-            throw new LuaXAstGeneratorException(expression.Location, "Both argument of the operation must be boolean");
+            throw new LuaXExecutionException(expression.Location, "Both argument of the operation must be boolean");
         }
 
         private static object RelationalOperation(LuaXExpression expression, LuaXBinaryOperator @operator, object left, object right)
@@ -235,7 +235,7 @@ namespace Luax.Interpreter.Expression
             }
 
             if (sign == null || (!canRelate && @operator != LuaXBinaryOperator.Equal && @operator != LuaXBinaryOperator.NotEqual))
-                throw new LuaXAstGeneratorException(expression.Location, "An attempt to compare incompatible types");
+                throw new LuaXExecutionException(expression.Location, "An attempt to compare incompatible types");
 
             return @operator switch
             {
@@ -245,7 +245,7 @@ namespace Luax.Interpreter.Expression
                 LuaXBinaryOperator.Less => sign < 0,
                 LuaXBinaryOperator.GreaterOrEqual => sign >= 0,
                 LuaXBinaryOperator.LessOrEqual => sign <= 0,
-                _ => throw new LuaXAstGeneratorException(expression.Location, "Unknown relational operator"),
+                _ => throw new LuaXExecutionException(expression.Location, "Unknown relational operator"),
             };
         }
 
@@ -275,7 +275,7 @@ namespace Luax.Interpreter.Expression
                 LuaXBinaryOperator.And => LogicalOperation(expression, left, right, (a1, a2) => a1 && a2),
                 LuaXBinaryOperator.Or => LogicalOperation(expression, left, right, (a1, a2) => a1 || a2),
                 LuaXBinaryOperator.Equal or LuaXBinaryOperator.NotEqual or LuaXBinaryOperator.Less or LuaXBinaryOperator.LessOrEqual or LuaXBinaryOperator.Greater or LuaXBinaryOperator.GreaterOrEqual => RelationalOperation(expression, expression.Operator, left, right),
-                _ => throw new LuaXAstGeneratorException(expression.Location, "The index is out of range"),
+                _ => throw new LuaXExecutionException(expression.Location, "Unsupported operation"),
             };
         }
 
@@ -292,7 +292,7 @@ namespace Luax.Interpreter.Expression
             object _array = Evaluate(expression.ArrayExpression, types, runningClass, variables);
 
             if (_array is not LuaXVariableInstanceArray array)
-                throw new LuaXAstGeneratorException(expression.Location, "The array expression does not return an array value");
+                throw new LuaXExecutionException(expression.Location, "The array expression does not return an array value");
 
             int index;
             object _index = Evaluate(expression.IndexExpression, types, runningClass, variables);
@@ -301,13 +301,13 @@ namespace Luax.Interpreter.Expression
             else if (_index is double d)
                 index = (int)d;
             else
-                throw new LuaXAstGeneratorException(expression.Location, "The size expression is not an numeric value");
+                throw new LuaXExecutionException(expression.Location, "The size expression is not an numeric value");
 
             if (index < 0)
                 index = array.Length + index;
 
             if (index < 0 || index >= array.Length)
-                throw new LuaXAstGeneratorException(expression.Location, "The index is out of range");
+                throw new LuaXExecutionException(expression.Location, "The index is out of range");
 
             return array[index].Value;
         }
@@ -316,7 +316,7 @@ namespace Luax.Interpreter.Expression
         {
             var array = Evaluate(expression.ArrayExpression, types, runningClass, variables);
             if (array is not LuaXVariableInstanceArray a)
-                throw new LuaXAstGeneratorException(expression.Location, "The value is not an array or array is not initialized");
+                throw new LuaXExecutionException(expression.Location, "The value is not an array or array is not initialized");
             return a.Length;
         }
 
@@ -337,7 +337,7 @@ namespace Luax.Interpreter.Expression
             else if (_size is double d)
                 size = (int)d;
             else
-                throw new LuaXAstGeneratorException(expression.Location, "The size expression is not an numeric value");
+                throw new LuaXExecutionException(expression.Location, "The size expression is not an numeric value");
 
             return new LuaXVariableInstanceArray(expression.ReturnType, size);
         }
@@ -353,7 +353,7 @@ namespace Luax.Interpreter.Expression
         private static object EvaluateNewObject(LuaXNewObjectExpression expression, LuaXTypesLibrary types)
         {
             if (!types.SearchClass(expression.ClassName, out var @class))
-                throw new LuaXAstGeneratorException(expression.Location, $"Class {expression.ClassName} is not found");
+                throw new LuaXExecutionException(expression.Location, $"Class {expression.ClassName} is not found");
             return @class.New(types);
         }
 
@@ -369,12 +369,12 @@ namespace Luax.Interpreter.Expression
         {
             object _v = Evaluate(expression.Object, types, runningClass, variables);
             if (_v is not LuaXObjectInstance v)
-                throw new LuaXAstGeneratorException(expression.Location, "The expression is not a class instance expression");
+                throw new LuaXExecutionException(expression.Location, "The expression is not a class instance expression");
 
             var p = v.Properties[expression.PropertyName];
 
             if (p == null)
-                throw new LuaXAstGeneratorException(expression.Location, $"Instance property {v.Class.LuaType.Name}.{expression.PropertyName} is not found");
+                throw new LuaXExecutionException(expression.Location, $"Instance property {v.Class.LuaType.Name}.{expression.PropertyName} is not found");
 
             return p.Value;
         }
@@ -389,12 +389,12 @@ namespace Luax.Interpreter.Expression
         private static object EvaluateStaticProperty(LuaXStaticPropertyExpression expression, LuaXTypesLibrary types)
         {
             if (!types.SearchClass(expression.ClassName, out var @class))
-                throw new LuaXAstGeneratorException(expression.Location, $"Class {expression.ClassName} is not found");
+                throw new LuaXExecutionException(expression.Location, $"Class {expression.ClassName} is not found");
 
             var p = @class.StaticProperties[expression.PropertyName];
 
             if (p == null)
-                throw new LuaXAstGeneratorException(expression.Location, $"Static property {expression.ClassName}.{expression.PropertyName} is not found");
+                throw new LuaXExecutionException(expression.Location, $"Static property {expression.ClassName}.{expression.PropertyName} is not found");
 
             return p.Value;
         }
@@ -409,7 +409,7 @@ namespace Luax.Interpreter.Expression
         {
             var v = variables[name];
             if (v == null)
-                throw new LuaXAstGeneratorException(expression.Location, $"Variable {name} is not found");
+                throw new LuaXExecutionException(expression.Location, $"Variable {name} is not found");
             return v.Value;
         }
 
