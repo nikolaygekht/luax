@@ -17,7 +17,8 @@ namespace Luax.Interpreter.Expression
         /// </summary>
         public enum ResultType
         {
-            Default,
+            ReachForEnd,
+            ReturnDefault,
             Return,
         };
 
@@ -52,7 +53,7 @@ namespace Luax.Interpreter.Expression
             types.SearchClass(method.Class.Name, out var currentClass);
 
             var rt = ExecuteStatements(method.Statements, types, currentClass, variables, out result);
-            if (rt == ResultType.Default)
+            if (rt == ResultType.ReachForEnd || rt == ResultType.ReturnDefault)
                 result = method.ReturnType.DefaultValue();
             return rt;
         }
@@ -107,13 +108,18 @@ namespace Luax.Interpreter.Expression
                             ExecuteCallStatement(callStatement, types, currentClass, variables);
                             break;
                         case LuaXIfStatement @if:
+                            {
+                                var r = ExecuteIf(@if, types, currentClass, variables, out result);
+                                if (r != ResultType.ReachForEnd)
+                                    return r;
+                            }
                             break;
                         case LuaXReturnStatement @return:
                             {
                                 if (@return.Expression == null)
                                 {
                                     result = null;
-                                    return ResultType.Default;
+                                    return ResultType.ReturnDefault;
                                 }
                                 else
                                 {
@@ -134,7 +140,7 @@ namespace Luax.Interpreter.Expression
                 }
             }
             result = null;
-            return ResultType.Default;
+            return ResultType.ReachForEnd;
         }
 
         private static void ExecuteAssignVariable(LuaXAssignVariableStatement assign, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables)
@@ -190,6 +196,28 @@ namespace Luax.Interpreter.Expression
 
             var expr = LuaXExpressionEvaluator.Evaluate(assign.Expression, types, currentClass, variables);
             array[index].Value = expr;
+        }
+
+        private static ResultType ExecuteIf(LuaXIfStatement ifStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
+        {
+            for (int i = 0; i < ifStatement.Clauses.Count; i++)
+            {
+                var clause = ifStatement.Clauses[i];
+                var v = LuaXExpressionEvaluator.Evaluate(clause.Condition, types, currentClass, variables);
+                if (v is bool b)
+                {
+                    if (b)
+                        return ExecuteStatements(clause.Statements, types, currentClass, variables, out result);
+                }
+                else
+                    throw new LuaXExecutionException(clause.Location, "Condition of if statement is not a boolean value");
+            }
+
+            if (ifStatement.ElseClause != null)
+                return ExecuteStatements(ifStatement.ElseClause, types, currentClass, variables, out result);
+
+            result = null;
+            return ResultType.ReachForEnd;
         }
     }
 }

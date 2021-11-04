@@ -42,7 +42,7 @@ namespace Luax.Interpreter.Execution
                 throw new LuaXAstGeneratorException(main.Location, "The main method should have either have no parameter or have a string[] parameter");
 
             var rc = LuaXMethodExecutor.Execute(main, TypesLibrary, null, main.Arguments.Count == 0 ? Array.Empty<object>() : new object[] { luaArgs }, out var r);
-            if (rc == LuaXMethodExecutor.ResultType.Default)
+            if (rc == LuaXMethodExecutor.ResultType.ReachForEnd)
                 return 0;
             else if (r is int i)
                 return i;

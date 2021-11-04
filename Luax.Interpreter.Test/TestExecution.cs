@@ -113,6 +113,34 @@ namespace Luax.Interpreter.Test
             }
             thrown.Should().BeTrue();
         }
+
+        [Theory]
+        [InlineData("f", 1, 1.0)]
+        [InlineData("f", 2, 2.0)]
+        [InlineData("f", 10, 3628800)]
+        [InlineData("t", 0, 0.0)]
+        [InlineData("t", 1, 0.1)]
+        [InlineData("t", 2, 0.2)]
+        [InlineData("t", 3, 0.3)]
+        [InlineData("t", 4, -1)]
+        public void TestIf(string methodName, int argument, double expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("IfTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod(methodName, null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsReal().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { argument }, out var r);
+            r.Should().BeOfType<double>();
+            r.Should().Be(expectedValue);
+        }
     }
 }
 

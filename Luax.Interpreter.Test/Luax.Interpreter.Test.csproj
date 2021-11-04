@@ -19,6 +19,7 @@
     <None Remove="TestSources\ConstTest.luax" />
     <None Remove="TestSources\ExceptionStackTraceTest.luax" />
     <None Remove="TestSources\ExpressionTest.luax" />
+    <None Remove="TestSources\IfTest.luax" />
     <None Remove="TestSources\Project1.ini" />
     <None Remove="TestSources\Project2.ini" />
     <None Remove="TestSources\Project3.ini" />
@@ -29,6 +30,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\IfTest.luax" />
     <EmbeddedResource Include="TestSources\ExceptionStackTraceTest.luax" />
     <EmbeddedResource Include="TestSources\ConstTest.luax" />
     <EmbeddedResource Include="TestSources\ConsoleAppError5.luax" />

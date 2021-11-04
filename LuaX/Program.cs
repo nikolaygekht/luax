@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using Luax.Interpreter;
 using Luax.Interpreter.Execution;
 using Luax.Interpreter.Infrastructure.Stdlib;
 using Luax.Parser.Ast;
@@ -44,11 +45,18 @@ namespace LuaX
                     Console.WriteLine($"{error.Source}({err.Line},{err.Column}) - {err.Message}");
                 Environment.ExitCode = -3;
             }
+            catch (LuaXExecutionException executionError)
+            {
+                Console.WriteLine($"{executionError.Locations[0].Source}({executionError.Locations[0].Line},{executionError.Locations[0].Column}) - {executionError.Message}");
+                for (int i = 1; i < executionError.Locations.Count; i++)
+                    Console.WriteLine($"   called from {executionError.Locations[i].Source}({executionError.Locations[i].Line},{executionError.Locations[i].Column})");
+                Environment.ExitCode = -4;
+            }
             catch (Exception exception)
             {
                 Console.WriteLine("Unexpected exception:");
                 Console.WriteLine(exception.ToString());
-                Environment.ExitCode = -4;
+                Environment.ExitCode = -5;
             }
         }
     }

@@ -1,0 +1,25 @@
+﻿class test
+   public static function t(arg : int) : real
+       var r : real;
+       if arg == 1 then
+          r = 0.1;
+       elseif arg == 2 then
+          return 0.2;
+       elseif arg == 3 then
+          r = 0.3;
+       elseif arg == 0 then
+          return r;
+       else
+          r = -1;
+       end
+       return r;
+   end
+
+   public static function f(a : int) : real
+      assert.isTrue(a >= 1, "The value must be greater than 0");
+      if a == 1 then
+         return 1;
+      end
+      return a * f(a - 1);
+   end
+end

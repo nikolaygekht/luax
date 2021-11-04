@@ -87,6 +87,7 @@ namespace Luax.Interpreter.Execution
                     continue;
                 }
 
+                bool matchargs = true;
                 for (int i = 0; i < args.Count; i++)
                 {
                     if (!((args[i] == null && method.Arguments[i].LuaType.IsString()) ||
@@ -94,10 +95,14 @@ namespace Luax.Interpreter.Execution
                           (args[i] is bool && method.Arguments[i].LuaType.IsBoolean()) ||
                           (args[i] is int && method.Arguments[i].LuaType.IsInteger()) ||
                           (args[i] is double && method.Arguments[i].LuaType.IsReal())))
+                    {
                         OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Incorrect, $"The theory data {i + 1}th argument type is does not match to the theory argument type"));
+                        success = false;
+                        matchargs = false;
+                    }
                 }
-
-                success &= RunCase(@class, method, args.ToArray(), argsText);
+                if (matchargs)
+                    success &= RunCase(@class, method, args.ToArray(), argsText);
             }
             return success;
         }
@@ -126,32 +131,31 @@ namespace Luax.Interpreter.Execution
             }
             catch (LuaXAssertionException assertion)
             {
-                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Assert, $"Assertion: {assertion.Message}"));
+                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Assert, $"Assertion: {assertion.Message}", assertion));
                 success = false;
             }
             catch (LuaXExecutionException executionException)
             {
                 if (executionException.InnerException is LuaXAssertionException assertionException1)
                 {
-                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Assert, $"Assertion: {assertionException1.Message}"));
+                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Assert, $"Assertion: {assertionException1.Message}", executionException));
                 }
                 else
                 {
-                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Assert, $"Exception: {executionException.Message}"));
+                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Assert, $"Exception: {executionException.Message}", executionException));
                     success = false;
                 }
             }
             catch (LuaXAstGeneratorException error)
             {
-                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Incorrect, $"Unexpected exception {error.SourceName}({error.Errors[0].Line},{error.Errors[0].Column}) - {error.Errors[0].Message}"));
+                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Incorrect, $"Unexpected exception {error.SourceName}({error.Errors[0].Line},{error.Errors[0].Column}) - {error.Errors[0].Message}", error));
                 success = false;
             }
             catch (Exception exception)
             {
-                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Exception, $"Unexpected exception {exception.GetType().Name}: {exception.Message}"));
+                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Exception, $"Unexpected exception {exception.GetType().Name}: {exception.Message}", exception));
                 success = false;
             }
-
             return success;
         }
     }
