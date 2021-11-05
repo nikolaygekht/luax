@@ -1,0 +1,107 @@
+class listItem
+    public var name : string;
+
+    public static function create(name : string) : listItem
+        var l : listItem;
+        l = new listItem();
+        l.name = name;
+        return l;
+    end
+end
+
+-- subclassing list. pay attention that constructor is overriden!!!
+class testList : list
+    public function testList() : void
+        super.list();
+    end
+
+    public function get(index : int) : listItem
+        return cast<listItem>(super.get(index));
+    end
+end
+
+@TestSuite()
+class listTest
+    @Fact()
+    public function create_empty_viaNew() : void
+        var l : list;
+        l = new list();
+        assert.isTrue(l ~= nil, "value");
+        assert.isTrue(typename(l) == "list", "type");
+        assert.isTrue(l.length() == 0, "size");
+    end
+
+    @Fact()
+    public function create_empty_viaFactory() : void
+        var l : list;
+        l = list.create(nil);
+        assert.isTrue(l ~= nil, "value");
+        assert.isTrue(typename(l) == "list", "type");
+        assert.isTrue(l.length() == 0, "size");
+    end
+
+    @Fact()
+    public function create_fromArray() : void
+        var l : list, s : object[];
+
+        s = new object[3];
+        s[0] = listItem.create("a");
+        s[2] = listItem.create("c");
+
+        l = list.create(s);
+        assert.isTrue(l.length() == 3, "size");
+        assert.isTrue((cast<listItem>(l.get(0))).name == "a", "item 1");
+        assert.isTrue(l.get(1) == nil, "item 2");
+        assert.isTrue((cast<listItem>(l.get(2))).name == "c", "item 3");
+    end
+
+    @Fact()
+    public function create_toArray() : void
+        var l : list, s : object[], d : object[];
+
+        s = new object[3];
+        s[0] = listItem.create("a");
+        s[2] = listItem.create("c");
+
+        l = list.create(s);
+        d = l.toArray();
+
+        assert.isTrue(d.length == 3, "size");
+        assert.isTrue((cast<listItem>(d[0])).name == "a", "item 1");
+        assert.isTrue(l.get(1) == nil, "item 2");
+        assert.isTrue((cast<listItem>(d[2])).name == "c", "item 3");
+    end
+
+    @Fact()
+    public function add() : void
+        var l : list;
+        l = new list();
+        l.add(listItem.create("a"));
+        l.add(listItem.create("b"));
+        l.add(listItem.create("c"));
+        assert.isTrue(l.length() == 3, "length");
+        assert.isTrue(l.get(0) ~= nil, "returns value");
+        assert.isTrue(typename(l.get(0)) == "listItem", "return proper type");
+        assert.isTrue((cast<listItem>(l.get(0))).name == "a", "item 1");
+        assert.isTrue((cast<listItem>(l.get(1))).name == "b", "item 2");
+        assert.isTrue((cast<listItem>(l.get(2))).name == "c", "item 3");
+    end
+
+    @Fact()
+    public function insert() : void
+        var l : testList;
+        l = new testList();
+        l.insert(0, listItem.create("a")); -- insert into empty
+        l.insert(0, listItem.create("b")); -- insert at top
+        l.insert(2, listItem.create("c")); -- insert at end
+        l.insert(1, listItem.create("d")); -- insert in the middle
+        assert.isTrue(l.length() == 4, "length");
+
+        assert.isTrue(l.get(0).name == "b", "item 1");
+        assert.isTrue(l.get(1).name == "d", "item 2");
+        assert.isTrue(l.get(2).name == "a", "item 3");
+        assert.isTrue(l.get(3).name == "c", "item 4");
+    end
+
+    -- TBD: check the rest of methods: remove, clear
+end

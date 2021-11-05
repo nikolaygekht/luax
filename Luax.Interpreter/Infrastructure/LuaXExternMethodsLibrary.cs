@@ -27,6 +27,16 @@ namespace Luax.Interpreter.Infrastructure
         {
             foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.Static))
             {
+                if (method.Name == "Initialize" && method.ReturnType == typeof(void))
+                {
+                    var args = method.GetParameters();
+                    if (args.Length == 1 && args[0].ParameterType == typeof(LuaXTypesLibrary))
+                    {
+                        method.Invoke(null, new object[] { library });
+                    }
+                    continue;
+                }
+
                 var attr = method.GetCustomAttribute<LuaXExternMethodAttribute>();
                 if (attr != null)
                 {

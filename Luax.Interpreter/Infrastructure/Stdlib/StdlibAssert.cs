@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Luax.Parser.Ast;
 
 #pragma warning disable S125                // Sections of code should not be commented out
 #pragma warning disable IDE1006             // Naming rule violation.
@@ -29,7 +28,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             {
                 if (!string.IsNullOrEmpty(message))
                     message = " because " + message;
-                throw new LuaXAssertionException("Expected the condition to be true but it is false" + (message ?? ""));
+                throw new LuaXAssertionException("Expected the condition to be false but it is true" + (message ?? ""));
             }
             return null;
         }

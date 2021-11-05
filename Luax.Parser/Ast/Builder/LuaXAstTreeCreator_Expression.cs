@@ -155,7 +155,7 @@ namespace Luax.Parser.Ast.Builder
             var t1 = arg1.ReturnType;
             var t2 = arg2.ReturnType;
             var n1 = arg1 is LuaXConstantExpression c1 && c1.Value.IsNil;
-            var n2 = arg1 is LuaXConstantExpression c2 && c2.Value.IsNil;
+            var n2 = arg2 is LuaXConstantExpression c2 && c2.Value.IsNil;
 
             //check type compatibility
             if (CanCompare(t1, n1, t2, n2))

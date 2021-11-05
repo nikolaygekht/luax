@@ -23,11 +23,16 @@ namespace Luax.Interpreter.Infrastructure
         public LuaXTypesLibrary(LuaXApplication application)
         {
             mApplication = application;
+
+            mTypes.Add("object", new LuaXClassInstance(LuaXClass.Object));
+
             foreach (var @class in application.Classes)
                 mTypes.Add(@class.Name, new LuaXClassInstance(@class));
-
+            
             ExternMethods.Add(this, typeof(StdlibDate));
+            ExternMethods.Add(this, typeof(StdlibMix));
             ExternMethods.Add(this, typeof(StdlibAssert));
+            ExternMethods.Add(this, typeof(StdlibList));
         }
 
         public string[] GetClassNames() => mTypes.Keys.ToArray();

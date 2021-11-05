@@ -63,6 +63,8 @@ class stdlib
     -- The fractional part is the part of the day (hour * 3600 + minute * 60 + seconds) / 86400.0
     public static extern toJdn(x : datetime) : real;
     public static extern fromJdn(x : real) : datetime;
+
+    public static extern print(x : string) : void;
 end
 
 -- -------------------------------------------------------
@@ -151,6 +153,9 @@ class list
     public extern insert(index : int, value : object) : void;
     public extern remove(index : int) : void;
     public extern clear() : void;
+    public extern toArray() : object[];
+    public extern list() : void;
+    public static extern create(initial : object[]) : list;
 end
 
 -- ----------------------------------------------------------
