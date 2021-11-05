@@ -26,6 +26,7 @@ namespace Luax.Interpreter.Infrastructure
             foreach (var @class in application.Classes)
                 mTypes.Add(@class.Name, new LuaXClassInstance(@class));
 
+            ExternMethods.Add(this, typeof(StdlibString));
             ExternMethods.Add(this, typeof(StdlibDate));
             ExternMethods.Add(this, typeof(StdlibAssert));
         }
