@@ -40,6 +40,10 @@ namespace Luax.Interpreter.Execution
             const int modeOptions = 1;
             const int modeFiles = 2;
             int mode = modeNothing;
+
+            string currentDirectory = Path.IsPathFullyQualified(projectName) ? 
+                new FileInfo(projectName).Directory.FullName : "";
+
             var project = new LuaXProject(projectName)
             {
                 ProjectType = LuaXProjectType.Unknown
@@ -69,7 +73,8 @@ namespace Luax.Interpreter.Execution
                     case modeNothing:
                         throw new LuaXAstGeneratorException(new LuaXElementLocation(projectName, lineNo, 1), "A comment or a section name is expected here");
                     case modeFiles:
-                        project.Files.Add(line);
+                        var filePath = !Path.IsPathFullyQualified(line) ? Path.Combine(currentDirectory, line) : line;
+                        project.Files.Add(filePath);
                         break;
                     case modeOptions:
                         {
