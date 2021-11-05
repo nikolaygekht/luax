@@ -33,5 +33,18 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             }
             return null;
         }
+
+        //public static extern isEquals(expected: object, actual: object, message: string) : void;
+        [LuaXExternMethod("assert", "isEquals")]
+        public static object isEquals(string expected, string actual, string message)
+        {
+            if ((expected != null && actual == null) || (expected == null && actual != null) || !expected.Equals(actual))
+            {
+                if (string.IsNullOrEmpty(message))
+                    message = " for " + message;
+                throw new LuaXAssertionException("Expected '" + expected + "' but found '" + actual + "'" + (message ?? ""));
+            }
+            return null;
+        }
     }
 }

@@ -37,6 +37,12 @@ class suite1
     public function fact5() : void
         assert.isTrue(false, "assert should work");
     end
+    
+    -- good fact, equals
+    @Fact()
+    public function fact6() : void
+        assert.isEquals("value", "incorrectValue", "some field value");
+    end
 
     -- good theory
     @Theory()
