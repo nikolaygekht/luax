@@ -13,7 +13,13 @@ namespace Luax.Interpreter.Execution
     /// </summary>
     public static class LuaXProjectReader
     {
-        public static Func<string, TextReader> OpenProjectFileCallback { get; set; } = projectFile => File.OpenText(projectFile);
+        static ILuaXProjectReaderContentProvider mProjectReaderContentProvider = new DefaultLuaXProjectReaderContentProvider();
+
+        public static ILuaXProjectReaderContentProvider ProjectContentProvider
+        {
+            get => mProjectReaderContentProvider;
+            internal set => mProjectReaderContentProvider = value;
+        }
 
         public static LuaXProject Read(string projectFile)
         {
@@ -29,7 +35,7 @@ namespace Luax.Interpreter.Execution
             }
             else
             {
-                using var reader = OpenProjectFileCallback(projectFile);
+                using var reader = mProjectReaderContentProvider.GetContentReader(projectFile);
                 return Read(projectFile, reader);
             }
         }
@@ -41,8 +47,7 @@ namespace Luax.Interpreter.Execution
             const int modeFiles = 2;
             int mode = modeNothing;
 
-            string currentDirectory = Path.IsPathFullyQualified(projectName) ? 
-                new FileInfo(projectName).Directory.FullName : "";
+            string projectFullDirectorypath = mProjectReaderContentProvider.GetProjectFullDirPath(projectName);
 
             var project = new LuaXProject(projectName)
             {
@@ -73,7 +78,7 @@ namespace Luax.Interpreter.Execution
                     case modeNothing:
                         throw new LuaXAstGeneratorException(new LuaXElementLocation(projectName, lineNo, 1), "A comment or a section name is expected here");
                     case modeFiles:
-                        var filePath = !Path.IsPathFullyQualified(line) ? Path.Combine(currentDirectory, line) : line;
+                        var filePath = mProjectReaderContentProvider.GetFileFullPath(projectFullDirectorypath, line);
                         project.Files.Add(filePath);
                         break;
                     case modeOptions:
