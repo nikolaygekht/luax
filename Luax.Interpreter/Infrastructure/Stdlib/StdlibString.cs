@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace Luax.Interpreter.Infrastructure.Stdlib
@@ -24,7 +23,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("stdlib", "left")]
         public static object Extern_left(string s, int length)
         {
-            return s[..length];
+            return (string)s[..length];
         }
         
         //public static extern trim(s : string) : string;
@@ -38,7 +37,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("stdlib", "right")]
         public static object Extern_right(string s, int length)
         {
-            return s[^length..];
+            return (string)s[^length..];
         }
         
         //public static extern substring(s : string, from : int, length : int) : string;
@@ -60,9 +59,14 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("stdlib", "parse")]
         public static object Extern_parse(string s, string re)
         {
-            return Regex.Matches(s, re).Cast<Match>()
-                .Select(m => m.Value)
-                .ToArray();
+            var matchCollection = Regex.Matches(s, re);
+            var result = new string[matchCollection.Count];
+            var i = 0;
+            foreach (Match m in matchCollection)
+            {
+                result[i++] = m.Value;
+            }
+            return result;
         }
         
         //public static extern unicode(s : string) : int;
@@ -76,7 +80,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("stdlib", "char")]
         public static object Extern_char(int unicode)
         {
-            return ((char)unicode).ToString();
+            return new string((char)unicode, 1);
         }
     }
 }
