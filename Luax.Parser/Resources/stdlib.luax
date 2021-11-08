@@ -6,6 +6,7 @@ class stdlib
     -- string functions
     -- -------------------------------------------------------
     public static extern len(s : string) : int;
+    public static extern indexOf(s : string, sub:string) : int;
     public static extern left(s : string, length : int) : string;
     public static extern trim(s : string) : string;
     public static extern right(s : string, length : int) : string;

@@ -12,7 +12,7 @@ namespace Luax.Interpreter.Test
     {
         public TestConsoleExecutor()
         {
-            LuaXProjectReader.OpenProjectFileCallback = name => new StringReader(ResourceReader.Read(typeof(TestProjectReader).Assembly, name));
+            LuaXProjectReader.ProjectContentProvider = new ResourcesProjectReaderContent(typeof(TestProjectReader).Assembly);          
             LuaXProjectExecutorBase.ReadFileCallback = name => ResourceReader.Read(typeof(TestProjectReader).Assembly, name);
         }
 

@@ -15,7 +15,7 @@ namespace Luax.Interpreter.Test
 
         public TestTestExecutor()
         {
-            LuaXProjectReader.OpenProjectFileCallback = name => new StringReader(ResourceReader.Read(typeof(TestProjectReader).Assembly, name));
+            LuaXProjectReader.ProjectContentProvider = new ResourcesProjectReaderContent(typeof(TestProjectReader).Assembly);
             LuaXProjectExecutorBase.ReadFileCallback = name => ResourceReader.Read(typeof(TestProjectReader).Assembly, name);
             var project = new LuaXProject("TestSuite")
             {
