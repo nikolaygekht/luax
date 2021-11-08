@@ -7,13 +7,13 @@
     <type name="luax">
         <annotation>
             <documentation><![CDATA[
-                LuaX 5.1 Syntax
-                See https://github.com/nikolaygekht/luax
-                for details
+                Lua 5.1 Syntax 0.2 ftp://ftp.velest.ru
+                Lua http://www.lua.org
+                <filename>/\.(lua)$/i</filename>
                 Depends on C scheme
             ]]></documentation>
             <contributors>
-                Nikolay Gekht
+                Serj Che
             </contributors>
         </annotation>
 
@@ -36,8 +36,8 @@
            <block start="/(\()/" end="/(\))/" scheme="luax" region00="Symbol" region01="def:PairStart" region10="Symbol" region11="def:PairEnd" />
            <block start="/(\[)/" end="/(\])/" scheme="luax" region00="Symbol" region01="def:PairStart" region10="Symbol" region11="def:PairEnd" />
 
-            <inherit scheme="def:Number"/>
-
+           <regexp match="/0[xX][a-fA-F]([a-fA-F_]*[a-fA-F])?/" region="Number" />
+           <regexp match="/[\d]([\d_]*[\d])?(\.[\d]([\d_]*[\d])?(e[+-]?\d+))?/" region="Number" />
 
             <block start="/\b(?{Outline}(?{PairStart}(?{Keyword}class))\b\s*\M\S*\s*\()/"
                          end="/\b(?{PairEnd}(?{Keyword}end))\b/" scheme="luax"/>
