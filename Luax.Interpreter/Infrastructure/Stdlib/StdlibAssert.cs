@@ -40,7 +40,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if ((expected != null && actual == null) || (expected == null && actual != null) || !expected.Equals(actual))
             {
-                if (!string.IsNullOrEmpty(message))
+                if (string.IsNullOrEmpty(message))
                     message = " for " + message;
                 throw new LuaXAssertionException("Expected '" + expected + "' but found '" + actual + "'" + (message ?? ""));
             }
