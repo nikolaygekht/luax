@@ -1,6 +1,5 @@
 bin/
 obj/
-.nuget/
 .vs/
 TestResults/
 *.csproj.user
