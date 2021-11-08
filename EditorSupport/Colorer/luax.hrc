@@ -36,8 +36,8 @@
            <block start="/(\()/" end="/(\))/" scheme="luax" region00="Symbol" region01="def:PairStart" region10="Symbol" region11="def:PairEnd" />
            <block start="/(\[)/" end="/(\])/" scheme="luax" region00="Symbol" region01="def:PairStart" region10="Symbol" region11="def:PairEnd" />
 
-           <regexp match="/0[xX][a-fA-F]([a-fA-F_]*[a-fA-F])?/" region="Number" />
-           <regexp match="/[\d]([\d_]*[\d])?(\.[\d]([\d_]*[\d])?(e[+-]?\d+))?/" region="Number" />
+           <regexp match="/\b0[xX][a-fA-F]([a-fA-F_]*[a-fA-F])?\b/" region="Number" />
+           <regexp match="/\b[\d]([\d_]*[\d])?(\.[\d]([\d_]*[\d])?(e[+-]?\d+))?\b/" region="Number" />
 
             <block start="/\b(?{Outline}(?{PairStart}(?{Keyword}class))\b\s*\M\S*\s*\()/"
                          end="/\b(?{PairEnd}(?{Keyword}end))\b/" scheme="luax"/>

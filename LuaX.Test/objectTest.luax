@@ -1,0 +1,35 @@
+@TestSuite()
+class objectTest
+    var x : int;
+
+    @Fact()
+    public function arrayIsReference() : void
+        var a1 : int[], a2 : int[];
+        a1 = new int[5];
+        a2 = a1;
+        a1[2] = 10;
+
+        assert.isTrue(a2.length == 5, "arr1");
+        assert.isTrue(a2[2] == 10, "arr1");
+    end
+
+    @Fact()
+    public function objectIsReference() : void
+        var x1 : objectTest, x2 : objectTest;
+        x1 = new objectTest();
+        x2 = x1;
+        x1.x = 10;
+        assert.isTrue(x2.x == 10, "");
+    end
+
+    @Fact()
+    public function stringIsNotReference() : void
+        var x1 : string, x2 : string;
+        x1 = "a";
+        x2 = x1;
+        x1 = x1 .. "b";
+
+        assert.isTrue(x1 == "ab", "1");
+        assert.isTrue(x2 == "a", "2");
+    end
+end
