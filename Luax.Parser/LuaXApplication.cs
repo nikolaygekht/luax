@@ -48,7 +48,7 @@ namespace Luax.Parser
             for (int i = 0; i < Classes.Count; i++)
             {
                 var parser = new LuaXAstTreeCreator(Classes[i].Location.Source, Classes);
-                Classes[i].Pass2(parser);
+                Classes[i].Pass2(this, parser);
             }
         }
     }

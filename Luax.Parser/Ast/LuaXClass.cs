@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
@@ -70,8 +71,25 @@ namespace Luax.Parser.Ast
             Location = location;
         }
 
-        internal void Pass2(LuaXAstTreeCreator creator)
+        private void ValidateParentChain(LuaXApplication application)
         {
+            HashSet<string> parents = new HashSet<string>();
+            string name = Name;
+            while (!string.IsNullOrEmpty(name) && name != "object")
+            {
+                if (parents.Contains(name))
+                    throw new LuaXAstGeneratorException(Location, $"Class contains itself in the class inheritance chain");
+                parents.Add(name);
+                application.Classes.Search(name, out var @class);
+                name = @class.Parent;
+            }
+        }
+
+        internal void Pass2(LuaXApplication application, LuaXAstTreeCreator creator)
+        {
+            ValidateParentChain(application);
+
+            //process methods
             for (int i = 0; i < Methods.Count; i++)
             {
                 var method = Methods[i];

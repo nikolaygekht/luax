@@ -460,5 +460,32 @@ namespace Luax.Parser.Test
             decl.Value.ConstantType.Should().Be(LuaXType.Integer);
             decl.Value.Value.Should().Be(10);
         }
+
+        [Fact]
+        public void CyclicReference_Self_OK()
+        {
+            var app = new LuaXApplication();
+            app.Classes.Add(new LuaXClass("a", "object", new LuaXElementLocation("", 0, 0)));
+            ((Action)(() => app.Pass2())).Should().NotThrow<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void CyclicReference_Self_Fail()
+        {
+            var app = new LuaXApplication();
+            app.Classes.Add(new LuaXClass("a", "a", new LuaXElementLocation("", 0, 0)));
+            ((Action)(() => app.Pass2())).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void CyclicReference_InChain_Self_Fail()
+        {
+            var app = new LuaXApplication();
+            app.Classes.Add(new LuaXClass("a", "d", new LuaXElementLocation("", 0, 0)));
+            app.Classes.Add(new LuaXClass("b", "a", new LuaXElementLocation("", 0, 0)));
+            app.Classes.Add(new LuaXClass("c", "b", new LuaXElementLocation("", 0, 0)));
+            app.Classes.Add(new LuaXClass("d", "a", new LuaXElementLocation("", 0, 0)));
+            ((Action)(() => app.Pass2())).Should().Throw<LuaXAstGeneratorException>();
+        }
     }
 }
