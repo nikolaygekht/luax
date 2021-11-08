@@ -186,5 +186,4 @@ end
 class assert
    public static extern isTrue(condition : boolean, message : string) : void;
    public static extern isFalse(condition : boolean, message : string) : void;
-   public static extern isEquals(expected: string, actual: string, message: string) : void;
 end

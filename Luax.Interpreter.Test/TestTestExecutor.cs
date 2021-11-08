@@ -94,17 +94,6 @@ namespace Luax.Interpreter.Test
         }
 
         [Fact]
-        public void ExecuteIsEqualsFalse()
-        {
-            mExecutor.Run(System.Array.Empty<string>());
-            var args = mExecutionResults.Find(args => args.Class == "suite1" && args.Method == "fact6");
-            args.Should().NotBeNull();
-            args.Data.Should().BeEmpty();
-            args.Status.Should().Be(LuaXTestStatus.Assert);
-            args.Message.Should().Contain("some field value");
-        }
-
-        [Fact]
         public void ExecuteTheory_OK()
         {
             mExecutor.Run(System.Array.Empty<string>());
