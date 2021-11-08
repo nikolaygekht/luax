@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<!DOCTYPE hrc PUBLIC "-//Cail Lomecb//DTD Colorer HRC take5//EN"
+  "http://colorer.sf.net/2003/hrc.dtd">
+<hrc version="take5" xmlns="http://colorer.sf.net/2003/hrc"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://colorer.sf.net/2003/hrc http://colorer.sf.net/2003/hrc.xsd">
+    <type name="luax">
+        <annotation>
+            <documentation><![CDATA[
+                LuaX 5.1 Syntax
+                See https://github.com/nikolaygekht/luax
+                for details
+                Depends on C scheme
+            ]]></documentation>
+            <contributors>
+                Nikolay Gekht
+            </contributors>
+        </annotation>
+
+        <region name="String" parent="def:String"/>
+        <region name="Comment" parent="def:Comment"/>
+        <region name="Directive" parent="def:Directive"/>
+        <region name="Symbol" parent="def:Symbol"/>
+        <region name="Keyword" parent="def:Keyword"/>
+        <region name="Number" parent="def:Number"/>
+        <region name="PairStart" parent="def:PairStart"/>
+        <region name="PairEnd" parent="def:PairEnd"/>
+        <region name="StringEscape" parent="c:StringEscape"/>
+        <region name="Outline" parent="def:Outlined"/>
+
+        <scheme name="luax">
+            <regexp match="/(\-\-.*$)/" region="Comment"/>
+            <regexp match="/ (&#34;) (( \\[^x] | \\x[0-9A-Za-z][0-9A-Za-z] | [^\\&#34;] )*?) (&#34;) /x" region0="String" region1="def:PairStart" region4="def:PairEnd" />
+            <regexp match="/@(\w+)/" region0="Directive" />
+
+           <block start="/(\()/" end="/(\))/" scheme="luax" region00="Symbol" region01="def:PairStart" region10="Symbol" region11="def:PairEnd" />
+           <block start="/(\[)/" end="/(\])/" scheme="luax" region00="Symbol" region01="def:PairStart" region10="Symbol" region11="def:PairEnd" />
+
+            <inherit scheme="def:Number"/>
+
+
+            <block start="/\b(?{Outline}(?{PairStart}(?{Keyword}class))\b\s*\M\S*\s*\()/"
+                         end="/\b(?{PairEnd}(?{Keyword}end))\b/" scheme="luax"/>
+            <block start="/\b(?{Outline}(?{PairStart}(?{Keyword}function))\b\s*\M\S*\s*\()/"
+                         end="/\b(?{PairEnd}(?{Keyword}end))\b/" scheme="luax"/>
+            <block start="/(?{PairStart}(?{Keyword}if))\b/"
+                         end="/\b(?{PairEnd}(?{Keyword}end))\b/" scheme="luax"/>
+            <block start="/\b(?{PairStart}(?{Keyword}(while|for))\s+\M.*)\s+do/"
+                         end="/\b(?{PairEnd}(?{Keyword}end))\b/" scheme="luax"/>
+            <block start="/\b(?{PairStart}(?{Keyword}repeat))\b/"
+                         end="/\b(?{PairEnd}(?{Keyword}until))\b\M[^;\n\r]+/" scheme="luax"/>
+            <block start="/(\s?(?{PairStart}(?{Keyword}do)))\b/"
+                         end="/\b\M(?{PairEnd}(?{Keyword}end))\b/" scheme="luax"
+                         content-priority="low" priority="low"/>
+
+            <keywords region="Symbol">
+                <symb name="+"/>
+                <symb name="-"/>
+                <symb name="*"/>
+                <symb name="/"/>
+                <symb name="^"/>
+                <symb name="%"/>
+                <symb name="&lt;"/>
+                <symb name="&lt;="/>
+                <symb name="&gt;"/>
+                <symb name="&gt;="/>
+                <symb name="=="/>
+                <symb name="~="/>
+                <symb name="="/>
+                <symb name=";"/>
+                <symb name=":"/>
+                <symb name=","/>
+                <symb name="."/>
+                <symb name=".."/>
+            </keywords>
+
+            <keywords region="Keyword">
+                <word name="and"/>
+                <word name="or"/>
+                <word name="not"/>
+
+                <word name="false"/>
+                <word name="true"/>
+
+                <word name="nil"/>
+                <word name="boolean"/>
+                <word name="string"/>
+                <word name="int"/>
+                <word name="real"/>
+                <word name="void"/>
+                <word name="function"/>
+                <word name="var"/>
+
+                <word name="else"/>
+                <word name="elseif"/>
+                <word name="in"/>
+                <word name="then"/>
+
+                <word name="do"/>
+                <word name="end"/>
+                <word name="for"/>
+                <word name="if"/>
+                <word name="repeat"/>
+                <word name="until"/>
+                <word name="while"/>
+                <word name="class"/>
+                <word name="public"/>
+                <word name="internal"/>
+                <word name="private"/>
+                <word name="cast"/>
+                <word name="typename"/>
+                <word name="try"/>
+                <word name="catch"/>
+                <word name="throw"/>
+            </keywords>
+        </scheme>
+    </type>
+</hrc>

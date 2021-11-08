@@ -1,0 +1,82 @@
+class inheritanceTestA
+    private var propertyA : string;
+
+    -- constructor
+    public function inheritanceTestA() : void
+        propertyA = "initA";
+    end
+
+    -- property setter
+    public function setA(value : string) : void
+        propertyA = value;
+    end
+
+    -- property getter
+    public function getA() : string
+        return propertyA;
+    end
+
+    -- overridable
+    public function toString() : string
+        return propertyA;
+    end
+end
+
+class inheritanceTestB : inheritanceTestA
+    private var propertyB : string;
+
+    -- constructor
+    public function inheritanceTestB() : void
+        super.inheritanceTestA();
+        propertyB = "initB";
+    end
+
+    -- property setter
+    public function setB(value : string) : void
+        propertyB = value;
+    end
+
+    -- property getter
+    public function getB() : string
+        return propertyB;
+    end
+
+    -- overridable
+    public function toString() : string
+        return super.toString() .. propertyB;
+    end
+end
+
+@TestSuite()
+class inheritanceTest
+    @Fact()
+
+    public function constructorOfA() : void
+        var x : inheritanceTestA;
+        x = new inheritanceTestA();
+        assert.isTrue(x.getA() == "initA", "a");
+    end
+
+    @Fact()
+    public function constructorOfB() : void
+        var x : inheritanceTestB;
+        x = new inheritanceTestB();
+        assert.isTrue(x.getA() == "initA", "a");
+        assert.isTrue(x.getB() == "initB", "b");
+    end
+
+    @Fact()
+    public function overridable() : void
+        var x : inheritanceTestA, y : inheritanceTestA;
+        x = new inheritanceTestA();
+        y = new inheritanceTestB();
+
+        assert.isTrue(typename(x) == "inheritanceTestA", "type x");
+        assert.isTrue(typename(y) == "inheritanceTestB", "type y");
+
+        assert.isTrue(x.toString() == "initA", "x");
+        assert.isTrue(y.toString() == "initAinitB", "y");
+    end
+end
+
+

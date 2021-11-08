@@ -133,7 +133,8 @@ grammar LuaX
 
         CALLABLE_EXPR -> ASSIGN_TARGET |
                          METHOD |
-                         CALL;
+                         CALL | 
+                         BRACKET_EXPR;
 
         BRACKET_EXPR -> L_ROUND_BRACKET EXPR R_ROUND_BRACKET;
 

@@ -47,7 +47,7 @@ namespace Luax.Interpreter.Expression
             {
                 variables.Add(@this.Class.LuaType.TypeOf(), "this", @this);
                 if (@this.Class.LuaType.ParentClass != null)
-                    variables.Add(@this.Class.LuaType.TypeOf(), "super", @this.Class.LuaType.ParentClass.TypeOf());
+                    variables.Add(@this.Class.LuaType.ParentClass.TypeOf(), "super", @this);
             }
 
             types.SearchClass(method.Class.Name, out var currentClass);
@@ -70,7 +70,6 @@ namespace Luax.Interpreter.Expression
                     args1[0] = @this;
                     for (int i = 0; i < args.Length; i++)
                         args1[i + 1] = args[i];
-                    result = @delegate.Invoke(null, args1);
                     args = args1;
                 }
                 result = @delegate.Invoke(null, args);

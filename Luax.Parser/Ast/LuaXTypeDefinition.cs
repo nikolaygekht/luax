@@ -13,6 +13,7 @@ namespace Luax.Parser.Ast
         public static LuaXTypeDefinition Real { get; } = new LuaXTypeDefinition() { TypeId = LuaXType.Real };
         public static LuaXTypeDefinition Datetime { get; } = new LuaXTypeDefinition() { TypeId = LuaXType.Datetime };
         public static LuaXTypeDefinition Boolean { get; } = new LuaXTypeDefinition() { TypeId = LuaXType.Boolean };
+        public static LuaXTypeDefinition Void { get; } = new LuaXTypeDefinition() { TypeId = LuaXType.Void };
 
         /// <summary>
         /// The lua type.

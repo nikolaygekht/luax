@@ -115,6 +115,8 @@ namespace Luax.Interpreter.Expression
                 return LuaXTypeDefinition.Integer.ToString();
             else if (argument is double)
                 return LuaXTypeDefinition.Real.ToString();
+            else if (argument is string)
+                return LuaXTypeDefinition.String.ToString();
             else if (argument is DateTime)
                 return LuaXTypeDefinition.Datetime.ToString();
             else if (argument is bool)
