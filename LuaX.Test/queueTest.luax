@@ -1,0 +1,44 @@
+@TestSuite()
+class queueTest
+    @Fact()
+    public function emptyQueue() : void
+        var q : queue;
+        q = new queue();
+        assert.isTrue(q.length() == 0, "length");
+        assert.isTrue(q.peek() == nil, "peek");
+    end
+
+    @Fact()
+    public function happyDayScenario() : void
+        var q : queue, a : listItem, b : listItem, c : listItem;
+
+        a = listItem.create("a");
+        b = listItem.create("b");
+        c = listItem.create("c");
+
+        q = new queue();
+
+        q.enqueue(a);
+        assert.isTrue(q.length() == 1, "length1");
+        assert.isTrue(q.peek() == a, "peek1");
+
+        q.enqueue(b);
+        assert.isTrue(q.length() == 2, "length2");
+        assert.isTrue(q.peek() == a, "peek2");
+
+        q.enqueue(c);
+        assert.isTrue(q.length() == 3, "length3");
+        assert.isTrue(q.peek() == a, "peek3");
+
+        assert.isTrue(q.dequeue() == a, "dequeue1");
+        assert.isTrue(q.length() == 2, "length4");
+        assert.isTrue(q.peek() == b, "peek4");
+
+        assert.isTrue(q.dequeue() == b, "dequeue2");
+        assert.isTrue(q.length() == 1, "length5");
+        assert.isTrue(q.peek() == c, "peek5");
+
+        assert.isTrue(q.dequeue() == c, "dequeue3");
+        assert.isTrue(q.length() == 0, "length6");
+    end
+end

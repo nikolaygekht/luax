@@ -1,0 +1,45 @@
+@TestSuite()
+class stackTest
+    @Fact()
+    public function emptyStack() : void
+        var q : stack;
+        q = new stack();
+        assert.isTrue(q.length() == 0, "length");
+        assert.isTrue(q.peek() == nil, "peek");
+    end
+
+    @Fact()
+    public function happyDayScenario() : void
+        var q : stack, a : listItem, b : listItem, c : listItem;
+
+        a = listItem.create("a");
+        b = listItem.create("b");
+        c = listItem.create("c");
+
+        q = new stack();
+
+        q.push(a);
+        assert.isTrue(q.length() == 1, "length1");
+        assert.isTrue(q.peek() == a, "peek1");
+
+        q.push(b);
+        assert.isTrue(q.length() == 2, "length2");
+        assert.isTrue(q.peek() == b, "peek2");
+
+        q.push(c);
+        assert.isTrue(q.length() == 3, "length3");
+        assert.isTrue(q.peek() == c, "peek3");
+
+        assert.isTrue(q.pop() == c, "pop1");
+        assert.isTrue(q.length() == 2, "length4");
+        assert.isTrue(q.peek() == b, "peek4");
+
+        assert.isTrue(q.pop() == b, "pop2");
+        assert.isTrue(q.length() == 1, "length5");
+        assert.isTrue(q.peek() == a, "peek5");
+
+        assert.isTrue(q.pop() == a, "pop3");
+        assert.isTrue(q.length() == 0, "length6");
+    end
+
+end
