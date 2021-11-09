@@ -175,7 +175,7 @@ end
 -- ----------------------------------------------------------
 -- string -> object map
 -- ----------------------------------------------------------
-class string_map 
+class stringMap 
     public extern length() : int;
     public extern contains(key : string) : boolean;
     public extern get(key : string) : object;
@@ -183,6 +183,7 @@ class string_map
     public extern remove(key : string) : void;
     public extern keys() : string[];
     public extern clear() : void;
+    public extern stringMap() : void;
 end
 
 -- -----------------------------------------------------------
