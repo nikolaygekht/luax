@@ -209,10 +209,22 @@ class stack
     public extern stack() : void;
 end
 
+-- ------------------------------------------------------------
+-- action class
+-- ------------------------------------------------------------
+@Interface()
+class action
+    public function invoke() : void
+    end
+end
+
 -- -----------------------------------------------------------
 -- assertion class
 -- -----------------------------------------------------------
 class assert
    public static extern isTrue(condition : boolean, message : string) : void;
    public static extern isFalse(condition : boolean, message : string) : void;
+
+   public static extern throws(action : action, message : string) : void;
+   public static extern doesNotThrow(action : action, message : string) : void;
 end
