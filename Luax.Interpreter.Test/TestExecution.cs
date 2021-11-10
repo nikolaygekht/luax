@@ -141,6 +141,38 @@ namespace Luax.Interpreter.Test
             r.Should().BeOfType<double>();
             r.Should().Be(expectedValue);
         }
+
+        [Theory]
+        [InlineData("f", 6, 15)]
+        [InlineData("f", 5, 0)]
+        [InlineData("f", 4, 5)]
+        [InlineData("f", 3, 9)]
+        [InlineData("f", 2, 12)]
+        [InlineData("f", 1, 14)]
+        [InlineData("t", 6, 15)]
+        [InlineData("t", 5, 0)]
+        [InlineData("t", 4, 5)]
+        [InlineData("t", 3, 9)]
+        [InlineData("t", 2, 12)]
+        [InlineData("t", 1, 14)]
+        public void TestWhile(string methodName, int argument, int expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("WhileTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod(methodName, null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsInteger().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { argument }, out var r);
+            r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
     }
 }
 

@@ -1,0 +1,49 @@
+@TestSuite()
+class whileTest
+    private static function dummy(arg : int) : int
+      var i : int, summ : int;
+      i = 5;
+      summ = 0;
+      while i > 0 do
+        if arg == i then
+           break;
+        end
+        summ = summ + i;
+        i = i - 1;
+        continue;
+      end
+      return summ;
+   end
+
+    @Theory()
+    @TheoryData(6, 15)
+    @TheoryData(5, 0)
+    @TheoryData(4, 5)
+    @TheoryData(3, 9)
+    @TheoryData(2, 12)
+    @TheoryData(1, 14)
+    public function testDummy(arg : int, expected : int) : void
+        assert.isTrue(dummy(arg) == expected, "");
+    end
+
+    public static function factorial(a : int) : real
+      assert.isTrue(a >= 1, "The value must be greater than 0");
+      var result : int, i : int;
+      result = 1;
+      i = 1;
+      while i <= a do
+         result = result * i;
+         i = i + 1;
+      end
+      return 1.0 * result;
+    end
+
+    @Theory()
+    @TheoryData(1, 1.0)
+    @TheoryData(2, 2.0)
+    @TheoryData(3, 6.0)
+    @TheoryData(10, 3628800.0)
+    public function testFactorial(arg : int, expected : real) : void
+        assert.isTrue(factorial(arg) == expected, "");
+    end
+end

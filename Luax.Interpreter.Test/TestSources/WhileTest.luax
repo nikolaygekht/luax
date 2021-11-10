@@ -1,0 +1,33 @@
+﻿class test
+   public static function t(arg : int) : int
+      var i : int, summ : int;
+      i = 5;
+      summ = 0;
+      while i > 0 do
+        if arg == i then
+           break;
+        end
+        summ = summ + i;
+        i = i - 1;
+        continue;
+      end
+      return summ;
+   end
+
+   public static function f(arg : int) : int
+      var i : int, summ : int;
+      i = 5;
+      summ = 0;
+      while true do
+        if arg == i then
+           break;
+        end
+        summ = summ + i;
+        i = i - 1;
+        if i <= 0 then
+           break;
+        end
+      end
+      return summ;
+   end
+end

@@ -27,6 +27,7 @@
     <None Remove="TestSources\Project5.ini" />
     <None Remove="TestSources\Stdlibtest.luax" />
     <None Remove="TestSources\TestSuite.luax" />
+    <None Remove="TestSources\WhileTest.luax" />
   </ItemGroup>
 
   <ItemGroup>
@@ -52,6 +53,7 @@
     <EmbeddedResource Include="TestSources\CastTest.luax" />
     <EmbeddedResource Include="TestSources\ExpressionTest.luax" />
     <EmbeddedResource Include="TestSources\ClassesTest1.luax" />
+    <EmbeddedResource Include="TestSources\WhileTest.luax" />
   </ItemGroup>
 
   <ItemGroup>
