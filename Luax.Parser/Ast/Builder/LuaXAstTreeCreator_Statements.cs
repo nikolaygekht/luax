@@ -280,7 +280,7 @@ namespace Luax.Parser.Ast.Builder
         {
             LuaXBreakStatement stmt = new LuaXBreakStatement(new LuaXElementLocation(Name, node));
             if (loopsDepth <= 0)
-                throw new LuaXAstGeneratorException(Name, new LuaXParserError(stmt.Location, "The BREAK statement is not in loop"));
+                throw new LuaXAstGeneratorException(Name, new LuaXParserError(stmt.Location, "The break statement is not in loop"));
             statements.Add(stmt);
         }
 
@@ -295,7 +295,7 @@ namespace Luax.Parser.Ast.Builder
         {
             LuaXContinueStatement stmt = new LuaXContinueStatement(new LuaXElementLocation(Name, node));
             if (loopsDepth <= 0)
-                throw new LuaXAstGeneratorException(Name, new LuaXParserError(stmt.Location, "The CONTINUE statement is not in loop"));
+                throw new LuaXAstGeneratorException(Name, new LuaXParserError(stmt.Location, "The continue statement is not in loop"));
             statements.Add(stmt);
         }
 

@@ -6,7 +6,9 @@
 
   <ItemGroup>
     <None Remove="TestSources\Break1.luax" />
+    <None Remove="TestSources\Break2.luax" />
     <None Remove="TestSources\Continue1.luax" />
+    <None Remove="TestSources\Continue2.luax" />
     <None Remove="TestSources\Debug.luax" />
     <None Remove="TestSources\Expression1.luax" />
     <None Remove="TestSources\If1.luax" />
@@ -20,7 +22,9 @@
 
   <ItemGroup>
     <EmbeddedResource Include="TestSources\Break1.luax" />
+    <EmbeddedResource Include="TestSources\Break2.luax" />
     <EmbeddedResource Include="TestSources\Continue1.luax" />
+    <EmbeddedResource Include="TestSources\Continue2.luax" />
     <EmbeddedResource Include="TestSources\Debug.luax" />
     <EmbeddedResource Include="TestSources\If1.luax" />
     <EmbeddedResource Include="TestSources\ParseClassMethods.luax" />
