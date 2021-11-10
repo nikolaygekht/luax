@@ -1,0 +1,76 @@
+class assertTestAction_CheckTrueForTrue : action
+    public function invoke() : void
+        assert.isTrue(true, "");
+    end
+end
+
+class assertTestAction_CheckTrueForFalse : action
+    public function invoke() : void
+        assert.isFalse(true, "");
+    end
+end
+
+class assertTestAction_CheckFalseForTrue : action
+    public function invoke() : void
+        assert.isTrue(false, "");
+    end
+end
+
+class assertTestAction_CheckFalseForFalse : action
+    public function invoke() : void
+        assert.isFalse(false, "");
+    end
+end
+
+class assertTestAction_CheckInvoked : action
+    public var invoked : boolean;
+    public function invoke() : void
+        invoked = true;
+    end
+end
+
+class assertTestAction_SuppressThrow : action
+    public var invoked : boolean;
+    public function invoke() : void
+        var i : int;
+        i = 1 / 0;
+    end
+end
+
+@TestSuite()
+class assertionTest
+
+    @Fact()
+    public function checkInvoked() : void
+        var action : assertTestAction_CheckInvoked;
+        action = new assertTestAction_CheckInvoked();
+        assert.isFalse(action.invoked, "before");
+        assert.doesNotThrow(action, "");
+        assert.isTrue(action.invoked, "after");
+    end
+
+    @Fact()
+    public function suppressThrow() : void
+        assert.throws(new assertTestAction_SuppressThrow(), "");
+    end
+
+    @Fact()
+    public function isTrue_Success() : void
+        assert.doesNotThrow(new assertTestAction_CheckTrueForTrue(), "");
+    end
+
+    @Fact()
+    public function isFalse_Success() : void
+        assert.doesNotThrow(new assertTestAction_CheckFalseForFalse(), "");
+    end
+
+    @Fact()
+    public function isTrue_Fail() : void
+        assert.throws(new assertTestAction_CheckFalseForTrue(), "");
+    end
+
+    @Fact()
+    public function isFalse_Fail() : void
+        assert.throws(new assertTestAction_CheckTrueForFalse(), "");
+    end
+end

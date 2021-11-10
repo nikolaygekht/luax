@@ -186,9 +186,45 @@ class string_map
 end
 
 -- -----------------------------------------------------------
+-- Queue 
+-- -----------------------------------------------------------
+class queue
+    public extern length() : int;
+    public extern enqueue(value : object) : void;
+    public extern peek() : object;
+    public extern dequeue() : object;
+    public extern clear() : void;
+    public extern queue() : void;
+end
+
+-- -----------------------------------------------------------
+-- Stack 
+-- -----------------------------------------------------------
+class stack
+    public extern length() : int;
+    public extern push(value : object) : void;
+    public extern peek() : object;
+    public extern pop() : object;
+    public extern clear() : void;
+    public extern stack() : void;
+end
+
+-- ------------------------------------------------------------
+-- action class
+-- ------------------------------------------------------------
+@Interface()
+class action
+    public function invoke() : void
+    end
+end
+
+-- -----------------------------------------------------------
 -- assertion class
 -- -----------------------------------------------------------
 class assert
    public static extern isTrue(condition : boolean, message : string) : void;
    public static extern isFalse(condition : boolean, message : string) : void;
+
+   public static extern throws(action : action, message : string) : void;
+   public static extern doesNotThrow(action : action, message : string) : void;
 end

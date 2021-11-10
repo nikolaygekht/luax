@@ -424,6 +424,12 @@ class expressionTest
     end
 
     @Fact()
+    public function logicalPriority() : void
+        assert.isTrue(false or true and true, "1");
+        assert.isTrue(false and true or true, "2");
+    end
+
+    @Fact()
     public function nearTest() : void
         assert.isTrue(near(1.0, 1.0), "near1");
         assert.isTrue(near(1.0 / 3.0, 2.0 / 6.0), "near2");
