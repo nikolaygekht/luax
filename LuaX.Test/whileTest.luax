@@ -46,4 +46,33 @@ class whileTest
     public function testFactorial(arg : int, expected : real) : void
         assert.isTrue(factorial(arg) == expected, "");
     end
+
+   public static function stringMaker(str : string, strRep : int, rep : int) : string
+      var i : int, j : int, substr : string, resStr : string;
+      i = rep;
+      resStr = "";
+      while i > 0 do
+        j = strRep;
+        substr = "";
+        while j > 0 do
+           substr = substr .. str;
+           j = j - 1;
+        end
+        if i < rep then
+           resStr = resStr .. "_";
+        end
+        resStr = resStr .. substr;
+        i = i - 1;
+      end
+      return resStr;
+   end
+
+    @Theory()
+    @TheoryData("a", 3, 1, "aaa")
+    @TheoryData("b", 4, 2, "bbbb_bbbb")
+    @TheoryData("b", 4, 3, "bbbb_bbbb_bbbb")
+    public function testStringMaker(str : string, strRep : int, rep : int, expected : string) : void
+        assert.isTrue(stringMaker(str, strRep, rep) == expected, "");
+    end
+
 end

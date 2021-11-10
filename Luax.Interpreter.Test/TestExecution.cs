@@ -173,6 +173,31 @@ namespace Luax.Interpreter.Test
             r.Should().BeOfType<int>();
             r.Should().Be(expectedValue);
         }
+
+        [Theory]
+        [InlineData("a", 3, 1, "aaa")]
+        [InlineData("b", 4, 2, "bbbb_bbbb")]
+        [InlineData("b", 4, 3, "bbbb_bbbb_bbbb")]
+        public void NestedTestWhile(string str, int strRep, int rep, string expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("WhileNestedTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("stringMaker", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(3);
+            method.Arguments[0].LuaType.IsString().Should().BeTrue();
+            method.Arguments[1].LuaType.IsInteger().Should().BeTrue();
+            method.Arguments[2].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsString().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { str, strRep, rep }, out var r);
+            r.Should().BeOfType<string>();
+            r.Should().Be(expectedValue);
+        }
     }
 }
 
