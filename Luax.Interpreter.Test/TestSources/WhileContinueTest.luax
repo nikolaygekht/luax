@@ -4,6 +4,10 @@
       i = arg;
       summ = 0;
       while i > 0 do
+        if i == 5 then
+           i = i - 1;
+           continue;
+        end
         summ = summ + i;
         i = i - 1;
       end

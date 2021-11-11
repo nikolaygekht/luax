@@ -1,9 +1,12 @@
 ﻿class test
    public static function dummy(arg : int) : int
       var i : int, summ : int;
-      i = arg;
+      i = 5;
       summ = 0;
       while i > 0 do
+        if arg == i then
+           break;
+        end
         summ = summ + i;
         i = i - 1;
       end

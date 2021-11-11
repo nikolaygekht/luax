@@ -143,19 +143,13 @@ namespace Luax.Interpreter.Test
         }
 
         [Theory]
-        [InlineData("f", 6, 15)]
-        [InlineData("f", 5, 0)]
-        [InlineData("f", 4, 5)]
-        [InlineData("f", 3, 9)]
-        [InlineData("f", 2, 12)]
-        [InlineData("f", 1, 14)]
-        [InlineData("t", 6, 15)]
-        [InlineData("t", 5, 0)]
-        [InlineData("t", 4, 5)]
-        [InlineData("t", 3, 9)]
-        [InlineData("t", 2, 12)]
-        [InlineData("t", 1, 14)]
-        public void TestWhile(string methodName, int argument, int expectedValue)
+        [InlineData(6, 21)]
+        [InlineData(5, 15)]
+        [InlineData(4, 10)]
+        [InlineData(3, 6)]
+        [InlineData(2, 3)]
+        [InlineData(1, 1)]
+        public void TestWhile(int argument, int expectedValue)
         {
             var app = new LuaXApplication();
             app.CompileResource("WhileTest");
@@ -163,7 +157,59 @@ namespace Luax.Interpreter.Test
             var typelib = new LuaXTypesLibrary(app);
 
             typelib.SearchClass("test", out var program).Should().BeTrue();
-            program.SearchMethod(methodName, null, out var method).Should().BeTrue();
+            program.SearchMethod("dummy", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsInteger().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { argument }, out var r);
+            r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData(6, 15)]
+        [InlineData(5, 0)]
+        [InlineData(4, 5)]
+        [InlineData(3, 9)]
+        [InlineData(2, 12)]
+        [InlineData(1, 14)]
+        public void TestWhileBreak(int argument, int expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("WhileBreakTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("dummy", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsInteger().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { argument }, out var r);
+            r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData(6, 16)]
+        [InlineData(5, 10)]
+        [InlineData(4, 10)]
+        [InlineData(3, 6)]
+        [InlineData(2, 3)]
+        [InlineData(1, 1)]
+        public void TestWhileContinue(int argument, int expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("WhileContinueTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("dummy", null, out var method).Should().BeTrue();
             method.Static.Should().BeTrue();
             method.Arguments.Should().HaveCount(1);
             method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
@@ -178,7 +224,7 @@ namespace Luax.Interpreter.Test
         [InlineData("a", 3, 1, "aaa")]
         [InlineData("b", 4, 2, "bbbb_bbbb")]
         [InlineData("b", 4, 3, "bbbb_bbbb_bbbb")]
-        public void NestedTestWhile(string str, int strRep, int rep, string expectedValue)
+        public void TestWhileNested(string str, int strRep, int rep, string expectedValue)
         {
             var app = new LuaXApplication();
             app.CompileResource("WhileNestedTest");

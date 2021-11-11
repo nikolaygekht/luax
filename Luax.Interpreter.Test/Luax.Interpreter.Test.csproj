@@ -27,6 +27,8 @@
     <None Remove="TestSources\Project5.ini" />
     <None Remove="TestSources\Stdlibtest.luax" />
     <None Remove="TestSources\TestSuite.luax" />
+    <None Remove="TestSources\WhileBreakTest.luax" />
+    <None Remove="TestSources\WhileContinueTest.luax" />
     <None Remove="TestSources\WhileNestedTest.luax" />
     <None Remove="TestSources\WhileTest.luax" />
   </ItemGroup>
@@ -36,6 +38,8 @@
     <EmbeddedResource Include="TestSources\ExceptionStackTraceTest.luax" />
     <EmbeddedResource Include="TestSources\ConstTest.luax" />
     <EmbeddedResource Include="TestSources\ConsoleAppError5.luax" />
+    <EmbeddedResource Include="TestSources\WhileBreakTest.luax" />
+    <EmbeddedResource Include="TestSources\WhileContinueTest.luax" />
     <EmbeddedResource Include="TestSources\WhileNestedTest.luax" />
     <EmbeddedResource Include="TestSources\TestSuite.luax" />
     <EmbeddedResource Include="TestSources\ConsoleAppOK1.luax" />
