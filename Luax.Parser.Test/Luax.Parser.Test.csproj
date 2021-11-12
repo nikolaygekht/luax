@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestSources\Break1.luax" />
+    <None Remove="TestSources\Break2.luax" />
+    <None Remove="TestSources\Continue1.luax" />
+    <None Remove="TestSources\Continue2.luax" />
     <None Remove="TestSources\Debug.luax" />
     <None Remove="TestSources\Expression1.luax" />
     <None Remove="TestSources\If1.luax" />
@@ -13,9 +17,14 @@
     <None Remove="TestSources\ParseClassMethods.luax" />
     <None Remove="TestSources\ParseClassProperties.luax" />
     <None Remove="TestSources\ParseConstant.luax" />
+    <None Remove="TestSources\While1.luax" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\Break1.luax" />
+    <EmbeddedResource Include="TestSources\Break2.luax" />
+    <EmbeddedResource Include="TestSources\Continue1.luax" />
+    <EmbeddedResource Include="TestSources\Continue2.luax" />
     <EmbeddedResource Include="TestSources\Debug.luax" />
     <EmbeddedResource Include="TestSources\If1.luax" />
     <EmbeddedResource Include="TestSources\ParseClassMethods.luax" />
@@ -24,6 +33,7 @@
     <EmbeddedResource Include="TestSources\Expression1.luax" />
     <EmbeddedResource Include="TestSources\ParseConstant.luax" />
     <EmbeddedResource Include="TestSources\ParseClass.luax" />
+    <EmbeddedResource Include="TestSources\While1.luax" />
   </ItemGroup>
 
   <ItemGroup>
