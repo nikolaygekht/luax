@@ -55,12 +55,12 @@ namespace LuaX
                             Console.ForegroundColor = args.Status == LuaXTestStatus.OK ? ConsoleColor.Green : ConsoleColor.Red;
                             Console.Write("{0}", message2);
                             Console.ForegroundColor = currentColor;
-                           
+
                             if (args.Status != LuaXTestStatus.OK)
                                 Console.WriteLine();
 
                             logWriter?.WriteLine("{0}", message1 + message2);
-                            
+
                             if (args.Status == LuaXTestStatus.Exception && args.Exception != null && errorWriter != null)
                                 WriteException(args.Exception, s => errorWriter.WriteLine("{0}", s));
                         };
@@ -68,10 +68,9 @@ namespace LuaX
                         Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
                         Console.Write(new string(' ', Console.WindowWidth - 2));
                         Console.WriteLine();
-                        Console.WriteLine("Total Tests: {0}", executor.TotalTests);                       
+                        Console.WriteLine("Total Tests: {0}", executor.TotalTests);
                         Console.ForegroundColor = executor.SuccessfullTests == executor.TotalTests ? ConsoleColor.Green : ConsoleColor.Red;
                         Console.WriteLine("Successful Tests: {0}", executor.SuccessfullTests);
-                        
 
                         if (executor.TotalTests != executor.SuccessfullTests)
                             Console.WriteLine("Failed!");
@@ -118,7 +117,5 @@ namespace LuaX
             writerAction(e.ToString());
             return -5;
         }
-
-
     }
 }

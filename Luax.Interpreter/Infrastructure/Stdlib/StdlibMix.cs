@@ -1,21 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Hime.SDK.Grammars.LR;
 
 #pragma warning disable S125 // Sections of code should not be commented out
 
 namespace Luax.Interpreter.Infrastructure.Stdlib
 {
-    internal class StdlibMix
+    internal static class StdlibMix
     {
         //public static extern isTrue(condition : boolean, message : string) : void;
         [LuaXExternMethod("stdlib", "print")]
-        public static object print(string text)
+        public static object Print(string text)
         {
             Console.WriteLine("{0}", text);
             return null;
         }
     }
+
 }

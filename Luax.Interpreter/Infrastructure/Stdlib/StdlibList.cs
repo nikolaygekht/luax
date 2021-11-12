@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Luax.Parser.Ast;
 
 #pragma warning disable S125                // Sections of code should not be commented out
-#pragma warning disable IDE1006             // Naming rule violation.
 
 namespace Luax.Interpreter.Infrastructure.Stdlib
 {
@@ -25,29 +24,29 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties["__list"].Value is List<LuaXObjectInstance> l))
+            if (@this.Properties["__list"].Value is not List<LuaXObjectInstance> l)
                 throw new ArgumentException("The list isn't properly initialized", nameof(@this));
             return l.Count;
         }
-        
+
         //public extern get(index : int) : object;
         [LuaXExternMethod("list", "get")]
         public static object ListGet(LuaXObjectInstance @this, int index)
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties["__list"].Value is List<LuaXObjectInstance> l))
+            if (@this.Properties["__list"].Value is not List<LuaXObjectInstance> l)
                 throw new ArgumentException("The list isn't properly initialized", nameof(@this));
             return l[index];
         }
-        
+
         //public extern set(index : int, value : object) : void;
         [LuaXExternMethod("list", "set")]
         public static object ListSet(LuaXObjectInstance @this, int index, LuaXObjectInstance v)
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties["__list"].Value is List<LuaXObjectInstance> l))
+            if (@this.Properties["__list"].Value is not List<LuaXObjectInstance> l)
                 throw new ArgumentException("The list isn't properly initialized", nameof(@this));
             l[index] = v;
             return null;
@@ -59,7 +58,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties["__list"].Value is List<LuaXObjectInstance> l))
+            if (@this.Properties["__list"].Value is not List<LuaXObjectInstance> l)
                 throw new ArgumentException("The list isn't properly initialized", nameof(@this));
             l.Add(v);
             return null;
@@ -71,7 +70,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties["__list"].Value is List<LuaXObjectInstance> l))
+            if (@this.Properties["__list"].Value is not List<LuaXObjectInstance> l)
                 throw new ArgumentException("The list isn't properly initialized", nameof(@this));
             l.Insert(index, v);
             return null;
@@ -83,12 +82,11 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties["__list"].Value is List<LuaXObjectInstance> l))
+            if (@this.Properties["__list"].Value is not List<LuaXObjectInstance> l)
                 throw new ArgumentException("The list isn't properly initialized", nameof(@this));
             l.RemoveAt(index);
             return null;
         }
-
 
         //public extern clear() : void;
         [LuaXExternMethod("list", "clear")]
@@ -96,7 +94,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties["__list"].Value is List<LuaXObjectInstance> l))
+            if (@this.Properties["__list"].Value is not List<LuaXObjectInstance> l)
                 throw new ArgumentException("The list isn't properly initialized", nameof(@this));
             l.Clear();
             return null;
@@ -108,7 +106,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties["__list"].Value is List<LuaXObjectInstance> l))
+            if (@this.Properties["__list"].Value is not List<LuaXObjectInstance> l)
                 throw new ArgumentException("The list isn't properly initialized", nameof(@this));
             mTypeLibrary.SearchClass("object", out var t);
             var r = new LuaXVariableInstanceArray(t.LuaType.TypeOf().ArrayOf(), l.Count);
@@ -116,7 +114,6 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 r[i].Value = l[i];
             return r;
         }
-
 
         //public extern list() : void;
         [LuaXExternMethod("list", "list")]
@@ -131,9 +128,8 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         public static object Create(LuaXVariableInstanceArray array)
         {
             var r = mListClass.New(mTypeLibrary);
-            
-            List<LuaXObjectInstance> l = r.Properties["__list"].Value as List<LuaXObjectInstance>;
-            if (l == null)
+
+            if (r.Properties["__list"].Value is not List<LuaXObjectInstance> l)
                 throw new InvalidOperationException("The list isn't properly initialized");
 
             if (array != null)
