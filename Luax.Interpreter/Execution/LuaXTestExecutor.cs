@@ -136,14 +136,10 @@ namespace Luax.Interpreter.Execution
             catch (LuaXExecutionException executionException)
             {
                 if (executionException.InnerException is LuaXAssertionException assertionException1)
-                {
                     OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Assert, $"Assertion: {assertionException1.Message}", executionException));
-                }
                 else
-                {
                     OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Exception, $"Exception: {executionException.Message}", executionException));
-                    success = false;
-                }
+                success = false;
             }
             catch (LuaXAstGeneratorException error)
             {

@@ -73,7 +73,7 @@ end
 -- -------------------------------------------------------
 class io
     public static extern exists(filename : string) : boolean;
-    public static extern size(filename : string) : real;
+    public static extern size(filename : string) : int;
     public static extern isFolder(filename : string) : boolean;
     public static extern isFile(filename : string) : boolean;
     public static extern files(path : string) : string[];
@@ -90,7 +90,6 @@ class io
     -- open modes
     const M_OPEN = 1;    -- open existing file
     const M_CREATE = 2;  -- create if not exist
-    const M_NEW = 4;     -- delete file if exist
     const M_READ = 16;
     const M_WRITE = 32;
     const M_READWRITE = 48;
@@ -117,15 +116,16 @@ end
 -- File i/o
 -- -------------------------------------------------------
 class file
-    public extern length() : int;
-    public extern getPosition() : int;
+    public extern size() : int;
+    public extern position() : int;
     public extern seek(position : int) : void;
     public extern readLine() : string;
-    public extern read() : int;
+    public extern readByte() : int;
     public extern readBuffer(length : int) : buffer;
-    public extern writeLine(v : string) : int;
-    public extern write(v : int) : int;
-    public extern writeBuffer(v : buffer) : int;
+    public extern writeLine(v : string) : void;
+    public extern writeByte(v : int) : void;
+    public extern writeBuffer(v : buffer, offset : int, length : int) : void;
+    public extern close() : void;
 end
 
 -- -------------------------------------------------------
