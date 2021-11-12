@@ -388,7 +388,7 @@ namespace Luax.Parser.Test
             var app = new LuaXApplication();
             app.CompileResource("Break1");
             var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
-            Assert.Contains("The break statement is not in loop", ex.Message);
+            Assert.Contains("The break statement is not in a loop", ex.Message);
         }
 
         [Fact]
@@ -397,7 +397,7 @@ namespace Luax.Parser.Test
             var app = new LuaXApplication();
             app.CompileResource("Break2");
             var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
-            Assert.Contains("The break statement is not in loop", ex.Message);
+            Assert.Contains("The break statement is not in a loop", ex.Message);
         }
 
         [Fact]
@@ -406,7 +406,7 @@ namespace Luax.Parser.Test
             var app = new LuaXApplication();
             app.CompileResource("Continue1");
             var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
-            Assert.Contains("The continue statement is not in loop", ex.Message);
+            Assert.Contains("The continue statement is not in a loop", ex.Message);
         }
 
         [Fact]
@@ -415,7 +415,7 @@ namespace Luax.Parser.Test
             var app = new LuaXApplication();
             app.CompileResource("Continue2");
             var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
-            Assert.Contains("The continue statement is not in loop", ex.Message);
+            Assert.Contains("The continue statement is not in a loop", ex.Message);
         }
     }
 }

@@ -60,10 +60,10 @@ namespace Luax.Parser.Ast.Builder
                         ProcessesWhileStatement(child, @class, method, statements);
                         break;
                     case "BREAK_STMT":
-                        ProcessesBreakStatement(child, @class, method, statements);
+                        ProcessesBreakStatement(child, statements);
                         break;
                     case "CONTINUE_STMT":
-                        ProcessesContinueStatement(child, @class, method, statements);
+                        ProcessesContinueStatement(child, statements);
                         break;
                     default:
                         throw new LuaXAstGeneratorException(Name, child, $"Unexpected symbol {child.Symbol}");
@@ -276,11 +276,11 @@ namespace Luax.Parser.Ast.Builder
         /// <param name="class"></param>
         /// <param name="method"></param>
         /// <param name="statements"></param>
-        private void ProcessesBreakStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        private void ProcessesBreakStatement(IAstNode node, LuaXStatementCollection statements)
         {
             LuaXBreakStatement stmt = new LuaXBreakStatement(new LuaXElementLocation(Name, node));
             if (mLoopDepth <= 0)
-                throw new LuaXAstGeneratorException(Name, new LuaXParserError(stmt.Location, "The break statement is not in loop"));
+                throw new LuaXAstGeneratorException(Name, new LuaXParserError(stmt.Location, "The break statement is not in a loop"));
             statements.Add(stmt);
         }
 
@@ -291,11 +291,11 @@ namespace Luax.Parser.Ast.Builder
         /// <param name="class"></param>
         /// <param name="method"></param>
         /// <param name="statements"></param>
-        private void ProcessesContinueStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        private void ProcessesContinueStatement(IAstNode node, LuaXStatementCollection statements)
         {
             LuaXContinueStatement stmt = new LuaXContinueStatement(new LuaXElementLocation(Name, node));
             if (mLoopDepth <= 0)
-                throw new LuaXAstGeneratorException(Name, new LuaXParserError(stmt.Location, "The continue statement is not in loop"));
+                throw new LuaXAstGeneratorException(Name, new LuaXParserError(stmt.Location, "The continue statement is not in a loop"));
             statements.Add(stmt);
         }
 

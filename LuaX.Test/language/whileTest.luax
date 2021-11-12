@@ -1,7 +1,5 @@
 @TestSuite()
 class whileTest
-    -- Test While
-    ------------------------------------------------------------
     public static function factorial(a : int) : real
        assert.isTrue(a >= 1, "The value must be greater than 0");
        var result : int, i : int;
@@ -58,7 +56,7 @@ class whileTest
 
     -- Test Continue
     ------------------------------------------------------------
-    private static function dividesByThree (arg : int) : string
+    private static function dividesByThree(arg : int) : string
        var i : int, result : string;
        i = 0;
        result = "";
@@ -111,6 +109,4 @@ class whileTest
     public function testNestedWhile(sourceVal : int, multRep : int, rep : int, expected : int) : void
        assert.isTrue(nestedWhileAction(sourceVal, multRep, rep) == expected, "");
     end
-    ------------------------------------------------------------
-
 end
