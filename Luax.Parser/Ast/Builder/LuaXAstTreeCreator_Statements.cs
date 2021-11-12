@@ -16,7 +16,7 @@ namespace Luax.Parser.Ast.Builder
         /// <summary>
         /// Depth of nested loops
         /// </summary>
-        private int loopsDepth;
+        private int mLoopDepth;
         /// <summary>
         /// Processes the method body
         /// </summary>
@@ -24,7 +24,7 @@ namespace Luax.Parser.Ast.Builder
         /// <param name="method"></param>
         public void ProcessBody(IAstNode node, LuaXClass @class, LuaXMethod method)
         {
-            loopsDepth = 0;
+            mLoopDepth = 0;
             ProcessStatements(node.Children, @class, method, method.Statements);
         }
 
@@ -261,9 +261,9 @@ namespace Luax.Parser.Ast.Builder
 
             if (body != null)
             {
-                loopsDepth++;
+                mLoopDepth++;
                 ProcessStatements(body.Children, @class, method, stmt.Statements);
-                loopsDepth--;
+                mLoopDepth--;
             }
 
             statements.Add(stmt);
@@ -279,7 +279,7 @@ namespace Luax.Parser.Ast.Builder
         private void ProcessesBreakStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
         {
             LuaXBreakStatement stmt = new LuaXBreakStatement(new LuaXElementLocation(Name, node));
-            if (loopsDepth <= 0)
+            if (mLoopDepth <= 0)
                 throw new LuaXAstGeneratorException(Name, new LuaXParserError(stmt.Location, "The break statement is not in loop"));
             statements.Add(stmt);
         }
@@ -294,7 +294,7 @@ namespace Luax.Parser.Ast.Builder
         private void ProcessesContinueStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
         {
             LuaXContinueStatement stmt = new LuaXContinueStatement(new LuaXElementLocation(Name, node));
-            if (loopsDepth <= 0)
+            if (mLoopDepth <= 0)
                 throw new LuaXAstGeneratorException(Name, new LuaXParserError(stmt.Location, "The continue statement is not in loop"));
             statements.Add(stmt);
         }
