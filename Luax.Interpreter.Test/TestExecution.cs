@@ -141,6 +141,54 @@ namespace Luax.Interpreter.Test
             r.Should().BeOfType<double>();
             r.Should().Be(expectedValue);
         }
+
+        [Theory]
+        [InlineData("constant", "exception from constant")]
+        [InlineData("callable", "exception from static call")]
+        [InlineData("bracket", "exception from bracket")]
+        [InlineData("array", "exception from array")]
+        public void TestThrow(string methodName, string expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ThrowTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod(methodName, null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsVoid().Should().BeTrue();
+
+            var resultType = LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
+            resultType.Should().Be(LuaXMethodExecutor.ResultType.Exception);
+            r.Should().BeOfType<string>();
+            r.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData(-1, "value is lower")]
+        [InlineData(0, "value is equal")]
+        [InlineData(1, "value is greater")]
+        public void TestTryCatch(int arg, string expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("TryCatchTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("testTry", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsString().Should().BeTrue();
+
+            var resultType = LuaXMethodExecutor.Execute(method, typelib, null, new object[] { arg }, out var r);
+            resultType.Should().BeOneOf(LuaXMethodExecutor.ResultType.ReachForEnd, LuaXMethodExecutor.ResultType.Return);
+            r.Should().BeOfType<string>();
+            r.Should().Be(expectedValue);
+        }
     }
 }
 

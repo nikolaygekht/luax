@@ -11,7 +11,7 @@ class suite1
     -- function should be ignored
     public function nofact() : void
     end
-    
+
     -- good fact
     @Fact()
     public function fact1() : void

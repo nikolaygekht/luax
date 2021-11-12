@@ -7,6 +7,6 @@ class b : a
   public var i : int;
   public function f() : $type
     var x : string, arr : int[];
-	return $expression;
+    return $expression;
   end
 end

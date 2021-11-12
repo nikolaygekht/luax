@@ -72,9 +72,9 @@ namespace Luax.Parser.Test
 
             var lib = new LuaXClass("lib");
 
-            @lib.Properties.Add(new LuaXProperty()
+            @lib.Properties.Add(new LuaXProperty
             {
-                LuaType = new LuaXTypeDefinition()
+                LuaType = new LuaXTypeDefinition
                 {
                     TypeId = LuaXType.Integer
                 },
@@ -83,9 +83,9 @@ namespace Luax.Parser.Test
                 Visibility = LuaXVisibility.Public,
             });
 
-            @lib.Properties.Add(new LuaXProperty()
+            @lib.Properties.Add(new LuaXProperty
             {
-                LuaType = new LuaXTypeDefinition()
+                LuaType = new LuaXTypeDefinition
                 {
                     TypeId = LuaXType.Integer
                 },
@@ -94,9 +94,9 @@ namespace Luax.Parser.Test
                 Visibility = LuaXVisibility.Private,
             });
 
-            @lib.Properties.Add(new LuaXProperty()
+            @lib.Properties.Add(new LuaXProperty
             {
-                LuaType = new LuaXTypeDefinition()
+                LuaType = new LuaXTypeDefinition
                 {
                     TypeId = LuaXType.Integer
                 },
@@ -105,9 +105,9 @@ namespace Luax.Parser.Test
                 Visibility = LuaXVisibility.Public,
             });
 
-            @lib.Properties.Add(new LuaXProperty()
+            @lib.Properties.Add(new LuaXProperty
             {
-                LuaType = new LuaXTypeDefinition()
+                LuaType = new LuaXTypeDefinition
                 {
                     TypeId = LuaXType.Integer
                 },
@@ -116,7 +116,7 @@ namespace Luax.Parser.Test
                 Visibility = LuaXVisibility.Private,
             });
 
-            lib.Constants.Add(new LuaXConstantVariable()
+            lib.Constants.Add(new LuaXConstantVariable
             {
                 Name = "pi",
                 Value = new LuaXConstant(3.14, new LuaXElementLocation("", 0, 0))
@@ -124,9 +124,9 @@ namespace Luax.Parser.Test
 
             @class = new LuaXClass("class1");
 
-            @class.Properties.Add(new LuaXProperty()
+            @class.Properties.Add(new LuaXProperty
             {
-                LuaType = new LuaXTypeDefinition()
+                LuaType = new LuaXTypeDefinition
                 {
                     TypeId = LuaXType.Integer
                 },
@@ -135,9 +135,9 @@ namespace Luax.Parser.Test
                 Visibility = LuaXVisibility.Public,
             });
 
-            @class.Properties.Add(new LuaXProperty()
+            @class.Properties.Add(new LuaXProperty
             {
-                LuaType = new LuaXTypeDefinition()
+                LuaType = new LuaXTypeDefinition
                 {
                     TypeId = LuaXType.Integer
                 },
@@ -146,9 +146,9 @@ namespace Luax.Parser.Test
                 Visibility = LuaXVisibility.Private,
             });
 
-            @class.Properties.Add(new LuaXProperty()
+            @class.Properties.Add(new LuaXProperty
             {
-                LuaType = new LuaXTypeDefinition()
+                LuaType = new LuaXTypeDefinition
                 {
                     TypeId = LuaXType.Integer
                 },
@@ -157,9 +157,9 @@ namespace Luax.Parser.Test
                 Visibility = LuaXVisibility.Public,
             });
 
-            @class.Properties.Add(new LuaXProperty()
+            @class.Properties.Add(new LuaXProperty
             {
-                LuaType = new LuaXTypeDefinition()
+                LuaType = new LuaXTypeDefinition
                 {
                     TypeId = LuaXType.Integer
                 },
@@ -168,9 +168,9 @@ namespace Luax.Parser.Test
                 Visibility = LuaXVisibility.Private,
             });
 
-            @class.Properties.Add(new LuaXProperty()
+            @class.Properties.Add(new LuaXProperty
             {
-                LuaType = new LuaXTypeDefinition()
+                LuaType = new LuaXTypeDefinition
                 {
                     TypeId = LuaXType.Object,
                     Class = "class1",
@@ -187,33 +187,33 @@ namespace Luax.Parser.Test
             method = new LuaXMethod(@class)
             {
                 Name = "test",
-                ReturnType = new LuaXTypeDefinition()
+                ReturnType = new LuaXTypeDefinition
                 {
                     TypeId = LuaXType.Void
                 }
             };
 
-            method.Arguments.Add(new LuaXVariable()
+            method.Arguments.Add(new LuaXVariable
             {
                 Name = "arg1",
                 LuaType = methodArgType ?? LuaXTypeDefinition.Integer
             });
 
             method.Variables.Add(
-                new LuaXVariable()
+                new LuaXVariable
                 {
                     Name = "v1",
-                    LuaType = new LuaXTypeDefinition()
+                    LuaType = new LuaXTypeDefinition
                     {
                         TypeId = LuaXType.Integer
                     },
                 });
 
             method.Variables.Add(
-               new LuaXVariable()
+               new LuaXVariable
                {
                    Name = "v2",
-                   LuaType = new LuaXTypeDefinition()
+                   LuaType = new LuaXTypeDefinition
                    {
                        TypeId = LuaXType.Integer,
                        Array = true,
@@ -221,30 +221,30 @@ namespace Luax.Parser.Test
                });
 
             method.Variables.Add(
-               new LuaXVariable()
+               new LuaXVariable
                {
                    Name = "v3",
-                   LuaType = new LuaXTypeDefinition()
+                   LuaType = new LuaXTypeDefinition
                    {
                        TypeId = LuaXType.Real
                    },
                });
 
             method.Variables.Add(
-               new LuaXVariable()
+               new LuaXVariable
                {
                    Name = "v4",
-                   LuaType = new LuaXTypeDefinition()
+                   LuaType = new LuaXTypeDefinition
                    {
                        TypeId = LuaXType.String
                    },
                });
 
             method.Variables.Add(
-               new LuaXVariable()
+               new LuaXVariable
                {
                    Name = "v5",
-                   LuaType = new LuaXTypeDefinition()
+                   LuaType = new LuaXTypeDefinition
                    {
                        TypeId = LuaXType.Object,
                        Class = "class1",
@@ -252,10 +252,10 @@ namespace Luax.Parser.Test
                });
 
             method.Variables.Add(
-               new LuaXVariable()
+               new LuaXVariable
                {
                    Name = "v6",
-                   LuaType = new LuaXTypeDefinition()
+                   LuaType = new LuaXTypeDefinition
                    {
                        TypeId = LuaXType.Object,
                        Class = "lib",
@@ -268,7 +268,7 @@ namespace Luax.Parser.Test
             {
                 Name = "staticMethod",
                 Static = true,
-                ReturnType = new LuaXTypeDefinition()
+                ReturnType = new LuaXTypeDefinition
                 {
                     TypeId = LuaXType.Void
                 }
@@ -278,7 +278,7 @@ namespace Luax.Parser.Test
             var method2 = new LuaXMethod(@class)
             {
                 Name = "instanceMethod",
-                ReturnType = new LuaXTypeDefinition()
+                ReturnType = new LuaXTypeDefinition
                 {
                     TypeId = LuaXType.Void
                 }
@@ -319,7 +319,7 @@ namespace Luax.Parser.Test
         public void Variable_AsMethodConstant_Success()
         {
             StageVariableAndProperty(out var metadata, out var @class, out var method);
-            method.Constants.Add(new LuaXConstantVariable() { Name = "c2", Value = new LuaXConstant(10, new LuaXElementLocation("", 0, 0)) });
+            method.Constants.Add(new LuaXConstantVariable { Name = "c2", Value = new LuaXConstant(10, new LuaXElementLocation("", 0, 0)) });
             var node = AstNodeExtensions.Parse("[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(c2)]]]]]]]]]]]]]]]");
             var processor = new LuaXAstTreeCreator("", metadata);
             var expression = processor.ProcessExpression(node, @class, method);
@@ -333,7 +333,7 @@ namespace Luax.Parser.Test
         public void Variable_AsClassConstant_Success()
         {
             StageVariableAndProperty(out var metadata, out var @class, out var method);
-            @class.Constants.Add(new LuaXConstantVariable() { Name = "c2", Value = new LuaXConstant(10, new LuaXElementLocation("", 0, 0)) });
+            @class.Constants.Add(new LuaXConstantVariable { Name = "c2", Value = new LuaXConstant(10, new LuaXElementLocation("", 0, 0)) });
             var node = AstNodeExtensions.Parse("[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(c2)]]]]]]]]]]]]]]]");
             var processor = new LuaXAstTreeCreator("", metadata);
             var expression = processor.ProcessExpression(node, @class, method);
@@ -347,7 +347,7 @@ namespace Luax.Parser.Test
         public void Variable_AsSuperClassConstant_Success()
         {
             StageVariableAndProperty(out var metadata, out var @class, out var method);
-            @class.Constants.Add(new LuaXConstantVariable() { Name = "c2", Value = new LuaXConstant(10, new LuaXElementLocation("", 0, 0)) });
+            @class.Constants.Add(new LuaXConstantVariable { Name = "c2", Value = new LuaXConstant(10, new LuaXElementLocation("", 0, 0)) });
             var @class1 = new LuaXClass("z", @class.Name, new LuaXElementLocation("", 0, 0));
             class1.ParentClass = @class;
             var method1 = new LuaXMethod(class1);
@@ -981,7 +981,7 @@ namespace Luax.Parser.Test
         [InlineData(LuaXType.String, "[STRING[STRINGDQ(\"a\")]]", "a")]
         public void MethodCall_Arguments_Match_Success(LuaXType argType, string constantText, object constantValue)
         {
-            StageVariableAndProperty(out var metadata, out var @class, out var method, new LuaXTypeDefinition() { TypeId = argType });
+            StageVariableAndProperty(out var metadata, out var @class, out var method, new LuaXTypeDefinition { TypeId = argType });
             var node = AstNodeExtensions.Parse($"[LOCAL_CALL[IDENTIFIER(test)][CALL_BRACKET[L_ROUND_BRACKET][CALL_ARGS[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT{constantText}]]]]]]]]]]]]][R_ROUND_BRACKET]]]");
             var processor = new LuaXAstTreeCreator("", metadata);
             var expression = processor.ProcessExpression(node, @class, method);
@@ -1000,7 +1000,7 @@ namespace Luax.Parser.Test
         [InlineData(LuaXType.String, "[BOOLEAN[BOOLEAN_TRUE]]")]
         public void MethodCall_Arguments_AutoCast_Success(LuaXType argType, string constantText)
         {
-            StageVariableAndProperty(out var metadata, out var @class, out var method, new LuaXTypeDefinition() { TypeId = argType });
+            StageVariableAndProperty(out var metadata, out var @class, out var method, new LuaXTypeDefinition { TypeId = argType });
             var node = AstNodeExtensions.Parse($"[LOCAL_CALL[IDENTIFIER(test)][CALL_BRACKET[L_ROUND_BRACKET][CALL_ARGS[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT{constantText}]]]]]]]]]]]]][R_ROUND_BRACKET]]]");
             var processor = new LuaXAstTreeCreator("", metadata);
             var expression = processor.ProcessExpression(node, @class, method);
@@ -1019,7 +1019,7 @@ namespace Luax.Parser.Test
         [InlineData(LuaXType.Real, "[STRING[STRINGDQ(\"a\")]]")]
         public void MethodCall_Arguments_Incompatible_Failed(LuaXType argType, string constantText)
         {
-            StageVariableAndProperty(out var metadata, out var @class, out var method, new LuaXTypeDefinition() { TypeId = argType });
+            StageVariableAndProperty(out var metadata, out var @class, out var method, new LuaXTypeDefinition { TypeId = argType });
             var node = AstNodeExtensions.Parse($"[LOCAL_CALL[IDENTIFIER(test)][CALL_BRACKET[L_ROUND_BRACKET][CALL_ARGS[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT{constantText}]]]]]]]]]]]]][R_ROUND_BRACKET]]]");
             var processor = new LuaXAstTreeCreator("", metadata);
             ((Action)(() => processor.ProcessExpression(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();

@@ -1,7 +1,7 @@
 ﻿class myclass
    function f1() : void
    end
-   
+
    private static function f2() : void
    end
 

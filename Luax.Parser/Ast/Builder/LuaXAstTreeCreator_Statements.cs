@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using Hime.Redist;
+using Luax.Parser.Ast.Extensions;
 using Luax.Parser.Ast.LuaExpression;
 using Luax.Parser.Ast.Statement;
 using Microsoft.VisualBasic.FileIO;
@@ -46,6 +47,12 @@ namespace Luax.Parser.Ast.Builder
                     case "IF_STMT":
                         ProcessesIfStatement(child, @class, method, statements);
                         break;
+                    case "TRY_STMT":
+                        ProcessTryStatement(child, @class, method, statements);
+                        break;
+                    case "THROW_STMT":
+                        ProcessThrowStatement(child, @class, method, statements);
+                        break;
                     case "RETURN_STMT":
                         ProcessesReturnStatement(child, @class, method, statements);
                         break;
@@ -53,6 +60,59 @@ namespace Luax.Parser.Ast.Builder
                         throw new LuaXAstGeneratorException(Name, child, $"Unexpected symbol {child.Symbol}");
                 }
             }
+        }
+
+        private void ProcessThrowStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        {
+            if (node.Children.Count == 3 && node.Children[1].Symbol != "SIMPLE_EXPR")
+                throw new LuaXAstGeneratorException(Name, node, "Expression is expected here");
+
+            var throwExpr = ProcessExpression(node.Children[1], @class, method);
+
+            if (!throwExpr.ReturnType.IsString())
+                throw new LuaXAstGeneratorException(Name, node, $"Expression with return type {LuaXTypeDefinition.String.TypeId} is expected here");
+
+            LuaXThrowStatement throwStmt = new LuaXThrowStatement(throwExpr, new LuaXElementLocation(Name, node));
+
+            statements.Add(throwStmt);
+        }
+
+        private void ProcessCatchStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXTryStatement target)
+        {
+            if (node.Children.Count < 3 || node.Children[1].Symbol != "IDENTIFIER" ||
+                method.FindVariableByName(node.Children[1].Value) == null ||
+                !method.FindVariableByName(node.Children[1].Value).LuaType.IsString())
+                throw new LuaXAstGeneratorException(Name, node, "Identifier of declared variable is expected here");
+
+            target.CatchStatement = new LuaXCatchStatement(node.Children[1].Value, new LuaXElementLocation(Name, node));
+            ProcessStatements(node.Children[2].Children, @class, method, target.CatchStatement.CatchStatements);
+        }
+
+        private void ProcessTryStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        {
+            if (node.Children.Count < 3 || node.Children[2].Symbol != "CATCH_STMT")
+                throw new LuaXAstGeneratorException(Name, node, "Catch statement is expected here");
+
+            LuaXTryStatement stmt = new LuaXTryStatement(new LuaXElementLocation(Name, node));
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "END")
+                    break;
+
+                switch (child.Symbol)
+                {
+                    case "STATEMENTS":
+                        ProcessStatements(child.Children, @class, method, stmt.TryStatements);
+                        break;
+                    case "CATCH_STMT":
+                        ProcessCatchStatement(child, @class, method, stmt);
+                        break;
+                    default:
+                        continue;
+                }
+            }
+            statements.Add(stmt);
         }
 
         private void ProcessDeclarationStatement(IAstNode node, LuaXMethod method)
@@ -238,7 +298,7 @@ namespace Luax.Parser.Ast.Builder
         public void ProcessConstantDeclarationInMethod(IAstNode node, LuaXMethod method)
         {
             var decl = ProcessConstantDeclaration(node);
-            
+
             if (method.Constants.Contains(decl.Name))
                 throw new LuaXAstGeneratorException(Name, node, "The constant with the name specified is already defined");
 

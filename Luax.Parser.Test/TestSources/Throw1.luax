@@ -1,0 +1,12 @@
+﻿class test
+    static function getError() : string
+      return "An exception occured!";
+    end
+
+    static function test1(arg1 : int) : void
+
+        throw "exception1";
+        throw getError();
+
+   end
+end

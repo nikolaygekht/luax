@@ -20,6 +20,7 @@ namespace Luax.Interpreter.Expression
             ReachForEnd,
             ReturnDefault,
             Return,
+            Exception,
         };
 
         /// <summary>
@@ -113,6 +114,15 @@ namespace Luax.Interpreter.Expression
                                     return r;
                             }
                             break;
+                        case LuaXThrowStatement @throw:
+                            var throwValue = ExecuteThrowStatement(@throw, types, currentClass, variables);
+                            result = throwValue;
+                            return ResultType.Exception;
+                        case LuaXTryStatement @try:
+                            var tryResult = ExecuteTryStatement(@try, types, currentClass, variables, out result);
+                            if (tryResult != ResultType.ReachForEnd)
+                                return tryResult;
+                            break;
                         case LuaXReturnStatement @return:
                             {
                                 if (@return.Expression == null)
@@ -120,11 +130,9 @@ namespace Luax.Interpreter.Expression
                                     result = null;
                                     return ResultType.ReturnDefault;
                                 }
-                                else
-                                {
-                                    result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass, variables);
-                                    return ResultType.Return;
-                                }
+
+                                result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass, variables);
+                                return ResultType.Return;
                             }
                     }
                 }
@@ -140,6 +148,35 @@ namespace Luax.Interpreter.Expression
             }
             result = null;
             return ResultType.ReachForEnd;
+        }
+
+        private static ResultType ExecuteTryStatement(LuaXTryStatement @try, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
+        {
+            var tryResult = ExecuteStatements(@try.TryStatements, types, currentClass, variables, out var tResult);
+
+            if (tryResult == ResultType.Exception)
+            {
+                variables[@try.CatchStatement.CatchIdentifier].Value = tResult;
+
+                var catchResult = ExecuteStatements(@try.CatchStatement.CatchStatements, types, currentClass, variables, out var cResult);
+
+                result = cResult;
+                return catchResult == ResultType.Exception ? ResultType.Exception : catchResult;
+            }
+
+            result = tResult;
+            return tryResult;
+        }
+
+        private static string ExecuteThrowStatement(LuaXThrowStatement @throw, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables)
+        {
+            var exprResult = LuaXExpressionEvaluator.Evaluate(@throw.ThrowExpression, types, currentClass, variables);
+            if (exprResult is string result)
+            {
+                return result;
+            }
+
+            throw new LuaXExecutionException(@throw.Location, "Result of throw statement is not a string value");
         }
 
         private static void ExecuteAssignVariable(LuaXAssignVariableStatement assign, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables)

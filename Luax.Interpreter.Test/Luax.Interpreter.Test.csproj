@@ -27,9 +27,13 @@
     <None Remove="TestSources\Project5.ini" />
     <None Remove="TestSources\Stdlibtest.luax" />
     <None Remove="TestSources\TestSuite.luax" />
+    <None Remove="TestSources\ThrowTest.luax" />
+    <None Remove="TestSources\TryCatchTest.luax" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\TryCatchTest.luax" />
+    <EmbeddedResource Include="TestSources\ThrowTest.luax" />
     <EmbeddedResource Include="TestSources\IfTest.luax" />
     <EmbeddedResource Include="TestSources\ExceptionStackTraceTest.luax" />
     <EmbeddedResource Include="TestSources\ConstTest.luax" />

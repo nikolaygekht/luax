@@ -1,0 +1,17 @@
+﻿class test
+   public static function testTry(arg : int) : string
+       var captured : string;
+
+       try
+        if(arg < 0) then
+            throw "lower";
+        elseif (arg == 0) then
+            throw "equal";
+        else
+            return "value is greater";
+        end
+       catch captured
+            return "value is " .. captured;
+       end
+   end
+end
