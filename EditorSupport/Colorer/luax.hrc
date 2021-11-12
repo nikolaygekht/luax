@@ -87,9 +87,13 @@
                 <word name="string"/>
                 <word name="int"/>
                 <word name="real"/>
+                <word name="datetime"/>
                 <word name="void"/>
                 <word name="function"/>
                 <word name="var"/>
+                <word name="const"/>
+                <word name="this"/>
+                <word name="super"/>
 
                 <word name="else"/>
                 <word name="elseif"/>
@@ -112,6 +116,9 @@
                 <word name="try"/>
                 <word name="catch"/>
                 <word name="throw"/>
+                <word name="static"/>
+                <word name="new"/>
+                <word name="return"/>
             </keywords>
         </scheme>
     </type>

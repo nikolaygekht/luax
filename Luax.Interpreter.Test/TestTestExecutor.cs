@@ -12,7 +12,6 @@ namespace Luax.Interpreter.Test
     {
         private readonly LuaXTestExecutor mExecutor;
         private readonly List<LuaXTestStatusEventArgs> mExecutionResults = new List<LuaXTestStatusEventArgs>();
-
         public TestTestExecutor()
         {
             LuaXProjectReader.ProjectContentProvider = new ResourcesProjectReaderContent(typeof(TestProjectReader).Assembly);
@@ -148,6 +147,16 @@ namespace Luax.Interpreter.Test
                 args.Method == "theory1" &&
                 args.Status == LuaXTestStatus.Incorrect &&
                 args.Message.Contains("arguments count"));
+        }
+
+        [Fact]
+        public void ExecuteTearDown()
+        {
+            mExecutor.TypesLibrary.SearchClass("suite1", out var @class);
+
+            @class.StaticProperties["finalizerCalled"].Value = 0;
+            mExecutor.Run(System.Array.Empty<string>());
+            @class.StaticProperties["finalizerCalled"].Value.Should().Be(mExecutor.TotalTests);
         }
     }
 }

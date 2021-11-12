@@ -40,23 +40,44 @@ namespace LuaX
                         if (project.Options["errorlog"] != null)
                             errorWriter = new StreamWriter(project.Options["errorlog"]);
 
+                        var currentColor = Console.ForegroundColor;
 
                         var executor = new LuaXTestExecutor(project);
                         executor.OnTest += (_, args) => {
-                            var message = $"{args.Class}::{args.Method}({args.Data}) - {args.Status} [{args.Message}]";
-                            Console.WriteLine("{0}", message);
-                            logWriter?.WriteLine("{0}", message);
+                            Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
+                            Console.Write(new string(' ', Console.WindowWidth - 2));
+                            Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
+
+                            var message1 = $"{args.Class}::{args.Method}({args.Data}) - ";
+                            Console.Write("{0}", message1);
+
+                            var message2 = $"{args.Status} [{args.Message}]";
+                            Console.ForegroundColor = args.Status == LuaXTestStatus.OK ? ConsoleColor.Green : ConsoleColor.Red;
+                            Console.Write("{0}", message2);
+                            Console.ForegroundColor = currentColor;
+
+                            if (args.Status != LuaXTestStatus.OK)
+                                Console.WriteLine();
+
+                            logWriter?.WriteLine("{0}", message1 + message2);
+
                             if (args.Status == LuaXTestStatus.Exception && args.Exception != null && errorWriter != null)
                                 WriteException(args.Exception, s => errorWriter.WriteLine("{0}", s));
                         };
                         executor.Run(args);
+                        Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
+                        Console.Write(new string(' ', Console.WindowWidth - 2));
+                        Console.WriteLine();
                         Console.WriteLine("Total Tests: {0}", executor.TotalTests);
+                        Console.ForegroundColor = executor.SuccessfullTests == executor.TotalTests ? ConsoleColor.Green : ConsoleColor.Red;
                         Console.WriteLine("Successful Tests: {0}", executor.SuccessfullTests);
 
                         if (executor.TotalTests != executor.SuccessfullTests)
                             Console.WriteLine("Failed!");
                         else
                             Console.WriteLine("OK!");
+
+                        Console.ForegroundColor = currentColor;
                     }
                     finally
                     {
@@ -96,7 +117,5 @@ namespace LuaX
             writerAction(e.ToString());
             return -5;
         }
-
-
     }
 }

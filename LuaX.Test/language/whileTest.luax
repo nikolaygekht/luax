@@ -11,7 +11,7 @@ class whileTest
           result = result * i;
           i = i + 1;
        end
-       return 1.0 * result;
+       return result;
     end
 
     @Theory()
@@ -70,7 +70,7 @@ class whileTest
          if stdlib.len(result) ~= 0 then
             result = result .. "_";
          end
-         result = result .. i; 
+         result = result .. i;
        end
        return result;
     end

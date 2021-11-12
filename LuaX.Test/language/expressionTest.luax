@@ -66,11 +66,26 @@ class expressionTest
         assert.isTrue(1_234.567_890e2 == 123456.789, "underscore in real");
     end
 
-
     @Fact()
     public function callPriority() : void
         assert.isTrue(2 .. expressionTestSubject.c == "21", "property");
         assert.isTrue(2 .. expressionTestSubject.s() == "22", "method");
+    end
+
+    private static function arrayPriority_CreateArray() : string[]
+        var s : string[];
+        s = new string[2];
+        s[0] = "a";
+        s[1] = "b";
+        return s;
+    end
+
+    @Fact()
+    public function arrayPriority() : void
+        var s : string[];
+        s = arrayPriority_CreateArray();
+        assert.isTrue(s[0] .. s[1] == "ab", "direct");
+        assert.isTrue(arrayPriority_CreateArray()[0] .. arrayPriority_CreateArray()[1] == "ab", "returnvalue");
     end
 
     @Fact()

@@ -1,0 +1,88 @@
+﻿@TestSuite()
+class ioTest
+    private var toremove : string;
+
+    public function ioTest() : void
+        toremove = io.combinePath(io.tempFolder(), "luaxtest");
+        if io.exists(toremove) then
+            io.delete(toremove);
+        end
+    end
+
+    @TearDown()
+    public function tearDown() : void
+        if io.exists(toremove) then
+            --io.delete(toremove);
+        end
+    end
+
+    @Fact()
+    public function temp() : void
+        assert.isTrue(io.tempFolder() ~= nil, "nil");
+        assert.isTrue(io.exists(io.tempFolder()), "exists");
+        assert.isTrue(io.isFolder(io.tempFolder()), "folder");
+        assert.isTrue(io.fullPath(io.tempFolder()) == io.tempFolder(), "absolute");
+    end
+
+    @Fact()
+    public function current() : void
+        assert.isTrue(io.currentDirectory() ~= nil, "nil");
+        assert.isTrue(io.exists(io.currentDirectory()), "exists");
+        assert.isTrue(io.isFolder(io.currentDirectory()), "folder");
+        assert.isTrue(io.fullPath(io.currentDirectory()) == io.currentDirectory(), "absolute");
+    end
+
+    @Fact()
+    public function fullPathOfDot() : void
+        assert.isTrue(io.fullPath(".") == io.currentDirectory(), "");
+    end
+
+    @Fact()
+    public function combine() : void
+        var s : string;
+        s = io.combinePath(toremove, "abc");
+        assert.isTrue(s == toremove .. "/abc" or
+                      s == toremove .. "\\abc", "");
+    end
+
+    @Fact()
+    public function createFolder() : void
+        assert.isFalse(io.exists(toremove), "stage");
+        io.createFolder(toremove);
+        assert.isTrue(io.exists(toremove), "created");
+        assert.isTrue(io.isFolder(toremove), "a folder");
+    end
+
+    @Fact()
+    public function textToFileANSI() : void
+        assert.isFalse(io.exists(toremove), "stage");
+        io.writeTextToFile(toremove, "mytest", io.CP_ANSI);
+        assert.isTrue(io.exists(toremove), "created");
+        assert.isTrue(io.isFile(toremove), "a file");
+
+        assert.isTrue(io.readTextFromFile(toremove, io.CP_ANSI) == "mytest", "text");
+    end
+
+    @Fact()
+    public function textToFileUTF7() : void
+        assert.isFalse(io.exists(toremove), "stage");
+        io.writeTextToFile(toremove, "testтест", io.CP_UTF7);
+        assert.isTrue(io.exists(toremove), "created");
+        assert.isTrue(io.isFile(toremove), "a file");
+
+        assert.isTrue(io.readTextFromFile(toremove, io.CP_UTF7) == "testтест", "text");
+        assert.isTrue(io.readTextFromFile(toremove, io.CP_ANSI) == "test+BEIENQRBBEI-", "text");
+    end
+
+    @Fact()
+    public function textToFileUTF8() : void
+        assert.isFalse(io.exists(toremove), "stage");
+        io.writeTextToFile(toremove, "testтест", io.CP_UTF8);
+        assert.isTrue(io.exists(toremove), "created");
+        assert.isTrue(io.isFile(toremove), "a file");
+
+        assert.isTrue(io.readTextFromFile(toremove, io.CP_UTF8) == "testтест", "text");
+    end
+
+    -- TBD: add test for files, folders method when loops are implemented
+end
