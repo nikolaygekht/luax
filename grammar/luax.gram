@@ -244,6 +244,10 @@ grammar LuaX
 
         TRY_STMT -> TRY STATEMENTS CATCH_STMT END;
 
+        THROW -> 'throw';
+
+        THROW_STMT -> THROW REXPR EOS;
+
         CALL_STMT -> CALL EOS;
 
         IF -> 'if';
@@ -304,6 +308,7 @@ grammar LuaX
                      BREAK_STMT |
                      CONTINUE_STMT |
                      TRY_STMT |
+                     THROW_STMT |
                      NOP;
 
         STATEMENTS -> STATEMENT* ;
