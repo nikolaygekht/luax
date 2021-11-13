@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Runtime.Intrinsics;
 using System.Security;
 using System.Text;
@@ -253,21 +254,34 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, astNode, "Type and expression are expected");
 
             var arr = ProcessExpression(astNode.Children[0], currentClass, currentMethod);
-
-            if (!arr.ReturnType.Array)
-                throw new LuaXAstGeneratorException(Name, astNode, "[] operator can be applied to arrays only");
-
+            var index = ProcessExpression(astNode.Children[2], currentClass, currentMethod);
             var location = new LuaXElementLocation(Name, astNode);
 
-            var index = ProcessExpression(astNode.Children[2], currentClass, currentMethod);
-            if (index.ReturnType.TypeId != LuaXType.Integer || index.ReturnType.Array)
+            if (arr.ReturnType.Array)
             {
-                if (index.ReturnType.TypeId == LuaXType.Real && !index.ReturnType.Array)
-                    index = new LuaXCastOperatorExpression(index, LuaXTypeDefinition.Integer, location);
-                else
-                    throw new LuaXAstGeneratorException(Name, astNode, "Index should be a numeric value");
+                if (index.ReturnType.TypeId != LuaXType.Integer || index.ReturnType.Array)
+                {
+                    if (index.ReturnType.TypeId == LuaXType.Real && !index.ReturnType.Array)
+                        index = new LuaXCastOperatorExpression(index, LuaXTypeDefinition.Integer, location);
+                    else
+                        throw new LuaXAstGeneratorException(Name, astNode, "Index should be a numeric value");
+                }
+                return new LuaXArrayAccessExpression(arr, index, arr.ReturnType.ArrayElementType(), location);
             }
-            return new LuaXArrayAccessExpression(arr, index, arr.ReturnType.ArrayElementType(), location);
+            else if (arr.ReturnType.IsObject())
+            {
+                if (!Metadata.Search(arr.ReturnType.Class, out var @class) ||
+                    !@class.SearchMethod("get", out var @method) ||
+                    method.Arguments.Count != 1 ||
+                    method.Static || 
+                    method.Visibility == LuaXVisibility.Private ||
+                    !method.Arguments[0].LuaType.IsTheSame(index.ReturnType))
+                    throw new LuaXAstGeneratorException(Name, astNode, $"The class {arr.ReturnType.Class} does not have a public instance method get({index.ReturnType.ToString()})");
+                var call = new LuaXInstanceCallExpression(method.ReturnType, arr, "get", null, location);
+                call.Arguments.Add(index);
+                return call;
+            }
+            throw new LuaXAstGeneratorException(Name, astNode, "[] operator can be applied to arrays only");
         }
 
         /// <summary>

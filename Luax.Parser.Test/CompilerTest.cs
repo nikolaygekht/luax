@@ -417,5 +417,37 @@ namespace Luax.Parser.Test
             var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
             Assert.Contains("The continue statement is not in a loop", ex.Message);
         }
+
+        [Fact]
+        public void ClassAsArray_Success()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ClassAsArray");
+            ((Action)(() => app.Pass2())).Should().NotThrow<LuaXAstGeneratorException>();
+            app.Classes.Search("test", out var @class);
+            @class.Methods.Search("test", out var @method);
+            method.Statements[0].Should().BeOfType<LuaXAssignVariableStatement>();
+            var stmt1 = method.Statements[0].As<LuaXAssignVariableStatement>();
+            stmt1.Expression.Should().BeOfType<LuaXInstanceCallExpression>();
+            var expr1 = stmt1.Expression.As<LuaXInstanceCallExpression>();
+            expr1.ReturnType.IsReal().Should().BeTrue();
+            expr1.Object.ReturnType.Class.Should().Be("test");
+            expr1.MethodName.Should().Be("get");
+            expr1.Arguments.Should().HaveCount(1);
+            expr1.Arguments[0].Should().BeOfType<LuaXConstantExpression>();
+            expr1.Arguments[0].As<LuaXConstantExpression>().Value.Value.Should().Be("a");
+
+            var stmt2 = method.Statements[1].As<LuaXCallStatement>();
+            stmt2.CallExpression.Should().BeOfType<LuaXInstanceCallExpression>();
+            var expr2 = stmt2.CallExpression.As<LuaXInstanceCallExpression>();
+            expr2.ReturnType.IsVoid().Should().BeTrue();
+            expr2.Object.ReturnType.Class.Should().Be("test");
+            expr2.MethodName.Should().Be("set");
+            expr2.Arguments.Should().HaveCount(2);
+            expr2.Arguments[0].Should().BeOfType<LuaXConstantExpression>();
+            expr2.Arguments[0].As<LuaXConstantExpression>().Value.Value.Should().Be("b");
+            expr2.Arguments[1].Should().BeOfType<LuaXVariableExpression>();
+            expr2.Arguments[1].As<LuaXVariableExpression>().VariableName.Should().Be("x");
+        }
     }
 }
