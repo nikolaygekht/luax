@@ -438,7 +438,7 @@ namespace Luax.Parser.Test
             @try.TryStatements[1].Should().BeOfType<LuaXReturnStatement>();
             @try.TryStatements[1].As<LuaXReturnStatement>().Expression.ToString().Should().Be("(var:r Greater arg:arg1)");
 
-            @try.CatchStatement.Should().BeOfType<LuaXCatchStatement>();
+            @try.CatchStatement.Should().BeOfType<LuaXCatchClause>();
             var @catch = @try.CatchStatement;
             @catch.CatchIdentifier.Should().Be("exception");
 

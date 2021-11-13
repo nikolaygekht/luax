@@ -100,7 +100,7 @@ namespace Luax.Parser.Ast.Builder
                 !method.FindVariableByName(node.Children[1].Value).LuaType.IsString())
                 throw new LuaXAstGeneratorException(Name, node, "Identifier of declared variable is expected here");
 
-            target.CatchStatement = new LuaXCatchStatement(node.Children[1].Value, new LuaXElementLocation(Name, node));
+            target.CatchStatement = new LuaXCatchClause(node.Children[1].Value, new LuaXElementLocation(Name, node));
             ProcessStatements(node.Children[2].Children, @class, method, target.CatchStatement.CatchStatements);
         }
 

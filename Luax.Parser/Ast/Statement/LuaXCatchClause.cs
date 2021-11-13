@@ -2,10 +2,15 @@
 
 namespace Luax.Parser.Ast.Statement
 {
-    public class LuaXCatchStatement : LuaXStatement
+    public class LuaXCatchClause
     {
         /// <summary>
-        /// The expression to catch
+        /// The location of the clause
+        /// </summary>
+        public LuaXElementLocation Location { get; }
+
+        /// <summary>
+        /// The identifier to catch
         /// </summary>
         public string CatchIdentifier { get; }
 
@@ -14,10 +19,10 @@ namespace Luax.Parser.Ast.Statement
         /// </summary>
         public LuaXStatementCollection CatchStatements = new LuaXStatementCollection();
 
-        public LuaXCatchStatement(string catchIdentifier, LuaXElementLocation location)
-            : base(location)
+        public LuaXCatchClause(string catchIdentifier, LuaXElementLocation location)
         {
             CatchIdentifier = catchIdentifier;
+            Location = location;
         }
     }
 }
