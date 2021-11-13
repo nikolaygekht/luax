@@ -76,7 +76,30 @@ class io
     public static extern size(filename : string) : int;
     public static extern isFolder(filename : string) : boolean;
     public static extern isFile(filename : string) : boolean;
-    public static extern open(filename : string, mode : string) : file;
+    public static extern files(path : string) : string[];
+    public static extern folders(path : string) : string[];
+    public static extern delete(path : string) : void;
+    public static extern writeTextToFile(path : string, text : string, codepage : int) : void;
+    public static extern readTextFromFile(path : string, codepage : int) : string;
+    public static extern tempFolder() : string;
+    public static extern combinePath(p1 : string, p2 : string) : string;
+    public static extern fullPath(p1 : string) : string;
+    public static extern currentDirectory() : string;
+    public static extern createFolder(name : string) : void;
+
+    -- open modes
+    const M_OPEN = 1;    -- open existing file
+    const M_CREATE = 2;  -- create if not exist
+    const M_READ = 16;
+    const M_WRITE = 32;
+    const M_READWRITE = 48;
+    const M_SHARE_READ = 64;
+    const M_SHARE_WRITE = 128;
+    const M_SHARE = 192;
+    const CP_ANSI = 437;
+    const CP_UTF7 = 65000;
+    const CP_UTF8 = 65001;
+    public static extern open(filename : string, mode : int, codepage : int) : file;
 end
 
 -- ------------------------------------------------------- 
@@ -86,21 +109,23 @@ class buffer
     public extern length() : int;
     public extern get(index : int) : int;
     public extern set(index : int, value : int) : void;
+    public static extern create(length : int) : buffer;
 end
 
 -- -------------------------------------------------------
 -- File i/o
 -- -------------------------------------------------------
 class file
-    public extern length() : int;
-    public extern getPosition() : int;
+    public extern size() : int;
+    public extern position() : int;
     public extern seek(position : int) : void;
     public extern readLine() : string;
-    public extern read() : int;
+    public extern readByte() : int;
     public extern readBuffer(length : int) : buffer;
-    public extern writeLine(v : string) : int;
-    public extern write(v : int) : int;
-    public extern writeBuffer(v : buffer) : int;
+    public extern writeLine(v : string) : void;
+    public extern writeByte(v : int) : void;
+    public extern writeBuffer(v : buffer, offset : int, length : int) : void;
+    public extern close() : void;
 end
 
 -- -------------------------------------------------------

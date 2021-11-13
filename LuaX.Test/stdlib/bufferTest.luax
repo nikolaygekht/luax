@@ -1,0 +1,63 @@
+class bufferTestGetOutOfRangeAction1 : action
+    public function invoke() : void
+        var v : buffer;
+        v = buffer.create(10);
+        v.get(10);
+    end
+end
+
+class bufferTestGetOutOfRangeAction2 : action
+    public function invoke() : void
+        var v : buffer;
+        v = buffer.create(10);
+        v.get(-1);
+    end
+end
+
+class bufferTestSetOutOfRangeAction1 : action
+    public function invoke() : void
+        var v : buffer;
+        v = buffer.create(10);
+        v.set(10, 0);
+    end
+end
+
+class bufferTestSetOutOfRangeAction2 : action
+    public function invoke() : void
+        var v : buffer;
+        v = buffer.create(10);
+        v.set(-1, 0);
+    end
+end
+
+
+@TestSuite()
+class bufferTest
+    @Fact()
+    public function create() : void
+        var v : buffer;
+        v = buffer.create(10);
+        assert.isTrue(v.length() == 10, "");
+    end
+
+    @Fact()
+    public function getset() : void
+        var v : buffer;
+        v = buffer.create(3);
+        v.set(0, 1);
+        v.set(1, 127);
+        v.set(2, 255);
+
+        assert.isTrue(v.get(0) == 1, "1");
+        assert.isTrue(v.get(1) == 127, "2");
+        assert.isTrue(v.get(2) == 255, "3");
+    end
+
+    @Fact()
+    public function outOfRange() : void
+        assert.throws(new bufferTestGetOutOfRangeAction1(), "get1");
+        assert.throws(new bufferTestGetOutOfRangeAction2(), "get2");
+        assert.throws(new bufferTestSetOutOfRangeAction1(), "set1");
+        assert.throws(new bufferTestSetOutOfRangeAction2(), "set2");
+    end
+end

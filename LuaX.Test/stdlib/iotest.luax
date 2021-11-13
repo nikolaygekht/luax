@@ -1,0 +1,282 @@
+﻿@TestSuite()
+class ioTest
+    private var temporary : string;
+    private var file : file;
+
+    public function ioTest() : void
+        temporary = io.combinePath(io.tempFolder(), "luaxtest");
+        if io.exists(temporary) then
+            io.delete(temporary);
+        end
+    end
+
+    @TearDown()
+    public function tearDown() : void
+        if file ~= nil then
+            file.close();
+        end
+
+        if io.exists(temporary) then
+            io.delete(temporary);
+        end
+    end
+
+    @Fact()
+    public function temp() : void
+        assert.isTrue(io.tempFolder() ~= nil, "nil");
+        assert.isTrue(io.exists(io.tempFolder()), "exists");
+        assert.isTrue(io.isFolder(io.tempFolder()), "folder");
+        assert.isTrue(io.fullPath(io.tempFolder()) == io.tempFolder(), "absolute");
+    end
+
+    @Fact()
+    public function current() : void
+        assert.isTrue(io.currentDirectory() ~= nil, "nil");
+        assert.isTrue(io.exists(io.currentDirectory()), "exists");
+        assert.isTrue(io.isFolder(io.currentDirectory()), "folder");
+        assert.isTrue(io.fullPath(io.currentDirectory()) == io.currentDirectory(), "absolute");
+    end
+
+    @Fact()
+    public function fullPathOfDot() : void
+        assert.isTrue(io.fullPath(".") == io.currentDirectory(), "");
+    end
+
+    @Fact()
+    public function combine() : void
+        var s : string;
+        s = io.combinePath(temporary, "abc");
+        assert.isTrue(s == temporary .. "/abc" or
+                      s == temporary .. "\\abc", "");
+    end
+
+    @Fact()
+    public function createFolder() : void
+        assert.isFalse(io.exists(temporary), "stage");
+        io.createFolder(temporary);
+        assert.isTrue(io.exists(temporary), "created");
+        assert.isTrue(io.isFolder(temporary), "a folder");
+    end
+
+    @Fact()
+    public function textToFileANSI() : void
+        assert.isFalse(io.exists(temporary), "stage");
+        io.writeTextToFile(temporary, "mytest", io.CP_ANSI);
+        assert.isTrue(io.exists(temporary), "created");
+        assert.isTrue(io.isFile(temporary), "a file");
+
+        assert.isTrue(io.readTextFromFile(temporary, io.CP_ANSI) == "mytest", "text");
+    end
+
+    @Fact()
+    public function textToFileUTF7() : void
+        assert.isFalse(io.exists(temporary), "stage");
+        io.writeTextToFile(temporary, "testтест", io.CP_UTF7);
+        assert.isTrue(io.exists(temporary), "created");
+        assert.isTrue(io.isFile(temporary), "a file");
+
+        assert.isTrue(io.readTextFromFile(temporary, io.CP_UTF7) == "testтест", "text");
+        assert.isTrue(io.readTextFromFile(temporary, io.CP_ANSI) == "test+BEIENQRBBEI-", "text");
+    end
+
+    @Fact()
+    public function textToFileUTF8() : void
+        assert.isFalse(io.exists(temporary), "stage");
+        io.writeTextToFile(temporary, "testтест", io.CP_UTF8);
+        assert.isTrue(io.exists(temporary), "created");
+        assert.isTrue(io.isFile(temporary), "a file");
+
+        assert.isTrue(io.readTextFromFile(temporary, io.CP_UTF8) == "testтест", "text");
+    end
+
+    private function stage(folders : int, files : int) : void
+        var i : int, j : int, f : string;
+        io.createFolder(temporary);
+        i = 1;
+        while i <= folders do
+            f = io.combinePath(temporary, "folder" .. i);
+            io.createFolder(f);
+            j = 1;
+            while j <= files do
+                io.writeTextToFile(io.combinePath(f, "file" .. j), "text", io.CP_ANSI);
+                j = j + 1;
+            end
+            i = i + 1;
+        end
+
+        i = 1;
+        while i <= files do
+            io.writeTextToFile(io.combinePath(temporary, "file" .. i), "text" .. i, io.CP_ANSI);
+            i = i + 1;
+        end
+    end
+
+    @Fact()
+    public function removeFolderWithContent() : void
+        stage(5, 5);
+        assert.isTrue(io.exists(temporary), "created");
+        assert.isTrue(io.isFolder(temporary), "asfolder");
+        io.delete(temporary);
+        assert.isFalse(io.exists(temporary), "removed");
+    end
+
+    public function contains(arr : string[], folder : string, v : string) : boolean
+        var i : int;
+        i = 0;
+        while i < arr.length do
+            if (arr[i] == io.combinePath(folder, v)) then
+                return true;
+            end
+            i = i + 1;
+        end
+        return false;
+    end
+
+    @Fact()
+    public function folderList1() : void
+        stage(5, 5);
+        var d : string[];
+        d = io.folders(temporary);
+        assert.isTrue(d.length == 5, "length");
+        assert.isTrue(contains(d, temporary, "folder1"), "f1");
+        assert.isTrue(contains(d, temporary, "folder2"), "f2");
+        assert.isTrue(contains(d, temporary, "folder3"), "f3");
+        assert.isTrue(contains(d, temporary, "folder4"), "f4");
+        assert.isTrue(contains(d, temporary, "folder5"), "f5");
+        assert.isFalse(contains(d, temporary, "folder6"), "f6");
+    end
+
+    @Fact()
+    public function fileList1() : void
+        stage(1, 4);
+        var d : string[], f : string;
+        f = temporary;
+        d = io.files(f);
+        assert.isTrue(d.length == 4, "length");
+        assert.isTrue(contains(d, f, "file1"), "f1");
+        assert.isTrue(contains(d, f, "file2"), "f2");
+        assert.isTrue(contains(d, f, "file3"), "f3");
+        assert.isTrue(contains(d, f, "file4"), "f4");
+        assert.isFalse(contains(d, f, "file5"), "f5");
+    end
+
+    @Fact()
+    public function fileList2() : void
+        stage(1, 5);
+        var d : string[], f : string;
+        d = io.folders(temporary);
+        f = d[0];
+        d = io.files(f);
+        assert.isTrue(d.length == 5, "length");
+        assert.isTrue(contains(d, f, "file1"), "f1");
+        assert.isTrue(contains(d, f, "file2"), "f2");
+        assert.isTrue(contains(d, f, "file3"), "f3");
+        assert.isTrue(contains(d, f, "file4"), "f4");
+        assert.isTrue(contains(d, f, "file5"), "f5");
+        assert.isFalse(contains(d, f, "file6"), "f6");
+    end
+
+    @Fact()
+    public function fileTestClose() : void
+        assert.isFalse(io.exists(temporary), "stage");
+
+        file = io.open(temporary, io.M_CREATE + io.M_OPEN, io.CP_ANSI);
+        file.close();
+        file = nil;
+
+        assert.isTrue(io.exists(temporary), "created");
+        io.delete(temporary);
+        assert.isFalse(io.exists(temporary), "deleted");
+    end
+
+    @Fact()
+    public function fileTest_CreateAndClose() : void
+        file = io.open(temporary, io.M_CREATE + io.M_OPEN, io.CP_ANSI);
+        file.close();
+        file = nil;
+        io.delete(temporary);
+        -- should succesfully reach this point
+        assert.isTrue(true, "should be here!");
+    end
+
+    @Fact()
+    public function fileTest_WriteBytes() : void
+        file = io.open(temporary, io.M_CREATE + io.M_OPEN + io.M_WRITE + io.M_READ, io.CP_ANSI);
+
+        assert.isTrue(file.position() == 0, "position0");
+        file.writeByte(12);
+        assert.isTrue(file.position() == 1, "position1");
+        file.writeByte(24);
+        assert.isTrue(file.position() == 2, "position2");
+        assert.isTrue(file.readByte() == -1, "read at end 1");
+        file.seek(0);
+        assert.isTrue(file.position() == 0, "position0 again");
+        assert.isTrue(file.size() == 2, "size");
+        assert.isTrue(file.readByte() == 12, "byte 1");
+        assert.isTrue(file.readByte() == 24, "byte 2");
+        assert.isTrue(file.readByte() == -1, "read at end 2");
+        file.seek(1);
+        assert.isTrue(file.readByte() == 24, "byte 2 again");
+        file.close();
+        file = nil;
+    end
+
+    @Fact()
+    public function fileTest_WriteText() : void
+        file = io.open(temporary, io.M_CREATE + io.M_WRITE, io.CP_ANSI);
+
+        file.writeLine("Line 1");
+        file.writeLine("Line 2");
+        file.writeLine("Line 3");
+
+        file.close();
+        file = nil;
+
+        file = io.open(temporary, io.M_OPEN + io.M_READ, io.CP_ANSI);
+        assert.isTrue(file.readLine() == "Line 1", "line 1");
+        assert.isTrue(file.readLine() == "Line 2", "line 2");
+        assert.isTrue(file.readLine() == "Line 3", "line 3");
+        assert.isTrue(file.readLine() == nil, "line 3");
+
+        file.close();
+        file = nil;
+    end
+
+@Fact()
+    public function fileTest_WriteBuffer() : void
+        var b : buffer;
+        b = buffer.create(5);
+        b.set(0, 0x48);
+        b.set(1, 0x65);
+        b.set(2, 0x6c);
+        b.set(3, 0x6c);
+        b.set(4, 0x6f);
+
+        file = io.open(temporary, io.M_CREATE + io.M_WRITE, io.CP_ANSI);
+        file.writeBuffer(b, 0, 5);
+        file.close();
+
+        file = io.open(temporary, io.M_OPEN + io.M_READ, io.CP_ANSI);
+
+        b = file.readBuffer(5);
+        assert.isTrue(b.length() == 5, "length1");
+        assert.isTrue(b.get(0) == 0x48, "b1");
+        assert.isTrue(b.get(1) == 0x65, "b2");
+        assert.isTrue(b.get(2) == 0x6c, "b3");
+        assert.isTrue(b.get(3) == 0x6c, "b4");
+        assert.isTrue(b.get(4) == 0x6f, "b5");
+
+        file.seek(1);
+        b = file.readBuffer(3);
+        assert.isTrue(b.length() == 3, "length3");
+        assert.isTrue(b.get(0) == 0x65, "b2 1");
+        assert.isTrue(b.get(1) == 0x6c, "b3 1");
+        assert.isTrue(b.get(2) == 0x6c, "b4 1");
+
+        file.seek(0);
+        assert.isTrue(file.readLine() == "Hello", "as text");
+
+        file.close();
+        file = nil;
+    end
+end

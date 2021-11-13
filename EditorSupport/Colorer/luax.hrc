@@ -36,7 +36,7 @@
            <block start="/(\()/" end="/(\))/" scheme="luax" region00="Symbol" region01="def:PairStart" region10="Symbol" region11="def:PairEnd" />
            <block start="/(\[)/" end="/(\])/" scheme="luax" region00="Symbol" region01="def:PairStart" region10="Symbol" region11="def:PairEnd" />
 
-           <regexp match="/\b0[xX][a-fA-F]([a-fA-F_]*[a-fA-F])?\b/" region="Number" />
+           <regexp match="/\b0[xX][0-9a-fA-F]([0-9a-fA-F_]*[0-9a-fA-F])?\b/" region="Number" />
            <regexp match="/\b[\d]([\d_]*[\d])?(\.[\d]([\d_]*[\d])?(e[+-]?\d+))?\b/" region="Number" />
 
             <block start="/\b(?{Outline}(?{PairStart}(?{Keyword}class))\b\s*\M\S*\s*\()/"
@@ -87,9 +87,13 @@
                 <word name="string"/>
                 <word name="int"/>
                 <word name="real"/>
+                <word name="datetime"/>
                 <word name="void"/>
                 <word name="function"/>
                 <word name="var"/>
+                <word name="const"/>
+                <word name="this"/>
+                <word name="super"/>
 
                 <word name="else"/>
                 <word name="elseif"/>
@@ -112,6 +116,9 @@
                 <word name="try"/>
                 <word name="catch"/>
                 <word name="throw"/>
+                <word name="static"/>
+                <word name="new"/>
+                <word name="return"/>
             </keywords>
         </scheme>
     </type>

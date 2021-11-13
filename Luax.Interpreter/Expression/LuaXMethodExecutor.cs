@@ -20,6 +20,8 @@ namespace Luax.Interpreter.Expression
             ReachForEnd,
             ReturnDefault,
             Return,
+            Break,
+            Continue,
             Exception,
         };
 
@@ -133,6 +135,23 @@ namespace Luax.Interpreter.Expression
 
                                 result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass, variables);
                                 return ResultType.Return;
+                            }
+                        case LuaXWhileStatement @while:
+                            {
+                                var r = ExecuteWhile(@while, types, currentClass, variables, out result);
+                                if (r != ResultType.ReachForEnd)
+                                    return r;
+                            }
+                            break;
+                        case LuaXBreakStatement:
+                            {
+                                result = null;
+                                return ResultType.Break;
+                            }
+                        case LuaXContinueStatement:
+                            {
+                                result = null;
+                                return ResultType.Continue;
                             }
                     }
                 }
@@ -251,6 +270,34 @@ namespace Luax.Interpreter.Expression
 
             if (ifStatement.ElseClause != null)
                 return ExecuteStatements(ifStatement.ElseClause, types, currentClass, variables, out result);
+
+            result = null;
+            return ResultType.ReachForEnd;
+        }
+
+        private static ResultType ExecuteWhile(LuaXWhileStatement whileStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
+        {
+            while (true)
+            {
+                var v = LuaXExpressionEvaluator.Evaluate(whileStatement.WhileCondition, types, currentClass, variables);
+                if (v is bool b)
+                {
+                    if (b)
+                    {
+                        ResultType statementsResult = ExecuteStatements(whileStatement.Statements, types, currentClass, variables, out result);
+                        if (statementsResult == ResultType.Break)
+                            break;
+                        else if (statementsResult == ResultType.Continue)
+                            continue;
+                        else if (statementsResult != ResultType.ReachForEnd)
+                            return statementsResult;
+    }
+                    else
+                        break;
+}
+                else
+                    throw new LuaXExecutionException(whileStatement.Location, "Condition of while statement is not a boolean value");
+            }
 
             result = null;
             return ResultType.ReachForEnd;

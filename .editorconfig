@@ -27,3 +27,6 @@ dotnet_diagnostic.IDE0063.severity = none
 # S2589: Boolean expressions should not be gratuitous 
 # too many false positives
 dotnet_diagnostic.S2589.severity = none
+
+# RCS1003: Add curly braces to if-else
+dotnet_diagnostic.RCS1003.severity = none

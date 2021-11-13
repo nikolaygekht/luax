@@ -353,6 +353,72 @@ namespace Luax.Parser.Test
         }
 
         [Fact]
+        public void WhileBreakContinue()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("While1");
+            app.Pass2();
+            app.Classes.Search("test", out var @class).Should().BeTrue();
+            @class.SearchMethod("test1", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(2);
+            method.Statements[0].Should().BeOfType<LuaXAssignVariableStatement>();
+            method.Statements[1].Should().BeOfType<LuaXWhileStatement>();
+
+            var @while = method.Statements[1].As<LuaXWhileStatement>();
+            @while.WhileCondition.ToString().Should().Be("(var:i Greater const:int:0)");
+            @while.Statements.Should().HaveCount(3);
+            @while.Statements[0].Should().BeOfType<LuaXIfStatement>();
+
+            var @if = @while.Statements[0].As<LuaXIfStatement>();
+            @if.Clauses.Should().HaveCount(1);
+            @if.Clauses[0].Condition.ToString().Should().Be("(arg:arg1 Equal var:i)");
+            @if.Clauses[0].Statements.Should().HaveCount(1);
+            @if.Clauses[0].Statements[0].Should().BeOfType<LuaXBreakStatement>();
+
+            @while.Statements[1].Should().BeOfType<LuaXAssignVariableStatement>();
+            var assign = @while.Statements[1].As<LuaXAssignVariableStatement>();
+            assign.VariableName.Should().Be("i");
+            assign.Expression.ToString().Should().Be("(var:i Subtract const:int:1)");
+            @while.Statements[2].Should().BeOfType<LuaXContinueStatement>();
+        }
+
+        [Fact]
+        public void BreakOutOfLoop1()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("Break1");
+            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
+            Assert.Contains("The break statement is not in a loop", ex.Message);
+        }
+
+        [Fact]
+        public void BreakOutOfLoop2()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("Break2");
+            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
+            Assert.Contains("The break statement is not in a loop", ex.Message);
+        }
+
+        [Fact]
+        public void ContinueOutOfLoop1()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("Continue1");
+            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
+            Assert.Contains("The continue statement is not in a loop", ex.Message);
+        }
+
+        [Fact]
+        public void ContinueOutOfLoop2()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("Continue2");
+            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
+            Assert.Contains("The continue statement is not in a loop", ex.Message);
+        }
+
+        [Fact]
         public void Try()
         {
             var app = new LuaXApplication();

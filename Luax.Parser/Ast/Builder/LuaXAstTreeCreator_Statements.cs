@@ -15,12 +15,19 @@ namespace Luax.Parser.Ast.Builder
     internal partial class LuaXAstTreeCreator
     {
         /// <summary>
+        /// Depth of nested loops
+        /// </summary>
+        private int mLoopDepth;
+        /// <summary>
         /// Processes the method body
         /// </summary>
         /// <param name="node"></param>
         /// <param name="method"></param>
         public void ProcessBody(IAstNode node, LuaXClass @class, LuaXMethod method)
-            => ProcessStatements(node.Children, @class, method, method.Statements);
+        {
+            mLoopDepth = 0;
+            ProcessStatements(node.Children, @class, method, method.Statements);
+        }
 
         private void ProcessStatements(IReadOnlyList<IAstNode> nodes, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
         {
@@ -55,6 +62,15 @@ namespace Luax.Parser.Ast.Builder
                         break;
                     case "RETURN_STMT":
                         ProcessesReturnStatement(child, @class, method, statements);
+                        break;
+                    case "WHILE_STMT":
+                        ProcessesWhileStatement(child, @class, method, statements);
+                        break;
+                    case "BREAK_STMT":
+                        ProcessesBreakStatement(child, statements);
+                        break;
+                    case "CONTINUE_STMT":
+                        ProcessesContinueStatement(child, statements);
                         break;
                     default:
                         throw new LuaXAstGeneratorException(Name, child, $"Unexpected symbol {child.Symbol}");
@@ -264,6 +280,82 @@ namespace Luax.Parser.Ast.Builder
                     break;
                 ProcessesIfClause(child, @class, method, stmt);
             }
+            statements.Add(stmt);
+        }
+
+        /// <summary>
+        /// Processes WHILE statement
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        /// <param name="method"></param>
+        /// <param name="statements"></param>
+        private void ProcessesWhileStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        {
+            LuaXElementLocation location = new LuaXElementLocation(Name, node);
+            LuaXExpression condition = null;
+            IAstNode body = null;
+
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "END")
+                    break;
+                if (child.Symbol == "WHILE" || child.Symbol == "DO")
+                    continue;
+                if (child.Symbol == "STATEMENTS")
+                    body = child;
+                if (child.Symbol == "EXPR")
+                    condition = ProcessExpression(child, @class, method);
+            }
+
+            if (condition != null)
+            {
+                if (!condition.ReturnType.IsBoolean())
+                    throw new LuaXAstGeneratorException(Name, new LuaXParserError(condition.Location, "The while condition should be a boolean expression"));
+            }
+            else
+                throw new LuaXAstGeneratorException(Name, new LuaXParserError(location, "The while condition should be in while statement"));
+
+            LuaXWhileStatement stmt = new LuaXWhileStatement(location, condition);
+
+            if (body != null)
+            {
+                mLoopDepth++;
+                ProcessStatements(body.Children, @class, method, stmt.Statements);
+                mLoopDepth--;
+            }
+
+            statements.Add(stmt);
+        }
+
+        /// <summary>
+        /// Processes BREAK statement
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        /// <param name="method"></param>
+        /// <param name="statements"></param>
+        private void ProcessesBreakStatement(IAstNode node, LuaXStatementCollection statements)
+        {
+            LuaXBreakStatement stmt = new LuaXBreakStatement(new LuaXElementLocation(Name, node));
+            if (mLoopDepth <= 0)
+                throw new LuaXAstGeneratorException(Name, new LuaXParserError(stmt.Location, "The break statement is not in a loop"));
+            statements.Add(stmt);
+        }
+
+        /// <summary>
+        /// Processes CONTINUE statement
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        /// <param name="method"></param>
+        /// <param name="statements"></param>
+        private void ProcessesContinueStatement(IAstNode node, LuaXStatementCollection statements)
+        {
+            LuaXContinueStatement stmt = new LuaXContinueStatement(new LuaXElementLocation(Name, node));
+            if (mLoopDepth <= 0)
+                throw new LuaXAstGeneratorException(Name, new LuaXParserError(stmt.Location, "The continue statement is not in a loop"));
             statements.Add(stmt);
         }
 
