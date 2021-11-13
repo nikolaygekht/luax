@@ -173,13 +173,6 @@ namespace Luax.Interpreter.Expression
             }
         }
 
-        private static object LogicalOperation(LuaXExpression expression, object left, object right, Func<bool, bool, bool> action)
-        {
-            if (left is bool i1 && right is bool i2)
-                return action(i1, i2);
-            throw new LuaXExecutionException(expression.Location, "Both argument of the operation must be boolean");
-        }
-
         private static object RelationalOperation(LuaXExpression expression, LuaXBinaryOperator @operator, object left, object right)
         {
             int? sign = null;
@@ -253,6 +246,8 @@ namespace Luax.Interpreter.Expression
 
         private static object EvaluateBinary(LuaXBinaryOperatorExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
         {
+            if (expression.Operator == LuaXBinaryOperator.And || expression.Operator == LuaXBinaryOperator.Or)
+                return EvaluateLogical(expression, types, runningClass, variables);
             var left = Evaluate(expression.LeftArgument, types, runningClass, variables);
             var right = Evaluate(expression.RightArgument, types, runningClass, variables);
 
@@ -274,11 +269,31 @@ namespace Luax.Interpreter.Expression
                 LuaXBinaryOperator.Divide => MathOperation(expression, left, right, (a1, a2) => a1 / a2, (a1, a2) => a1 / a2),
                 LuaXBinaryOperator.Reminder => MathOperation(expression, left, right, (a1, a2) => a1 % a2, (_, _) => 0.0),
                 LuaXBinaryOperator.Power => MathOperation(expression, left, right, (a1, a2) => (int)Math.Pow(a1, a2), (a1, a2) => Math.Pow(a1, a2)),
-                LuaXBinaryOperator.And => LogicalOperation(expression, left, right, (a1, a2) => a1 && a2),
-                LuaXBinaryOperator.Or => LogicalOperation(expression, left, right, (a1, a2) => a1 || a2),
                 LuaXBinaryOperator.Equal or LuaXBinaryOperator.NotEqual or LuaXBinaryOperator.Less or LuaXBinaryOperator.LessOrEqual or LuaXBinaryOperator.Greater or LuaXBinaryOperator.GreaterOrEqual => RelationalOperation(expression, expression.Operator, left, right),
                 _ => throw new LuaXExecutionException(expression.Location, "Unsupported operation"),
             };
+        }
+
+        private static object EvaluateLogical(LuaXBinaryOperatorExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
+        {
+            var left = Evaluate(expression.LeftArgument, types, runningClass, variables);
+            if (left is not bool a)
+                throw new LuaXExecutionException(expression.LeftArgument.Location, "Expression is expected to be a boolean value");
+
+            if (expression.Operator == LuaXBinaryOperator.And && !a)
+                return false;
+            if (expression.Operator == LuaXBinaryOperator.Or && a)
+                return true;
+
+            var right = Evaluate(expression.RightArgument, types, runningClass, variables);
+            if (right is not bool b)
+                throw new LuaXExecutionException(expression.RightArgument.Location, "Expression is expected to be a boolean value");
+
+            if (expression.Operator == LuaXBinaryOperator.And)
+                return a && b;
+            else if (expression.Operator == LuaXBinaryOperator.Or)
+                    return a || b;
+            throw new LuaXExecutionException(expression.Location, $"Unexpected logical operator {expression.Operator}");
         }
 
         /// <summary>

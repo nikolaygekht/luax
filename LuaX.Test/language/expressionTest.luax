@@ -426,16 +426,43 @@ class expressionTest
     public function logicalAnd() : void
         assert.isTrue(true and true, "1");
         assert.isFalse(true and false, "2");
-        assert.isFalse(false and true, "2");
-        assert.isFalse(false and false, "2");
+        assert.isFalse(false and true, "3");
+        assert.isFalse(false and false, "4");
+    end
+
+    var logicalSecondArgumentCalled : boolean;
+
+    private function logicalSecondArgument(b : boolean) : boolean
+        logicalSecondArgumentCalled = true;
+        return b;
+    end
+
+    @Fact()
+    public function logicalSkipSecondArgument() : void
+        logicalSecondArgumentCalled = false;
+        assert.isFalse(false and logicalSecondArgument(false), "false and result");
+        assert.isFalse(logicalSecondArgumentCalled, "false and called");
+
+        logicalSecondArgumentCalled = false;
+        assert.isTrue(true or logicalSecondArgument(false), "true or result");
+        assert.isFalse(logicalSecondArgumentCalled, "true or called");
+
+        logicalSecondArgumentCalled = false;
+        assert.isFalse(true and logicalSecondArgument(false), "true and result");
+        assert.isTrue(logicalSecondArgumentCalled, "false and called");
+
+        logicalSecondArgumentCalled = false;
+        assert.isTrue(false or logicalSecondArgument(true), "false or result");
+        assert.isTrue(logicalSecondArgumentCalled, "false or called");
+
     end
 
     @Fact()
     public function logicalOr() : void
         assert.isTrue(true or true, "1");
         assert.isTrue(true or false, "2");
-        assert.isTrue(false or true, "2");
-        assert.isFalse(false or false, "2");
+        assert.isTrue(false or true, "3");
+        assert.isFalse(false or false, "4");
     end
 
     @Fact()
