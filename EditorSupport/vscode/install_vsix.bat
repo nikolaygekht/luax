@@ -1,0 +1,1 @@
+code --install-extension luax-1.1.1.vsix
