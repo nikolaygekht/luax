@@ -1,0 +1,43 @@
+{
+	"name": "luax-highlighter",
+	"displayName": "LuaX.CodeHighlighter",
+	"description": "LuaX code highlighting extension for VS Code",
+	"categories": [
+		"Languages"
+	],
+	"version": "1.1.1",
+	"publisher": "Gehtsoft",
+	"author": {
+		"name": "Gehtsoft"
+	},
+	"icon": "luax.png",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/gehtsof/publict/vscode-luax.git"
+	},
+	"engines": {
+		"vscode": "*"
+	},
+	"contributes": {
+		"languages": [
+			{
+				"id": "luax",
+				"extensions": [
+					".luax"
+				],
+				"aliases": [
+					"Luax",
+					"luax"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "luax",
+				"scopeName": "source.luax",
+				"path": "./syntaxes/luax.json"
+			}
+		]
+	}
+}
