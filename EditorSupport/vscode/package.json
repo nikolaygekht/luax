@@ -1,5 +1,5 @@
 {
-	"name": "luax",
+	"name": "luax-highlighter",
 	"displayName": "LuaX.CodeHighlighter",
 	"description": "LuaX code highlighting extension for VS Code",
 	"categories": [

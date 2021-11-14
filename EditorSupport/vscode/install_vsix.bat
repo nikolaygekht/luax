@@ -1,1 +1,1 @@
-code --install-extension luax-1.1.1.vsix
+code --install-extension luax-highlighter-1.1.1.vsix
