@@ -1,7 +1,7 @@
 {
 	"name": "luax",
-	"displayName": "Luax",
-	"description": "Enhanced Lua language",
+	"displayName": "LuaX.CodeHighlighter",
+	"description": "LuaX code highlighting extension for VS Code",
 	"categories": [
 		"Languages"
 	],
