@@ -1,0 +1,9 @@
+@group
+    @key=runtime
+    @brief=LuaX Runtime
+    @title=Runtime
+    @ingroup=main
+    @transform=yes
+    @sortgroups=no
+@end
+

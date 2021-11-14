@@ -1,0 +1,9 @@
+@group
+    @key=language
+    @brief=LuaX Language Syntax
+    @title=Language
+    @ingroup=main
+    @transform=yes
+    @sortgroups=no
+@end
+
