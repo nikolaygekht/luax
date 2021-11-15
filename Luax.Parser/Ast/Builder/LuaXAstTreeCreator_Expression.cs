@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
 using System.Security;
 using System.Text;
@@ -437,6 +438,7 @@ namespace Luax.Parser.Ast.Builder
         /// <param name="currentClass"></param>
         /// <param name="currentMethod"></param>
         /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private LuaXExpression ProcessVariable(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
         {
             if (astNode.Children.Count != 1 || astNode.Children[0].Symbol != "IDENTIFIER")
@@ -446,7 +448,7 @@ namespace Luax.Parser.Ast.Builder
 
             var name = astNode.Children[0].Value;
 
-            if (!currentMethod.Static && name == "this")
+            if (IsThisReference(name, currentMethod))
                 return new LuaXVariableExpression("this",
                     new LuaXTypeDefinition()
                     {
@@ -454,7 +456,7 @@ namespace Luax.Parser.Ast.Builder
                         Class = currentClass.Name
                     }, location);
 
-            if (!currentMethod.Static && currentClass.HasParent && name == "super")
+            if (IsSuperRefenence(name, currentClass, currentMethod))
                 return new LuaXVariableExpression("super",
                     new LuaXTypeDefinition()
                     {
@@ -468,19 +470,10 @@ namespace Luax.Parser.Ast.Builder
                 return new LuaXVariableExpression(name, v2.LuaType, location);
             if (currentMethod.Constants.Search(name, out var c1))
                 return new LuaXConstantExpression(c1.Value, location);
-            if (currentClass.SearchProperty(name, out var p1))
-            {
-                if (p1.Static)
-                    return new LuaXStaticPropertyExpression(currentClass.Name, name, p1.LuaType, location);
-                else
-                {
-                    if (currentMethod.Static)
-                        throw new LuaXAstGeneratorException(Name, astNode, $"Can't access instance property {name} in a static method");
 
-                    return new LuaXInstancePropertyExpression(new LuaXVariableExpression("this", new LuaXTypeDefinition() { TypeId = LuaXType.Object, Class = currentClass.Name }, location),
-                        name, p1.LuaType, location);
-                }
-            }
+            if (currentClass.SearchProperty(name, out var p1))
+                return ProcessVariableAsProperty(astNode, currentClass, currentMethod, name, p1, location);
+            
             if (currentClass.SearchConstant(name, out var c2))
                 return new LuaXConstantExpression(c2.Value, location);
 
@@ -488,6 +481,29 @@ namespace Luax.Parser.Ast.Builder
                 return new LuaXClassNameExpression(name, location);
 
             throw new LuaXAstGeneratorException(Name, astNode, $"Identifier {name} is not an argument, property, method or class name");
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsThisReference(string name,  LuaXMethod currentMethod)
+            => !currentMethod.Static && name == "this";
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsSuperRefenence(string name, LuaXClass currentClass, LuaXMethod currentMethod)
+            => !currentMethod.Static && currentClass.HasParent && name == "super";
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private LuaXExpression ProcessVariableAsProperty(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod, string name, LuaXProperty p1, LuaXElementLocation location)
+        {
+            if (p1.Static)
+                return new LuaXStaticPropertyExpression(currentClass.Name, name, p1.LuaType, location);
+            else
+            {
+                if (currentMethod.Static)
+                    throw new LuaXAstGeneratorException(Name, astNode, $"Can't access instance property {name} in a static method");
+
+                return new LuaXInstancePropertyExpression(new LuaXVariableExpression("this", new LuaXTypeDefinition() { TypeId = LuaXType.Object, Class = currentClass.Name }, location),
+                    name, p1.LuaType, location);
+            }
         }
 
         /// <summary>
