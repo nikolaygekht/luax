@@ -317,6 +317,14 @@ namespace Luax.Parser.Ast.Builder
 
             var arg = ProcessExpression(astNode.Children[5], currentClass, currentMethod);
 
+            //check cast compatibility
+            if (arg.ReturnType.IsTheSame(type))
+                return arg;
+
+            var customCast = FindCustomCast(arg, type);
+            if (customCast != null)
+                return customCast;
+
             return new LuaXCastOperatorExpression(arg, type, new LuaXElementLocation(Name, astNode));
         }
 
