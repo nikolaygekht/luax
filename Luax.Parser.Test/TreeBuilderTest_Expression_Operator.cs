@@ -280,6 +280,7 @@ namespace Luax.Parser.Test
         [InlineData("EQ_OP", "==", LuaXBinaryOperator.Equal, "vb1", "vb2")]
         [InlineData("EQ_OP", "==", LuaXBinaryOperator.Equal, "vd1", "vd2")]
         [InlineData("NEQ_OP", "~=", LuaXBinaryOperator.NotEqual, "vi1", "vi2")]
+        [InlineData("NEQ_OP", "!=", LuaXBinaryOperator.NotEqual, "vi1", "vi2")]
         [InlineData("GT_OP", ">", LuaXBinaryOperator.Greater, "vi1", "vi2")]
         [InlineData("GE_OP", ">=", LuaXBinaryOperator.GreaterOrEqual, "vi1", "vi2")]
         [InlineData("LT_OP", "<", LuaXBinaryOperator.Less, "vi1", "vi2")]

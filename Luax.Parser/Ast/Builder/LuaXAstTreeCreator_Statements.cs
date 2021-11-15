@@ -119,7 +119,7 @@ namespace Luax.Parser.Ast.Builder
             else if (target is LuaXArrayAccessExpression e4)
                 stmt = new LuaXAssignArrayItemStatement(e4.ArrayExpression, e4.IndexExpression, source, location);
             else if (target is LuaXInstanceCallExpression e5 && e5.MethodName == "get" &&
-                e5.Arguments.Count == 1 && 
+                e5.Arguments.Count == 1 &&
                 e5.ReturnType.IsTheSame(source.ReturnType))
             {
                 Metadata.Search(e5.Object.ReturnType.Class, out var @class1);
@@ -129,7 +129,7 @@ namespace Luax.Parser.Ast.Builder
                      method1.Arguments.Count != 2 ||
                     !method1.Arguments[0].LuaType.IsTheSame(e5.Arguments[0].ReturnType) ||
                     !method1.Arguments[1].LuaType.IsTheSame(source.ReturnType))
-                    throw new LuaXAstGeneratorException(Name, node, $"The class {class1.Name} does not have public instance method set({e5.Arguments[0].ReturnType.ToString()}, {source.ReturnType.ToString()}) : void");
+                    throw new LuaXAstGeneratorException(Name, node, $"The class {class1.Name} does not have public instance method set({e5.Arguments[0].ReturnType}, {source.ReturnType}) : void");
 
                 var expr = new LuaXInstanceCallExpression(LuaXTypeDefinition.Void, e5.Object, "set", null, location);
                 expr.Arguments.Add(e5.Arguments[0]);
@@ -163,6 +163,44 @@ namespace Luax.Parser.Ast.Builder
                 return expression.CastTo(LuaXTypeDefinition.String);
             else if (targetType.IsObject() && expression.ReturnType.IsObject() && Metadata.IsKindOf(expression.ReturnType.Class, targetType.Class))
                 return expression.CastTo(targetType);
+
+            return FindCustomCast(expression, targetType);
+        }
+
+        private LuaXExpression FindCustomCast(LuaXExpression expression, LuaXTypeDefinition targetType)
+        {
+            LuaXClass castClass = null;
+            LuaXMethod castMethod = null;
+
+            //try to find custom cast
+            foreach (var @class in Metadata)
+            {
+                if (!@class.Attributes.Any(attribute => attribute.Name == "Cast"))
+                    continue;
+
+                foreach (var method in @class.Methods)
+                {
+                    if (method.Visibility != LuaXVisibility.Private &&
+                        method.Static &&
+                        method.ReturnType.IsTheSame(targetType) &&
+                        method.Arguments.Count == 1 &&
+                        method.Arguments[0].LuaType.IsTheSame(expression.ReturnType))
+                    {
+                        castMethod = method;
+                        castClass = @class;
+                        break;
+                    }
+                }
+                if (castClass != null)
+                    break;
+            }
+
+            if (castClass != null)
+            {
+                var expr = new LuaXStaticCallExpression(targetType, castClass.Name, castMethod.Name, expression.Location);
+                expr.Arguments.Add(expression);
+                return expr;
+            }
 
             return null;
         }
@@ -348,7 +386,7 @@ namespace Luax.Parser.Ast.Builder
         public void ProcessConstantDeclarationInMethod(IAstNode node, LuaXMethod method)
         {
             var decl = ProcessConstantDeclaration(node);
-            
+
             if (method.Constants.Contains(decl.Name))
                 throw new LuaXAstGeneratorException(Name, node, "The constant with the name specified is already defined");
 

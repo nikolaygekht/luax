@@ -17,7 +17,7 @@ namespace Luax.Interpreter.Execution
         public IEnumerator<string> GetEnumerator() => ((IEnumerable<string>)mFiles).GetEnumerator();
 
         internal void Add(string file) => mFiles.Add(file);
-        
+
         IEnumerator IEnumerable.GetEnumerator() => ((IEnumerable)mFiles).GetEnumerator();
     }
 }

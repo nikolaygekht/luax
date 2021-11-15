@@ -1,6 +1,5 @@
 ﻿using Luax.Parser.Ast.LuaExpression;
 
-
 /// <summary>
 /// WHILE statement
 /// </summary>

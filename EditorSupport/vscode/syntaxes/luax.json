@@ -168,6 +168,19 @@
 				}
 			]
 		},
+                "new-statement":
+                {
+			"name": "meta.new.lua",
+			"match": "\\b(new)\\s*\\b(int|string|real|boolean|datetime|[_[:alpha:]][_[:alnum:]]*)\\b",
+			"captures": {
+				"1": {
+					"name": "keyword.control.lua"
+				},
+				"2": {
+					"name": "support.type.lua"
+				}
+			}
+		},
 		"var-declaration": {
 			"name": "meta.property.lua",
 			"begin": "\\b([_[:alpha:]][_[:alnum:]]*)\\s*:\\s*\\b(int|string|real|boolean|datetime|[_[:alpha:]][_[:alnum:]]*)\\b",
@@ -216,6 +229,9 @@
 		},
                "general" : {
 			"patterns": [
+				{
+                                        "include": "#new-statement"
+				},
 				{
 					"include": "#typename"
 				},
@@ -369,7 +385,7 @@
 		},
 		"number": {
 			"name": "constant.numeric.lua",
-			"match": "(?<![\\d.])\\b0x[a-fA-F\\d]+|\\b\\d+(\\.\\d+)?([eE]-?\\d+)?|\\.\\d+([eE]-?\\d+)?"
+			"match": "(?<![\\d.])\\b0x[a-fA-F\\d][a-fA-F\\d_]*[a-fA-F\\d]?|\\b\\d[\\d_]*\\d?(\\.\\d[\\d_]*\\d?)?([eE][-+]?\\d[\\d_]*\\d?)?|\\.\\d[\\d_]*\\d?([eE]-?\\d[\\d_]*\\d?)?"
 		},
 		"single-quote-string": {
 			"name": "string.quoted.single.lua",
@@ -519,7 +535,7 @@
 		},
 		"operator": {
 			"name": "keyword.operator.lua",
-			"match": "(\\+|-|%|#|\\*|\\/|\\^|==?|~=|<=?|>=?|(?<!\\.)\\.{2}(?!\\.))"
+			"match": "(\\[\\]\\{\\}\\+|-|%|#|\\*|\\/|\\^|==?|~=|<=?|>=?|(?<!\\.)\\.{2}(?!\\.))"
 		},
 		"keyword": {
 			"name": "keyword.control.lua",

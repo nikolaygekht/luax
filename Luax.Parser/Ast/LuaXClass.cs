@@ -78,7 +78,7 @@ namespace Luax.Parser.Ast
             while (!string.IsNullOrEmpty(name) && name != "object")
             {
                 if (parents.Contains(name))
-                    throw new LuaXAstGeneratorException(Location, $"Class contains itself in the class inheritance chain");
+                    throw new LuaXAstGeneratorException(Location, "Class contains itself in the class inheritance chain");
                 parents.Add(name);
                 application.Classes.Search(name, out var @class);
                 name = @class.Parent;

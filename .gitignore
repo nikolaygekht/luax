@@ -1,7 +1,9 @@
 bin/
 obj/
 .vs/
+.sonarqube/
 TestResults/
 *.csproj.user
 *.nupkg
 *.log
+sonarqube.bat
