@@ -369,7 +369,7 @@
 		},
 		"number": {
 			"name": "constant.numeric.lua",
-			"match": "(?<![\\d.])\\b0x[a-fA-F\\d]+|\\b\\d+(\\.\\d+)?([eE]-?\\d+)?|\\.\\d+([eE]-?\\d+)?"
+			"match": "(?<![\\d.])\\b0x[a-fA-F\\d][a-fA-F\\d_]*[a-fA-F\\d]?|\\b\\d[\\d_]*\\d?(\\.\\d[\\d_]*\\d?)?([eE][-+]?\\d[\\d_]*\\d?)?|\\.\\d[\\d_]*\\d?([eE]-?\\d[\\d_]*\\d?)?"
 		},
 		"single-quote-string": {
 			"name": "string.quoted.single.lua",
