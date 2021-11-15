@@ -13,13 +13,7 @@ namespace Luax.Interpreter.Execution
     /// </summary>
     public static class LuaXProjectReader
     {
-        static ILuaXProjectReaderContentProvider mProjectReaderContentProvider = new DefaultLuaXProjectReaderContentProvider();
-
-        public static ILuaXProjectReaderContentProvider ProjectContentProvider
-        {
-            get => mProjectReaderContentProvider;
-            internal set => mProjectReaderContentProvider = value;
-        }
+        public static ILuaXProjectReaderContentProvider ProjectContentProvider { get; internal set; } = new DefaultLuaXProjectReaderContentProvider();
 
         public static LuaXProject Read(string projectFile)
         {
@@ -35,85 +29,36 @@ namespace Luax.Interpreter.Execution
             }
             else
             {
-                using var reader = mProjectReaderContentProvider.GetContentReader(projectFile);
+                using var reader = ProjectContentProvider.GetContentReader(projectFile);
                 return Read(projectFile, reader);
             }
         }
 
         public static LuaXProject Read(string projectName, TextReader projectContent)
         {
-            const int modeNothing = 0;
-            const int modeOptions = 1;
-            const int modeFiles = 2;
-            int mode = modeNothing;
-
-            string projectFullDirectorypath = mProjectReaderContentProvider.GetProjectFullDirPath(projectName);
+            string projectFullDirectoryPath = ProjectContentProvider.GetProjectFullDirPath(projectName);
 
             var project = new LuaXProject(projectName)
             {
                 ProjectType = LuaXProjectType.Unknown
             };
-            int lineNo = 0;
+
+            var dfa = new ProjectReaderDfa(projectName, project, projectFullDirectoryPath, ProjectContentProvider);
+
             while (true)
             {
-                lineNo++;
                 var line = projectContent.ReadLine();
-                if (line == null)
+                if (!dfa.Feed(line))
                     break;
-                line = line.Trim();
-                if (line.StartsWith(';') || line.StartsWith("--"))
-                    continue;
-                if (line.StartsWith('['))
-                {
-                    if (line == "[options]")
-                        mode = modeOptions;
-                    else if (line == "[files]")
-                        mode = modeFiles;
-                    else
-                        throw new LuaXAstGeneratorException(new LuaXElementLocation(projectName, lineNo, 1), "A section name can be either options or files");
-                    continue;
-                }
-                switch (mode)
-                {
-                    case modeNothing:
-                        throw new LuaXAstGeneratorException(new LuaXElementLocation(projectName, lineNo, 1), "A comment or a section name is expected here");
-                    case modeFiles:
-                        var filePath = mProjectReaderContentProvider.GetFileFullPath(projectFullDirectorypath, line);
-                        project.Files.Add(filePath);
-                        break;
-                    case modeOptions:
-                        {
-                            var eqIndex = line.IndexOf('=');
-                            if (eqIndex < 1)
-                                project.Options.Add(line, "");
-                            else if (eqIndex == line.Length - 1)
-                                project.Options.Add(line.Substring(0, eqIndex).Trim(), "");
-                            else
-                            {
-                                var key = line.Substring(0, eqIndex).Trim();
-                                var value = line[(eqIndex + 1)..].Trim();
-                                if (key == "type")
-                                {
-                                    if (value == "console")
-                                        project.ProjectType = LuaXProjectType.ConsoleApp;
-                                    else if (value == "test")
-                                        project.ProjectType = LuaXProjectType.TestSuite;
-                                    else
-                                        throw new LuaXAstGeneratorException(new LuaXElementLocation(projectName, lineNo, 1), "Unknown project type");
-                                }
-                                project.Options.Add(key, value);
-                            }
-                        }
-                        break;
-                }
             }
+
             if (project.ProjectType == LuaXProjectType.Unknown)
             {
                 project.ProjectType = LuaXProjectType.ConsoleApp;
                 project.Options.Add("type", "console");
             }
             if (project.Files.Count == 0)
-                throw new LuaXAstGeneratorException(new LuaXElementLocation(projectName, lineNo, 1), "The project does not have any files");
+                throw new LuaXAstGeneratorException(new LuaXElementLocation(projectName, dfa.LineNo, 1), "The project does not have any files");
             return project;
         }
     }

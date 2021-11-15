@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Luax.Interpreter.Expression;
@@ -50,6 +51,40 @@ namespace Luax.Interpreter.Execution
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string ProcessTheoryParams(LuaXAttribute attribute, List<object> args)
+        {
+            var sb = new StringBuilder();
+            foreach (var p in attribute.Parameters)
+            {
+                if (sb.Length > 0)
+                    sb.Append(", ");
+                if (p.Value == null)
+                    sb.Append("nil");
+                else if (p.Value is int i)
+                    sb.Append(i);
+                else if (p.Value is double v)
+                    sb.Append(v);
+                else if (p.Value is bool b)
+                    sb.Append(b ? "true" : "false");
+                else if (p.Value is string s)
+                    sb.Append('"').Append(s).Append('"');
+                args.Add(p.Value);
+            }
+
+            return sb.ToString();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsTheoryArgumentValid(object arg, LuaXTypeDefinition type)
+        {
+            return ((arg == null && type.IsString()) ||
+                          (arg is string && type.IsString()) ||
+                          (arg is bool && type.IsBoolean()) ||
+                          (arg is int && type.IsInteger()) ||
+                          (arg is double && type.IsReal()));
+        }
+
         private bool RunTheory(LuaXClassInstance @class, LuaXMethod method)
         {
             if (method.Arguments.Count == 0 || !method.ReturnType.IsVoid() || method.Static)
@@ -62,26 +97,8 @@ namespace Luax.Interpreter.Execution
 
             foreach (var attribute in method.Attributes.Where(a => a.Name == "TheoryData"))
             {
-                StringBuilder sb = new StringBuilder();
                 List<object> args = new List<object>();
-                foreach (var p in attribute.Parameters)
-                {
-                    if (sb.Length > 0)
-                        sb.Append(", ");
-                    if (p.Value == null)
-                        sb.Append("nil");
-                    else if (p.Value is int i)
-                        sb.Append(i);
-                    else if (p.Value is double v)
-                        sb.Append(v);
-                    else if (p.Value is bool b)
-                        sb.Append(b ? "true" : "false");
-                    else if (p.Value is string s)
-                        sb.Append('"').Append(s).Append('"');
-                    args.Add(p.Value);
-                }
-
-                var argsText = sb.ToString();
+                var argsText = ProcessTheoryParams(attribute, args);
 
                 if (args.Count != method.Arguments.Count)
                 {
@@ -93,17 +110,14 @@ namespace Luax.Interpreter.Execution
                 bool matchargs = true;
                 for (int i = 0; i < args.Count; i++)
                 {
-                    if (!((args[i] == null && method.Arguments[i].LuaType.IsString()) ||
-                          (args[i] is string && method.Arguments[i].LuaType.IsString()) ||
-                          (args[i] is bool && method.Arguments[i].LuaType.IsBoolean()) ||
-                          (args[i] is int && method.Arguments[i].LuaType.IsInteger()) ||
-                          (args[i] is double && method.Arguments[i].LuaType.IsReal())))
+                    if (!IsTheoryArgumentValid(args[i], method.Arguments[i].LuaType))
                     {
                         OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Incorrect, $"The theory data {i + 1}th argument type is does not match to the theory argument type"));
                         success = false;
                         matchargs = false;
                     }
                 }
+
                 if (matchargs)
                     success &= RunCase(@class, method, args.ToArray(), argsText);
             }

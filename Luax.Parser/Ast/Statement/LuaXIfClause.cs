@@ -15,7 +15,7 @@ namespace Luax.Parser.Ast.Statement
         /// The condition when the clause is execute
         /// </summary>
         public LuaXExpression Condition { get; }
-        
+
         /// <summary>
         /// The clause content
         /// </summary>

@@ -380,7 +380,7 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, node, "The variable with the name specified is already defined");
 
             @class.Constants.Add(decl);
-        }      
+        }
 
         /// <summary>
         /// Processes a class element
@@ -512,10 +512,8 @@ namespace Luax.Parser.Ast.Builder
             if (name == null)
                 throw new LuaXAstGeneratorException(Name, node, "IDENTIFIER is expected");
 
-#pragma warning disable S2589 // Boolean expressions should not be gratuitous: NG: it is false positive
             if (type == null)
                 throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected");
-#pragma warning restore S2589
 
             return factory.Create(name, type, l);
         }
@@ -626,29 +624,37 @@ namespace Luax.Parser.Ast.Builder
             for (int i = 0; i < node.Children.Count; i++)
             {
                 var child = node.Children[i];
-                if (child.Symbol == "ATTRIBUTES")
-                    attributes = child;
-                else if (child.Symbol == "VISIBILITY")
-                    visibility = ProcessVisibility(child);
-                else if (child.Symbol == "STATIC")
-                    @static = true;
-                else if (child.Symbol == "IDENTIFIER")
-                    name = child.Value;
-                else if (child.Symbol == "FUNCTION_DECLARATION_ARGS")
-                    arguments = child;
-                else if (child.Symbol == "TYPE_DECL")
-                    returnType = ProcessTypeDecl(child, true);
-                else if (child.Symbol == "STATEMENTS")
-                    body = child;
+                switch (child.Symbol)
+                {
+                    case "ATTRIBUTES":
+                        attributes = child;
+                        break;
+                    case "VISIBILITY":
+                        visibility = ProcessVisibility(child);
+                        break;
+                    case "STATIC":
+                        @static = true;
+                        break;
+                    case "IDENTIFIER":
+                        name = child.Value;
+                        break;
+                    case "FUNCTION_DECLARATION_ARGS":
+                        arguments = child;
+                        break;
+                    case "TYPE_DECL":
+                        returnType = ProcessTypeDecl(child, true);
+                        break;
+                    case "STATEMENTS":
+                        body = child;
+                        break;
+                }
             }
 
             if (name == null)
                 throw new LuaXAstGeneratorException(Name, node, "IDENTIFIER is expected here");
 
-#pragma warning disable S2589 // Boolean expressions should not be gratuitous: NG: false positive here
             if (returnType == null)
                 throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected here");
-#pragma warning restore S2589
 
             LuaXMethod method = new LuaXMethod(@class)
             {
@@ -716,10 +722,8 @@ namespace Luax.Parser.Ast.Builder
             if (name == null)
                 throw new LuaXAstGeneratorException(Name, node, "IDENTIFIER is expected here");
 
-#pragma warning disable S2589 // Boolean expressions should not be gratuitous: NG: false positive here
             if (returnType == null)
                 throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected here");
-#pragma warning restore S2589
 
             LuaXMethod method = new LuaXMethod(@class)
             {

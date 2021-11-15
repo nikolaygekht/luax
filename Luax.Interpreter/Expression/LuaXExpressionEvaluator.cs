@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.CompilerServices;
+using System.Runtime.Intrinsics.X86;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -173,60 +175,99 @@ namespace Luax.Interpreter.Expression
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int CompareNumbers(LuaXExpression expression, object left, object right)
+        {
+            int sign;
+            var r = MathOperation(expression, left, right, (a, b) => a - b, (a, b) => a - b);
+
+            if (r is int ir)
+            {
+                if (ir == 0)
+                    sign = 0;
+                else if (ir < 0)
+                    sign = -1;
+                else
+                    sign = 1;
+            }
+            else if (r is double dr)
+            {
+                if (dr == 0)
+                    sign = 0;
+                else if (dr < 0)
+                    sign = -1;
+                else
+                    sign = 1;
+            }
+            else
+                throw new LuaXExecutionException(expression.Location, $"Unexpected relational operator state");
+
+            return sign;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int CompareDate(DateTime d1, DateTime d2)
+        {
+            int sign;
+            var l = d1.Ticks - d2.Ticks;
+            if (l == 0)
+                sign = 0;
+            else if (l < 0)
+                sign = -1;
+            else
+                sign = 1;
+            return sign;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsRelationOfNumbers(object left, object right)
+            => (left is int || left is double) && (right is int || right is double);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsRelationOfObjects(object left, object right)
+            => left == null || right == null || left is LuaXObjectInstance || right is LuaXVariableInstanceArray;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int CompareObjects(object left, object right)
+            => ReferenceEquals(left, right) ? 0 : 1;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static int CompareBoolean(bool b1, bool b2)
+            => b1 == b2 ? 0 : 1;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static object RelationalOperation(LuaXExpression expression, LuaXBinaryOperator @operator, object left, object right)
         {
             int? sign = null;
             bool canRelate = false;
 
-            if ((left is int || left is double) &&
-                (right is int || right is double))
+            if (IsRelationOfNumbers(left, right))
             {
-                var r = MathOperation(expression, left, right, (a, b) => a - b, (a, b) => a - b);
-                if (r is int ir)
-                {
-                    if (ir == 0)
-                        sign = 0;
-                    else if (ir < 0)
-                        sign = -1;
-                    else
-                        sign = 1;
-                }
-                else if (r is double dr)
-                {
-                    if (dr == 0)
-                        sign = 0;
-                    else if (dr < 0)
-                        sign = -1;
-                    else
-                        sign = 1;
-                }
+                sign = CompareNumbers(expression, left, right);
                 canRelate = true;
             }
-            else if (left is bool b1 && right is bool b2)
+            else if (IsRelationOfObjects(left, right))
             {
-                sign = b1 == b2 ? 0 : 1;
+                sign = CompareObjects(left, right);
                 canRelate = false;
             }
-            else if (left == null || right == null || left is LuaXObjectInstance || right is LuaXVariableInstanceArray)
+            else if (left.GetType() == right.GetType())
             {
-                sign = ReferenceEquals(left, right) ? 0 : 1;
-                canRelate = false;
-            }
-            else if (left is string s1 && right is string s2)
-            {
-                sign = string.CompareOrdinal(s1, s2);
-                canRelate = true;
-            }
-            else if (left is DateTime d1 && right is DateTime d2)
-            {
-                var l = d1.Ticks - d2.Ticks;
-                if (l == 0)
-                    sign = 0;
-                else if (l < 0)
-                    sign = -1;
-                else
-                    sign = 1;
-                canRelate = true;
+                if (left is bool b1)
+                {
+                    sign = CompareBoolean(b1, (bool)right);
+                    canRelate = false;
+                }
+                else if (left is string s1)
+                {
+                    sign = string.CompareOrdinal(s1, (string)right);
+                    canRelate = true;
+                }
+                else if (left is DateTime d1)
+                {
+                    sign = CompareDate(d1, (DateTime)right);
+                    canRelate = true;
+                }
             }
 
             if (sign == null || (!canRelate && @operator != LuaXBinaryOperator.Equal && @operator != LuaXBinaryOperator.NotEqual))

@@ -119,7 +119,7 @@ namespace Luax.Parser.Ast.Builder
             else if (target is LuaXArrayAccessExpression e4)
                 stmt = new LuaXAssignArrayItemStatement(e4.ArrayExpression, e4.IndexExpression, source, location);
             else if (target is LuaXInstanceCallExpression e5 && e5.MethodName == "get" &&
-                e5.Arguments.Count == 1 && 
+                e5.Arguments.Count == 1 &&
                 e5.ReturnType.IsTheSame(source.ReturnType))
             {
                 Metadata.Search(e5.Object.ReturnType.Class, out var @class1);
@@ -129,7 +129,7 @@ namespace Luax.Parser.Ast.Builder
                      method1.Arguments.Count != 2 ||
                     !method1.Arguments[0].LuaType.IsTheSame(e5.Arguments[0].ReturnType) ||
                     !method1.Arguments[1].LuaType.IsTheSame(source.ReturnType))
-                    throw new LuaXAstGeneratorException(Name, node, $"The class {class1.Name} does not have public instance method set({e5.Arguments[0].ReturnType.ToString()}, {source.ReturnType.ToString()}) : void");
+                    throw new LuaXAstGeneratorException(Name, node, $"The class {class1.Name} does not have public instance method set({e5.Arguments[0].ReturnType}, {source.ReturnType}) : void");
 
                 var expr = new LuaXInstanceCallExpression(LuaXTypeDefinition.Void, e5.Object, "set", null, location);
                 expr.Arguments.Add(e5.Arguments[0]);
@@ -195,7 +195,7 @@ namespace Luax.Parser.Ast.Builder
                     break;
             }
 
-            if (castClass != null && castMethod != null)
+            if (castClass != null)
             {
                 var expr = new LuaXStaticCallExpression(targetType, castClass.Name, castMethod.Name, expression.Location);
                 expr.Arguments.Add(expression);
@@ -386,7 +386,7 @@ namespace Luax.Parser.Ast.Builder
         public void ProcessConstantDeclarationInMethod(IAstNode node, LuaXMethod method)
         {
             var decl = ProcessConstantDeclaration(node);
-            
+
             if (method.Constants.Contains(decl.Name))
                 throw new LuaXAstGeneratorException(Name, node, "The constant with the name specified is already defined");
 

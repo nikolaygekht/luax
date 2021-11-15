@@ -270,18 +270,24 @@ namespace Luax.Parser.Ast.Builder
             }
             else if (arr.ReturnType.IsObject())
             {
-                if (!Metadata.Search(arr.ReturnType.Class, out var @class) ||
-                    !@class.SearchMethod("get", out var @method) ||
-                    method.Arguments.Count != 1 ||
-                    method.Static || 
-                    method.Visibility == LuaXVisibility.Private ||
-                    !method.Arguments[0].LuaType.IsTheSame(index.ReturnType))
-                    throw new LuaXAstGeneratorException(Name, astNode, $"The class {arr.ReturnType.Class} does not have a public instance method get({index.ReturnType.ToString()})");
+                if (!HasGetMethod(arr.ReturnType.Class, index.ReturnType, out var method))
+                     throw new LuaXAstGeneratorException(Name, astNode, $"The class {arr.ReturnType.Class} does not have a public instance method get({index.ReturnType})");
                 var call = new LuaXInstanceCallExpression(method.ReturnType, arr, "get", null, location);
                 call.Arguments.Add(index);
                 return call;
             }
             throw new LuaXAstGeneratorException(Name, astNode, "[] operator can be applied to arrays only");
+        }
+
+        private bool HasGetMethod(string className, LuaXTypeDefinition returnType, out LuaXMethod method)
+        {
+            method = null;
+            return Metadata.Search(className, out var @class) &&
+                    @class.SearchMethod("get", out method) &&
+                     method.Arguments.Count == 1 &&
+                     !method.Static &&
+                     method.Visibility != LuaXVisibility.Private &&
+                     method.Arguments[0].LuaType.IsTheSame(returnType);
         }
 
         /// <summary>
@@ -322,10 +328,7 @@ namespace Luax.Parser.Ast.Builder
                 return arg;
 
             var customCast = FindCustomCast(arg, type);
-            if (customCast != null)
-                return customCast;
-
-            return new LuaXCastOperatorExpression(arg, type, new LuaXElementLocation(Name, astNode));
+            return customCast ?? new LuaXCastOperatorExpression(arg, type, new LuaXElementLocation(Name, astNode));
         }
 
         /// <summary>
@@ -377,49 +380,54 @@ namespace Luax.Parser.Ast.Builder
             var location = new LuaXElementLocation(Name, astNode);
 
             if (leftSide is LuaXClassNameExpression classNameExpression)
-            {
-                //static property call
-                if (!Metadata.Search(classNameExpression.Name, out var leftSideClass))
-                    throw new LuaXAstGeneratorException(Name, astNode, $"Class {classNameExpression.Name} is not found in metadata");
-                if (leftSideClass.SearchProperty(name, out var property))
-                {
-                    if (!property.Static)
-                        throw new LuaXAstGeneratorException(Name, astNode, $"Property {classNameExpression.Name}.{name} is not static");
-                    if (property.Visibility == LuaXVisibility.Private && classNameExpression.ReturnType.Class != currentClass.Name)
-                        throw new LuaXAstGeneratorException(Name, astNode, $"Property {classNameExpression.Name}.{name} is private and cannot be accessed");
+                return ProcessStaticProperty(astNode, currentClass, classNameExpression, name, location);
+            else
+                return ProcessInstanceProperty(astNode, currentClass, leftSide, name, location);
+        }
 
-                    return new LuaXStaticPropertyExpression(classNameExpression.ReturnType.Class, name, property.LuaType, location);
-                }
-                else if (leftSideClass.SearchConstant(name, out var constant))
-                    return new LuaXConstantExpression(constant.Value, location);
-                
-                throw new LuaXAstGeneratorException(Name, astNode, $"Class {classNameExpression.Name} does not contain property {name}");
+        private LuaXExpression ProcessStaticProperty(IAstNode astNode, LuaXClass currentClass, LuaXClassNameExpression classNameExpression, string name, LuaXElementLocation location)
+        {
+            if (!Metadata.Search(classNameExpression.Name, out var leftSideClass))
+                throw new LuaXAstGeneratorException(Name, astNode, $"Class {classNameExpression.Name} is not found in metadata");
+            if (leftSideClass.SearchProperty(name, out var property))
+            {
+                if (!property.Static)
+                    throw new LuaXAstGeneratorException(Name, astNode, $"Property {classNameExpression.Name}.{name} is not static");
+                if (property.Visibility == LuaXVisibility.Private && classNameExpression.ReturnType.Class != currentClass.Name)
+                    throw new LuaXAstGeneratorException(Name, astNode, $"Property {classNameExpression.Name}.{name} is private and cannot be accessed");
+
+                return new LuaXStaticPropertyExpression(classNameExpression.ReturnType.Class, name, property.LuaType, location);
+            }
+            else if (leftSideClass.SearchConstant(name, out var constant))
+                return new LuaXConstantExpression(constant.Value, location);
+
+            throw new LuaXAstGeneratorException(Name, astNode, $"Class {classNameExpression.Name} does not contain property {name}");
+        }
+
+        private LuaXExpression ProcessInstanceProperty(IAstNode astNode, LuaXClass currentClass, LuaXExpression leftSide, string name, LuaXElementLocation location)
+        {
+            //instance property call
+            var leftSideType = leftSide.ReturnType;
+            if (leftSideType.Array)
+            {
+                if (name != "length")
+                    throw new LuaXAstGeneratorException(Name, astNode, $"The array does not have the property {name}");
+                return new LuaXArrayLengthExpression(leftSide, LuaXTypeDefinition.Integer, location);
+            }
+            else if (leftSideType.TypeId == LuaXType.Object)
+            {
+                if (!Metadata.Search(leftSideType.Class, out var leftSideClass))
+                    throw new LuaXAstGeneratorException(Name, astNode, $"Class {leftSideType.Class} is not found in metadata");
+                if (!leftSideClass.SearchProperty(name, out var property))
+                    throw new LuaXAstGeneratorException(Name, astNode, $"Class {leftSideType.Class} does not contain property {name}");
+                if (property.Static)
+                    throw new LuaXAstGeneratorException(Name, astNode, $"Property {leftSideType.Class}.{name} is static");
+                if (property.Visibility == LuaXVisibility.Private && leftSideType.Class != currentClass.Name)
+                    throw new LuaXAstGeneratorException(Name, astNode, $"Property {leftSideType.Class}.{name} is private and cannot be accessed");
+                return new LuaXInstancePropertyExpression(leftSide, name, property.LuaType, location);
             }
             else
-            {
-                //instance property call
-                var leftSideType = leftSide.ReturnType;
-                if (leftSideType.Array)
-                {
-                    if (name != "length")
-                        throw new LuaXAstGeneratorException(Name, astNode, $"The array does not have the property {name}");
-                    return new LuaXArrayLengthExpression(leftSide, LuaXTypeDefinition.Integer, location);
-                }
-                else if (leftSideType.TypeId == LuaXType.Object)
-                {
-                    if (!Metadata.Search(leftSideType.Class, out var leftSideClass))
-                        throw new LuaXAstGeneratorException(Name, astNode, $"Class {leftSideType.Class} is not found in metadata");
-                    if (!leftSideClass.SearchProperty(name, out var property))
-                        throw new LuaXAstGeneratorException(Name, astNode, $"Class {leftSideType.Class} does not contain property {name}");
-                    if (property.Static)
-                        throw new LuaXAstGeneratorException(Name, astNode, $"Property {leftSideType.Class}.{name} is static");
-                    if (property.Visibility == LuaXVisibility.Private && leftSideType.Class != currentClass.Name)
-                        throw new LuaXAstGeneratorException(Name, astNode, $"Property {leftSideType.Class}.{name} is private and cannot be accessed");
-                    return new LuaXInstancePropertyExpression(leftSide, name, property.LuaType, location);
-                }
-                else
-                    throw new LuaXAstGeneratorException(Name, astNode, "The left side argument of the property access expression is not a class or an array");
-            }
+                throw new LuaXAstGeneratorException(Name, astNode, "The left side argument of the property access expression is not a class or an array");
         }
 
         /// <summary>
@@ -631,29 +639,9 @@ namespace Luax.Parser.Ast.Builder
             LuaXVariableCollection methodArguments;
 
             if (subject.ReturnType.TypeId == LuaXType.ClassName)
-            {
-                Metadata.Search(subject.ReturnType.Class, out var @class);
-                if (!@class.SearchMethod(identifier, out var @method))
-                    throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not found");
-                if (!method.Static)
-                    throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not a static method");
-                callExpression = new LuaXStaticCallExpression(method.ReturnType, subject.ReturnType.Class, identifier, new LuaXElementLocation(Name, callNode));
-                methodArguments = method.Arguments;
-            }
+                callExpression = ProcessStaticCall(subject, identifier, callNode, out methodArguments);
             else if (subject.ReturnType.TypeId == LuaXType.Object)
-            {
-                string exactClass = null;
-                if (subject is LuaXVariableExpression ve && ve.VariableName == "super")
-                    exactClass = subject.ReturnType.Class;
-
-                Metadata.Search(subject.ReturnType.Class, out var @class);
-                if (!@class.SearchMethod(identifier, out var @method))
-                    throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not found");
-                if (method.Static)
-                    throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is a static method");
-                callExpression = new LuaXInstanceCallExpression(method.ReturnType, subject, identifier, exactClass, new LuaXElementLocation(Name, callNode));
-                methodArguments = method.Arguments;
-            }
+                callExpression = ProcessInstanceCall(subject, identifier, callNode, out methodArguments);
             else
                 throw new LuaXAstGeneratorException(Name, new LuaXParserError(subject.Location, "The class name or an object expression is expected here"));
 
@@ -661,19 +649,51 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, callNode, $"The method {identifier} expects {methodArguments.Count} argument(s), but {args?.Count ?? 0} is provided");
 
             if (args != null)
-            {
-                for (int i = 0; i < args.Count; i++)
-                {
-                    var argExpression = ProcessExpression(args[i], currentClass, currentMethod);
-                    if (!methodArguments[i].LuaType.IsTheSame(argExpression.ReturnType))
-                    {
-                        var argExpression1 = CastToCompatible(argExpression, methodArguments[i].LuaType);
-                        argExpression = argExpression1 ?? throw new LuaXAstGeneratorException(Name, callNode, $"The type of the {i + 1}th argument ({methodArguments[i].Name}) is not compatible with the expected type ({methodArguments[i].LuaType} is expected, {argExpression.ReturnType} is provided)");
-                    }
-                    callExpression.Arguments.Add(argExpression);
-                }
-            }
+                ProcessCallArgs(callExpression, args, methodArguments, callNode, currentClass, currentMethod);
+
             return callExpression;
+        }
+
+        private LuaXCallExpression ProcessStaticCall(LuaXExpression subject, string identifier, IAstNode callNode, out LuaXVariableCollection methodArguments)
+        {
+            Metadata.Search(subject.ReturnType.Class, out var @class);
+            if (!@class.SearchMethod(identifier, out var @method))
+                throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not found");
+            if (!method.Static)
+                throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not a static method");
+
+            methodArguments = method.Arguments;
+            return new LuaXStaticCallExpression(method.ReturnType, subject.ReturnType.Class, identifier, new LuaXElementLocation(Name, callNode));
+        }
+
+        private LuaXCallExpression ProcessInstanceCall(LuaXExpression subject, string identifier, IAstNode callNode, out LuaXVariableCollection methodArguments)
+        {
+            string exactClass = null;
+            if (subject is LuaXVariableExpression ve && ve.VariableName == "super")
+                exactClass = subject.ReturnType.Class;
+
+            Metadata.Search(subject.ReturnType.Class, out var @class);
+            if (!@class.SearchMethod(identifier, out var @method))
+                throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not found");
+            if (method.Static)
+                throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is a static method");
+
+            methodArguments = method.Arguments;
+            return new LuaXInstanceCallExpression(method.ReturnType, subject, identifier, exactClass, new LuaXElementLocation(Name, callNode));
+        }
+
+        private void ProcessCallArgs(LuaXCallExpression callExpression, IReadOnlyList<IAstNode> args, LuaXVariableCollection methodArguments, IAstNode callNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            for (int i = 0; i < args.Count; i++)
+            {
+                var argExpression = ProcessExpression(args[i], currentClass, currentMethod);
+                if (!methodArguments[i].LuaType.IsTheSame(argExpression.ReturnType))
+                {
+                    var argExpression1 = CastToCompatible(argExpression, methodArguments[i].LuaType);
+                    argExpression = argExpression1 ?? throw new LuaXAstGeneratorException(Name, callNode, $"The type of the {i + 1}th argument ({methodArguments[i].Name}) is not compatible with the expected type ({methodArguments[i].LuaType} is expected, {argExpression.ReturnType} is provided)");
+                }
+                callExpression.Arguments.Add(argExpression);
+            }
         }
     }
 }

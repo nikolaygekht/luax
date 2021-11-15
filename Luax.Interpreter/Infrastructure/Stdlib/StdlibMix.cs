@@ -18,5 +18,4 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return null;
         }
     }
-
 }
