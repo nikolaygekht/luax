@@ -164,6 +164,44 @@ namespace Luax.Parser.Ast.Builder
             else if (targetType.IsObject() && expression.ReturnType.IsObject() && Metadata.IsKindOf(expression.ReturnType.Class, targetType.Class))
                 return expression.CastTo(targetType);
 
+            return FindCustomCast(expression, targetType);
+        }
+
+        private LuaXExpression FindCustomCast(LuaXExpression expression, LuaXTypeDefinition targetType)
+        {
+            LuaXClass castClass = null;
+            LuaXMethod castMethod = null;
+
+            //try to find custom cast
+            foreach (var @class in Metadata)
+            {
+                if (!@class.Attributes.Any(attribute => attribute.Name == "Cast"))
+                    continue;
+
+                foreach (var method in @class.Methods)
+                {
+                    if (method.Visibility != LuaXVisibility.Private &&
+                        method.Static &&
+                        method.ReturnType.IsTheSame(targetType) &&
+                        method.Arguments.Count == 1 &&
+                        method.Arguments[0].LuaType.IsTheSame(expression.ReturnType))
+                    {
+                        castMethod = method;
+                        castClass = @class;
+                        break;
+                    }
+                }
+                if (castClass != null)
+                    break;
+            }
+
+            if (castClass != null && castMethod != null)
+            {
+                var expr = new LuaXStaticCallExpression(targetType, castClass.Name, castMethod.Name, expression.Location);
+                expr.Arguments.Add(expression);
+                return expr;
+            }
+
             return null;
         }
 
