@@ -169,11 +169,10 @@ namespace Luax.Interpreter.Test
         }
 
         [Theory]
-        [InlineData("constant", "exception from constant")]
-        [InlineData("callable", "exception from static call")]
-        [InlineData("bracket", "exception from bracket")]
-        [InlineData("array", "exception from array")]
-        public void TestThrow(string methodName, string expectedValue)
+        [InlineData("test1", -1, "exception from factory")]
+        [InlineData("test2", -2, "exception from static call")]
+        [InlineData("test3", -3, "exception from variable")]
+        public void TestThrow(string methodName, int expectedCode, string expectedMessage)
         {
             var app = new LuaXApplication();
             app.CompileResource("ThrowTest");
@@ -186,10 +185,16 @@ namespace Luax.Interpreter.Test
             method.Arguments.Should().HaveCount(0);
             method.ReturnType.IsVoid().Should().BeTrue();
 
-            var resultType = LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
-            resultType.Should().Be(LuaXMethodExecutor.ResultType.Exception);
-            r.Should().BeOfType<string>();
-            r.Should().Be(expectedValue);
+            try
+            {
+                LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
+            }
+            catch (Exception ex)
+            {
+                ex.Should().BeOfType<LuaXExecutionException>();
+                ex.As<LuaXExecutionException>().Code.Should().Be(expectedCode);
+                ex.As<LuaXExecutionException>().Message.Should().Be(expectedMessage);
+            }
         }
 
         [Theory]
@@ -219,10 +224,10 @@ namespace Luax.Interpreter.Test
         }
 
         [Theory]
-        [InlineData(-1, "value is lower")]
-        [InlineData(0, "value is equal")]
-        [InlineData(1, "value is greater")]
-        public void TestTryCatch(int arg, string expectedValue)
+        [InlineData(-1, 1, "value is lower, code is")]
+        [InlineData(0, 2, "value is equal, code is")]
+        [InlineData(1, 0, "value is greater")]
+        public void TestTryCatch(int arg, int expectedCode, string expectedMessage)
         {
             var app = new LuaXApplication();
             app.CompileResource("TryCatchTest");
@@ -237,9 +242,9 @@ namespace Luax.Interpreter.Test
             method.ReturnType.IsString().Should().BeTrue();
 
             var resultType = LuaXMethodExecutor.Execute(method, typelib, null, new object[] { arg }, out var r);
-            resultType.Should().BeOneOf(LuaXMethodExecutor.ResultType.ReachForEnd, LuaXMethodExecutor.ResultType.Return);
+
             r.Should().BeOfType<string>();
-            r.Should().Be(expectedValue);
+            r.Should().Be(expectedCode != 0 ? $"{expectedMessage} {expectedCode}" : expectedMessage);
         }
 
         [Theory]

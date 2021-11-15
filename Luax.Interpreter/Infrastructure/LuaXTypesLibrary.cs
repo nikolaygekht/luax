@@ -45,6 +45,9 @@ namespace Luax.Interpreter.Infrastructure
         public bool SearchClass(string className, out LuaXClassInstance @class)
             => mTypes.TryGetValue(className, out @class);
 
+        public bool IsKindOf(string sourceClassName, string targetClassName) =>
+            mApplication.Classes.IsKindOf(sourceClassName, targetClassName);
+
         internal bool CastTo(LuaXTypeDefinition returnType, ref object argument)
         {
             switch (returnType.TypeId)

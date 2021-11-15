@@ -73,7 +73,6 @@ grammar LuaX
 
         TYPE_CLASS -> IDENTIFIER;
 
-
         TYPE_NAME -> TYPE_INT |
                      TYPE_REAL |
                      TYPE_BOOLEAN |

@@ -1,11 +1,11 @@
 ﻿class test
-    static function getError() : string
-      return "An exception occured!";
+    static function getError() : exception
+      return exception.createException(-1, "An exception occured!");
     end
 
     static function test1(arg1 : int) : void
 
-        throw "exception1";
+        throw exception.createException(0, "exception1");
         throw getError();
 
    end

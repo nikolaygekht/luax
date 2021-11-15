@@ -3,7 +3,7 @@
     "LuaX": {
       "commandName": "Project",
       "commandLineArgs": "project.ini",
-      "workingDirectory": "D:\\develop\\experiments\\luax\\LuaX.Test\\"
+      "workingDirectory": "C:\\Sources\\gehtsoft-luax\\LuaX.Test"
     }
   }
 }

@@ -1,4 +1,4 @@
-﻿class a 
+﻿class a
     public var a : int, b : real, c : string, d : boolean, e : datetime, f : int[];
 end
 

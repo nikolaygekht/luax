@@ -1,25 +1,22 @@
 ﻿class test
-   public static function constant() : void
-       throw "exception from constant";
-   end
+    public static function test1() : void
+        throw exception.createException(-1, "exception from factory");
+    end
 
-   public static function getError() : string
-       return "exception from static call";
-   end
+    public static function getError() : exception
+        return exception.createException(-2, "exception from static call");
+    end
 
-   public static function callable() : void
-       throw getError();
-   end
+    public static function test2() : void
+        throw getError();
+    end
 
-   public static function bracket() : void
-       throw ("exception" .. " " .. "from" .. " " .. "bracket");
-   end
-      public static function array() : void
-       var arr : string[];
-       arr = new string[3];
-       arr[0] = "wrong";
-       arr[1] = "exception from array";
-       arr[2] = "wrong";
-       throw arr[1];
-   end
+    public static function test3() : void
+        var ex : exception;
+        ex = new exception();
+        ex.code = -3;
+        ex.message = "exception from variable";
+
+        throw ex;
+    end
 end

@@ -85,8 +85,8 @@ namespace Luax.Parser.Ast.Builder
 
             var throwExpr = ProcessExpression(node.Children[1], @class, method);
 
-            if (!throwExpr.ReturnType.IsString())
-                throw new LuaXAstGeneratorException(Name, node, $"Expression with return type {LuaXTypeDefinition.String.TypeId} is expected here");
+            if (!throwExpr.ReturnType.IsObject() || throwExpr.ReturnType.Array || !Metadata.IsKindOf(throwExpr.ReturnType.Class, "exception"))
+                throw new LuaXAstGeneratorException(Name, node, $"Expression with return type Exception is expected here");
 
             LuaXThrowStatement throwStmt = new LuaXThrowStatement(throwExpr, new LuaXElementLocation(Name, node));
 
@@ -97,8 +97,8 @@ namespace Luax.Parser.Ast.Builder
         {
             if (node.Children.Count < 3 || node.Children[1].Symbol != "IDENTIFIER" ||
                 method.FindVariableByName(node.Children[1].Value) == null ||
-                !method.FindVariableByName(node.Children[1].Value).LuaType.IsString())
-                throw new LuaXAstGeneratorException(Name, node, "Identifier of declared variable is expected here");
+                !Metadata.IsKindOf(method.FindVariableByName(node.Children[1].Value).LuaType.Class, "exception"))
+                throw new LuaXAstGeneratorException(Name, node, "Identifier of declared variable of type exception is expected here");
 
             target.CatchStatement = new LuaXCatchClause(node.Children[1].Value, new LuaXElementLocation(Name, node));
             ProcessStatements(node.Children[2].Children, @class, method, target.CatchStatement.CatchStatements);

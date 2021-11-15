@@ -11,9 +11,17 @@ namespace Luax.Interpreter
     {
         public LuaXElementLocationCollection Locations { get; } = new LuaXElementLocationCollection();
 
+        public int Code { get; } = 0;
+
         public LuaXExecutionException(LuaXElementLocation location, string message) : base(message)
         {
             Locations.Add(location);
+        }
+
+        public LuaXExecutionException(LuaXElementLocation location, string message, int code) : base(message)
+        {
+            Locations.Add(location);
+            Code = code;
         }
 
         public LuaXExecutionException(LuaXElementLocation location, string message, Exception innerException) : base(message, innerException)
@@ -30,6 +38,6 @@ namespace Luax.Interpreter
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             info.AddValue("locations", Locations);
-        }       
+        }
     }
 }

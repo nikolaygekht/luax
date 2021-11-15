@@ -22,7 +22,6 @@ namespace Luax.Interpreter.Expression
             Return,
             Break,
             Continue,
-            Exception,
         };
 
         /// <summary>
@@ -117,9 +116,8 @@ namespace Luax.Interpreter.Expression
                             }
                             break;
                         case LuaXThrowStatement @throw:
-                            var throwValue = ExecuteThrowStatement(@throw, types, currentClass, variables);
-                            result = throwValue;
-                            return ResultType.Exception;
+                            ExecuteThrowStatement(@throw, types, currentClass, variables);
+                            break;
                         case LuaXTryStatement @try:
                             var tryResult = ExecuteTryStatement(@try, types, currentClass, variables, out result);
                             if (tryResult != ResultType.ReachForEnd)
@@ -171,31 +169,39 @@ namespace Luax.Interpreter.Expression
 
         private static ResultType ExecuteTryStatement(LuaXTryStatement @try, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
         {
-            var tryResult = ExecuteStatements(@try.TryStatements, types, currentClass, variables, out var tResult);
-
-            if (tryResult == ResultType.Exception)
+            try
             {
-                variables[@try.CatchStatement.CatchIdentifier].Value = tResult;
-
-                var catchResult = ExecuteStatements(@try.CatchStatement.CatchStatements, types, currentClass, variables, out var cResult);
-
-                result = cResult;
-                return catchResult == ResultType.Exception ? ResultType.Exception : catchResult;
+                var tryResult = ExecuteStatements(@try.TryStatements, types, currentClass, variables, out result);
+                return tryResult;
             }
+            catch (LuaXExecutionException ex)
+            {
+                if (types.SearchClass("exception", out var exceptionClass))
+                {
+                    var exceptionObject = new LuaXObjectInstance(exceptionClass);
+                    exceptionObject.Properties["code"].Value = ex.Code;
+                    exceptionObject.Properties["message"].Value = ex.Message;
 
-            result = tResult;
-            return tryResult;
+                    variables[@try.CatchStatement.CatchIdentifier].Value = exceptionObject;
+
+                    var catchResult = ExecuteStatements(@try.CatchStatement.CatchStatements, types, currentClass, variables, out result);
+                    return catchResult;
+                }
+
+                throw new LuaXExecutionException(@try.CatchStatement.Location, "Type exception is not defined");
+            }
         }
 
-        private static string ExecuteThrowStatement(LuaXThrowStatement @throw, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables)
+        private static void ExecuteThrowStatement(LuaXThrowStatement @throw, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables)
         {
             var exprResult = LuaXExpressionEvaluator.Evaluate(@throw.ThrowExpression, types, currentClass, variables);
-            if (exprResult is string result)
+
+            if (exprResult is LuaXObjectInstance result && types.IsKindOf(result.Class.LuaType.Name, "exception"))
             {
-                return result;
+                throw new LuaXExecutionException(@throw.ThrowExpression.Location, result.Properties["message"].Value.ToString(), (int)result.Properties["code"].Value);
             }
 
-            throw new LuaXExecutionException(@throw.Location, "Result of throw statement is not a string value");
+            throw new LuaXExecutionException(@throw.Location, "Result of throw statement is not an exception");
         }
 
         private static void ExecuteAssignVariable(LuaXAssignVariableStatement assign, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables)
@@ -291,10 +297,10 @@ namespace Luax.Interpreter.Expression
                             continue;
                         else if (statementsResult != ResultType.ReachForEnd)
                             return statementsResult;
-    }
+                    }
                     else
                         break;
-}
+                }
                 else
                     throw new LuaXExecutionException(whileStatement.Location, "Condition of while statement is not a boolean value");
             }

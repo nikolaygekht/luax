@@ -1,17 +1,17 @@
 ﻿class test
    public static function testTry(arg : int) : string
-       var captured : string;
+       var captured : exception;
 
        try
         if(arg < 0) then
-            throw "lower";
+            throw exception.createException(1, "lower");
         elseif (arg == 0) then
-            throw "equal";
+            throw  exception.createException(2, "equal");
         else
             return "value is greater";
         end
        catch captured
-            return "value is " .. captured;
+            return "value is " .. captured.message .. ", code is " .. captured.code;
        end
    end
 end
