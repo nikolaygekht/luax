@@ -123,6 +123,29 @@ class listTest
         assert.isTrue(l[1].name == "B", "get B");
     end
 
-    -- TBD: check the rest of methods: remove, clear
+    @Fact()
+    public function clear() : void
+        var l : list;
+        l = new list();
+        l.add(listItem.create("a"));
+        l.add(listItem.create("b"));
+        l.add(listItem.create("c"));
+        assert.isTrue(l.length() == 3, "fill");
+        l.clear();
+        assert.isTrue(l.length() == 0, "clear");
+    end
+
+    @Fact()
+    public function remove() : void
+        var l : list;
+        l = new list();
+        l.add(listItem.create("a"));
+        l.add(listItem.create("b"));
+        l.add(listItem.create("c"));
+        l.remove(1);
+        assert.isTrue(l.length() == 2, "length");
+        assert.isTrue((cast<listItem>(l[0])).name == "a", "a");
+        assert.isTrue((cast<listItem>(l[1])).name == "c", "c");
+    end
 end
 
