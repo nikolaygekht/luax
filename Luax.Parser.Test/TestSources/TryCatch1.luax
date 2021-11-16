@@ -4,7 +4,7 @@
       var ex: exception;
       try
         if(arg < 0) then
-            throw exception.createException(-1, "Argument value is lower than 0");
+            throw exception.create(-1, "Argument value is lower than 0");
         end
 
         return arg > 0;

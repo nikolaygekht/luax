@@ -1,10 +1,10 @@
 ﻿class test
     public static function test1() : void
-        throw exception.createException(-1, "exception from factory");
+        throw exception.create(-1, "exception from factory");
     end
 
     public static function getError() : exception
-        return exception.createException(-2, "exception from static call");
+        return exception.create(-2, "exception from static call");
     end
 
     public static function test2() : void

@@ -1,6 +1,6 @@
 class assertTestAction_throwException : action
     public function invoke() : void
-        throw exception.createException(-1, "Exception from method call");
+        throw exception.create(-1, "Exception from method call");
     end
 end
 

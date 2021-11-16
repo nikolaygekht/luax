@@ -2,7 +2,7 @@ class assertTestAction_throwsFromCatch : action
     public function invoke() : void
         var ex : exception;
         try        
-            throw exception.createException(-1, "This exception should not be supressed in catch block");
+            throw exception.create(-1, "This exception should not be supressed in catch block");
         catch ex
             assert.isTrue(ex.message == "This exception should not be supressed in catch block", "");
             throw ex;
@@ -14,9 +14,33 @@ class assertTestAction_exceptionSupressed : action
     public function invoke() : void
         var ex : exception;
         try
-            throw exception.createException(-1, "This exception should be supressed in catch block");
+            throw exception.create(-1, "This exception should be supressed in catch block");
         catch ex
             assert.isTrue(ex.message == "This exception should be supressed in catch block", "");
+        end
+    end
+end
+
+class assertTestAction_divideByZeroExceptionSupressed : action
+    public function invoke() : void
+        var ex : exception;
+        try
+            var a: int;
+            a = 1/0; 
+        catch ex
+            assert.isTrue(ex.message == "Attempted to divide by zero.", "");
+        end
+    end
+end
+
+class assertTestAction_usingUninitializedVariableExceptionSupressed : action
+    public function invoke() : void
+        var ex : exception;
+        try
+            var x: list;
+            x.add(nil);
+        catch ex
+            assert.isTrue(ex.message == "The object is not initialized yet", "");
         end
     end
 end
@@ -31,5 +55,15 @@ class tryCatchTest
     @Fact()
     public function throwsFromCatch() : void
         assert.throws(new assertTestAction_throwsFromCatch(), "");
+    end
+
+    @Fact()
+    public function divideByZeroCatch() : void
+        assert.doesNotThrow(new assertTestAction_divideByZeroExceptionSupressed(), "");
+    end
+
+    @Fact()
+    public function uninitializedVarCatch() : void
+        assert.doesNotThrow(new assertTestAction_usingUninitializedVariableExceptionSupressed(), "");
     end
 end

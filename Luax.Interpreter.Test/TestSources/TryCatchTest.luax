@@ -4,9 +4,9 @@
 
        try
         if(arg < 0) then
-            throw exception.createException(1, "lower");
+            throw exception.create(1, "lower");
         elseif (arg == 0) then
-            throw  exception.createException(2, "equal");
+            throw  exception.create(2, "equal");
         else
             return "value is greater";
         end
