@@ -1,0 +1,29 @@
+class assertTestAction_throwException : action
+    public function invoke() : void
+        throw exception.createException(-1, "Exception from method call");
+    end
+end
+
+class assertTestAction_throwExceptionFromVariable : action
+    public function invoke() : void
+        var ex : exception;
+        ex = new exception();
+        ex.code = -2;
+        ex.message = "Exception from local variable";
+
+        throw ex;
+    end
+end
+
+@TestSuite()
+class throwTest
+    @Fact()
+    public function throwFromCall() : void
+        assert.throws(new assertTestAction_throwException(), "");
+    end
+
+    @Fact()
+    public function throwFromVariable() : void
+        assert.throws(new assertTestAction_throwExceptionFromVariable(), "");
+    end
+end

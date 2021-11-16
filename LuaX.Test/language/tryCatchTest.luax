@@ -1,0 +1,35 @@
+class assertTestAction_throwsFromCatch : action
+    public function invoke() : void
+        var ex : exception;
+        try        
+            throw exception.createException(-1, "This exception should not be supressed in catch block");
+        catch ex
+            assert.isTrue(ex.message == "This exception should not be supressed in catch block", "");
+            throw ex;
+        end
+    end
+end
+
+class assertTestAction_exceptionSupressed : action
+    public function invoke() : void
+        var ex : exception;
+        try
+            throw exception.createException(-1, "This exception should be supressed in catch block");
+        catch ex
+            assert.isTrue(ex.message == "This exception should be supressed in catch block", "");
+        end
+    end
+end
+
+@TestSuite()
+class tryCatchTest
+    @Fact()
+    public function exceptionSupressed() : void
+        assert.doesNotThrow(new assertTestAction_exceptionSupressed(), "");
+    end
+
+    @Fact()
+    public function throwsFromCatch() : void
+        assert.throws(new assertTestAction_throwsFromCatch(), "");
+    end
+end
