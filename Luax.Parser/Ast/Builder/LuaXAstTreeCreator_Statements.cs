@@ -93,15 +93,16 @@ namespace Luax.Parser.Ast.Builder
             statements.Add(throwStmt);
         }
 
-        private void ProcessCatchStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXTryStatement target)
+        private LuaXCatchClause ProcessCatchStatement(IAstNode node, LuaXClass @class, LuaXMethod method)
         {
             if (node.Children.Count < 3 || node.Children[1].Symbol != "IDENTIFIER" ||
                 method.FindVariableByName(node.Children[1].Value) == null ||
                 !Metadata.IsKindOf(method.FindVariableByName(node.Children[1].Value).LuaType.Class, "exception"))
                 throw new LuaXAstGeneratorException(Name, node, "Identifier of declared variable of type exception is expected here");
 
-            target.CatchStatement = new LuaXCatchClause(node.Children[1].Value, new LuaXElementLocation(Name, node));
-            ProcessStatements(node.Children[2].Children, @class, method, target.CatchStatement.CatchStatements);
+            var catchClause = new LuaXCatchClause(node.Children[1].Value, new LuaXElementLocation(Name, node));
+            ProcessStatements(node.Children[2].Children, @class, method, catchClause.CatchStatements);
+            return catchClause;
         }
 
         private void ProcessTryStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
@@ -109,10 +110,11 @@ namespace Luax.Parser.Ast.Builder
             if (node.Children.Count < 3 || node.Children[2].Symbol != "CATCH_STMT")
                 throw new LuaXAstGeneratorException(Name, node, "Catch statement is expected here");
 
-            LuaXTryStatement stmt = new LuaXTryStatement(new LuaXElementLocation(Name, node));
-            for (int i = 0; i < node.Children.Count; i++)
+            var catchClause = ProcessCatchStatement(node.Children[2], @class, method);
+            var stmt = new LuaXTryStatement(new LuaXElementLocation(Name, node), catchClause);
+
+            foreach (var child in node.Children)
             {
-                var child = node.Children[i];
                 if (child.Symbol == "END")
                     break;
 
@@ -121,13 +123,11 @@ namespace Luax.Parser.Ast.Builder
                     case "STATEMENTS":
                         ProcessStatements(child.Children, @class, method, stmt.TryStatements);
                         break;
-                    case "CATCH_STMT":
-                        ProcessCatchStatement(child, @class, method, stmt);
-                        break;
                     default:
                         continue;
                 }
             }
+
             statements.Add(stmt);
         }
 

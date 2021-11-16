@@ -182,13 +182,13 @@ namespace Luax.Interpreter.Expression
                     exceptionObject.Properties["code"].Value = ex.Code;
                     exceptionObject.Properties["message"].Value = ex.Message;
 
-                    variables[@try.CatchStatement.CatchIdentifier].Value = exceptionObject;
+                    variables[@try.CatchClause.CatchIdentifier].Value = exceptionObject;
 
-                    var catchResult = ExecuteStatements(@try.CatchStatement.CatchStatements, types, currentClass, variables, out result);
+                    var catchResult = ExecuteStatements(@try.CatchClause.CatchStatements, types, currentClass, variables, out result);
                     return catchResult;
                 }
 
-                throw new LuaXExecutionException(@try.CatchStatement.Location, "Type exception is not defined");
+                throw new LuaXExecutionException(@try.CatchClause.Location, "Type exception is not defined");
             }
         }
 

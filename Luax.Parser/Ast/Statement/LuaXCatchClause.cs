@@ -17,7 +17,7 @@ namespace Luax.Parser.Ast.Statement
         /// <summary>
         /// The content of catch clause
         /// </summary>
-        public LuaXStatementCollection CatchStatements = new LuaXStatementCollection();
+        public LuaXStatementCollection CatchStatements { get; } = new LuaXStatementCollection();
 
         public LuaXCatchClause(string catchIdentifier, LuaXElementLocation location)
         {

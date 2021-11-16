@@ -12,11 +12,12 @@ namespace Luax.Parser.Ast.Statement
         /// <summary>
         /// Catch statement
         /// </summary>
-        public LuaXCatchClause CatchStatement;
+        public LuaXCatchClause CatchClause { get; }
 
-        public LuaXTryStatement(LuaXElementLocation location)
+        public LuaXTryStatement(LuaXElementLocation location, LuaXCatchClause catchClause)
             : base(location)
         {
+            CatchClause = catchClause;
         }
     }
 }
