@@ -29,13 +29,7 @@ namespace Luax.Interpreter.Infrastructure
         {
             LuaType = classDefinition;
             StaticProperties = InitializeStatic(classDefinition);
-
-            if (SearchMethod(classDefinition.Name, null, out var constructor))
-            {
-                if (!constructor.ReturnType.IsVoid() || constructor.Arguments.Count > 0)
-                    throw new LuaXAstGeneratorException(constructor.Location, "Constructors must have void return type and no parameters");
-                Constructor = constructor;
-            }
+            Constructor = classDefinition.Constructor;
         }
 
         public LuaXObjectInstance New(LuaXTypesLibrary types)

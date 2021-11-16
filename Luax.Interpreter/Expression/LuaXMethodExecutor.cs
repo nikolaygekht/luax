@@ -38,6 +38,9 @@ namespace Luax.Interpreter.Expression
             if (method.Extern)
                 return ExecuteExtern(method, types, @this, args, out result);
 
+            if (method.IsConstructor)
+                HandleConstructor(method, types, @this);
+
             //create variables
             var variables = new LuaXVariableInstanceSet(method);
             if (args.Length != method.Arguments.Count)
@@ -58,6 +61,12 @@ namespace Luax.Interpreter.Expression
             if (rt == ResultType.ReachForEnd || rt == ResultType.ReturnDefault)
                 result = method.ReturnType.DefaultValue();
             return rt;
+        }
+
+        private static void HandleConstructor(LuaXMethod method, LuaXTypesLibrary types, LuaXObjectInstance @this)
+        {
+            if (method.Class.ParentClass?.Constructor != null)
+                Execute(method.Class.ParentClass?.Constructor, types, @this, Array.Empty<object>(), out _);
         }
 
         private static ResultType ExecuteExtern(LuaXMethod method, LuaXTypesLibrary types, LuaXObjectInstance @this, object[] args, out object result)
