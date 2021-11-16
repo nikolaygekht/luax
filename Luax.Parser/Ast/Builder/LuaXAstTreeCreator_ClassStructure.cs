@@ -683,21 +683,7 @@ namespace Luax.Parser.Ast.Builder
             if (attributes != null)
                 ProcessAttributes(attributes.Children, method.Attributes);
 
-            if (arguments?.Children.Count > 1 &&
-                arguments.Children[1].Symbol == "DECL_LIST")
-            {
-                ProcessDeclarationList(arguments.Children[1], new LuaXVariableFactory<LuaXVariable>(), v =>
-                {
-                    if (method.Arguments.Contains(v.Name))
-                        throw new LuaXAstGeneratorException(Name, node, $"The method already has argument with the name {v.Name}");
-                    method.Arguments.Add(v);
-                });
-            }
-
-            if (@class.Methods.Contains(method.Name))
-                throw new LuaXAstGeneratorException(Name, node, $"The method with the name {method.Name} already exists");
-
-            @class.Methods.Add(method);
+            ProcessMethodDefinition(node, @class, method, arguments);
         }
 
         /// <summary>
@@ -756,6 +742,11 @@ namespace Luax.Parser.Ast.Builder
                 Location = new LuaXElementLocation(Name, node)
             };
 
+            ProcessMethodDefinition(node, @class, method, arguments);
+        }
+
+        private void ProcessMethodDefinition(IAstNode node, LuaXClass @class, LuaXMethod method, IAstNode arguments)
+        {
             if (arguments?.Children.Count > 1 &&
                 arguments.Children[1].Symbol == "DECL_LIST")
             {
