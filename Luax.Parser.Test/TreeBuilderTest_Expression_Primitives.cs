@@ -346,10 +346,12 @@ namespace Luax.Parser.Test
         [Fact]
         public void Variable_AsSuperClassConstant_Success()
         {
-            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            StageVariableAndProperty(out var metadata, out var @class, out var _);
             @class.Constants.Add(new LuaXConstantVariable { Name = "c2", Value = new LuaXConstant(10, new LuaXElementLocation("", 0, 0)) });
-            var @class1 = new LuaXClass("z", @class.Name, new LuaXElementLocation("", 0, 0));
-            class1.ParentClass = @class;
+            var @class1 = new LuaXClass("z", @class.Name, new LuaXElementLocation("", 0, 0))
+            {
+                ParentClass = @class
+            };
             var method1 = new LuaXMethod(class1);
 
             var node = AstNodeExtensions.Parse("[REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CALLABLE_EXPR[ASSIGN_TARGET[VARIABLE[IDENTIFIER(c2)]]]]]]]]]]]]]]]");

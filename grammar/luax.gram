@@ -184,7 +184,7 @@ grammar LuaX
                     ADD_EXPR MINUS_OP^ MUL_EXPR;
 
         EQ_OP -> '==';
-        NEQ_OP -> '~=';
+        NEQ_OP -> '~=' | '!=';
         GT_OP -> '>';
         GE_OP -> '>=';
         LT_OP -> '<';

@@ -1,0 +1,22 @@
+@group
+    @key=main
+    @brief=LuaX Language
+    @title=Index
+    @ingroup=
+    @transform=yes
+    @sortgroups=no
+
+    LuaX is the object-oriented language created on the base of the [eurl=http://www.lua.org/]Lua[/eurl] language
+    with the purpose of cross-compiling into other languages: C#, Java, JavaScript, Go and so on.
+
+    The major changes comparing the Lua are:
+    * Classes with inheritance and method overriding instead of tables and late binding
+    * Strong typing
+    * Minimal (and completely new) runtime
+    * Exceptions
+
+    The parser library that builds AST tree to further saving into target language and interpreter for testing
+    the script are available in the [eurl=https://github.com/nikolaygekht/luax]git repo[/eurl]
+    under LGPL 2.1 license.
+@end
+

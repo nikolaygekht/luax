@@ -116,7 +116,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
 
         //public static extern tempFolder() : string;
         [LuaXExternMethod("io", "tempFolder")]
-        public static object TempFolder() => Path.GetTempPath();
+        public static object TempFolder() => Path.GetTempPath();        //NOSONAR -- accessing to temp is by design
 
         //public static extern combinePath(p1 : string, p2 : string) : string;
         [LuaXExternMethod("io", "combinePath")]

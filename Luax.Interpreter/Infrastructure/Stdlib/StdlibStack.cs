@@ -3,20 +3,15 @@ using System.Collections.Generic;
 using Luax.Parser.Ast;
 
 #pragma warning disable S125                // Sections of code should not be commented out
-#pragma warning disable IDE1006             // Naming rule violation.
 
 namespace Luax.Interpreter.Infrastructure.Stdlib
 {
     internal static class StdlibStack
     {
-        private static LuaXClassInstance mStackClass;
-        private static LuaXTypesLibrary mTypeLibrary;
-
         public static void Initialize(LuaXTypesLibrary typeLibrary)
         {
-            mTypeLibrary = typeLibrary;
-            typeLibrary.SearchClass("stack", out mStackClass);
-            mStackClass.LuaType.Properties.Add(new LuaXProperty() { Name = "__list", Visibility = LuaXVisibility.Private, LuaType = LuaXTypeDefinition.Void });
+            typeLibrary.SearchClass("stack", out var stackClass);
+            stackClass.LuaType.Properties.Add(new LuaXProperty() { Name = "__stack", Visibility = LuaXVisibility.Private, LuaType = LuaXTypeDefinition.Void });
         }
 
         //public extern length() : int;
@@ -25,7 +20,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties["__list"].Value is Stack<LuaXObjectInstance> l))
+            if (@this.Properties["__stack"].Value is not Stack<LuaXObjectInstance> l)
                 throw new ArgumentException("The list isn't properly initialized", nameof(@this));
             return l.Count;
         }
@@ -36,7 +31,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties["__list"].Value is Stack<LuaXObjectInstance> l))
+            if (@this.Properties["__stack"].Value is not Stack<LuaXObjectInstance> l)
                 throw new ArgumentException("The list isn't properly initialized", nameof(@this));
             if (l.Count == 0)
                 return null;
@@ -49,7 +44,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties["__list"].Value is Stack<LuaXObjectInstance> l))
+            if (@this.Properties["__stack"].Value is not Stack<LuaXObjectInstance> l)
                 throw new ArgumentException("The list isn't properly initialized", nameof(@this));
             l.Push(value);
             return null;
@@ -61,7 +56,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties["__list"].Value is Stack<LuaXObjectInstance> l))
+            if (@this.Properties["__stack"].Value is not Stack<LuaXObjectInstance> l)
                 throw new ArgumentException("The list isn't properly initialized", nameof(@this));
             if (l.Count == 0)
                 return null;
@@ -74,7 +69,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties["__list"].Value is Stack<LuaXObjectInstance> l))
+            if (@this.Properties["__stack"].Value is not Stack<LuaXObjectInstance> l)
                 throw new ArgumentException("The list isn't properly initialized", nameof(@this));
             l.Clear();
             return null;
@@ -84,7 +79,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("stack", "stack")]
         public static object Constructor(LuaXObjectInstance @this)
         {
-            @this.Properties["__list"].Value = new Stack<LuaXObjectInstance>();
+            @this.Properties["__stack"].Value = new Stack<LuaXObjectInstance>();
             return null;
         }
     }

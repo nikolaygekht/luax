@@ -4,9 +4,9 @@ namespace Luax.Interpreter.Execution
 {
     internal class DefaultLuaXProjectReaderContentProvider : ILuaXProjectReaderContentProvider
     {
-        public TextReader GetContentReader(string projectFilePath)
+        public TextReader GetContentReader(string filePath)
         {
-            return File.OpenText(projectFilePath);
+            return File.OpenText(filePath);
         }
 
         public string GetFileFullPath(string projectFullDirPath, string filePath)
@@ -17,9 +17,9 @@ namespace Luax.Interpreter.Execution
                 return Path.Combine(projectFullDirPath, filePath);
         }
 
-        public string GetProjectFullDirPath(string projectName)
+        public string GetProjectFullDirPath(string projectPath)
         {
-            return new FileInfo(projectName).Directory.FullName;
+            return new FileInfo(projectPath).Directory.FullName;
         }
     }
 }

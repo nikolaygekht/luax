@@ -293,9 +293,7 @@ namespace Luax.Interpreter.Expression
                         ResultType statementsResult = ExecuteStatements(whileStatement.Statements, types, currentClass, variables, out result);
                         if (statementsResult == ResultType.Break)
                             break;
-                        else if (statementsResult == ResultType.Continue)
-                            continue;
-                        else if (statementsResult != ResultType.ReachForEnd)
+                        else if (statementsResult != ResultType.Continue && statementsResult != ResultType.ReachForEnd)
                             return statementsResult;
                     }
                     else

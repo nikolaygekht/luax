@@ -11,7 +11,7 @@ namespace Luax.Parser.Ast.Statement
         /// The name of the class
         /// </summary>
         public string ClassName { get; }
-        
+
         /// <summary>
         /// The name of the property
         /// </summary>

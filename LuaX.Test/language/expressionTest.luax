@@ -62,6 +62,7 @@ class expressionTest
         assert.isTrue(1.0e2 == 100.0, "e-form");
         assert.isTrue(1.5 == 150.0 / 100.0, "regular form");
         assert.isTrue(0xffff == 65535, "hexadecimal form");
+        assert.isTrue(0x12ab_de89 == 0x12abde89, "underscore in hexadecimal");
         assert.isTrue(1_234_567 == 1234567, "underscore in integer");
         assert.isTrue(1_234.567_890e2 == 123456.789, "underscore in real");
     end
@@ -305,10 +306,10 @@ class expressionTest
         assert.isFalse("a" == nil, "equals no 3");
         assert.isFalse(nil == "a", "equals no 4");
 
-        assert.isTrue(s1 ~= nil, "equals no 5");
+        assert.isTrue(s1 != nil, "equals no 5");
         assert.isTrue(s2 == nil, "equals no 6");
         assert.isFalse(s1 == nil, "equals no 7");
-        assert.isFalse(s2 ~= nil, "equals no 8");
+        assert.isFalse(s2 != nil, "equals no 8");
 
         assert.isTrue("a" ~= "A", "not equals yes 1");
         assert.isTrue("a" ~= "aa", "not equals yes 2");
@@ -426,16 +427,43 @@ class expressionTest
     public function logicalAnd() : void
         assert.isTrue(true and true, "1");
         assert.isFalse(true and false, "2");
-        assert.isFalse(false and true, "2");
-        assert.isFalse(false and false, "2");
+        assert.isFalse(false and true, "3");
+        assert.isFalse(false and false, "4");
+    end
+
+    var logicalSecondArgumentCalled : boolean;
+
+    private function logicalSecondArgument(b : boolean) : boolean
+        logicalSecondArgumentCalled = true;
+        return b;
+    end
+
+    @Fact()
+    public function logicalSkipSecondArgument() : void
+        logicalSecondArgumentCalled = false;
+        assert.isFalse(false and logicalSecondArgument(false), "false and result");
+        assert.isFalse(logicalSecondArgumentCalled, "false and called");
+
+        logicalSecondArgumentCalled = false;
+        assert.isTrue(true or logicalSecondArgument(false), "true or result");
+        assert.isFalse(logicalSecondArgumentCalled, "true or called");
+
+        logicalSecondArgumentCalled = false;
+        assert.isFalse(true and logicalSecondArgument(false), "true and result");
+        assert.isTrue(logicalSecondArgumentCalled, "false and called");
+
+        logicalSecondArgumentCalled = false;
+        assert.isTrue(false or logicalSecondArgument(true), "false or result");
+        assert.isTrue(logicalSecondArgumentCalled, "false or called");
+
     end
 
     @Fact()
     public function logicalOr() : void
         assert.isTrue(true or true, "1");
         assert.isTrue(true or false, "2");
-        assert.isTrue(false or true, "2");
-        assert.isFalse(false or false, "2");
+        assert.isTrue(false or true, "3");
+        assert.isFalse(false or false, "4");
     end
 
     @Fact()

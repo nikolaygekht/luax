@@ -1,0 +1,14 @@
+﻿class test
+	public function get(index : string) : real
+		return 0.0;
+	end
+
+	public function set(index : string, value : real) : void
+	end
+
+	public function test() : void
+		var x : real;
+		x = this["a"];
+		this["b"] = x;
+	end
+end

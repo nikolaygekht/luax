@@ -18,6 +18,10 @@ class testList : list
     public function get(index : int) : listItem
         return cast<listItem>(super.get(index));
     end
+
+    public function set(index : int, value : listItem) : void
+        super.set(index, value);
+    end
 end
 
 @TestSuite()
@@ -103,6 +107,45 @@ class listTest
         assert.isTrue(l.get(3).name == "c", "item 4");
     end
 
-    -- TBD: check the rest of methods: remove, clear
+    @Fact()
+    public function accessViaIndexer() : void
+        var l : testList;
+        l = new testList();
+        l.add(listItem.create("a"));
+        l.add(listItem.create("b"));
+        l.add(listItem.create("c"));
+
+        assert.isTrue(l[0].name == "a", "get a");
+        assert.isTrue(l[1].name == "b", "get b");
+        assert.isTrue(l[2].name == "c", "get c");
+
+        l[1] = listItem.create("B");
+        assert.isTrue(l[1].name == "B", "get B");
+    end
+
+    @Fact()
+    public function clear() : void
+        var l : list;
+        l = new list();
+        l.add(listItem.create("a"));
+        l.add(listItem.create("b"));
+        l.add(listItem.create("c"));
+        assert.isTrue(l.length() == 3, "fill");
+        l.clear();
+        assert.isTrue(l.length() == 0, "clear");
+    end
+
+    @Fact()
+    public function remove() : void
+        var l : list;
+        l = new list();
+        l.add(listItem.create("a"));
+        l.add(listItem.create("b"));
+        l.add(listItem.create("c"));
+        l.remove(1);
+        assert.isTrue(l.length() == 2, "length");
+        assert.isTrue((cast<listItem>(l[0])).name == "a", "a");
+        assert.isTrue((cast<listItem>(l[1])).name == "c", "c");
+    end
 end
 

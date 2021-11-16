@@ -47,13 +47,9 @@ namespace Luax.Interpreter.Infrastructure
 
         public bool IsKindOf(string sourceClassName, string targetClassName) =>
             mApplication.Classes.IsKindOf(sourceClassName, targetClassName);
-
-        internal bool CastTo(LuaXTypeDefinition returnType, ref object argument)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool CastInteger(ref object argument)
         {
-            switch (returnType.TypeId)
-            {
-                case LuaXType.Integer:
-                    {
                         if (argument is int)
                             return true;
                         if (argument is double r)
@@ -80,9 +76,12 @@ namespace Luax.Interpreter.Infrastructure
                             }
                             return false;
                         }
+            else
+                return false;
                     }
-                    return false;
-                case LuaXType.Real:
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool CastReal(ref object argument)
                     {
                         if (argument is int i)
                         {
@@ -110,9 +109,12 @@ namespace Luax.Interpreter.Infrastructure
                             }
                             return false;
                         }
+            else
+                return false;
                     }
-                    return false;
-                case LuaXType.Datetime:
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool CastDateTime(ref object argument)
                     {
                         if (argument is int i)
                         {
@@ -152,9 +154,12 @@ namespace Luax.Interpreter.Infrastructure
                             }
                             return false;
                         }
+            else
+                return false;
                     }
-                    return false;
-                case LuaXType.String:
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool CastString(ref object argument)
                     {
                         if (argument == null)
                             return true;
@@ -183,11 +188,11 @@ namespace Luax.Interpreter.Infrastructure
                                 argument = d.ToString("yyyy-MM-dd HH:mm:ss.fff");
                             return true;
                         }
-                        if (argument is string)
-                            return true;
+            return argument is string;
                     }
-                    return false;
-                case LuaXType.Boolean:
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool CastBoolean(ref object argument)
                     {
                         if (argument is bool)
                             return true;
@@ -205,8 +210,24 @@ namespace Luax.Interpreter.Infrastructure
                             }
                             return false;
                         }
+            return false;
                     }
-                    return false;
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal bool CastTo(LuaXTypeDefinition returnType, ref object argument)
+        {
+            switch (returnType.TypeId)
+            {
+                case LuaXType.Integer:
+                    return CastInteger(ref argument);
+                case LuaXType.Real:
+                    return CastReal(ref argument);
+                case LuaXType.Datetime:
+                    return CastDateTime(ref argument);
+                case LuaXType.String:
+                    return CastString(ref argument);
+                case LuaXType.Boolean:
+                    return CastBoolean(ref argument);
                 case LuaXType.Object:
                     if (argument == null)
                         return true;
