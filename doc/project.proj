@@ -6,7 +6,7 @@
   <PropertyGroup>
     <DocTargetDir>$(MSBuildProjectDirectory)/dst</DocTargetDir>
     <RawDir>$(MSBuildProjectDirectory)/src/raw</RawDir>
-    <DocgenVersion>0.1.26</DocgenVersion>
+    <DocgenVersion>0.1.27</DocgenVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -26,7 +26,7 @@
     |`int`|Signed 32-bit integer values|`5`, `-2`, `1_234`, 0x12af|`0`|
     |`real`|64-bit floating number values|`5.0`, `1.5e12`, `1_245.567_89`|`0.0`|
     |`boolean`|Boolean value|`true`, `false`|`false`|
-    |`datetime`|Date and time|January, 1 1900|
+    |`datetime`|Date and time| |January, 1 1900|
     |`string`|A text string in unicode|`"text constant"`, `"line with \" quote inside and tabulation\t"`|`nil`|
 
     [b]Objects[/b]
@@ -34,10 +34,9 @@
     The language also supports complex [link=language_classes]objects[/link]. The object is a set
     of properties and methods.
 
-    [b]Objects[/b]
+    [b]Arrays[/b]
 
-    Also, there are arrays of any primitive data types or objects. Only one-dimension zero-based indexed arrays
-    are supported.
+    See [link=language_arrays]arrays[/link] for details.
 
     [b]Declaring named constants[/b]
 
@@ -71,14 +70,9 @@
         var l : list;
     ```
 
-    The example above defines a variable `l` of type `list`. The variable is not initialized yet and has `nil` value. Use
-    `new` operator to create an object.
-
-    Example:
-    ```luax
-        l = new list();
-    ```
-
+    The example above defines a variable `l` of type `list`. 
+    The variable is not initialized yet and has `nil` value. 
+    
     To declare an array add `[]` after the name of the variable type:
 
     Example:
@@ -86,14 +80,7 @@
         var l : string[];
     ```
     The example above defines a variable `l` as array of strings.
-    The variable is not initialized yet and has `nil` value. Use
-    `new` operator to create the array. When an array is created, its
-    elements are assigned to the default value.
-
-    Example:
-    ```luax
-        l = new string[32];
-    ```
+    The variable is not initialized yet and has `nil` value. 
 @end
 
 @article
@@ -288,7 +275,22 @@
     When object is created, all properties are initialized to the default value (see [link=language_datatypes]Data types[/link]
     for details). Also, the //constructor// of the class is called (see below for details about constructors).
 
-    [b]Properties[/b]
+    [b]Visibility[/b]
+
+    By default, the properties and methods can be used only be other methods of the same class or classes
+    derived from this class. It means that properties and methods are `private` by default.
+
+    To make a property or method visible to other classes you can declare it `public`.
+    To make a property or method visible to other classes but only among other luax classes, but not
+    to the classes of the target platform, declare it `internal`.
+@end
+
+@article
+    @key=language_properties
+    @title=Properties of classes
+    @brief=
+    @ingroup=language
+    @transform=yes
 
     Object can keep various data called properties. Properties are similar to variables, but exist as long as
     the object exists. To declare the property use `var` keyword.
@@ -304,6 +306,7 @@
     individual values for each instance of the class. But there also class (static) properties. These
     properties have the same value for all instances of the class. To declare such property use
     keyword `static`.
+
     Example
     ```luax
     class a
@@ -311,7 +314,16 @@
     end
     ```
 
-    [b]Methods[/b]
+@end
+
+@article
+    @key=language_methods
+    @title=Methods of classes
+    @brief=
+    @ingroup=language
+    @transform=yes
+
+    [b]Defining Methods[/b]
 
     Methods defines behavior of the object. To define a method use keyword `function`.
 
@@ -332,16 +344,6 @@
 
     If the method does not require the object status, you can declare them `static`. Static methods can access
     only static properties of the class.
-
-
-    [b]Visibility[/b]
-
-    By default, the properties and methods can be used only be other methods of the same class or classes
-    derived from this class. It means that properties and methods are `private` by default.
-
-    To make a property or method visible to other classes you can declare it `public`.
-    To make a property or method visible to other classes but only among other luax classes, but not
-    to the classes of the target platform, declare it `internal`.
 
     [b]Overriding the methods[/b]
 
@@ -408,30 +410,62 @@
 @end
 
 @article
-    @key=language_properties
-    @title=Properties of classes
-    @brief=
-    @ingroup=language
-    @transform=yes
-
-@end
-
-@article
-    @key=language_methods
-    @title=Methods of classes
-    @brief=
-    @ingroup=language
-    @transform=yes
-
-@end
-
-@article
     @key=language_arrays
     @title=Arrays
     @brief=
     @ingroup=language
     @transform=yes
 
+    You can declare a single dimenson array of primitive types or objects. It is not possible
+    to create an array of arrays. 
+
+    Arrays are indexed by an integer zero-based index. The first element of the array has index `0`.
+
+    Use `new` operator to create the array. When an array is created, its
+    elements are assigned to the default value.
+
+    Example:
+    ```luax
+        l = new string[32];
+    ```
+
+
+    The elements of the array are accessed using `[]` operator. 
+
+    ```luax
+        l[0] = 123;
+        stdlib.print("" .. l[0]);
+    ```
+
+    To get the length of the array use the property `length`.
+    
+    ```luax
+        if index >= 0 and index < arr.length then
+            -- it is correct index for this array
+        end
+    ```
+
+    [b]Objects as arrays[/b]
+
+    If object defines a pair of public methods get and set, it can be accessed using `[]` operator too. 
+    In this case the key don't have to be an integer value, the object is responsible for the logic.
+
+    ```luax
+    class a
+       public function get(index : string) : datetime
+       end
+
+       public function set(index : string, value : datetime) : void
+       end
+    end
+
+       ...
+       var x : a;
+
+       x["abcd"] = cast<datetime>("2012-05-22");
+       -- the line above will be automatically translated into
+       -- a.set("abcd", cast<datetime>("2012-05-22"));
+    ```
 @end
 
 @article
@@ -454,7 +488,7 @@
 
 @article
     @key=language_while
-    @title=while and statements
+    @title=while and until statements
     @brief=
     @ingroup=language
     @transform=yes

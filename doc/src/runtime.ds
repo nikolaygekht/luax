@@ -7,3 +7,154 @@
     @sortgroups=no
 @end
 
+@class
+    @name=object
+    @brief=The base class for all other classes in the system
+    @ingroup=runtime
+    @type=class
+@end
+
+@class
+    @name=exception
+    @brief=The base class for all exceotions in the system
+    @ingroup=runtime
+    @parent=object
+    @type=class
+
+    @member
+        @type=property
+        @name=code
+        @brief=The exception code
+        @divisor=.
+        @scope=instance
+        @visibility=protected
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=private
+        @end
+    @end
+
+    @member
+        @type=property
+        @name=message
+        @brief=The exception message
+        @divisor=.
+        @scope=instance
+        @visibility=protected
+
+        @declaration
+            @prefix=private
+            @language=luax
+            @return=string
+        @end
+    @end
+
+    @member
+        @type=method
+        @name=getCode
+        @brief=The exception code
+        @divisor=.
+        @scope=instance
+        @visibility=public
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+        @end
+    @end
+
+    @member
+        @type=method
+        @name=getMessage
+        @brief=The exception message
+        @divisor=.
+        @scope=instance
+        @visibility=public
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+        @end
+    @end
+
+    @member
+        @type=method
+        @name=create
+        @brief=Create the exception
+        @divisor=.
+        @scope=class
+        @visibility=public
+
+        @declaration
+            @language=luax
+            @return=exception
+            @params=code : int, message : string
+            @prefix=public static
+        @end
+
+        @param
+            @name=code
+            The code for the exception
+        @end
+
+        @param
+            @name=message
+            The message for the exception
+        @end
+    @end
+@end
+
+@class
+    @name=list
+    @brief=The list of objects
+    @ingroup=runtime
+    @parent=object
+@end
+
+@class
+    @name=queue
+    @brief=The queue of objects
+    @ingroup=runtime
+    @parent=object
+@end
+
+@class
+    @name=stack
+    @brief=The stack of objects
+    @ingroup=runtime
+    @parent=object
+@end
+
+@class
+    @name=buffer
+    @brief=The binary buffer
+    @ingroup=runtime
+    @parent=object
+@end
+
+
+@class
+    @name=io
+    @brief=The access to file system
+    @ingroup=runtime
+    @parent=object
+@end
+
+@class
+    @name=file
+    @brief=The file read/write functions
+    @ingroup=runtime
+    @parent=object
+@end
+
+
+@class
+    @name=stdlib
+    @brief=The basic set of standard functions
+    @ingroup=runtime
+    @parent=object
+@end
