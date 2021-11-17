@@ -192,7 +192,7 @@ namespace Luax.Interpreter.Test
             catch (Exception ex)
             {
                 ex.Should().BeOfType<LuaXExecutionException>();
-                ex.As<LuaXExecutionException>().Code.Should().Be(expectedCode);
+                ex.As<LuaXExecutionException>().Properties["code"].Value.Should().Be(expectedCode);
                 ex.As<LuaXExecutionException>().Message.Should().Be(expectedMessage);
             }
         }

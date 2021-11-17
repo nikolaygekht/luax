@@ -176,11 +176,22 @@ namespace Luax.Interpreter.Expression
             }
             catch (Exception ex)
             {
-                if (types.SearchClass("exception", out var exceptionClass))
+                var exceptionVariable = variables[@try.CatchClause.CatchIdentifier];
+                if (types.SearchClass(exceptionVariable.LuaType.Class, out var exceptionClass))
                 {
                     var exceptionObject = new LuaXObjectInstance(exceptionClass);
-                    exceptionObject.Properties["code"].Value = ex is LuaXExecutionException ex1 ? ex1.Code : 0;
                     exceptionObject.Properties["message"].Value = ex.Message;
+
+                    if (ex is LuaXExecutionException executionException)
+                    {
+                        foreach (var property in executionException.Properties)
+                        {
+                            if (property.Name == "message")
+                                continue;
+
+                            exceptionObject.Properties[property.Name].Value = property.Value;
+                        }
+                    }
 
                     variables[@try.CatchClause.CatchIdentifier].Value = exceptionObject;
 
@@ -188,7 +199,7 @@ namespace Luax.Interpreter.Expression
                     return catchResult;
                 }
 
-                throw new LuaXExecutionException(@try.CatchClause.Location, "Type exception is not defined");
+                throw new LuaXExecutionException(@try.CatchClause.Location, $"Type '{exceptionVariable.LuaType.Class}' is not defined");
             }
         }
 
@@ -198,7 +209,7 @@ namespace Luax.Interpreter.Expression
 
             if (exprResult is LuaXObjectInstance result && types.IsKindOf(result.Class.LuaType.Name, "exception"))
             {
-                throw new LuaXExecutionException(@throw.ThrowExpression.Location, result.Properties["message"].Value.ToString(), (int)result.Properties["code"].Value);
+                throw new LuaXExecutionException(@throw.ThrowExpression.Location, result.Properties["message"].Value.ToString(), result.Properties);
             }
 
             throw new LuaXExecutionException(@throw.Location, "Result of throw statement is not an exception");

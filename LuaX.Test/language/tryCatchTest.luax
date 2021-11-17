@@ -45,6 +45,52 @@ class assertTestAction_usingUninitializedVariableExceptionSupressed : action
     end
 end
 
+class assertTestAction_callChainExceptionCaught : action
+    public function invoke() : void
+        var ex : exception;
+        try
+            f1();
+        catch ex
+            assert.isTrue(ex.message == "Exception from the bottom of call chain. Function: f3()", "");
+        end
+    end
+    private function f1() : void
+        f2();
+    end
+    private function f2() : void
+        f3();
+    end
+    private function f3() : void
+        throw exception.create(-3, "Exception from the bottom of call chain. Function: f3()");
+    end
+end
+
+class assertTestAction_nestedTryCatch : action
+    public function invoke() : void
+        var ex : exception;
+        try
+            var ex2 : exception;
+            try
+                var ex3 : exception;
+                try
+                    throw exception.create(-3, "Exception from nested try 3");
+                catch ex3
+                    assert.isTrue(ex3.message == "Exception from nested try 3", "");
+                    assert.isTrue(ex3.code == -3, "");
+                    throw exception.create(-2, ex3.message..". Rethrown to level 2");
+                end
+            catch ex2
+                assert.isTrue(ex2.message == "Exception from nested try 3. Rethrown to level 2", "");
+                assert.isTrue(ex2.code == -2, "");
+                throw exception.create(-1, ex2.message..". Rethrown to level 1");
+            end
+        catch ex
+            assert.isTrue(ex.message == "Exception from nested try 3. Rethrown to level 2. Rethrown to level 1", "");
+            assert.isTrue(ex.code == -1, "");
+        end
+    end   
+end
+
 @TestSuite()
 class tryCatchTest
     @Fact()
@@ -65,5 +111,15 @@ class tryCatchTest
     @Fact()
     public function uninitializedVarCatch() : void
         assert.doesNotThrow(new assertTestAction_usingUninitializedVariableExceptionSupressed(), "");
+    end
+
+    @Fact()
+    public function callChainCatch() : void
+        assert.doesNotThrow(new assertTestAction_callChainExceptionCaught(), "");
+    end
+
+    @Fact()
+    public function nestedTryCatch() : void
+        assert.doesNotThrow(new assertTestAction_nestedTryCatch(), "");
     end
 end

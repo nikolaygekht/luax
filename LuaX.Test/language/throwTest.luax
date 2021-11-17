@@ -25,5 +25,5 @@ class throwTest
     @Fact()
     public function throwFromVariable() : void
         assert.throws(new assertTestAction_throwExceptionFromVariable(), "");
-    end
+    end    
 end

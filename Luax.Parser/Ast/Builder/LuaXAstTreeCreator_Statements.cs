@@ -79,7 +79,7 @@ namespace Luax.Parser.Ast.Builder
 
         private void ProcessThrowStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
         {
-            if (node.Children.Count == 3 && node.Children[1].Symbol != "SIMPLE_EXPR")
+            if (node.Children.Count == 3 && node.Children[1].Symbol != "REXPR")
                 throw new LuaXAstGeneratorException(Name, node, "Expression is expected here");
 
             var throwExpr = ProcessExpression(node.Children[1], @class, method);

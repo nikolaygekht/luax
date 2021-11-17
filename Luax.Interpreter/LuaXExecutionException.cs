@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
+using Luax.Interpreter.Infrastructure;
 using Luax.Parser.Ast;
 
 #pragma warning disable S3925 // TBD: "ISerializable" should be implemented correctly
@@ -11,17 +12,17 @@ namespace Luax.Interpreter
     {
         public LuaXElementLocationCollection Locations { get; } = new LuaXElementLocationCollection();
 
-        public int Code { get; } = 0;
+        public LuaXVariableInstanceSet Properties { get; } = new LuaXVariableInstanceSet();
 
         public LuaXExecutionException(LuaXElementLocation location, string message) : base(message)
         {
             Locations.Add(location);
         }
 
-        public LuaXExecutionException(LuaXElementLocation location, string message, int code) : base(message)
+        public LuaXExecutionException(LuaXElementLocation location, string message, LuaXVariableInstanceSet properties) : base(message)
         {
             Locations.Add(location);
-            Code = code;
+            Properties = properties;
         }
 
         public LuaXExecutionException(LuaXElementLocation location, string message, Exception innerException) : base(message, innerException)

@@ -245,7 +245,7 @@ grammar LuaX
 
         THROW -> 'throw';
 
-        THROW_STMT -> THROW SIMPLE_EXPR EOS;
+        THROW_STMT -> THROW REXPR EOS;
 
         CALL_STMT -> CALL EOS;
 

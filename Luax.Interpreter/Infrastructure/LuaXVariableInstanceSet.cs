@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using Luax.Parser.Ast;
 
 namespace Luax.Interpreter.Infrastructure
@@ -6,7 +7,7 @@ namespace Luax.Interpreter.Infrastructure
     /// <summary>
     /// A set of LuaX interpreter variables
     /// </summary>
-    public class LuaXVariableInstanceSet
+    public class LuaXVariableInstanceSet : IEnumerable<LuaXVariableInstance>
     {
         private readonly Dictionary<string, LuaXVariableInstance> mVariables = new Dictionary<string, LuaXVariableInstance>();
 
@@ -72,5 +73,19 @@ namespace Luax.Interpreter.Infrastructure
         /// <param name="name"></param>
         /// <returns></returns>
         public bool Contains(string name) => mVariables.ContainsKey(name);
+
+        /// <summary>
+        /// IEnumerable implementation to be able to enumerate through elements of LuaXVariableInstanceSet
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerator<LuaXVariableInstance> GetEnumerator()
+        {
+            return mVariables.Values.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 }
