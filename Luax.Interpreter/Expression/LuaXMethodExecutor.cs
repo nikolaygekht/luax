@@ -174,12 +174,12 @@ namespace Luax.Interpreter.Expression
                 var tryResult = ExecuteStatements(@try.TryStatements, types, currentClass, variables, out result);
                 return tryResult;
             }
-            catch (LuaXExecutionException ex)
+            catch (Exception ex)
             {
                 if (types.SearchClass("exception", out var exceptionClass))
                 {
                     var exceptionObject = new LuaXObjectInstance(exceptionClass);
-                    exceptionObject.Properties["code"].Value = ex.Code;
+                    exceptionObject.Properties["code"].Value = ex is LuaXExecutionException ex1 ? ex1.Code : 0;
                     exceptionObject.Properties["message"].Value = ex.Message;
 
                     variables[@try.CatchClause.CatchIdentifier].Value = exceptionObject;

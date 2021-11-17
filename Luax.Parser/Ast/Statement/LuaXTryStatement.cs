@@ -7,16 +7,17 @@ namespace Luax.Parser.Ast.Statement
         /// <summary>
         /// Try block body
         /// </summary>
-        public LuaXStatementCollection TryStatements { get; } = new LuaXStatementCollection();
+        public LuaXStatementCollection TryStatements { get; }
 
         /// <summary>
         /// Catch statement
         /// </summary>
         public LuaXCatchClause CatchClause { get; }
 
-        public LuaXTryStatement(LuaXElementLocation location, LuaXCatchClause catchClause)
+        public LuaXTryStatement(LuaXElementLocation location, LuaXCatchClause catchClause, LuaXStatementCollection tryStatements)
             : base(location)
         {
+            TryStatements = tryStatements;
             CatchClause = catchClause;
         }
     }

@@ -450,7 +450,7 @@ namespace Luax.Parser.Ast.Builder
 
             if (IsThisReference(name, currentMethod))
                 return new LuaXVariableExpression("this",
-                    new LuaXTypeDefinition()
+                    new LuaXTypeDefinition
                     {
                         TypeId = LuaXType.Object,
                         Class = currentClass.Name
@@ -458,7 +458,7 @@ namespace Luax.Parser.Ast.Builder
 
             if (IsSuperRefenence(name, currentClass, currentMethod))
                 return new LuaXVariableExpression("super",
-                    new LuaXTypeDefinition()
+                    new LuaXTypeDefinition
                     {
                         TypeId = LuaXType.Object,
                         Class = currentClass.ParentClass.Name,
@@ -473,7 +473,7 @@ namespace Luax.Parser.Ast.Builder
 
             if (currentClass.SearchProperty(name, out var p1))
                 return ProcessVariableAsProperty(astNode, currentClass, currentMethod, name, p1, location);
-            
+
             if (currentClass.SearchConstant(name, out var c2))
                 return new LuaXConstantExpression(c2.Value, location);
 
@@ -501,7 +501,7 @@ namespace Luax.Parser.Ast.Builder
                 if (currentMethod.Static)
                     throw new LuaXAstGeneratorException(Name, astNode, $"Can't access instance property {name} in a static method");
 
-                return new LuaXInstancePropertyExpression(new LuaXVariableExpression("this", new LuaXTypeDefinition() { TypeId = LuaXType.Object, Class = currentClass.Name }, location),
+                return new LuaXInstancePropertyExpression(new LuaXVariableExpression("this", new LuaXTypeDefinition { TypeId = LuaXType.Object, Class = currentClass.Name }, location),
                     name, p1.LuaType, location);
             }
         }
@@ -621,7 +621,7 @@ namespace Luax.Parser.Ast.Builder
             if (method.Static)
                 return ProcessCall(new LuaXClassNameExpression(currentClass.Name, new LuaXElementLocation(Name, callNode)), callNode, currentClass, currentMethod);
             else
-                return ProcessCall(new LuaXVariableExpression("this", new LuaXTypeDefinition() { TypeId = LuaXType.Object, Class = currentClass.Name }, new LuaXElementLocation(Name, callNode)), callNode, currentClass, currentMethod);
+                return ProcessCall(new LuaXVariableExpression("this", new LuaXTypeDefinition { TypeId = LuaXType.Object, Class = currentClass.Name }, new LuaXElementLocation(Name, callNode)), callNode, currentClass, currentMethod);
         }
 
         private LuaXExpression ProcessMethodCall(IAstNode callNode, LuaXClass currentClass, LuaXMethod currentMethod)
