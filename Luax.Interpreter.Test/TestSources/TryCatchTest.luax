@@ -1,0 +1,17 @@
+﻿class test
+   public static function testTry(arg : int) : string
+       var captured : exception;
+
+       try
+        if(arg < 0) then
+            throw exception.create(1, "lower");
+        elseif (arg == 0) then
+            throw  exception.create(2, "equal");
+        else
+            return "value is greater";
+        end
+       catch captured
+            return "value is " .. captured.getMessage() .. ", code is " .. captured.getCode();
+       end
+   end
+end

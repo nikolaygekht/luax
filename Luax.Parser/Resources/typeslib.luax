@@ -1,0 +1,23 @@
+﻿-- -------------------------------------------------------
+-- predefined types
+-- -------------------------------------------------------
+class exception : object
+    private var code : int;
+    private var message : string;
+
+    public function getMessage() : string
+        return message;
+    end
+
+    public function getCode() : int
+        return code;
+    end
+
+    public static function create(codeValue: int, messageText: string) : exception
+        var ex : exception;
+        ex = new exception();
+        ex.code = codeValue;
+        ex.message = messageText;
+        return ex;
+    end
+end

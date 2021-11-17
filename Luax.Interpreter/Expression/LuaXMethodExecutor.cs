@@ -21,7 +21,7 @@ namespace Luax.Interpreter.Expression
             ReturnDefault,
             Return,
             Break,
-            Continue
+            Continue,
         };
 
         /// <summary>
@@ -124,6 +124,14 @@ namespace Luax.Interpreter.Expression
                                     return r;
                             }
                             break;
+                        case LuaXThrowStatement @throw:
+                            ExecuteThrowStatement(@throw, types, currentClass, variables);
+                            break;
+                        case LuaXTryStatement @try:
+                            var tryResult = ExecuteTryStatement(@try, types, currentClass, variables, out result);
+                            if (tryResult != ResultType.ReachForEnd)
+                                return tryResult;
+                            break;
                         case LuaXReturnStatement @return:
                             {
                                 if (@return.Expression == null)
@@ -131,11 +139,9 @@ namespace Luax.Interpreter.Expression
                                     result = null;
                                     return ResultType.ReturnDefault;
                                 }
-                                else
-                                {
-                                    result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass, variables);
-                                    return ResultType.Return;
-                                }
+
+                                result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass, variables);
+                                return ResultType.Return;
                             }
                         case LuaXWhileStatement @while:
                             {
@@ -168,6 +174,54 @@ namespace Luax.Interpreter.Expression
             }
             result = null;
             return ResultType.ReachForEnd;
+        }
+
+        private static ResultType ExecuteTryStatement(LuaXTryStatement @try, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
+        {
+            try
+            {
+                var tryResult = ExecuteStatements(@try.TryStatements, types, currentClass, variables, out result);
+                return tryResult;
+            }
+            catch (Exception ex)
+            {
+                var exceptionVariable = variables[@try.CatchClause.CatchIdentifier];
+                if (types.SearchClass(exceptionVariable.LuaType.Class, out var exceptionClass))
+                {
+                    var exceptionObject = new LuaXObjectInstance(exceptionClass);
+                    exceptionObject.Properties["message"].Value = ex.Message;
+
+                    if (ex is LuaXExecutionException executionException)
+                    {
+                        foreach (var property in executionException.Properties)
+                        {
+                            if (property.Name == "message")
+                                continue;
+
+                            exceptionObject.Properties[property.Name].Value = property.Value;
+                        }
+                    }
+
+                    variables[@try.CatchClause.CatchIdentifier].Value = exceptionObject;
+
+                    var catchResult = ExecuteStatements(@try.CatchClause.CatchStatements, types, currentClass, variables, out result);
+                    return catchResult;
+                }
+
+                throw new LuaXExecutionException(@try.CatchClause.Location, $"Type '{exceptionVariable.LuaType.Class}' is not defined");
+            }
+        }
+
+        private static void ExecuteThrowStatement(LuaXThrowStatement @throw, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables)
+        {
+            var exprResult = LuaXExpressionEvaluator.Evaluate(@throw.ThrowExpression, types, currentClass, variables);
+
+            if (exprResult is LuaXObjectInstance result && types.IsKindOf(result.Class.LuaType.Name, "exception"))
+            {
+                throw new LuaXExecutionException(@throw.ThrowExpression.Location, result.Properties["message"].Value.ToString(), result.Properties);
+            }
+
+            throw new LuaXExecutionException(@throw.Location, "Result of throw statement is not an exception");
         }
 
         private static void ExecuteAssignVariable(LuaXAssignVariableStatement assign, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables)

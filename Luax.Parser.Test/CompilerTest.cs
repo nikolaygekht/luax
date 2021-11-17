@@ -449,5 +449,67 @@ namespace Luax.Parser.Test
             expr2.Arguments[1].Should().BeOfType<LuaXVariableExpression>();
             expr2.Arguments[1].As<LuaXVariableExpression>().VariableName.Should().Be("x");
         }
+
+        [Fact]
+        public void Try()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("TryCatch1");
+            app.Pass2();
+            app.Classes.Search("test", out var @class).Should().BeTrue();
+            @class.SearchMethod("test1", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(1);
+            method.Statements[0].Should().BeOfType<LuaXTryStatement>();
+            var @try = method.Statements[0].As<LuaXTryStatement>();
+
+            @try.TryStatements.Should().HaveCount(2);
+
+            @try.TryStatements[0].Should().BeOfType<LuaXIfStatement>();
+            @try.TryStatements[0].As<LuaXIfStatement>().Clauses.Count.Should().Be(1);
+            @try.TryStatements[0].As<LuaXIfStatement>().ElseClause.Count.Should().Be(0);
+
+            @try.TryStatements[1].Should().BeOfType<LuaXReturnStatement>();
+            @try.TryStatements[1].As<LuaXReturnStatement>().Expression.ToString().Should().Be("(arg:arg Greater const:int:0)");
+
+            @try.CatchClause.Should().BeOfType<LuaXCatchClause>();
+            var @catch = @try.CatchClause;
+            @catch.CatchIdentifier.Should().Be("ex");
+
+            @catch.CatchStatements.Should().HaveCount(1);
+            @catch.CatchStatements[0].Should().BeOfType<LuaXReturnStatement>();
+            @catch.CatchStatements[0].As<LuaXReturnStatement>().Expression.ToString().Should().Be("const:boolean:False");
+        }
+
+        [Fact]
+        public void Throw()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("Throw1");
+            app.Pass2();
+            app.Classes.Search("test", out var @class).Should().BeTrue();
+            @class.SearchMethod("test1", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(2);
+            method.Statements[0].Should().BeOfType<LuaXThrowStatement>();
+            var throw1 = method.Statements[0].As<LuaXThrowStatement>();
+            @throw1.ThrowExpression.Should().BeOfType<LuaXStaticCallExpression>();
+            var throw1Expr = throw1.ThrowExpression.As<LuaXStaticCallExpression>();
+            throw1Expr.ReturnType.IsObject().Should().BeTrue();
+            throw1Expr.ReturnType.Class.Should().Be("exception");
+            throw1Expr.Arguments.Count.Should().Be(2);
+            var throwArg1 = throw1.ThrowExpression.As<LuaXStaticCallExpression>().Arguments[0];
+            throwArg1.Should().BeOfType(typeof(LuaXConstantExpression));
+            throwArg1.ReturnType.IsInteger().Should().BeTrue();
+            throwArg1.ToString().Should().Be("const:int:0");
+            var throwArg2 = throw1.ThrowExpression.As<LuaXStaticCallExpression>().Arguments[1];
+            throwArg2.Should().BeOfType(typeof(LuaXConstantExpression));
+            throwArg2.ReturnType.IsString().Should().BeTrue();
+            throwArg2.ToString().Should().Be("const:string:exception1");
+
+            var @throw2 = method.Statements[1].As<LuaXThrowStatement>();
+            @throw2.ThrowExpression.Should().BeOfType<LuaXStaticCallExpression>();
+            @throw2.ThrowExpression.As<LuaXStaticCallExpression>().ReturnType.IsObject().Should().BeTrue();
+            @throw2.ThrowExpression.As<LuaXStaticCallExpression>().ReturnType.Class.Should().Be("exception");
+            @throw2.ThrowExpression.As<LuaXStaticCallExpression>().ToString().Should().Be("call:test::getError()");
+        }
     }
 }

@@ -73,7 +73,6 @@ grammar LuaX
 
         TYPE_CLASS -> IDENTIFIER;
 
-
         TYPE_NAME -> TYPE_INT |
                      TYPE_REAL |
                      TYPE_BOOLEAN |
@@ -238,11 +237,11 @@ grammar LuaX
 
         END -> 'end';
 
-        CATCH_STMT -> CATCH IDENTIFIER STATEMENTS;
+        CATCH_CLAUSE -> CATCH IDENTIFIER STATEMENTS;
 
         TRY -> 'try';
 
-        TRY_STMT -> TRY STATEMENTS CATCH_STMT END;
+        TRY_STMT -> TRY STATEMENTS CATCH_CLAUSE END;
 
         THROW -> 'throw';
 
@@ -255,9 +254,9 @@ grammar LuaX
         ELSE -> 'else';
         ELSEIF -> 'elseif';
 
-        ELSEIF_CLAUSE -> ELSEIF EXPR THEN STATEMENTS ;
+        ELSEIF_CLAUSE -> ELSEIF EXPR THEN STATEMENTS;
 
-        ELSE_CLAUSE -> ELSE STATEMENTS ;
+        ELSE_CLAUSE -> ELSE STATEMENTS;
 
         IF_CLAUSE -> IF EXPR THEN STATEMENTS;
 

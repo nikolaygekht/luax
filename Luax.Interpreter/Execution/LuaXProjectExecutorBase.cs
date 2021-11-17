@@ -17,7 +17,7 @@ namespace Luax.Interpreter.Execution
         public LuaXTypesLibrary TypesLibrary => mTypeLibrary;
         protected LuaXProject Project { get; }
 
-        public static Func<string, string> ReadFileCallback { get; set;  } = name => File.ReadAllText(name);
+        public static Func<string, string> ReadFileCallback { get; set;  } = File.ReadAllText;
 
         protected LuaXProjectExecutorBase(LuaXProject project)
         {

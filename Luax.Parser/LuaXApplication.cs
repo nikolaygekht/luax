@@ -18,7 +18,9 @@ namespace Luax.Parser
         /// </summary>
         public LuaXApplication()
         {
-            var body = StdlibHeader.ReadStdlib();
+            var body = TypesLibHeader.ReadTypesLib();
+            Classes.AddRange(body.Classes);
+            body = StdlibHeader.ReadStdlib();
             Classes.AddRange(body.Classes);
         }
 

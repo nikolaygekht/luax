@@ -53,6 +53,12 @@ namespace Luax.Parser.Ast.Builder
                     case "IF_STMT":
                         ProcessesIfStatement(child, @class, method, statements);
                         break;
+                    case "TRY_STMT":
+                        ProcessTryStatement(child, @class, method, statements);
+                        break;
+                    case "THROW_STMT":
+                        ProcessThrowStatement(child, @class, method, statements);
+                        break;
                     case "RETURN_STMT":
                         ProcessesReturnStatement(child, @class, method, statements);
                         break;
@@ -69,6 +75,62 @@ namespace Luax.Parser.Ast.Builder
                         throw new LuaXAstGeneratorException(Name, child, $"Unexpected symbol {child.Symbol}");
                 }
             }
+        }
+
+        private void ProcessThrowStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        {
+            if (node.Children.Count == 3 && node.Children[1].Symbol != "REXPR")
+                throw new LuaXAstGeneratorException(Name, node, "Expression is expected here");
+
+            var throwExpr = ProcessExpression(node.Children[1], @class, method);
+
+            if (!throwExpr.ReturnType.IsObject() || !Metadata.IsKindOf(throwExpr.ReturnType.Class, "exception"))
+                throw new LuaXAstGeneratorException(Name, node, $"Expression with return type Exception is expected here");
+
+            var throwStmt = new LuaXThrowStatement(throwExpr, new LuaXElementLocation(Name, node));
+
+            statements.Add(throwStmt);
+        }
+
+        private LuaXCatchClause ProcessCatchClause(IAstNode node, LuaXClass @class, LuaXMethod method)
+        {
+            if (node.Children.Count < 3 || node.Children[1].Symbol != "IDENTIFIER" ||
+                !method.Variables.Search(node.Children[1].Value, out var v1) || v1 == null ||
+                !Metadata.IsKindOf(v1.LuaType.Class, "exception"))
+                throw new LuaXAstGeneratorException(Name, node, "Identifier of declared variable of type exception is expected here");
+
+            var catchClause = new LuaXCatchClause(node.Children[1].Value, new LuaXElementLocation(Name, node));
+            ProcessStatements(node.Children[2].Children, @class, method, catchClause.CatchStatements);
+            return catchClause;
+        }
+
+        private void ProcessTryStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        {
+            if (node.Children.Count < 3 || node.Children[2].Symbol != "CATCH_CLAUSE")
+                throw new LuaXAstGeneratorException(Name, node, "Catch clause is expected here");
+
+            var tryStatements = new LuaXStatementCollection();
+            LuaXCatchClause catchClause = null;
+            foreach (var child in node.Children)
+            {
+                if (child.Symbol == "END")
+                    break;
+
+                switch (child.Symbol)
+                {
+                    case "STATEMENTS":
+                        ProcessStatements(child.Children, @class, method, tryStatements);
+                        break;
+                    case "CATCH_CLAUSE":
+                        catchClause = ProcessCatchClause(node.Children[2], @class, method);
+                        break;
+                    default:
+                        continue;
+                }
+            }
+
+            var stmt = new LuaXTryStatement(new LuaXElementLocation(Name, node), catchClause, tryStatements);
+            statements.Add(stmt);
         }
 
         private void ProcessDeclarationStatement(IAstNode node, LuaXMethod method)

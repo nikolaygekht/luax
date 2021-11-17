@@ -169,6 +169,35 @@ namespace Luax.Interpreter.Test
         }
 
         [Theory]
+        [InlineData("test1", -1, "exception from the factory")]
+        [InlineData("test2", -2, "exception from the static call")]
+        [InlineData("test3", -3, "exception from the variable")]
+        public void TestThrow(string methodName, int expectedCode, string expectedMessage)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ThrowTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod(methodName, null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsVoid().Should().BeTrue();
+
+            try
+            {
+                LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
+            }
+            catch (Exception ex)
+            {
+                ex.Should().BeOfType<LuaXExecutionException>();
+                ex.As<LuaXExecutionException>().Properties["code"].Value.Should().Be(expectedCode);
+                ex.As<LuaXExecutionException>().Message.Should().Be(expectedMessage);
+            }
+        }
+
+        [Theory]
         [InlineData(6, 15)]
         [InlineData(5, 0)]
         [InlineData(4, 5)]
@@ -192,6 +221,30 @@ namespace Luax.Interpreter.Test
             LuaXMethodExecutor.Execute(method, typelib, null, new object[] { argument }, out var r);
             r.Should().BeOfType<int>();
             r.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData(-1, 1, "value is lower, code is")]
+        [InlineData(0, 2, "value is equal, code is")]
+        [InlineData(1, 0, "value is greater")]
+        public void TestTryCatch(int arg, int expectedCode, string expectedMessage)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("TryCatchTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("testTry", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsString().Should().BeTrue();
+
+            var resultType = LuaXMethodExecutor.Execute(method, typelib, null, new object[] { arg }, out var r);
+
+            r.Should().BeOfType<string>();
+            r.Should().Be(expectedCode != 0 ? $"{expectedMessage} {expectedCode}" : expectedMessage);
         }
 
         [Theory]

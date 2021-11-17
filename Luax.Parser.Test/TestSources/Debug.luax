@@ -12,7 +12,7 @@ class c : object
      var o : object;
      o = new a();
      o = new b();
-     
+
      var pa : a, pb : b;
 
      pa = cast<a>(o);

@@ -56,7 +56,7 @@ class stdlib
     public static extern millisecond(x : datetime) : int;
     public static extern nowlocal() : datetime;
     public static extern nowutc() : datetime;
-    
+
     -- JDN
     -- Julian Day number
     -- The integer part is Julian day number
@@ -102,7 +102,7 @@ class io
     public static extern open(filename : string, mode : int, codepage : int) : file;
 end
 
--- ------------------------------------------------------- 
+-- -------------------------------------------------------
 -- Binary buffer
 -- -------------------------------------------------------
 class buffer
@@ -134,10 +134,10 @@ end
 class csvParser
     public extern setSeparator(separator : string) : void;
     public extern getSeparator() : string;
-    
+
     public extern setAllowStrings(flag : boolean) : void;
     public extern getAllowString() : boolean;
-    
+
     public extern setAllowComments(flag : boolean) : void;
     public extern getAllowComments() : boolean;
     public extern setCommentPrefix(commentPrefix : string) : void;
@@ -187,7 +187,7 @@ end
 -- ----------------------------------------------------------
 -- int -> object map
 -- ----------------------------------------------------------
-class int_map 
+class int_map
     public extern length() : int;
     public extern contains(key : int) : boolean;
     public extern get(key : int) : object;
@@ -200,7 +200,7 @@ end
 -- ----------------------------------------------------------
 -- string -> object map
 -- ----------------------------------------------------------
-class string_map 
+class string_map
     public extern length() : int;
     public extern contains(key : string) : boolean;
     public extern get(key : string) : object;
@@ -211,7 +211,7 @@ class string_map
 end
 
 -- -----------------------------------------------------------
--- Queue 
+-- Queue
 -- -----------------------------------------------------------
 class queue
     public extern length() : int;
@@ -223,7 +223,7 @@ class queue
 end
 
 -- -----------------------------------------------------------
--- Stack 
+-- Stack
 -- -----------------------------------------------------------
 class stack
     public extern length() : int;

@@ -31,9 +31,13 @@
     <None Remove="TestSources\WhileContinueTest.luax" />
     <None Remove="TestSources\WhileNestedTest.luax" />
     <None Remove="TestSources\WhileTest.luax" />
+    <None Remove="TestSources\ThrowTest.luax" />
+    <None Remove="TestSources\TryCatchTest.luax" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\TryCatchTest.luax" />
+    <EmbeddedResource Include="TestSources\ThrowTest.luax" />
     <EmbeddedResource Include="TestSources\IfTest.luax" />
     <EmbeddedResource Include="TestSources\ExceptionStackTraceTest.luax" />
     <EmbeddedResource Include="TestSources\ConstTest.luax" />
