@@ -2,9 +2,9 @@ class assertTestAction_throwsFromCatch : action
     public function invoke() : void
         var ex : exception;
         try        
-            throw exception.create(-1, "This exception should not be supressed in catch block");
+            throw exception.create(-1, "This exception should not be supressed in the catch block");
         catch ex
-            assert.isTrue(ex.message == "This exception should not be supressed in catch block", "");
+            assert.isTrue(ex.getMessage() == "This exception should not be supressed in the catch block", "");
             throw ex;
         end
     end
@@ -14,9 +14,9 @@ class assertTestAction_exceptionSupressed : action
     public function invoke() : void
         var ex : exception;
         try
-            throw exception.create(-1, "This exception should be supressed in catch block");
+            throw exception.create(-1, "This exception should be supressed in the catch block");
         catch ex
-            assert.isTrue(ex.message == "This exception should be supressed in catch block", "");
+            assert.isTrue(ex.getMessage() == "This exception should be supressed in the catch block", "");
         end
     end
 end
@@ -28,7 +28,7 @@ class assertTestAction_divideByZeroExceptionSupressed : action
             var a: int;
             a = 1/0; 
         catch ex
-            assert.isTrue(ex.message == "Attempted to divide by zero.", "");
+            assert.isTrue(ex.getMessage() == "Attempted to divide by zero.", "");
         end
     end
 end
@@ -40,7 +40,7 @@ class assertTestAction_usingUninitializedVariableExceptionSupressed : action
             var x: list;
             x.add(nil);
         catch ex
-            assert.isTrue(ex.message == "The object is not initialized yet", "");
+            assert.isTrue(ex.getMessage() == "The object is not initialized yet", "");
         end
     end
 end
@@ -51,7 +51,7 @@ class assertTestAction_callChainExceptionCaught : action
         try
             f1();
         catch ex
-            assert.isTrue(ex.message == "Exception from the bottom of call chain. Function: f3()", "");
+            assert.isTrue(ex.getMessage() == "Exception from the bottom of the call chain. Function: f3()", "");
         end
     end
     private function f1() : void
@@ -61,7 +61,7 @@ class assertTestAction_callChainExceptionCaught : action
         f3();
     end
     private function f3() : void
-        throw exception.create(-3, "Exception from the bottom of call chain. Function: f3()");
+        throw exception.create(-3, "Exception from the bottom of the call chain. Function: f3()");
     end
 end
 
@@ -75,18 +75,18 @@ class assertTestAction_nestedTryCatch : action
                 try
                     throw exception.create(-3, "Exception from nested try 3");
                 catch ex3
-                    assert.isTrue(ex3.message == "Exception from nested try 3", "");
-                    assert.isTrue(ex3.code == -3, "");
-                    throw exception.create(-2, ex3.message..". Rethrown to level 2");
+                    assert.isTrue(ex3.getMessage() == "Exception from nested try 3", "");
+                    assert.isTrue(ex3.getCode() == -3, "");
+                    throw exception.create(-2, ex3.getMessage()..". Rethrown to level 2");
                 end
             catch ex2
-                assert.isTrue(ex2.message == "Exception from nested try 3. Rethrown to level 2", "");
-                assert.isTrue(ex2.code == -2, "");
-                throw exception.create(-1, ex2.message..". Rethrown to level 1");
+                assert.isTrue(ex2.getMessage() == "Exception from nested try 3. Rethrown to level 2", "");
+                assert.isTrue(ex2.getCode() == -2, "");
+                throw exception.create(-1, ex2.getMessage()..". Rethrown to level 1");
             end
         catch ex
-            assert.isTrue(ex.message == "Exception from nested try 3. Rethrown to level 2. Rethrown to level 1", "");
-            assert.isTrue(ex.code == -1, "");
+            assert.isTrue(ex.getMessage() == "Exception from nested try 3. Rethrown to level 2. Rethrown to level 1", "");
+            assert.isTrue(ex.getCode() == -1, "");
         end
     end   
 end

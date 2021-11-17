@@ -169,9 +169,9 @@ namespace Luax.Interpreter.Test
         }
 
         [Theory]
-        [InlineData("test1", -1, "exception from factory")]
-        [InlineData("test2", -2, "exception from static call")]
-        [InlineData("test3", -3, "exception from variable")]
+        [InlineData("test1", -1, "exception from the factory")]
+        [InlineData("test2", -2, "exception from the static call")]
+        [InlineData("test3", -3, "exception from the variable")]
         public void TestThrow(string methodName, int expectedCode, string expectedMessage)
         {
             var app = new LuaXApplication();

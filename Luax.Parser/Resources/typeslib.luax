@@ -2,8 +2,16 @@
 -- predefined types
 -- -------------------------------------------------------
 class exception : object
-    public var code : int;
-    public var message : string;
+    private var code : int;
+    private var message : string;
+
+    public function getMessage() : string
+        return message;
+    end
+
+    public function getCode() : int
+        return code;
+    end
 
     public static function create(codeValue: int, messageText: string) : exception
         var ex : exception;

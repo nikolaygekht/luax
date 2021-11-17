@@ -1,10 +1,10 @@
 ﻿class test
     public static function test1() : void
-        throw exception.create(-1, "exception from factory");
+        throw exception.create(-1, "exception from the factory");
     end
 
     public static function getError() : exception
-        return exception.create(-2, "exception from static call");
+        return exception.create(-2, "exception from the static call");
     end
 
     public static function test2() : void
@@ -13,10 +13,7 @@
 
     public static function test3() : void
         var ex : exception;
-        ex = new exception();
-        ex.code = -3;
-        ex.message = "exception from variable";
-
+        ex = exception.create(-3, "exception from the variable");
         throw ex;
     end
 end

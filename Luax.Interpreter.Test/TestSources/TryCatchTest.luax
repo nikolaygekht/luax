@@ -11,7 +11,7 @@
             return "value is greater";
         end
        catch captured
-            return "value is " .. captured.message .. ", code is " .. captured.code;
+            return "value is " .. captured.getMessage() .. ", code is " .. captured.getCode();
        end
    end
 end
