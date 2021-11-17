@@ -7,3 +7,509 @@
     @sortgroups=no
 @end
 
+@article
+    @key=language_datatypes
+    @title=Data types, constants and variables.
+    @brief=
+    @ingroup=language
+    @transform=yes
+
+    [b]Primitive date times[/b]
+
+    The LuaX language is a strong typed programming language. Every argument, variable
+    or property must be declared and must have the type. The type cannot be changed
+    since it is declared.
+
+    The LuaX language has the following primitive data types:
+
+    |!Type|Values|Example|Default value| >
+    |`int`|Signed 32-bit integer values|`5`, `-2`, `1_234`, 0x12af|`0`|
+    |`real`|64-bit floating number values|`5.0`, `1.5e12`, `1_245.567_89`|`0.0`|
+    |`boolean`|Boolean value|`true`, `false`|`false`|
+    |`datetime`|Date and time| |January, 1 1900|
+    |`string`|A text string in unicode|`"text constant"`, `"line with \" quote inside and tabulation\t"`|`nil`|
+
+    [b]Objects[/b]
+
+    The language also supports complex [link=language_classes]objects[/link]. The object is a set
+    of properties and methods.
+
+    [b]Arrays[/b]
+
+    See [link=language_arrays]arrays[/link] for details.
+
+    [b]Declaring named constants[/b]
+
+    To declare the named constant use `const` keyword. The type of the constant is defined by the value.
+    The constant can be assigned to constant value only (you cannot assign an expression to a constant).
+    Only `int`, `real`, `boolean` and `string` constants may be defined.
+
+    Example
+    ```luax
+        const MODE = 1;
+        const NAME = "queue";
+        const PI = 3.14;
+    ```
+
+    [b]Declaring variables[/b]
+
+
+    To declare a variable of the desired type use the key word `var`.
+
+    Example:
+    ```luax
+        var i : int, y : real;
+    ```
+
+    The example above defines two variables: 32-bit signed integer `i` and 64-bit floating number `j`.
+
+    To declare an object variable use the name of the class.
+
+    Example:
+    ```luax
+        var l : list;
+    ```
+
+    The example above defines a variable `l` of type `list`. 
+    The variable is not initialized yet and has `nil` value. 
+    
+    To declare an array add `[]` after the name of the variable type:
+
+    Example:
+    ```luax
+        var l : string[];
+    ```
+    The example above defines a variable `l` as array of strings.
+    The variable is not initialized yet and has `nil` value. 
+@end
+
+@article
+    @key=language_operators
+    @title=Operators
+    @brief=
+    @ingroup=language
+    @transform=yes
+
+    [b]Math[/b]
+
+    The following math operators may be used:
+
+    |!Operator|Meaining|Examples|>
+    |`-`|Unary minus|`-a`|
+    |`+`|Add a to b|`a + b`|
+    |`-`|Subtract b from a|`a - b`|
+    |`*`|Multiple a by b|`a * b`|
+    |`/`|Divide a by b|`a / b`|
+    |`%`|Modulus of dividing a by b|`a % b`|
+    |`^`|Raise a into power b|`a ^ b`|
+
+    [b]Concatenation[/b]
+
+    To concatenate two strings use a concatenation 
+    operator `..`. All primitve types will be 
+    converted to a string using an invariant locale.
+
+    [b]Comparison[/b]
+
+    |!Operator|Meaining|Examples|>
+    |`==`|Equals|`a == b`|
+    |`~=`|Not equals|`a ~= b`|
+    |`!=`|Not equals|`a != b`|
+    |`>`|Greater than|`a > b`|
+    |`>=`|Greater than or equal to|`a >= b`|
+    |`<`|Less than|`a < b`|
+    |`<=`|Less than or equal to|`a <= b`|
+
+    [b]Logical[/b]
+
+    |!Operator|Meaining|Examples|>
+    |`not`|Boolean not|`not (a > b)`|
+    |`or`|Boolean or|`a > b or b < c`|
+    |`and`|Boolean and|`a > b and b < c`|
+
+    [b]Precendence[/b]
+    
+    The operators with higher precendence are executed first. Here is the list of 
+    all operators in order of precendence (low to high).
+    |`or`|
+    |`and`|
+    |`not`|
+    |`==`, `!=`, `>`, `>=`, `<`, `<=`|
+    |`+`, `-`, `..`|
+    |`*`, `/`, `%`|
+    |`^`|
+
+    [b]Typename[/b]
+
+    A special operator `typename` returns the name of the type. 
+
+    Example
+    ```luax
+        if typename(s) == "string" then
+            ...
+        end
+    ```
+@end
+
+@article
+    @key=language_cast
+    @title=Operators: Cast
+    @brief=
+    @ingroup=language
+    @transform=yes
+
+    [b]Cast[/b]
+
+    The cast operator converts data from one type to another. The syntax of the operator 
+    is `cast<//target type//>(//expression//)`.
+
+    [b]Cast primitive type to a string[/b]
+
+    Any primitive type can be cased to a string. 
+
+    Numbers are casted by the following rules:
+    - Decimal point character is a `.`.
+    - Negative numbers are in form `-1`.
+    - Floating point numbers with large exponents are converted into a `e` form.
+
+    Booleans are casted as `"true"` and `"false"`
+
+    Datetime values are casted using `yyyy-MM-dd HH:mm:ss.fff` format.
+
+    [b]Cast a string to primitive types[/b]
+
+    A string can be parsed into a primitive type using the `cast` operator. 
+
+    The numbers and booleans are parsed using the rules above. 
+
+    For the date/time additionally the following formats are probed:
+    `yyyy-MM-dd`, `yyyy-MM-dd HH:mm` and `yyyy-MM-dd HH:mm:ss`.
+
+    [b]Cast an instance of one object from one class to another[/b]
+
+    An instance of the object can be cased to its own type or to a type of any of it's parents. You 
+    can cast the object to its type even if it is currently saved into a variable
+    of `object` type. 
+
+    Any class can be cased to `object`. 
+
+    [b]Custom casts[/b]
+
+    You can define a custom cast. To do it, define a class and markup it 
+    with the attribute `@Cast`. Then provide a public static method that 
+    accepts one argument of the type you want to cast from and returns
+    the value of the type to cast to. If such method exists, it will
+    be called when the cast is requested.
+
+    Example: Cast integer to a class
+    ```+luax
+    !@Cast()
+    class x
+        var p : int;
+    end
+
+    class intToArrayCast
+        public static function cast(v : int) : x
+            var r : x;
+            r = new x();
+            r.p = v;
+            return r;
+        end
+    end
+
+        ...
+        var r : x;
+        r = cast<x>(1);
+    ```
+
+    [b]Wrong casts[/b]
+
+    If cast is not possible, for example if the date/time format is wrong or
+    the specified class is not in the inherance chain of the object, the exception
+    is raised. 
+@end
+
+@article
+    @key=language_classes
+    @title=Classes and objects
+    @brief=
+    @ingroup=language
+    @transform=yes
+
+    [b]Classes[/b]
+
+    All the logic in LuaX must be defined in classes. Classes are declaration of types for complex objects that
+    has state (properties) and behavior (methods).
+
+    There are two special classes always defined:
+
+    Class `object` has not properties or methods. Any object can be treated as the instance of a class `object`.
+
+    Class `exception` is used a throwable object or as a parent class for the exceptions in luax code.
+
+    To define a class use keyword `class`.
+
+    Example
+    ```luax
+    class a
+    end
+
+    class b : a
+    end
+    ```
+
+    The example about defines two classes: `a` and `b`. The parent of the class `a` is `object` and the parent of class `b` is
+    class `b`.
+
+    [b]Creating an object[/b]
+
+    To create an instance of the object use the operator `new` followed by the name of the class.
+
+    ```luax
+        var x : a;
+        x = new a();
+    ```
+
+    The example above defines a variable of type `a` and initializes it with the instance of a class `a`.
+
+    When object is created, all properties are initialized to the default value (see [link=language_datatypes]Data types[/link]
+    for details). Also, the //constructor// of the class is called (see below for details about constructors).
+
+    [b]Visibility[/b]
+
+    By default, the properties and methods can be used only be other methods of the same class or classes
+    derived from this class. It means that properties and methods are `private` by default.
+
+    To make a property or method visible to other classes you can declare it `public`.
+    To make a property or method visible to other classes but only among other luax classes, but not
+    to the classes of the target platform, declare it `internal`.
+@end
+
+@article
+    @key=language_properties
+    @title=Properties of classes
+    @brief=
+    @ingroup=language
+    @transform=yes
+
+    Object can keep various data called properties. Properties are similar to variables, but exist as long as
+    the object exists. To declare the property use `var` keyword.
+
+    Example
+    ```luax
+    class a
+        var p : int;
+    end
+    ```
+
+    The example above declares a property `p` of the class `a`. Regular (instance) properties have their own,
+    individual values for each instance of the class. But there also class (static) properties. These
+    properties have the same value for all instances of the class. To declare such property use
+    keyword `static`.
+
+    Example
+    ```luax
+    class a
+        static var p : int;
+    end
+    ```
+
+@end
+
+@article
+    @key=language_methods
+    @title=Methods of classes
+    @brief=
+    @ingroup=language
+    @transform=yes
+
+    [b]Defining Methods[/b]
+
+    Methods defines behavior of the object. To define a method use keyword `function`.
+
+    Example
+    ```luax
+    class a
+        function x(argument1 : int, argument2 : real) : string
+        end
+    end
+    ```
+
+    The example above defines a method named `x` that accepts two arguments - an integer `argument1` and
+    real `argument2` and returns a `string` value.
+
+    If you need to define a //procedure// (an action that returns no value) use keyword `void` as the data type.
+
+    Each method must have an unique name among all methods of the same class.
+
+    If the method does not require the object status, you can declare them `static`. Static methods can access
+    only static properties of the class.
+
+    [b]Overriding the methods[/b]
+
+    You can define the method with the same name as a method in the parent class. In this case, if an instance
+    of your class is created, your implementation of the method will be used even from the methods defined in a
+    parent class or if the object is referenced as the instance of the parent class. In other words, all
+    methods in LuaX are virtual and you can override them.
+
+    Example
+    ```+luax
+    class a
+        public function x() : int
+            return y();
+        end
+
+        public function y() : int
+            return 1;
+        end
+    end
+
+    class b : a
+        -- override!!!
+        public function y() : int
+            return 2;
+        end
+    end
+
+    class test
+        public function factory() : a
+            return new b();
+        end
+
+        public function test() : void
+            -- the code line below will print 2!!!
+            var v : a;
+            v = factory();
+            stdlib.print("" .. v.x());
+        end
+    end
+    ```
+    [b]Constructors[/b]
+
+    You can also define a special method called a //constructor//. This is a `void`, parameterless method
+    with the same name as the name of the class. Constructor is called when a new 
+    instance of the object is created. 
+
+    Example
+    ```+luax
+    class a
+        static var _id : int;
+        -- a serial number of the object
+        var id : int;
+    
+        -- constructor
+        function a() : void
+            _id = id + 1;
+            id = _id; 
+        end
+    end
+    ```
+
+    If the parent class has a constructor, it will be invoked automatically before
+    the code of the this class constructor is invoked. 
+@end
+
+@article
+    @key=language_arrays
+    @title=Arrays
+    @brief=
+    @ingroup=language
+    @transform=yes
+
+    You can declare a single dimenson array of primitive types or objects. It is not possible
+    to create an array of arrays. 
+
+    Arrays are indexed by an integer zero-based index. The first element of the array has index `0`.
+
+    Use `new` operator to create the array. When an array is created, its
+    elements are assigned to the default value.
+
+    Example:
+    ```luax
+        l = new string[32];
+    ```
+
+
+    The elements of the array are accessed using `[]` operator. 
+
+    ```luax
+        l[0] = 123;
+        stdlib.print("" .. l[0]);
+    ```
+
+    To get the length of the array use the property `length`.
+    
+    ```luax
+        if index >= 0 and index < arr.length then
+            -- it is correct index for this array
+        end
+    ```
+
+    [b]Objects as arrays[/b]
+
+    If object defines a pair of public methods get and set, it can be accessed using `[]` operator too. 
+    In this case the key don't have to be an integer value, the object is responsible for the logic.
+
+    ```luax
+    class a
+       public function get(index : string) : datetime
+       end
+
+       public function set(index : string, value : datetime) : void
+       end
+    end
+
+       ...
+       var x : a;
+
+       x["abcd"] = cast<datetime>("2012-05-22");
+       -- the line above will be automatically translated into
+       -- a.set("abcd", cast<datetime>("2012-05-22"));
+    ```
+@end
+
+@article
+    @key=language_assignment
+    @title=Assignment and Call Statement
+    @brief=
+    @ingroup=language
+    @transform=yes
+
+@end
+
+@article
+    @key=language_if
+    @title=if statement
+    @brief=
+    @ingroup=language
+    @transform=yes
+
+@end
+
+@article
+    @key=language_while
+    @title=while and until statements
+    @brief=
+    @ingroup=language
+    @transform=yes
+
+@end
+
+@article
+    @key=language_for
+    @title=for statement
+    @brief=
+    @ingroup=language
+    @transform=yes
+
+@end
+
+@article
+    @key=language_exceptions
+    @title=Exception and throw and try statements
+    @brief=
+    @ingroup=language
+    @transform=yes
+
+
+@end

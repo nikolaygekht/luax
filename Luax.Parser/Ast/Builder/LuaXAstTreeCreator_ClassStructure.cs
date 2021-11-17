@@ -761,6 +761,13 @@ namespace Luax.Parser.Ast.Builder
             if (@class.Methods.Contains(method.Name))
                 throw new LuaXAstGeneratorException(Name, node, $"The method with the name {method.Name} already exists");
 
+            if (!method.Static && method.Name == @class.Name && method.ReturnType.IsVoid() &&
+                 method.Arguments.Count == 0)
+            {
+                method.IsConstructor = true;
+                @class.Constructor = method;
+            }
+
             @class.Methods.Add(method);
         }
     }

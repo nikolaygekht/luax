@@ -62,6 +62,11 @@ namespace Luax.Parser.Ast
         public LuaXVisibility Visibility { get; internal init; }
 
         /// <summary>
+        /// The method is constructor
+        /// </summary>
+        public bool IsConstructor { get; internal set; }
+
+        /// <summary>
         /// The location of the element in the source
         /// </summary>
         public LuaXElementLocation Location { get; internal init; }

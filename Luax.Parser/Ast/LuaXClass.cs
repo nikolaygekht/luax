@@ -33,6 +33,11 @@ namespace Luax.Parser.Ast
         /// </summary>
         public LuaXClass ParentClass { get; internal set; }
 
+        /// <summary>
+        /// The reference to a constructor
+        /// </summary>
+        public LuaXMethod Constructor { get; internal set; }
+
         public LuaXTypeDefinition TypeOf() => new LuaXTypeDefinition() { TypeId = LuaXType.Object, Class = Name };
 
         /// <summary>
