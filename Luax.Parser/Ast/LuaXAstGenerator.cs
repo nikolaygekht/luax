@@ -9,6 +9,8 @@ using Hime.Redist.Parsers;
 using Luax.Parser.Ast.Builder;
 using Luax.Parser.Hime;
 
+#pragma warning disable CA1822 
+
 namespace Luax.Parser.Ast
 {
     /// <summary>

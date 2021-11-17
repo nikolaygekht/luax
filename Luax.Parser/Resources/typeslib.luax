@@ -24,8 +24,8 @@ class exception : object
     public static function create(code : int, message : string) : exception
         var ex : exception;
         ex = new exception();
-        ex.code = codeValue;
-        ex.message = messageText;
+        ex.code = code;
+        ex.message = message;
         return ex;
     end
 end

@@ -84,6 +84,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
 
         private static Encoding GetEncoding(int codePage)
         {
+#pragma warning disable SYSLIB0001 // Obsolete
             if (codePage == 65000)
                 return Encoding.UTF7;
             else if (codePage == 65001)
@@ -92,6 +93,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 return Encoding.ASCII;
             else
                 return Encoding.GetEncoding(codePage);
+#pragma warning restore SYSLIB0001 // Obsolete
         }
 
         //public static extern writeTextToFile(path : string, text : string, codepage : int) : void;

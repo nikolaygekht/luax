@@ -470,20 +470,23 @@ namespace Luax.Parser.Ast.Builder
                 var child1 = child.Children[j];
                 if (child1.Symbol == "DECL_LIST")
                 {
-                    ProcessDeclarationList<LuaXProperty>(child1, factory, p =>
-                    {
-                        if (@class.Properties.Contains(p.Name))
-                            throw new LuaXAstGeneratorException(Name, child, $"The property {p.Name} already exists");
-                        if (@class.Constants.Contains(p.Name))
-                            throw new LuaXAstGeneratorException(Name, child, $"The constant {p.Name} already exists");
-                        if (attributes != null)
-                            ProcessAttributes(attributes.Children, p.Attributes);
-                        @class.Properties.Add(p);
-                    });
+                    ProcessDeclarationList(child1, factory, p =>
+                        ProcessDeclarationInProperty(p, @class, child, attributes));
                 }
                 else if (child1.Symbol != "VAR" && child1.Symbol != "EOS")
                     throw new LuaXAstGeneratorException(Name, child, $"One or more DECL is expected here but found {child1.Symbol}");
             }
+        }
+
+        private void ProcessDeclarationInProperty(LuaXProperty p, LuaXClass @class, IAstNode child, IAstNode attributes)
+        {
+            if (@class.Properties.Contains(p.Name))
+                throw new LuaXAstGeneratorException(Name, child, $"The property {p.Name} already exists");
+            if (@class.Constants.Contains(p.Name))
+                throw new LuaXAstGeneratorException(Name, child, $"The constant {p.Name} already exists");
+            if (attributes != null)
+                ProcessAttributes(attributes.Children, p.Attributes);
+            @class.Properties.Add(p);
         }
 
         /// <summary>
