@@ -241,7 +241,7 @@ namespace Luax.Interpreter.Test
             method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
             method.ReturnType.IsString().Should().BeTrue();
 
-            var resultType = LuaXMethodExecutor.Execute(method, typelib, null, new object[] { arg }, out var r);
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { arg }, out var r);
 
             r.Should().BeOfType<string>();
             r.Should().Be(expectedCode != 0 ? $"{expectedMessage} {expectedCode}" : expectedMessage);

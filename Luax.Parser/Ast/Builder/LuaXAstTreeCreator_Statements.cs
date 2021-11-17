@@ -85,7 +85,7 @@ namespace Luax.Parser.Ast.Builder
             var throwExpr = ProcessExpression(node.Children[1], @class, method);
 
             if (!throwExpr.ReturnType.IsObject() || !Metadata.IsKindOf(throwExpr.ReturnType.Class, "exception"))
-                throw new LuaXAstGeneratorException(Name, node, $"Expression with return type Exception is expected here");
+                throw new LuaXAstGeneratorException(Name, node, "Expression with return type exception is expected here");
 
             var throwStmt = new LuaXThrowStatement(throwExpr, new LuaXElementLocation(Name, node));
 

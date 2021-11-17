@@ -1,0 +1,29 @@
+﻿@DocBrief("This is brief for class 1")
+@DocDescription("This is the first line of the description")
+@DocDescription("This is the second line of the description")
+class class1
+	@DocBrief("This constant brief")
+	const C = 5;	
+
+	@DocBrief("This is property brief")
+	public var a : int;
+
+	internal var b : int;
+
+	private var c : int;
+
+	public static var d : int;
+
+	@DocBrief("This is f1 brief")
+	@DocDescription("This is f1 description")
+	public function f1() : void
+	end
+
+	@DocBrief("This is f2 brief")
+	@DocDescription("This is f2 description")
+	@DocReturn("This is f2 return")
+	@DocParameter("a", "a description")
+	@DocParameter("b", "b description")
+	internal function f2(a : int, b : real) : string
+	end
+end

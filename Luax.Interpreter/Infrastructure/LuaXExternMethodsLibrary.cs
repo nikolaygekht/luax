@@ -73,7 +73,7 @@ namespace Luax.Interpreter.Infrastructure
                     ValidateMethod(method, library, type, attr, out var luaMethod);
 
                     int offset = luaMethod.Static ? 0 : 1;
-                    
+
                     var args = method.GetParameters();
                     for (int i = 0; i < luaMethod.Arguments.Count; i++)
                     {

@@ -15,7 +15,6 @@ using Moq;
 using Xunit;
 
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
-#pragma warning disable S5773 // Types allowed to be deserialized should be restricted
 
 namespace Luax.Parser.Test
 {

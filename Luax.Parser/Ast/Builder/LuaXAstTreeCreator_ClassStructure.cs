@@ -94,7 +94,7 @@ namespace Luax.Parser.Ast.Builder
             }
 
             var @class = new LuaXClass(name, parent ?? "object", new LuaXElementLocation(Name, location));
-            
+
             if (attributes != null)
                 ProcessAttributes(attributes.Children, @class.Attributes);
 
@@ -212,27 +212,18 @@ namespace Luax.Parser.Ast.Builder
 
             var s = astNode.Children[0].Symbol;
             var l = new LuaXElementLocation(Name, astNode);
-            switch (s)
+            return s switch
             {
-                case "INTEGER":
-                    return new LuaXConstant(ProcessIntegerConstant(astNode.Children[0]), l);
-                case "HEX_INTEGER":
-                    return new LuaXConstant(ProcessIntegerConstant(astNode.Children[0]), l);
-                case "STRING":
-                    return new LuaXConstant(ProcessStringConstant(astNode.Children[0]), l);
-                case "BOOLEAN":
-                    return new LuaXConstant(ProcessBooleanConstant(astNode.Children[0]), l);
-                case "NEGATIVE_INTEGER":
-                    return new LuaXConstant(ProcessNegativeIntegerConstant(astNode.Children[0]), l);
-                case "REAL":
-                    return new LuaXConstant(ProcessRealConstant(astNode.Children[0]), l);
-                case "NEGATIVE_REAL":
-                    return new LuaXConstant(ProcessNegativeRealConstant(astNode.Children[0]), l);
-                case "NIL":
-                    return new LuaXConstant(LuaXType.Object, null, l);
-                default:
-                    throw new LuaXAstGeneratorException(Name, astNode, $"Unexpected child symbol {s} is expected in a constant");
-            }
+                "INTEGER" => new LuaXConstant(ProcessIntegerConstant(astNode.Children[0]), l),
+                "HEX_INTEGER" => new LuaXConstant(ProcessIntegerConstant(astNode.Children[0]), l),
+                "STRING" => new LuaXConstant(ProcessStringConstant(astNode.Children[0]), l),
+                "BOOLEAN" => new LuaXConstant(ProcessBooleanConstant(astNode.Children[0]), l),
+                "NEGATIVE_INTEGER" => new LuaXConstant(ProcessNegativeIntegerConstant(astNode.Children[0]), l),
+                "REAL" => new LuaXConstant(ProcessRealConstant(astNode.Children[0]), l),
+                "NEGATIVE_REAL" => new LuaXConstant(ProcessNegativeRealConstant(astNode.Children[0]), l),
+                "NIL" => new LuaXConstant(LuaXType.Object, null, l),
+                _ => throw new LuaXAstGeneratorException(Name, astNode, $"Unexpected child symbol {s} is expected in a constant"),
+            };
         }
 
         /// <summary>
@@ -379,14 +370,26 @@ namespace Luax.Parser.Ast.Builder
 
         public void ProcessConstantDeclarationInClass(IAstNode node, LuaXClass @class)
         {
-            var decl = ProcessConstantDeclaration(node);
-            if (@class.Constants.Contains(decl.Name))
-                throw new LuaXAstGeneratorException(Name, node, "The constant with the name specified is already defined");
+            IAstNode attributes = null;
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                if (node.Children[i].Symbol == "ATTRIBUTES")
+                    attributes = node.Children[i];
+                else if (node.Children[i].Symbol == "CONST_DECLARATION")
+                {
+                    var decl = ProcessConstantDeclaration(node.Children[i]);
+                    if (@class.Constants.Contains(decl.Name))
+                        throw new LuaXAstGeneratorException(Name, node, "The constant with the name specified is already defined");
 
-            if (@class.Properties.Contains(decl.Name))
-                throw new LuaXAstGeneratorException(Name, node, "The variable with the name specified is already defined");
+                    if (@class.Properties.Contains(decl.Name))
+                        throw new LuaXAstGeneratorException(Name, node, "The variable with the name specified is already defined");
 
-            @class.Constants.Add(decl);
+                    if (attributes != null)
+                        ProcessAttributes(attributes.Children, decl.Attributes);
+
+                    @class.Constants.Add(decl);
+                }
+            }
         }
 
         /// <summary>
@@ -404,7 +407,7 @@ namespace Luax.Parser.Ast.Builder
                     ProcessProperty(child, @class);
                 else if (child.Symbol == "FUNCTION_DECLARATION")
                     ProcessFunction(child, @class);
-                else if (child.Symbol == "CONST_DECLARATION")
+                else if (child.Symbol == "CLASS_CONST_DECLARATION")
                     ProcessConstantDeclarationInClass(child, @class);
                 else if (child.Symbol == "EXTERN_DECLARATION")
                     ProcessExtern(child, @class);
@@ -436,12 +439,16 @@ namespace Luax.Parser.Ast.Builder
         {
             bool @static = false;
             LuaXVisibility visibility = LuaXVisibility.Private;
+            IAstNode attributes = null;
 
             for (int i = 0; i < node.Children.Count; i++)
             {
                 var child = node.Children[i];
                 switch (child.Symbol)
                 {
+                    case "ATTRIBUTES":
+                        attributes = child;
+                        break;
                     case "VISIBILITY":
                         visibility = ProcessVisibility(child);
                         break;
@@ -449,15 +456,15 @@ namespace Luax.Parser.Ast.Builder
                         @static = true;
                         break;
                     case "DECLARATION":
-                        ProcessDeclarationInProperty(child, @class, @static, visibility);
+                        ProcessDeclarationInProperty(child, @class, @static, visibility, attributes);
                         break;
                 }
             }
         }
 
-        private void ProcessDeclarationInProperty(IAstNode child, LuaXClass @class, bool @static, LuaXVisibility visibility)
+        private void ProcessDeclarationInProperty(IAstNode child, LuaXClass @class, bool @static, LuaXVisibility visibility, IAstNode attributes)
         {
-            LuaXPropertyFactory factory = new LuaXPropertyFactory(@static, visibility); 
+            LuaXPropertyFactory factory = new LuaXPropertyFactory(@static, visibility);
             for (int j = 0; j < child.Children.Count; j++)
             {
                 var child1 = child.Children[j];
@@ -469,6 +476,8 @@ namespace Luax.Parser.Ast.Builder
                             throw new LuaXAstGeneratorException(Name, child, $"The property {p.Name} already exists");
                         if (@class.Constants.Contains(p.Name))
                             throw new LuaXAstGeneratorException(Name, child, $"The constant {p.Name} already exists");
+                        if (attributes != null)
+                            ProcessAttributes(attributes.Children, p.Attributes);
                         @class.Properties.Add(p);
                     });
                 }

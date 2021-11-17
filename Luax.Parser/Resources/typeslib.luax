@@ -1,19 +1,27 @@
 ﻿-- -------------------------------------------------------
 -- predefined types
 -- -------------------------------------------------------
+@DocBrief("The base class for all exceptions")
 class exception : object
+    @DocBrief("The exception code.")
     private var code : int;
+    @DocBrief("The exception message.")
     private var message : string;
 
+    @DocBrief("Gets the exception message.")
     public function getMessage() : string
         return message;
     end
 
+    @DocBrief("Gets the exception code.")
     public function getCode() : int
         return code;
     end
 
-    public static function create(codeValue: int, messageText: string) : exception
+    @DocBrief("Creates an instance of the exception object.")
+    @DocParameter("code", "The code of the exception")
+    @DocParameter("message", "The exception message")
+    public static function create(code : int, message : string) : exception
         var ex : exception;
         ex = new exception();
         ex.code = codeValue;

@@ -2,5 +2,6 @@
     const i = 10;
     const pi = 3.1415;
     const name = "a";
+    @attr()
     const success = true;
 end

@@ -78,11 +78,11 @@ namespace Luax.Interpreter.Execution
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool IsTheoryArgumentValid(object arg, LuaXTypeDefinition type)
         {
-            return ((arg == null && type.IsString()) ||
+            return (arg == null && type.IsString()) ||
                           (arg is string && type.IsString()) ||
                           (arg is bool && type.IsBoolean()) ||
                           (arg is int && type.IsInteger()) ||
-                          (arg is double && type.IsReal()));
+                          (arg is double && type.IsReal());
         }
 
         private bool RunTheory(LuaXClassInstance @class, LuaXMethod method)

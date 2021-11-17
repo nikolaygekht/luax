@@ -160,7 +160,10 @@ namespace Luax.Parser.Test
             property.LuaType.Array.Should().BeFalse();
             property.Static.Should().BeTrue();
             property.Visibility.Should().Be(LuaXVisibility.Internal);
-            property.Location.Line.Should().Be(6);
+            property.Location.Line.Should().Be(7);
+
+            property.Attributes.Count.Should().Be(1);
+            property.Attributes[0].Name.Should().Be("attr");
         }
 
         [Fact]
@@ -270,6 +273,9 @@ namespace Luax.Parser.Test
             property.Name.Should().Be("success");
             property.Value.ConstantType.Should().Be(LuaXType.Boolean);
             property.Value.Value.Should().Be(true);
+
+            property.Attributes.Should().HaveCount(1);
+            property.Attributes[0].Name.Should().Be("attr");
         }
 
         [Fact]

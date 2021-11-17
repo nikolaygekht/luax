@@ -82,7 +82,6 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return null;
         }
 
-#pragma warning disable SYSLIB0001 // Type or member is obsolete        
         private static Encoding GetEncoding(int codePage)
         {
             if (codePage == 65000)
@@ -94,7 +93,6 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             else
                 return Encoding.GetEncoding(codePage);
         }
-#pragma warning restore SYSLIB0001 // Type or member is obsolete
 
         //public static extern writeTextToFile(path : string, text : string, codepage : int) : void;
         [LuaXExternMethod("io", "writeTextToFile")]

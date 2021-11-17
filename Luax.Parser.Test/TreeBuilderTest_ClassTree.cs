@@ -143,7 +143,7 @@ namespace Luax.Parser.Test
         [Fact]
         public void ParseConstDeclaration_Success()
         {
-            var node = AstNodeExtensions.Parse("[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]");
+            var node = AstNodeExtensions.Parse("[CLASS_CONST_DECLARATION[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]]");
             var processor = new LuaXAstTreeCreator("");
             var @class = new LuaXClass("a");
             processor.ProcessConstantDeclarationInClass(node, @class);
@@ -157,7 +157,7 @@ namespace Luax.Parser.Test
         [Fact]
         public void ParseConstDeclaration_Fail_AlreadyExists()
         {
-            var node = AstNodeExtensions.Parse("[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]");
+            var node = AstNodeExtensions.Parse("[CLASS_CONST_DECLARATION[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]]");
             var processor = new LuaXAstTreeCreator("");
             var @class = new LuaXClass("a");
             @class.Constants.Add(new LuaXConstantVariable() { Name = "y" });
@@ -167,7 +167,7 @@ namespace Luax.Parser.Test
         [Fact]
         public void ParseConstDeclaration_Fail_PropertyExists()
         {
-            var node = AstNodeExtensions.Parse("[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]");
+            var node = AstNodeExtensions.Parse("[CLASS_CONST_DECLARATION[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]]");
             var processor = new LuaXAstTreeCreator("");
             var @class = new LuaXClass("a");
             @class.Properties.Add(new LuaXProperty() { Name = "y" });

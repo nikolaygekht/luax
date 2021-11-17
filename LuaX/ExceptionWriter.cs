@@ -5,7 +5,7 @@ using Luax.Parser.Ast;
 
 namespace LuaX
 {
-    internal static class ExceptionWriter
+    public static class ExceptionWriter
     {
         public static int WriteException(Exception e, Action<string> writerAction)
         {

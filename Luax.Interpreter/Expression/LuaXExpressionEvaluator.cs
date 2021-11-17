@@ -200,7 +200,7 @@ namespace Luax.Interpreter.Expression
                     sign = 1;
             }
             else
-                throw new LuaXExecutionException(expression.Location, $"Unexpected relational operator state");
+                throw new LuaXExecutionException(expression.Location, "Unexpected relational operator state");
 
             return sign;
         }
@@ -208,15 +208,13 @@ namespace Luax.Interpreter.Expression
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static int CompareDate(DateTime d1, DateTime d2)
         {
-            int sign;
             var l = d1.Ticks - d2.Ticks;
             if (l == 0)
-                sign = 0;
+                return 0;
             else if (l < 0)
-                sign = -1;
+                return -1;
             else
-                sign = 1;
-            return sign;
+                return 1;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
