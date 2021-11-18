@@ -579,15 +579,22 @@ end
 -- -----------------------------------------------------------
 @DocBrief("The library of assertions")
 class assert
-   @DocBrief("Asserts when the expresion is not true")
+   @DocBrief("Asserts when the expression is not true")
    @DocParameter("condition", "The boolean condition to check")
    @DocParameter("message", "The message to add to a standard message of the assertion")
    public static extern isTrue(condition : boolean, message : string) : void;
 
-   @DocBrief("Asserts when the expresion is not false")
+   @DocBrief("Asserts when the expression is not false")
    @DocParameter("condition", "The boolean condition to check")
    @DocParameter("message", "The message to add to a standard message of the assertion")
    public static extern isFalse(condition : boolean, message : string) : void;
+
+   @DocBrief("Asserts when two real values are not approximately equals")
+   @DocParameter("value", "The value to check")
+   @DocParameter("expected", "The expected value")
+   @DocParameter("delta", "The acceptable delta between values")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
+   public static extern approximatelyEquals(value : real, expected : real, delta : real, message : string) : void;
 
    @DocBrief("Asserts when the action does not throw an exception")
    @DocParameter("action", "The action object to execute")
