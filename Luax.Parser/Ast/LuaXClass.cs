@@ -109,6 +109,27 @@ namespace Luax.Parser.Ast
             }
         }
 
+        internal bool CheckOnParent(LuaXClass parent)
+        {
+            IClassesContainer currentContainer = OwnerContainer;
+            string name = Name;
+            while (!string.IsNullOrEmpty(name) && name != "object")
+            {
+                if (name.Equals(parent.Name))
+                    return true;
+                currentContainer.Classes.Search(name, out var @class);
+                if (@class == null)
+                {
+                    if (currentContainer.OwnerContainer == null)
+                        return false;
+                    currentContainer = currentContainer.OwnerContainer;
+                    continue;
+                }
+                name = @class.Parent;
+            }
+            return false;
+        }
+
         internal void Pass2(IClassesContainer classesContainer, LuaXAstTreeCreator creator)
         {
             OwnerContainer = classesContainer;
