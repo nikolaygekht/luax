@@ -291,6 +291,14 @@ namespace Luax.Interpreter.Test
         [InlineData("string", "stdlib.substring(\"string\", 2, 2)", "ri", typeof(string))]
         [InlineData("boolean", "stdlib.match(\"string\", \"^[\\\\w]*$\")", true, typeof(bool))]
         [InlineData("boolean", "stdlib.match(\"string\", \"^[\\\\d]*$\")", false, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"string\", \"i\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"string\", \"/i/\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"string\", \"/I/\")", false, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"string\", \"/I/i\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"str\\ning\", \"/^i/\")", false, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"str\\ning\", \"/^i/m\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"str ing\", \"/\\\\si/\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"str\\ning\", \"/\\\\si/s\")", true, typeof(bool))]
         [InlineData("int", "stdlib.unicode(\"s\", 0)", 115, typeof(int))]
         [InlineData("string", "stdlib.char(115)", "s", typeof(string))]
         public void TestStdlib(string @return, string expr, object expectedValue, Type expectedType)
@@ -380,6 +388,7 @@ namespace Luax.Interpreter.Test
         }
     }
 }
+
 
 
 

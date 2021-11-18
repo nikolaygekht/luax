@@ -161,43 +161,23 @@ end
 
 @DocBrief("Regular expression match")
 class match
-    @DocHide()
-    private var text : string;
-    @DocHide()
-    private var success : boolean;
-    @DocHide()
-    private var positions : int[];
-    @DocHide()
-    private var lengths : int[];
-
     @DocBrief("Returns flag indicating whether the match was successful")
-    public function succesful() : boolean
-        return success;
-    end
+    public extern successful() : boolean;
 
     @DocBrief("Returns the number of the captured groups")
-    public function groupsCount() : int
-        if positions == nil then
-            return 0;
-        else
-            return positions.length;
-        end
-    end
+    public extern groupsCount() : int;
 
     @DocBrief("Returns the captured value for the group")
-    public function groupValue(index : int) : string
-        return stdlib.substring(text, positions[index], lengths[index]);
-    end
+    public extern groupValue(index : int) : string;
 
     @DocBrief("Returns the position of the captured value in the text for the group")
-    public function groupPosition(index : int) : string
-        return positions[index];
-    end
+    public extern groupPosition(index : int) : int;
 
     @DocBrief("Returns the length of the captured value")
-    public function groupLength(index : int) : string
-        return lengths[index];
-    end
+    public extern groupLength(index : int) : int;
+
+    @DocBrief("Returns the next match")
+    public extern next() : match;
 end
 
 @DocBrief("Regular expression")

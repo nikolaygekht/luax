@@ -1,0 +1,66 @@
+@TestSuite()
+class regexpTest
+    @Theory()
+    @TheoryData("bc", "abcd", true)
+    @TheoryData("BC", "abcd", false)
+    @TheoryData("/BC/i", "abcd", true)
+    public function MatchByMethod(regex : string, text : string, match : boolean) : void
+        assert.isTrue(match == stdlib.match(text, regex), "");
+    end
+
+    @Theory()
+    @TheoryData("bc", "abcd", true)
+    @TheoryData("BC", "abcd", false)
+    @TheoryData("/BC/i", "abcd", true)
+    public function MatchByClass(regex : string, text : string, match : boolean) : void
+        var r : regexp;
+        r = regexp.create(regex);
+        assert.isTrue(match == r.match(text).successful(), "");
+    end
+
+    @Fact()
+    public function Groups() : void
+        var r : regexp, m : match;
+
+        r = regexp.create("/(\\w+) \\s+ (\\w+) \\s+ (\\w+)/x");
+        m = r.match("abcd ef ijk");
+        assert.isTrue(m.groupValue(1) == "abcd", "group 1");
+        assert.isTrue(m.groupPosition(1) == 0, "group 1 pos");
+        assert.isTrue(m.groupLength(1) == 4, "group 1 len");
+
+        assert.isTrue(m.groupValue(2) == "ef", "group 2");
+        assert.isTrue(m.groupPosition(2) == 5, "group 2 pos");
+        assert.isTrue(m.groupLength(2) == 2, "group 2 len");
+
+        assert.isTrue(m.groupValue(3) == "ijk", "group 3");
+        assert.isTrue(m.groupPosition(3) == 8, "group 3 pos");
+        assert.isTrue(m.groupLength(3) == 3, "group 3 len");
+    end
+
+    @Fact()
+    public function Next() : void
+        var r : regexp, m : match;
+
+        r = regexp.create("\\w+");
+        m = r.match("abcd ef ijk");
+        assert.isTrue(m.successful(), "successful 1");
+        assert.isTrue(m.groupValue(0) == "abcd", "group 1");
+        assert.isTrue(m.groupPosition(0) == 0, "group 1 pos");
+        assert.isTrue(m.groupLength(0) == 4, "group 1 len");
+
+        m = m.next();
+        assert.isTrue(m.successful(), "successful 2");
+        assert.isTrue(m.groupValue(0) == "ef", "group 2");
+        assert.isTrue(m.groupPosition(0) == 5, "group 2 pos");
+        assert.isTrue(m.groupLength(0) == 2, "group 2 len");
+        m = m.next();
+        assert.isTrue(m.successful(), "successful 3");
+        assert.isTrue(m.groupValue(0) == "ijk", "group 3");
+        assert.isTrue(m.groupPosition(0) == 8, "group 3 pos");
+        assert.isTrue(m.groupLength(0) == 3, "group 3 len");
+        m = m.next();
+        assert.isFalse(m.successful(), "successful 3");
+
+
+    end
+end
