@@ -14,6 +14,8 @@ namespace Luax.Parser.Ast.Builder
     {
         public string Name { get; }
 
+        internal bool ClassesPasse2InProgress { get; set; }
+
         public LuaXClassCollection Metadata { get; }
 
         public LuaXAstTreeCreator(string name, LuaXClassCollection metadata = null)
@@ -56,7 +58,7 @@ namespace Luax.Parser.Ast.Builder
         /// <summary>
         /// Processes the class declaration
         /// </summary>
-        /// <param name="classNode"></param>
+        /// <param name="classNode">correspondent AST node</param>
         /// <returns></returns>
         public LuaXClass ProcessClass(IAstNode astNode)
         {
@@ -411,6 +413,13 @@ namespace Luax.Parser.Ast.Builder
                     ProcessConstantDeclarationInClass(child, @class);
                 else if (child.Symbol == "EXTERN_DECLARATION")
                     ProcessExtern(child, @class);
+                else if (child.Symbol == "CLASS_DECLARATION")
+                {
+                    var innerClass = ProcessClass(child);
+                    if (@class.Classes.Contains(innerClass.Name))
+                        throw new LuaXAstGeneratorException(innerClass.Name, node, $"The class with the name {@class.Name} already defined");
+                    @class.Classes.Add(innerClass);
+                }
                 else
                     throw new LuaXAstGeneratorException(Name, node, $"Unexpected symbol {child.Symbol}");
             }

@@ -517,5 +517,23 @@ namespace Luax.Parser.Test
             @throw2.ThrowExpression.As<LuaXStaticCallExpression>().ReturnType.Class.Should().Be("exception");
             @throw2.ThrowExpression.As<LuaXStaticCallExpression>().ToString().Should().Be("call:test::getError()");
         }
+
+        [Fact]
+        public void InnerClassValid()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("InnerClass1");
+            app.Pass2();
+            app.Classes.Search("complexClass", out var @class).Should().BeTrue();
+            @class.Constructor.Should().BeNull();
+            @class.SearchMethod("dummy", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(5);
+            @class.Classes.Should().HaveCount(1);
+            @class.Classes.Search("innerClass", out var innerClass).Should().BeTrue();
+            innerClass.Constructor.Should().NotBeNull();
+            innerClass.SearchMethod("method", out var anotherMethod).Should().BeTrue();
+            anotherMethod.ReturnType.TypeId.Should().Be(LuaXType.Integer);
+            anotherMethod.Statements.Should().HaveCount(1);
+        }
     }
 }

@@ -184,7 +184,7 @@ namespace Luax.Parser.Ast.Builder
                 e5.Arguments.Count == 1 &&
                 e5.ReturnType.IsTheSame(source.ReturnType))
             {
-                Metadata.Search(e5.Object.ReturnType.Class, out var @class1);
+                SearchClassByName(e5.Object.ReturnType.Class, @class, out var @class1);
                 var found = class1.SearchMethod("set", out var @method1);
                 if (!found || method1.Static || method1.Visibility == LuaXVisibility.Private ||
                     !method1.ReturnType.IsVoid() ||

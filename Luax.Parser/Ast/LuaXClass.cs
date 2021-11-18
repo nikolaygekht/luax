@@ -11,7 +11,7 @@ namespace Luax.Parser.Ast
     /// <summary>
     /// LuaX class declaration
     /// </summary>
-    public class LuaXClass : ILuaXNamedObject
+    public class LuaXClass : ILuaXNamedObject, IClassesContainer
     {
         public static LuaXClass Object { get; } = new LuaXClass("object", null, new LuaXElementLocation("internal", new AstNodeWrapper()));
 
@@ -32,6 +32,11 @@ namespace Luax.Parser.Ast
         /// The reference to the parent class
         /// </summary>
         public LuaXClass ParentClass { get; internal set; }
+
+        /// <summary>
+        /// The reference to the owner container
+        /// </summary>
+        public IClassesContainer OwnerContainer { get; set; }
 
         /// <summary>
         /// The reference to a constructor
@@ -61,6 +66,11 @@ namespace Luax.Parser.Ast
         public LuaXMethodCollection Methods { get; } = new LuaXMethodCollection();
 
         /// <summary>
+        /// The collection of classes defined in this class.
+        /// </summary>
+        public LuaXClassCollection Classes { get; } = new LuaXClassCollection();
+
+        /// <summary>
         /// The location of the element in the source
         /// </summary>
         public LuaXElementLocation Location { get; }
@@ -76,23 +86,37 @@ namespace Luax.Parser.Ast
             Location = location;
         }
 
-        private void ValidateParentChain(LuaXApplication application)
+        private void ValidateParentChain(IClassesContainer classesContainer)
         {
             HashSet<string> parents = new HashSet<string>();
+            IClassesContainer currentContainer = classesContainer;
             string name = Name;
             while (!string.IsNullOrEmpty(name) && name != "object")
             {
                 if (parents.Contains(name))
                     throw new LuaXAstGeneratorException(Location, "Class contains itself in the class inheritance chain");
                 parents.Add(name);
-                application.Classes.Search(name, out var @class);
+                currentContainer.Classes.Search(name, out var @class);
+                if (@class == null)
+                {
+                    if(currentContainer.OwnerContainer == null)
+                        throw new LuaXAstGeneratorException(Location, $"Class with name '{name}' is not found");
+                    currentContainer = currentContainer.OwnerContainer;
+                    parents.Clear();
+                    continue;
+                }
                 name = @class.Parent;
             }
         }
 
-        internal void Pass2(LuaXApplication application, LuaXAstTreeCreator creator)
+        internal void Pass2(IClassesContainer classesContainer, LuaXAstTreeCreator creator)
         {
-            ValidateParentChain(application);
+            OwnerContainer = classesContainer;
+            ValidateParentChain(classesContainer);
+
+            // process inner classes
+            foreach (LuaXClass innerClass in Classes)
+                innerClass.Pass2(this, creator);
 
             //process methods
             for (int i = 0; i < Methods.Count; i++)
