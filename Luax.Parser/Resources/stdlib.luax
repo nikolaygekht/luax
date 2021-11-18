@@ -1,60 +1,143 @@
 ﻿-- -------------------------------------------------------
 -- standard library expected from the target platform
 -- -------------------------------------------------------
+@DocBrief("The library of standard math, string and date functions")
 class stdlib
     -- -------------------------------------------------------
     -- string functions
     -- -------------------------------------------------------
+    @DocBrief("Returns the length of the string")
     public static extern len(s : string) : int;
-    public static extern indexOf(s : string, sub:string) : int;
+    
+    @DocBrief("Finds a substring in a string")
+    public static extern indexOf(s : string, sub:string, caseSenstitive : boolean) : int;
+    
+    @DocBrief("Returns a left part of the string")
     public static extern left(s : string, length : int) : string;
+    
+    @DocBrief("Trims white space from the both sides of the string")
     public static extern trim(s : string) : string;
+    
+    @DocBrief("Trims white space from the right side of the string")
+    public static extern rtrim(s : string) : string;
+    
+    @DocBrief("Trims white space from the left side of the string")
+    public static extern ltrim(s : string) : string;
+    
+    @DocBrief("Returns the right part of the string")
     public static extern right(s : string, length : int) : string;
+    
+    @DocBrief("Returns a substring")
     public static extern substring(s : string, from : int, length : int) : string;
+    
+    @DocBrief("Checks whether the string matches the specified regular expression")
     public static extern match(s : string, re : string) : boolean;
-    public static extern parse(s : string, re : string) : string[];
-    public static extern unicode(s : string) : int;
+    
+    @DocBrief("Returns an unicode character by the position specified")
+    public static extern unicode(s : string, position : int) : int;
+    
+    @DocBrief("Creates a string by unicode character")
     public static extern char(unicode : int) : string;
 
     -- -------------------------------------------------------
     -- integer functions
     -- -------------------------------------------------------
+    @DocBrief("Returns the absolute value of an integer value")
     public static extern iabs(x : int) : int;
+    @DocBrief("Returns the sign of an integer value")
+    @DocDescription("The function returns `1` for positive numbers, `-1` for negative numbers and `0` if parameter is zero")
     public static extern isgn(x : int) : int;
 
     -- -------------------------------------------------------
     -- real functions
     -- -------------------------------------------------------
+    @DocBrief("Pi number")
+    const PI = 3.141592653589793;
+    @DocBrief("Euler constant")
+    const E = 2.718281828459045;
+
+    @DocBrief("Returns the absolute value of a real value")
     public static extern abs(x : real) : real;
+    
+    @DocBrief("Returns the sign of a real value")
+    @DocDescription("The function returns `1` for positive numbers, `-1` for negative numbers and `0` if parameter is zero")
     public static extern sgn(x : real) : int;
+    
+    @DocBrief("Returns sine value")
+    @DocParameter("x", "The value in radians")
     public static extern sin(x : real) : real;
+    
+    @DocBrief("Returns cosine value")
+    @DocParameter("x", "The value in radians")
     public static extern cos(x : real) : real;
+    
+    @DocBrief("Returns tangent value")
+    @DocParameter("x", "The value in radians")
     public static extern tan(x : real) : real;
+    
+    @DocBrief("Returns arcsine value")
+    @DocReturn("The function returns the value in radians")
     public static extern asin(x : real) : real;
+    
+    @DocBrief("Returns arccosine value")
+    @DocReturn("The function returns the value in radians")
     public static extern acos(x : real) : real;
+    
+    @DocBrief("Returns arctangent value")
+    @DocReturn("The function returns the value in radians")
     public static extern atan(x : real) : real;
-    public static extern atan2(x : real, y : real) : real;
+    
+    @DocBrief("Returns arctangent value by cartesian coordinates")
+    @DocReturn("The function returns the value in radians")
+    public static extern atan2(y : real, x : real) : real;
+    
+    @DocBrief("Returns a square root of the value")
     public static extern sqrt(x : real) : real;
-    public static extern ceil(x : real, digits : int) : real;
-    public static extern floor(x : real, digits : int) : real;
+    
+    @DocBrief("Returns the smallest integral value that is greater than or equal to the specified decimal number.")
+    public static extern ceil(x : real) : real;
+    
+    @DocBrief("Returns the largest integral value less than or equal to the specified decimal number.")
+    public static extern floor(x : real) : real;
+    
+    @DocBrief("Rounds the number to the specified number of digits")
     public static extern round(x : real, digits : int) : real;
+
+    @DocBrief("Returns the natural logarithm of ")
+    public static extern log(x : real) : real;
 
     -- ---------------------------------------------------------
     -- date/time function
     -- ---------------------------------------------------------
+    @DocBrief("Creates a date")
     public static extern mkdate(year : int, month : int, day : int) : datetime;
+    @DocBrief("Creates a date and time")
     public static extern mkdatetime(year : int, month : int, day : int, hour : int, minute : int, second : int, milliseconds : int) : datetime;
+    @DocBrief("Returns the day of month of the date")
     public static extern day(x : datetime) : int;
+    @DocBrief("Returns the day of week of the date")
+    @DocDescription("The week day numeration starts with Sunday. Sunday is `0`, Monday `1` and so on to Saturday which is `6`")
     public static extern dayOfWeek(x : datetime) : int;
+    @DocBrief("Returns the month number")
+    @DocDescription("The January is `1` and so on to December which is `12`")
     public static extern month(x : datetime) : int;
+    @DocBrief("Returns the year")
     public static extern year(x : datetime) : int;
+    @DocBrief("Checks whether the date belongs to a leap year")
     public static extern leapYear(x : datetime) : boolean;
+    @DocBrief("Returns the hour")
     public static extern hour(x : datetime) : int;
+    @DocBrief("Returns the minute")
     public static extern minute(x : datetime) : int;
+    @DocBrief("Returns the second")
     public static extern second(x : datetime) : int;
+    @DocBrief("Returns the seconds with fractions of seconds")
     public static extern seconds(x : datetime) : real;
+    @DocBrief("Returns a millisecond")
     public static extern millisecond(x : datetime) : int;
+    @DocBrief("Returns the current local time")
     public static extern nowlocal() : datetime;
+    @DocBrief("Returns the current UTC time")
     public static extern nowutc() : datetime;
 
     -- JDN
@@ -62,175 +145,441 @@ class stdlib
     -- The integer part is Julian day number
     -- https://en.wikipedia.org/wiki/Julian_day#Converting_Gregorian_calendar_date_to_Julian_Day_Number
     -- The fractional part is the part of the day (hour * 3600 + minute * 60 + seconds) / 86400.0
+    @DocBrief("Converts the datetime to a Julian day number")
+    @DocDescription("The integer part of the returned value is a [eurl=https://en.wikipedia.org/wiki/Julian_day#Converting_Gregorian_calendar_date_to_Julian_Day_Number]julian day number[/eurl]")
+    @DocDescription("The fractinal part of the returned value is a time as a part of the day. The value is calculated as `(hour * 3600 + minute * 60 + seconds) / 86400.0`")
     public static extern toJdn(x : datetime) : real;
+
+    @DocBrief("Converts the Julia day number to a day")
+    @DocDescription("The integer part of the parameter value is a [eurl=https://en.wikipedia.org/wiki/Julian_day#Converting_Gregorian_calendar_date_to_Julian_Day_Number]julian day number[/eurl]")
+    @DocDescription("The fractinal part of the parameter value is a time as a part of the day. The value is calculated as `(hour * 3600 + minute * 60 + seconds) / 86400.0`")
     public static extern fromJdn(x : real) : datetime;
 
+    @DocBrief("Prints the string specified to the default output")
     public static extern print(x : string) : void;
+end
+
+@DocBrief("Regular expression match")
+class match
+    @DocHide()
+    private var text : string;
+    @DocHide()
+    private var success : boolean;
+    @DocHide()
+    private var positions : int[];
+    @DocHide()
+    private var lengths : int[];
+
+    @DocBrief("Returns flag indicating whether the match was successful")
+    public function succesful() : boolean
+        return success;
+    end
+
+    @DocBrief("Returns the number of the captured groups")
+    public function groupsCount() : int
+        if positions == nil then
+            return 0;
+        else
+            return positions.length;
+        end
+    end
+
+    @DocBrief("Returns the captured value for the group")
+    public function groupValue(index : int) : string
+        return stdlib.substring(text, positions[index], lengths[index]);
+    end
+
+    @DocBrief("Returns the position of the captured value in the text for the group")
+    public function groupPosition(index : int) : string
+        return positions[index];
+    end
+
+    @DocBrief("Returns the length of the captured value")
+    public function groupLength(index : int) : string
+        return lengths[index];
+    end
+end
+
+@DocBrief("Regular expression")
+class regexp
+    @DocBrief("Creates a new regular expression")
+    public static extern create(expression : string) : regexp;
+
+    @DocBrief("Matches the text and returns the matches")
+    public extern match(text : string) : match;
 end
 
 -- -------------------------------------------------------
 -- Filesystem functions
 -- -------------------------------------------------------
+@DocBrief("The library of filesystem functions")
 class io
+    @DocBrief("Checks whether a file or a directory exists")
     public static extern exists(filename : string) : boolean;
+    
+    @DocBrief("Returns the size of the file specified")
     public static extern size(filename : string) : int;
+    
+    @DocBrief("Checks whether the specified path points at a folder")
     public static extern isFolder(filename : string) : boolean;
+    
+    @DocBrief("Checks whether the specified path points at a file")
     public static extern isFile(filename : string) : boolean;
+
+    @DocBrief("Returns the files in the folder specified")
+    @DocDescription("The names of the files will include the name of the folder")
     public static extern files(path : string) : string[];
+    
+    @DocBrief("Returns the sub-folders in the folder specified")
+    @DocDescription("The names of the folders will include the name of the parent folder")
     public static extern folders(path : string) : string[];
+
+    @DocBrief("Returns the file or a the folder specified")
+    @DocDescription("If a folder name is specified, all contained files and subfolders will be also removed")
     public static extern delete(path : string) : void;
+
+    @DocBrief("Writes text to the file")
     public static extern writeTextToFile(path : string, text : string, codepage : int) : void;
+    
+    @DocBrief("Reads the whole file as a text")
     public static extern readTextFromFile(path : string, codepage : int) : string;
+
+
+    @DocBrief("Returns the path to the system temporary folder")
     public static extern tempFolder() : string;
+    
+    @DocBrief("Combines two paths")
     public static extern combinePath(p1 : string, p2 : string) : string;
+
+    @DocBrief("Converts a relative path to an absolute path")
     public static extern fullPath(p1 : string) : string;
-    public static extern currentDirectory() : string;
+
+    @DocBrief("Returns the full path to the current working folder")
+    public static extern currentFolder() : string;
+
+    @DocBrief("Creates a new folder.")
+    @DocDescription("The method creates all non-existing folder in the path specified")
     public static extern createFolder(name : string) : void;
 
-    -- open modes
-    const M_OPEN = 1;    -- open existing file
-    const M_CREATE = 2;  -- create if not exist
+    @DocBrief("File open mode - open file.")
+    const M_OPEN = 1;
+    @DocBrief("File open mode - create file if not exists.")
+    const M_CREATE = 2;
+    @DocBrief("File open mode - open file for reading.")
     const M_READ = 16;
+    @DocBrief("File open mode - open file for writing.")
     const M_WRITE = 32;
+    @DocBrief("File open mode - open file for reading and writing.")
     const M_READWRITE = 48;
+    @DocBrief("File open mode - open file allow sharing it for reading.")
     const M_SHARE_READ = 64;
+    @DocBrief("File open mode - open file allow sharing it for writing.")
     const M_SHARE_WRITE = 128;
+    @DocBrief("File open mode - open file allow sharing it for both reading and writing.")
     const M_SHARE = 192;
+
+    @DocBrief("Codepage identifier: ANSI codepage")
     const CP_ANSI = 437;
+    @DocBrief("Codepage identifier: UTF-7 codepage")
     const CP_UTF7 = 65000;
+    @DocBrief("Codepage identifier: UTF-8 codepage")
     const CP_UTF8 = 65001;
+
+    @DocBrief("Opens a file")
+    @DocParameter("filename", "The name of the file to be opened")
+    @DocParameter("mode", "The combination of the constants that defines mode of the file. See for `M_` constants of the class. The modes may be concatenated using `+` operator.")
+    @DocParameter("codepage", "The codepage to be used when text is written or read from the file. See for `CP_` constants of the class")
     public static extern open(filename : string, mode : int, codepage : int) : file;
 end
 
 -- -------------------------------------------------------
 -- Binary buffer
 -- -------------------------------------------------------
+@DocBrief("The buffer of bytes")
 class buffer
+    @DocBrief("Returns the length of the buffer")
     public extern length() : int;
+
+    @DocBrief("Gets the byte value at the index specified")
     public extern get(index : int) : int;
+
+    @DocBrief("Sets the byte value at the index specified")
     public extern set(index : int, value : int) : void;
+
+    @DocBrief("Creates a new buffer of the specified length")
+    @DocDescription("The new buffer is initialized with `0` values")
     public static extern create(length : int) : buffer;
 end
 
 -- -------------------------------------------------------
 -- File i/o
 -- -------------------------------------------------------
+@DocBrief("The read/write operations for a file")
 class file
+    @DocBrief("Returns the length of the file")
     public extern size() : int;
+
+    @DocBrief("Returns the current read/write pointer position")
     public extern position() : int;
+
+    @DocBrief("Sets the read/write pointer position")
     public extern seek(position : int) : void;
+
+    @DocBrief("Reads a line of text")
     public extern readLine() : string;
+
+    @DocBrief("Reads one byte")
     public extern readByte() : int;
+
+    @DocBrief("Reads a buffer of the specified length")
     public extern readBuffer(length : int) : buffer;
+
+    @DocBrief("Writes a line of text")
     public extern writeLine(v : string) : void;
+
+    @DocBrief("Writers a byte")
     public extern writeByte(v : int) : void;
+    
+    @DocBrief("Writes a buffer")
+    @DocParameter("v", "The buffer to write")
+    @DocParameter("offset", "The offset of the piece of the buffer to write")
+    @DocParameter("length", "The length of the piece of the buffer to write")
     public extern writeBuffer(v : buffer, offset : int, length : int) : void;
+    
+    @DocBrief("Closes the file and frees all associated resources")
     public extern close() : void;
+
+    @DocBrief("Lock a portion of the file")
+    @DocParameter("offset", "The position of the file piece to be locked")
+    @DocParameter("length", "The length of the file piece to be locked")
+    public extern lock(offset : int, length : int) : void;
+
+    @DocBrief("Lock a portion of the file")
+    @DocParameter("offset", "The position of the file piece to be locked")
+    @DocParameter("length", "The length of the file piece to be locked")
+    public extern unlock(offset : int, length : int) : void;
 end
 
 -- -------------------------------------------------------
 -- CSV file parser
 -- -------------------------------------------------------
+@DocBrief("The parser for CSV (comma-separated values) text format")
 class csvParser
+    @DocBrief("Sets value separator")
+    @DocDescription("The default separator is comma (`\",\"`)")
     public extern setSeparator(separator : string) : void;
+    @DocBrief("Gets value separator")
     public extern getSeparator() : string;
 
+    @DocBrief("Sets the flag indicating that string values allowed")
+    @DocDescription("By default the strings aren't enabled")
     public extern setAllowStrings(flag : boolean) : void;
+    @DocBrief("Gets the flag indicating that string values allowed")
     public extern getAllowString() : boolean;
 
+    @DocBrief("Sets the flag indicating that comments are allowed")
+    @DocDescription("By default the comments aren't enabled")
     public extern setAllowComments(flag : boolean) : void;
+    @DocBrief("Gets the flag indicating that comments are allowed")
     public extern getAllowComments() : boolean;
+
+    @DocBrief("Sets the character(s) used to start the comment")
+    @DocDescription("By default the comments prefix is `\"#\"`")
     public extern setCommentPrefix(commentPrefix : string) : void;
+    @DocBrief("Gets the character(s) used to start the comment")
     public extern getCommentPrefix() : string;
 
+    @DocBrief("Splits the line of the text into values.")
+    @DocDescription("If line is a comment a `nil` value is returned")
     public extern splitLine(line : string) : string[];
-    public static extern create() : csvParser;
+
+    @DocBrief("Constructor")
+    public extern csvParser() : void;
 end
 
 -- -------------------------------------------------------
 -- XML node
 -- -------------------------------------------------------
+@DocBrief("A node of an XML document")
 class xmlNode
-    -- Get node type
-    -- node could be element, text, comment, cdata, attribute
+    const ELEMENT = "element";
+    const TEXT = "text";
+    const COMMENT = "comment";
+    const CDATA = "cdata";
+    const ATTRIBUTE = "attribute";
+
+    @DocBrief("Returns the type of the node")
+    @DocReturn("The return value could be `ELEMENT`, `TEXT`, `COMMENT`, `CDATA` or `ATTRIBUTE`")
     public extern getType() : string;
+
+    @DocBrief("Returns the name of the node")
+    @DocDescription("The name is returned only for `ELEMENT` and `ATTRIBUTE` nodes")
     public extern getName() : string;
+
+    @DocBrief("Returns the value of the node")
     public extern getValue() : string;
+
+    @DocBrief("Returns the number of children nodes")
     public extern getChildrenCount() : int;
+
+    @DocBrief("Returns the child node by its index")
     public extern getChild(index : int) : xmlNode;
 end
 
 -- -------------------------------------------------------
 -- XML parser
 -- -------------------------------------------------------
+@DocBrief("The parser for XML documents")
 class xmlParser
+    @DocBrief("Parses the XML and returns the root node of the document")
     public extern parse(xml : string) : xmlNode;
-    public static extern create() : xmlParser;
+
+    @DocBrief("Constructor")
+    public extern xmlParser() : void;
 end
 
 -- -------------------------------------------------------
 -- object list
 -- -------------------------------------------------------
+@DocBrief("The list of objects")
 class list
+    @DocBrief("Returns the number of the elements in the collection")
     public extern length() : int;
+
+    @DocBrief("Gets the element by the index specified")
     public extern get(index : int) : object;
+
+    @DocBrief("Sets the element by the index specified")
     public extern set(index : int, value : object) : void;
+
+    @DocBrief("Adds a new element at the end of the list")
     public extern add(value : object) : void;
+
+    @DocBrief("Adds a new element at the specified position in the list")
     public extern insert(index : int, value : object) : void;
+
+    @DocBrief("Removes the element at the specified position")
     public extern remove(index : int) : void;
+
+    @DocBrief("Removes all elements from the collection")
     public extern clear() : void;
+
+    @DocBrief("Saves the list into an array of objects")
     public extern toArray() : object[];
+
+    @DocBrief("The constructor")
     public extern list() : void;
+
+    @DocBrief("Creates a new list and initializes it with the specified array of object")
     public static extern create(initial : object[]) : list;
 end
 
 -- ----------------------------------------------------------
 -- int -> object map
 -- ----------------------------------------------------------
+@DocBrief("The map of objects with an integer key")
 class int_map
+    @DocBrief("Returns the number of the elements in the collection")
     public extern length() : int;
+
+    @DocBrief("Checks whether the map contains the key specified")
     public extern contains(key : int) : boolean;
+
+    @DocBrief("Returns an element by the key")
     public extern get(key : int) : object;
+
+    @DocBrief("Adds a new element or replaces an existing by the key")
     public extern set(key : int, value : object) : void;
+
+    @DocBrief("Removes the element by the key")
     public extern remove(key : int) : void;
+
+    @DocBrief("Returns all keys in the map")
     public extern keys() : int[];
+
+    @DocBrief("Removes all elements from the collection")
     public extern clear() : void;
+
+    @DocBrief("The constructor")
+    public extern int_map() : void;
 end
 
 -- ----------------------------------------------------------
 -- string -> object map
 -- ----------------------------------------------------------
+@DocBrief("The map of objects with an string key")
 class string_map
+    @DocBrief("Returns the number of the elements in the collection")
     public extern length() : int;
+
+    @DocBrief("Checks whether the map contains the key specified")
     public extern contains(key : string) : boolean;
+
+    @DocBrief("Returns an element by the key")
     public extern get(key : string) : object;
+
+    @DocBrief("Adds a new element or replaces an existing by the key")
     public extern set(key : string, value : object) : void;
+
+    @DocBrief("Removes the element by the key")
     public extern remove(key : string) : void;
+
+    @DocBrief("Returns all keys in the map")
     public extern keys() : string[];
+
+    @DocBrief("Removes all elements from the collection")
     public extern clear() : void;
+
+    @DocBrief("The constructor")
+    public extern string_map() : void;
 end
 
 -- -----------------------------------------------------------
 -- Queue
 -- -----------------------------------------------------------
+@DocBrief("The queue of objects")
 class queue
+    @DocBrief("Returns the number of the elements in the collection")
     public extern length() : int;
+
+    @DocBrief("Enqueues the object")
     public extern enqueue(value : object) : void;
+
+    @DocBrief("Returns the element on the top of the queue without removing")
     public extern peek() : object;
+
+    @DocBrief("Dequeues the object")
     public extern dequeue() : object;
+
+    @DocBrief("Removes all elements from the collection")
     public extern clear() : void;
+
+    @DocBrief("The constructor")
     public extern queue() : void;
 end
 
 -- -----------------------------------------------------------
 -- Stack
 -- -----------------------------------------------------------
+@DocBrief("The stack of objects")
 class stack
+
+    @DocBrief("Returns the number of the elements in the collection")
     public extern length() : int;
+
+    @DocBrief("Pushes an object into stack")
     public extern push(value : object) : void;
+
+    @DocBrief("Returns the object on the top of the stack without removing")
     public extern peek() : object;
+
+    @DocBrief("Pops the object on the top of the stack")
     public extern pop() : object;
+
+    @DocBrief("Removes all elements from the collection")
     public extern clear() : void;
+
+    @DocBrief("The constructor")
     public extern stack() : void;
 end
 
@@ -238,7 +587,9 @@ end
 -- action class
 -- ------------------------------------------------------------
 @Interface()
+@DocBrief("The interface to an action")
 class action
+    @DocBrief("The action method to be invoked")
     public function invoke() : void
     end
 end
@@ -246,10 +597,25 @@ end
 -- -----------------------------------------------------------
 -- assertion class
 -- -----------------------------------------------------------
+@DocBrief("The library of assertions")
 class assert
+   @DocBrief("Asserts when the expresion is not true")
+   @DocParameter("condition", "The boolean condition to check")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
    public static extern isTrue(condition : boolean, message : string) : void;
+
+   @DocBrief("Asserts when the expresion is not false")
+   @DocParameter("condition", "The boolean condition to check")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
    public static extern isFalse(condition : boolean, message : string) : void;
 
+   @DocBrief("Asserts when the action does not throw an exception")
+   @DocParameter("action", "The action object to execute")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
    public static extern throws(action : action, message : string) : void;
+
+   @DocBrief("Asserts when the action throws an exception")
+   @DocParameter("action", "The action object to execute")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
    public static extern doesNotThrow(action : action, message : string) : void;
 end

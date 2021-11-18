@@ -7,6 +7,7 @@
   <dg:file name="src/index.ds" encoding="utf-8" />
   <dg:file name="src/language.ds" encoding="utf-8" />
   <dg:file name="src/runtime.ds" encoding="utf-8" />
+  <dg:file name="src/stdlib.ds" encoding="utf-8" />
  </dg:source>
  <dg:output template="%docgen%/template/html/main.xsl" file="dst/null-file" encoding="utf-8">
   <dg:define name="text-language" value="en" />

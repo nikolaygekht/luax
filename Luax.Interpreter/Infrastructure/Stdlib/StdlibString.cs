@@ -16,9 +16,9 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
 
         //public static extern indexOf(s : string, sub:string) : int;
         [LuaXExternMethod("stdlib", "indexOf")]
-        public static object Extern_indexOf(string s, string sub)
+        public static object Extern_indexOf(string s, string sub, bool caseInsensitive)
         {
-            return s.IndexOf(sub, StringComparison.Ordinal);
+            return s.IndexOf(sub, caseInsensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
         }
 
         //public static extern left(s : string, length : int) : string;
@@ -57,25 +57,11 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return m.Success;
         }
 
-        //public static extern parse(s : string, re : string) : string[];
-        [LuaXExternMethod("stdlib", "parse")]
-        public static object Extern_parse(string s, string re)
-        {
-            var matchCollection = Regex.Matches(s, re);
-            var result = new string[matchCollection.Count];
-            var i = 0;
-            foreach (Match m in matchCollection)
-            {
-                result[i++] = m.Value;
-            }
-            return result;
-        }
-
         //public static extern unicode(s : string) : int;
         [LuaXExternMethod("stdlib", "unicode")]
-        public static object Extern_unicode(string s)
+        public static object Extern_unicode(string s, int index)
         {
-            return ((int)s[0]) & 0xffff;
+            return ((int)s[index]) & 0xffff;
         }
 
         //public static extern char(unicode : int) : string;
