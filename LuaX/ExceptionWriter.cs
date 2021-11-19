@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using Luax.Interpreter;
 using Luax.Interpreter.Infrastructure.Stdlib;
 using Luax.Parser.Ast;
@@ -23,14 +24,33 @@ namespace LuaX
             }
             else if (e is LuaXExecutionException executionError)
             {
-                writerAction($"{executionError.Locations[0].Source}({executionError.Locations[0].Line},{executionError.Locations[0].Column}) - {executionError.Message}");
-                for (int i = 1; i < executionError.Locations.Count; i++)
-                    writerAction($"   called from {executionError.Locations[i].Source}({executionError.Locations[i].Line},{executionError.Locations[i].Column})");
+                writerAction($"{nameof(LuaXExecutionException)}: {executionError.Message}.{(executionError.Properties["code"] != null ? $" Code: {executionError.Properties["code"].Value}." : "")}");
+                foreach (var stackFrame in executionError.LuaXStackTrace)
+                    writerAction($"\tat {BuildMethodSignature(stackFrame.CallSite)} in {stackFrame.Location.Source}({stackFrame.Location.Line},{stackFrame.Location.Column})");
+
                 return -4;
             }
             writerAction("Unexpected exception:");
             writerAction(e.ToString());
             return -5;
+        }
+
+        private static string BuildMethodSignature(LuaXMethod method)
+        {
+            var sb = new StringBuilder();
+            sb.Append($"{method.Class.Name}.{method.Name}");
+            sb.Append("(");
+
+            for (int i = 0; i < method.Arguments.Count; i++)
+            {
+                if (i > 0)
+                    sb.Append(", ");
+                sb.Append($"{method.Arguments[i].Name} : {(method.Arguments[i].LuaType.IsObject() ? method.Arguments[i].LuaType.Class : method.Arguments[i].LuaType.ToString())}");
+            }
+
+            sb.Append(")");
+
+            return sb.ToString();
         }
     }
 }

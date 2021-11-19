@@ -85,8 +85,8 @@ namespace Luax.Interpreter.Test
             app.Pass2();
             var typelib = new LuaXTypesLibrary(app);
 
-            typelib.SearchClass("program", out var program).Should().BeTrue();
-            program.SearchMethod("main", null, out var method).Should().BeTrue();
+            typelib.SearchClass("Program", out var program).Should().BeTrue();
+            program.SearchMethod("Main", null, out var method).Should().BeTrue();
             method.Static.Should().BeTrue();
             method.Arguments.Should().BeEmpty();
 
@@ -99,16 +99,26 @@ namespace Luax.Interpreter.Test
             {
                 e.InnerException.Should().NotBeNull();
                 e.InnerException.Should().BeOfType<LuaXAssertionException>();
-                e.Locations.Should().HaveCount(5);
-                e.Locations[0].Source.Should().Be("stdlib.luax");
-                e.Locations[1].Source.Should().Be("ExceptionStackTraceTest");
-                e.Locations[1].Line.Should().Be(15);
-                e.Locations[2].Source.Should().Be("ExceptionStackTraceTest");
-                e.Locations[2].Line.Should().Be(11);
-                e.Locations[3].Source.Should().Be("ExceptionStackTraceTest");
-                e.Locations[3].Line.Should().Be(7);
-                e.Locations[4].Source.Should().Be("ExceptionStackTraceTest");
-                e.Locations[4].Line.Should().Be(3);
+                e.LuaXStackTrace.Should().HaveCount(5);
+                e.LuaXStackTrace[0].Location.Source.Should().Be("stdlib.luax");
+                e.LuaXStackTrace[0].CallSite.Class.Name.Should().Be("assert");
+                e.LuaXStackTrace[0].CallSite.Name.Should().Be("isTrue");
+                e.LuaXStackTrace[1].Location.Source.Should().Be("ExceptionStackTraceTest");
+                e.LuaXStackTrace[1].Location.Line.Should().Be(15);
+                e.LuaXStackTrace[1].CallSite.Class.Name.Should().Be("Program");
+                e.LuaXStackTrace[1].CallSite.Name.Should().Be("z");
+                e.LuaXStackTrace[2].Location.Source.Should().Be("ExceptionStackTraceTest");
+                e.LuaXStackTrace[2].Location.Line.Should().Be(11);
+                e.LuaXStackTrace[2].CallSite.Class.Name.Should().Be("Program");
+                e.LuaXStackTrace[2].CallSite.Name.Should().Be("y");
+                e.LuaXStackTrace[3].Location.Source.Should().Be("ExceptionStackTraceTest");
+                e.LuaXStackTrace[3].Location.Line.Should().Be(7);
+                e.LuaXStackTrace[3].CallSite.Class.Name.Should().Be("Program");
+                e.LuaXStackTrace[3].CallSite.Name.Should().Be("x");
+                e.LuaXStackTrace[4].Location.Source.Should().Be("ExceptionStackTraceTest");
+                e.LuaXStackTrace[4].Location.Line.Should().Be(3);
+                e.LuaXStackTrace[4].CallSite.Class.Name.Should().Be("Program");
+                e.LuaXStackTrace[4].CallSite.Name.Should().Be("Main");
                 thrown = true;
             }
             thrown.Should().BeTrue();
