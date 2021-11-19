@@ -8,6 +8,8 @@ end
 
 @TestSuite()
 class expressionTest
+    const EPS = 1.0e-14;
+
     @Fact()
     public function typeName() : void
         assert.isTrue(typename(1) == "int", "int");
@@ -106,12 +108,12 @@ class expressionTest
         assert.isTrue(-1 + -1 == -2, "int2");
         assert.isTrue(1 + -1 == 0, "int3");
 
-        assert.isTrue(near(1.1 + 1.0, 2.1), "real1");
-        assert.isTrue(near(-1.0 + -1.1, -2.1), "real2");
-        assert.isTrue(near(1.0 + -1.1, -0.1), "real3");
+        assert.approximatelyEquals(1.1 + 1.0, 2.1, EPS, "real1");
+        assert.approximatelyEquals(-1.0 + -1.1, -2.1, EPS, "real2");
+        assert.approximatelyEquals(1.0 + -1.1, -0.1, EPS, "real3");
 
-        assert.isTrue(near(1.1 + 1, 2.1), "mix2");
-        assert.isTrue(near(1 + 1.1, 2.1), "mix1");
+        assert.approximatelyEquals(1.1 + 1, 2.1, EPS, "mix2");
+        assert.approximatelyEquals(1 + 1.1, 2.1, EPS, "mix1");
     end
 
     @Fact()
@@ -120,18 +122,18 @@ class expressionTest
         assert.isTrue(2 - -1 == 3, "int2");
         assert.isTrue(-2 - 1 == -3, "int3");
 
-        assert.isTrue(near(2.0 - 1.1, 0.9), "real1");
-        assert.isTrue(near(2.0 - -1.1, 3.1), "real2");
-        assert.isTrue(near(-2.0 - 1.1, -3.1), "real3");
+        assert.approximatelyEquals(2.0 - 1.1, 0.9, EPS, "real1");
+        assert.approximatelyEquals(2.0 - -1.1, 3.1, EPS, "real2");
+        assert.approximatelyEquals(-2.0 - 1.1, -3.1, EPS, "real3");
 
-        assert.isTrue(near(2.1 - 1, 1.1), "mix1");
-        assert.isTrue(near(2 - 1.1, 0.9), "mix1");
+        assert.approximatelyEquals(2.1 - 1, 1.1, EPS, "mix1");
+        assert.approximatelyEquals(2 - 1.1, 0.9, EPS, "mix1");
 
     end
 
     public function negate() : void
         assert.isTrue(-3 == 0 - 3, "int");
-        assert.isTrue(near(-3.1, 0.0 - 3.1), "real");
+        assert.approximatelyEquals(-3.1, 0.0 - 3.1, EPS, "real");
     end
 
     @Fact()
@@ -140,14 +142,14 @@ class expressionTest
         assert.isTrue(1 * 2 == 2, "int2");
         assert.isTrue(5 * 7 == 35, "int3");
 
-        assert.isTrue(near(1.0 * 0.0, 0.0), "real1");
-        assert.isTrue(near(1.0 * 2.0, 2.0), "real2");
-        assert.isTrue(near(2.0 * 0.25, 0.5), "real3");
-        assert.isTrue(near(1.5 * 2.0, 3.0), "real4");
-        assert.isTrue(near(5.0 * 7.0, 35.0), "real5");
+        assert.approximatelyEquals(1.0 * 0.0, 0.0, EPS, "real1");
+        assert.approximatelyEquals(1.0 * 2.0, 2.0, EPS, "real2");
+        assert.approximatelyEquals(2.0 * 0.25, 0.5, EPS, "real3");
+        assert.approximatelyEquals(1.5 * 2.0, 3.0, EPS, "real4");
+        assert.approximatelyEquals(5.0 * 7.0, 35.0, EPS, "real5");
 
-        assert.isTrue(near(2 * 0.25, 0.5), "mix1");
-        assert.isTrue(near(0.25 * 2, 0.5), "mix2");
+        assert.approximatelyEquals(2 * 0.25, 0.5, EPS, "mix1");
+        assert.approximatelyEquals(0.25 * 2, 0.5, EPS, "mix2");
     end
 
     @Fact()
@@ -158,14 +160,14 @@ class expressionTest
         assert.isTrue(5 / 2 == 2, "int4");
         assert.isTrue(125 / 2 == 62, "int5");
 
-        assert.isTrue(near(0.0 / 1.0, 0.0), "real1");
-        assert.isTrue(near(1.0 / 2.0, 0.5), "real2");
-        assert.isTrue(near(4.0 / 2.0, 2.0), "real3");
-        assert.isTrue(near(5.0 / 2.0, 2.5), "real4");
-        assert.isTrue(near(125.0 / 2.0, 62.5), "real5");
+        assert.approximatelyEquals(0.0 / 1.0, 0.0, EPS, "real1");
+        assert.approximatelyEquals(1.0 / 2.0, 0.5, EPS, "real2");
+        assert.approximatelyEquals(4.0 / 2.0, 2.0, EPS, "real3");
+        assert.approximatelyEquals(5.0 / 2.0, 2.5, EPS, "real4");
+        assert.approximatelyEquals(125.0 / 2.0, 62.5, EPS, "real5");
 
-        assert.isTrue(near(5 / 2.0, 2.5), "mix1");
-        assert.isTrue(near(125.0 / 2, 62.5), "mix2");
+        assert.approximatelyEquals(5 / 2.0, 2.5, EPS, "mix1");
+        assert.approximatelyEquals(125.0 / 2, 62.5, EPS, "mix2");
     end
 
     @Fact()
@@ -176,14 +178,14 @@ class expressionTest
         assert.isTrue(5 % 2 == 1, "int4");
         assert.isTrue(125 % 10 == 5, "int5");
 
-        assert.isTrue(near(0.0 % 1.0, 0), "real1");
-        assert.isTrue(near(1.0 % 2.0, 0), "real2");
-        assert.isTrue(near(4.0 % 2.0, 0), "real3");
-        assert.isTrue(near(5.0 % 2.0, 0), "real4");
-        assert.isTrue(near(125.0 % 2.0, 0), "real5");
+        assert.approximatelyEquals(0.0 % 1.0, 0, EPS, "real1");
+        assert.approximatelyEquals(1.0 % 2.0, 0, EPS, "real2");
+        assert.approximatelyEquals(4.0 % 2.0, 0, EPS, "real3");
+        assert.approximatelyEquals(5.0 % 2.0, 0, EPS, "real4");
+        assert.approximatelyEquals(125.0 % 2.0, 0, EPS, "real5");
 
-        assert.isTrue(near(1 % 2.0, 0), "mix1");
-        assert.isTrue(near(1.0 % 2, 0), "mix2");
+        assert.approximatelyEquals(1 % 2.0, 0, EPS, "mix1");
+        assert.approximatelyEquals(1.0 % 2, 0, EPS, "mix2");
     end
 
     @Fact()
@@ -191,8 +193,8 @@ class expressionTest
         assert.isTrue(2 ^ 2 == 4, "int1");
         assert.isTrue(3 ^ 5 == 243, "int2");
 
-        assert.isTrue(near(2.0 ^ 2.0, 4.0), "real1");
-        assert.isTrue(near(2.5 ^ 2.1, 6.8497389149076081809689669643046), "real2");
+        assert.approximatelyEquals(2.0 ^ 2.0, 4.0, EPS, "real1");
+        assert.approximatelyEquals(2.5 ^ 2.1, 6.8497389149076081809689669643046, EPS, "real2");
     end
 
     @Fact()
@@ -470,26 +472,6 @@ class expressionTest
     public function logicalPriority() : void
         assert.isTrue(false or true and true, "1");
         assert.isTrue(false and true or true, "2");
-    end
-
-    @Fact()
-    public function nearTest() : void
-        assert.isTrue(near(1.0, 1.0), "near1");
-        assert.isTrue(near(1.0 / 3.0, 2.0 / 6.0), "near2");
-
-        assert.isFalse(near(1.0 + EPS * 1.1, 1.0), "near3");
-        assert.isFalse(near(1.0 - EPS * 1.1, 1.0), "near4");
-    end
-
-    const EPS = 1.0e-14;
-
-    private static function near(v1 : real, v2 : real) : boolean
-        var x : real;
-        x = v1 - v2;
-        if x < 0 then
-            x = -x;
-        end
-        return x < EPS;
     end
 end
 

@@ -11,14 +11,14 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
 {
     internal static class StdlibBuffer
     {
-        private static LuaXClassInstance mClass;
+        private static LuaXClassInstance mBufferClass;
         private static LuaXTypesLibrary mTypeLibrary;
 
         public static void Initialize(LuaXTypesLibrary typeLibrary)
         {
             mTypeLibrary = typeLibrary;
-            typeLibrary.SearchClass("buffer", out mClass);
-            mClass.LuaType.Properties.Add(new LuaXProperty() { Name = "__array", Visibility = LuaXVisibility.Private, LuaType = LuaXTypeDefinition.Void });
+            typeLibrary.SearchClass("buffer", out mBufferClass);
+            mBufferClass.LuaType.Properties.Add(new LuaXProperty() { Name = "__array", Visibility = LuaXVisibility.Private, LuaType = LuaXTypeDefinition.Void });
         }
 
         //public extern length() : int;
@@ -54,7 +54,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("buffer", "create")]
         public static object Create(int length)
         {
-            var @this = mClass.New(mTypeLibrary);
+            var @this = mBufferClass.New(mTypeLibrary);
             @this.Properties["__array"].Value = new byte[length];
             return @this;
         }

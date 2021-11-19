@@ -31,15 +31,15 @@ class ioTest
 
     @Fact()
     public function current() : void
-        assert.isTrue(io.currentDirectory() ~= nil, "nil");
-        assert.isTrue(io.exists(io.currentDirectory()), "exists");
-        assert.isTrue(io.isFolder(io.currentDirectory()), "folder");
-        assert.isTrue(io.fullPath(io.currentDirectory()) == io.currentDirectory(), "absolute");
+        assert.isTrue(io.currentFolder() ~= nil, "nil");
+        assert.isTrue(io.exists(io.currentFolder()), "exists");
+        assert.isTrue(io.isFolder(io.currentFolder()), "folder");
+        assert.isTrue(io.fullPath(io.currentFolder()) == io.currentFolder(), "absolute");
     end
 
     @Fact()
     public function fullPathOfDot() : void
-        assert.isTrue(io.fullPath(".") == io.currentDirectory(), "");
+        assert.isTrue(io.fullPath(".") == io.currentFolder(), "");
     end
 
     @Fact()

@@ -7,3 +7,4 @@ TestResults/
 *.nupkg
 *.log
 sonarqube.bat
+**/launchSettings.json

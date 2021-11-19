@@ -709,6 +709,7 @@ namespace Luax.Parser.Ast.Builder
             LuaXVisibility visibility = LuaXVisibility.Private;
             string name = null;
             LuaXTypeDefinition returnType = null;
+            IAstNode attributes = null;
 
             IAstNode arguments = null;
 
@@ -718,6 +719,9 @@ namespace Luax.Parser.Ast.Builder
 
                 switch (child.Symbol)
                 {
+                    case "ATTRIBUTES":
+                        attributes = child;
+                        break;
                     case "VISIBILITY":
                         visibility = ProcessVisibility(child);
                         break;
@@ -753,6 +757,9 @@ namespace Luax.Parser.Ast.Builder
                 Extern = true,
                 Location = new LuaXElementLocation(Name, node)
             };
+
+            if (attributes != null)
+                ProcessAttributes(attributes.Children, method.Attributes);
 
             ProcessMethodDefinition(node, @class, method, arguments);
         }

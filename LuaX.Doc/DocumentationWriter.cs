@@ -31,6 +31,8 @@ namespace LuaX.Doc
         private void WriteClass(LuaXClass @class)
         {
             var doc = new SourceDocumentation(@class);
+            if (doc.Ignore)
+                return;
 
             mWriter.WriteLine();
             mWriter.WriteLine("@class");
@@ -55,6 +57,9 @@ namespace LuaX.Doc
         private void WriteMethod(LuaXMethod @method)
         {
             var doc = new SourceDocumentation(@method);
+            
+            if (doc.Ignore)
+                return;
 
             mWriter.WriteLine();
             mWriter.WriteLine("    @member");
@@ -99,6 +104,9 @@ namespace LuaX.Doc
         private void WriteProperty(LuaXProperty @property)
         {
             var doc = new SourceDocumentation(@property);
+            if (doc.Ignore)
+                return;
+
             mWriter.WriteLine();
             mWriter.WriteLine("    @member");
             mWriter.WriteLine("        @name={0}", property.Name);
@@ -153,6 +161,9 @@ namespace LuaX.Doc
         private void WriteConstant(LuaXConstantVariable @constant)
         {
             var doc = new SourceDocumentation(@constant);
+            if (doc.Ignore)
+                return;
+
             mWriter.WriteLine();
             mWriter.WriteLine("    @member");
             mWriter.WriteLine("        @name={0}", constant.Name);
