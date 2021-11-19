@@ -211,5 +211,101 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             }
             return null;
         }
+
+        //public static extern doesNotEqual(v1 : variant, v2 : variant, message : string) : void;
+        [LuaXExternMethod("assert", "doesNotEqual")]
+        public static object doesNotEqual(LuaXObjectInstance v1, LuaXObjectInstance v2, string message)
+        {
+            object p1, p2;
+            p1 = (v1?.Properties["__data"].Value);
+            p2 = (v2?.Properties["__data"].Value);
+
+            var b = equalsLuaValue(p1, p2);
+            if (b)
+            {
+                if (!string.IsNullOrEmpty(message))
+                    message = " because " + message;
+                throw new LuaXAssertionException("Expected values to be not equal but they are equal" + (message ?? ""));
+            }
+            return null;
+        }
+        //public static extern greater(value : real, expected : real, message : string) : void;
+        [LuaXExternMethod("assert", "greater")]
+        public static object greater(double v1, double v2, string message)
+        {
+            if (v1 <= v2)
+            {
+                if (!string.IsNullOrEmpty(message))
+                    message = " because " + message;
+                throw new LuaXAssertionException("Expected value to be greater than expected but it does not" + (message ?? ""));
+            }
+            return null;
+        }
+
+        //public static extern greaterOrEqual(value : real, expected : real, message : string) : void;
+        [LuaXExternMethod("assert", "greaterOrEqual")]
+        public static object greaterOrEqual(double v1, double v2, string message)
+        {
+            if (v1 < v2)
+            {
+                if (!string.IsNullOrEmpty(message))
+                    message = " because " + message;
+                throw new LuaXAssertionException("Expected value to be greater or equal than expected but it does not" + (message ?? ""));
+            }
+            return null;
+        }
+        //public static extern less(value : real, expected : real, message : string) : void;
+        [LuaXExternMethod("assert", "less")]
+        public static object less(double v1, double v2, string message)
+        {
+            if (v1 >= v2)
+            {
+                if (!string.IsNullOrEmpty(message))
+                    message = " because " + message;
+                throw new LuaXAssertionException("Expected value to be less than expected but it does not" + (message ?? ""));
+            }
+            return null;
+        }
+        //public static extern lessOrEqual(value : real, expected : real, message : string) : void;
+        [LuaXExternMethod("assert", "lessOrEqual")]
+        public static object lessOrEqual(double v1, double v2, string message)
+        {
+            if (v1 > v2)
+            {
+                if (!string.IsNullOrEmpty(message))
+                    message = " because " + message;
+                throw new LuaXAssertionException("Expected value to be less or equal than expected but it does not" + (message ?? ""));
+            }
+            return null;
+        }
+
+        //public static extern matches(value : real, pattern : string, message : string) : void;
+        [LuaXExternMethod("assert", "matches")]
+        public static object match(string value, string pattern, string message)
+        {
+            var re = StdlibString.CreateRegex(pattern);
+            if (!re.IsMatch(value))
+            {
+                if (!string.IsNullOrEmpty(message))
+                    message = " because " + message;
+                throw new LuaXAssertionException("Expected values to match the pattern but it does not" + (message ?? ""));
+            }
+            return null;
+        }
+
+        //public static extern matches(value : real, pattern : string, message : string) : void;
+        [LuaXExternMethod("assert", "doesNotMatch")]
+        public static object notMatch(string value, string pattern, string message)
+        {
+            var re = StdlibString.CreateRegex(pattern);
+            if (re.IsMatch(value))
+            {
+                if (!string.IsNullOrEmpty(message))
+                    message = " because " + message;
+                throw new LuaXAssertionException("Expected to not match the patter but it does" + (message ?? ""));
+            }
+            return null;
+        }
     }
 }
+
