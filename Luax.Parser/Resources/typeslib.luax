@@ -29,3 +29,39 @@ class exception : object
         return ex;
     end
 end
+
+
+@DocIgnore()
+@Cast()
+class variantCast
+    public static extern fromInt(v : int) : variant;
+    public static extern fromReal(v : real) : variant;
+    public static extern fromDatetime(v : datetime) : variant;
+    public static extern fromBoolean(v : boolean) : variant;
+    public static extern fromString(v : string) : variant;
+    public static extern fromObject(v : object) : variant;
+
+    public static extern castToInt(v : variant) : int;
+    public static extern castToReal(v : variant) : real;
+    public static extern castToDatetime(v : variant) : datetime;
+    public static extern castToBoolean(v : variant) : boolean;
+    public static extern castToString(v : variant) : string;
+    public static extern castToObject(v : variant) : object;
+end
+
+class variant
+    public extern type() : string;
+    public extern asInt() : int;
+    public extern asReal() : real;
+    public extern asDatetime() : datetime;
+    public extern asBoolean() : boolean;
+    public extern asString() : string;
+    public extern asObject() : object;
+
+    public extern isInt() : boolean;
+    public extern isReal() : boolean;
+    public extern isDatetime() : boolean;
+    public extern isBoolean() : boolean;
+    public extern isString() : boolean;
+    public extern isObject() : boolean;
+end

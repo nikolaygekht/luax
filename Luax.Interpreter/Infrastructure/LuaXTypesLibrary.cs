@@ -39,7 +39,8 @@ namespace Luax.Interpreter.Infrastructure
             ExternMethods.Add(this, typeof(StdlibStack));
             ExternMethods.Add(this, typeof(StdlibBuffer));
             ExternMethods.Add(this, typeof(StdlibIO));
-            
+            ExternMethods.Add(this, typeof(StdlibVariant));
+
         }
 
         public string[] GetClassNames() => mTypes.Keys.ToArray();
