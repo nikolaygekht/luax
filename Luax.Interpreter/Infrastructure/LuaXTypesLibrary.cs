@@ -39,7 +39,7 @@ namespace Luax.Interpreter.Infrastructure
             ExternMethods.Add(this, typeof(StdlibStack));
             ExternMethods.Add(this, typeof(StdlibBuffer));
             ExternMethods.Add(this, typeof(StdlibIO));
-            
+            ExternMethods.Add(this, typeof(StdlibVariant));
         }
 
         public string[] GetClassNames() => mTypes.Keys.ToArray();
@@ -69,7 +69,7 @@ namespace Luax.Interpreter.Infrastructure
                 case string s1 when int.TryParse(s1, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i1):
                     argument = i1;
                     return true;
-                case string s1:
+                case string :
                     return false;
                 default:
                     return false;
@@ -95,7 +95,7 @@ namespace Luax.Interpreter.Infrastructure
                 case string s2 when double.TryParse(s2, NumberStyles.Float, CultureInfo.InvariantCulture, out double i1):
                     argument = i1;
                     return true;
-                case string s2:
+                case string :
                     return false;
                 default:
                     return false;
@@ -131,7 +131,7 @@ namespace Luax.Interpreter.Infrastructure
                     DateTimeStyles.None, out var d4):
                     argument = d4;
                     return true;
-                case string s3:
+                case string :
                     return false;
                 default:
                     return false;
@@ -182,7 +182,7 @@ namespace Luax.Interpreter.Infrastructure
                 case string s when s == "false":
                     argument = false;
                     return true;
-                case string s:
+                case string :
                     return false;
                 default:
                     return false;

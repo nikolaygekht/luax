@@ -2,6 +2,9 @@ class testCustomCastA
     public var a : int;
 end
 
+class testCustomCastAA : testCustomCastA
+end
+
 class testCustomCastB
     public var a : string;
 end
@@ -35,9 +38,27 @@ class testCustomCast
     end
 
     @Fact()
+    public function CastAAtoBViaAssignment() : void
+        var a : testCustomCastAA, b : testCustomCastB;
+        a = new testCustomCastAA();
+        a.a = 123;
+        b = a;
+        assert.isTrue(b.a == "123", "");
+    end
+
+    @Fact()
     public function CastAtoBViaCast() : void
         var a : testCustomCastA, b : testCustomCastB;
         a = new testCustomCastA();
+        a.a = 123;
+        b = cast<testCustomCastB>(a);
+        assert.isTrue(b.a == "123", "");
+    end
+
+    @Fact()
+    public function CastAAtoBViaCast() : void
+        var a : testCustomCastAA, b : testCustomCastB;
+        a = new testCustomCastAA();
         a.a = 123;
         b = cast<testCustomCastB>(a);
         assert.isTrue(b.a == "123", "");
@@ -56,7 +77,20 @@ class testCustomCast
         assert.isTrue(b.a == "123", "");
     end
 
-    private function testCastViaReturnAction(a : testCustomCastA) : testCustomCastB
+    @Fact()
+    public function CastAAtoBViaCall() : void
+        var a : testCustomCastAA, b : testCustomCastB;
+        a = new testCustomCastAA();
+        a.a = 123;
+        b = testCastViaCallAction(a);
+        assert.isTrue(b.a == "123", "");
+    end
+
+    private function testCastAViaReturnAction(a : testCustomCastA) : testCustomCastB
+        return a;
+    end
+
+    private function testCastAAViaReturnAction(a : testCustomCastA) : testCustomCastB
         return a;
     end
 
@@ -65,7 +99,16 @@ class testCustomCast
         var a : testCustomCastA, b : testCustomCastB;
         a = new testCustomCastA();
         a.a = 123;
-        b = testCastViaReturnAction(a);
+        b = testCastAViaReturnAction(a);
+        assert.isTrue(b.a == "123", "");
+    end
+
+    @Fact()
+    public function CastAAtoBViaReturn() : void
+        var a : testCustomCastAA, b : testCustomCastB;
+        a = new testCustomCastAA();
+        a.a = 123;
+        b = testCastAAViaReturnAction(a);
         assert.isTrue(b.a == "123", "");
     end
 

@@ -112,7 +112,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                     else if (regex[i] == 'x')
                         options |= RegexOptions.IgnorePatternWhitespace;
                 }
-                regex = regex.Substring(1, ix - 1);
+                regex = regex[1..ix];
             }
 
             return new Regex(regex, options);
@@ -192,6 +192,5 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
 
             return CreateMatch(@this.Properties["__text"].Value as string, m.NextMatch());
         }
-
     }
 }
