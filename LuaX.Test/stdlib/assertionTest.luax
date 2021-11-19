@@ -9,6 +9,39 @@ class nonThrowingAction : action
     end
 end
 
+class equalClassA
+    public var x1 : int;
+    public var x2 : real;
+    public var x3 : string;
+    @IgnoreInEquals()
+    public var x4 : int;
+
+    public static function create(a : int, b : real, c : string, d : int) : equalClassA
+        var x : equalClassA;
+        x = new equalClassA();
+        x.x1 = a;
+        x.x2 = b;
+        x.x3 = c;
+        x.x4 = d;
+        return x;
+    end
+end
+
+class equalClassB
+    public var a : equalClassA;
+
+    public static function create(a : int, b : real, c : string, d : int) : equalClassB
+        var x : equalClassB;
+        x = new equalClassB();
+        x.a = new equalClassA();
+        x.a.x1 = a;
+        x.a.x2 = b;
+        x.a.x3 = c;
+        x.a.x4 = d;
+        return x;
+    end
+end
+
 @TestSuite()
 class assertionTest
 
@@ -127,6 +160,342 @@ class assertionTest
 
         try
             assert.approximatelyEquals(1, 1.000_001, 0.000_000_1, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function equalsInt_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(123, 123, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function equalsIntToReal1_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(123.0, 123, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function equalsIntToReal2_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(123, 123.0, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function equalsReal_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(123.5, 123.5, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function equalsString_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals("abc", "abc", "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function equalsBoolean_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(true, true, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function equalsDatetime_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(stdlib.mkdate(2020, 09, 23), stdlib.mkdate(2020, 09, 23), "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function equalsNil1_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(nil, nil, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function equalsNil2_Success() : void
+        var thrown : boolean, ex : exception, a : equalClassA, b : equalClassA;
+
+        try
+            assert.equals(a, b, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function equalsClass_Success1() : void
+        var thrown : boolean, ex : exception, a : equalClassA, b : equalClassA;
+
+        a = equalClassA.create(1, 1.5, "a", 4);
+        b = equalClassA.create(1, 1.5, "a", 4);
+
+        try
+            assert.equals(a, b, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function equalsClass_Success2() : void
+        var thrown : boolean, ex : exception, a : equalClassB, b : equalClassB;
+
+        a = equalClassB.create(1, 1.5, "a", 4);
+        b = equalClassB.create(1, 1.5, "a", 4);
+
+        try
+            assert.equals(a, b, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function equalsClass_Success_CheckIgnoreAttribute() : void
+        var thrown : boolean, ex : exception, a : equalClassA, b : equalClassA;
+
+        a = equalClassA.create(1, 1.5, "a", 4);
+        b = equalClassA.create(1, 1.5, "a", 5);
+
+        try
+            assert.equals(a, b, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function equalsInt1_Fail() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(123, 124, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function equalsInt2_Fail() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(123, "123", "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function equalsInt3_Fail() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(123, nil, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function equalsIntToReal1_Fail() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(123.1, 123, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function equalsIntToReal2_Fail() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(123, 123.1, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function equalsReal_Fail() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(123.5, 123.51, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function equalsString_Fail() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals("abc", "Abc", "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function equalsBoolean_Fail() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(true, false, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function equalsDatetime_Fail() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.equals(stdlib.mkdate(2020, 09, 23), stdlib.mkdate(2020, 09, 22), "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function equalsClass_Fail1() : void
+        var thrown : boolean, ex : exception, a : equalClassA, b : equalClassA;
+
+        a = equalClassA.create(1, 1.5, "a", 4);
+        b = equalClassA.create(2, 1.5, "a", 4);
+
+        try
+            assert.equals(a, b, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function equalsClass_Fail2() : void
+        var thrown : boolean, ex : exception, a : equalClassA, b : equalClassA;
+
+        a = equalClassA.create(1, 1.5, "a", 4);
+        b = equalClassA.create(1, 2.5, "a", 4);
+
+        try
+            assert.equals(a, b, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function equalsClass_Fail3() : void
+        var thrown : boolean, ex : exception, a : equalClassA, b : equalClassA;
+
+        a = equalClassA.create(1, 1.5, "a", 4);
+        b = equalClassA.create(1, 1.5, "b", 4);
+
+        try
+            assert.equals(a, b, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function equalsClass_Fail4() : void
+        var thrown : boolean, ex : exception, a : equalClassA, b : equalClassB;
+
+        a = equalClassA.create(1, 1.5, "a", 4);
+        b = equalClassB.create(1, 1.5, "b", 4);
+
+        try
+            assert.equals(a, b, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function equalsClass_Fail5() : void
+        var thrown : boolean, ex : exception, a : equalClassB, b : equalClassB;
+
+        a = equalClassB.create(2, 1.5, "a", 4);
+        b = equalClassB.create(1, 1.5, "b", 4);
+
+        try
+            assert.equals(a, b, "");
         catch ex
             thrown = true;
         end
