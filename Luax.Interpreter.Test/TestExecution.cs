@@ -124,6 +124,51 @@ namespace Luax.Interpreter.Test
             thrown.Should().BeTrue();
         }
 
+        [Fact]
+        public void LuaXStackTraceFrames()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("LuaXStackTraceFramesTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("Program", out var program).Should().BeTrue();
+            program.SearchMethod("Main", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().BeEmpty();
+
+            bool thrown = false;
+            try
+            {
+                LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var _);
+            }
+            catch (LuaXExecutionException e)
+            {
+                e.InnerException.Should().NotBeNull();
+                e.InnerException.Should().BeOfType<DivideByZeroException>();
+                e.LuaXStackTrace.Should().HaveCount(4);
+                e.LuaXStackTrace[0].Location.Source.Should().Be("LuaXStackTraceFramesTest");
+                e.LuaXStackTrace[0].Location.Line.Should().Be(19);
+                e.LuaXStackTrace[0].CallSite.Class.Name.Should().Be("Program");
+                e.LuaXStackTrace[0].CallSite.Name.Should().Be("f3");
+                e.LuaXStackTrace[1].Location.Source.Should().Be("LuaXStackTraceFramesTest");
+                e.LuaXStackTrace[1].Location.Line.Should().Be(13);
+                e.LuaXStackTrace[1].CallSite.Class.Name.Should().Be("Program");
+                e.LuaXStackTrace[1].CallSite.Name.Should().Be("f2");
+                e.LuaXStackTrace[2].Location.Source.Should().Be("LuaXStackTraceFramesTest");
+                e.LuaXStackTrace[2].Location.Line.Should().Be(7);
+                e.LuaXStackTrace[2].CallSite.Class.Name.Should().Be("Program");
+                e.LuaXStackTrace[2].CallSite.Name.Should().Be("f1");
+                e.LuaXStackTrace[3].Location.Source.Should().Be("LuaXStackTraceFramesTest");
+                e.LuaXStackTrace[3].Location.Line.Should().Be(3);
+                e.LuaXStackTrace[3].CallSite.Class.Name.Should().Be("Program");
+                e.LuaXStackTrace[3].CallSite.Name.Should().Be("Main");
+
+                thrown = true;
+            }
+            thrown.Should().BeTrue();
+        }
+
         [Theory]
         [InlineData("f", 1, 1.0)]
         [InlineData("f", 2, 2.0)]

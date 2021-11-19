@@ -20,6 +20,7 @@
     <None Remove="TestSources\ExceptionStackTraceTest.luax" />
     <None Remove="TestSources\ExpressionTest.luax" />
     <None Remove="TestSources\IfTest.luax" />
+    <None Remove="TestSources\LuaXStackTraceFramesTest.luax" />
     <None Remove="TestSources\Project1.ini" />
     <None Remove="TestSources\Project2.ini" />
     <None Remove="TestSources\Project3.ini" />
@@ -36,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\LuaXStackTraceFramesTest.luax" />
     <EmbeddedResource Include="TestSources\TryCatchTest.luax" />
     <EmbeddedResource Include="TestSources\ThrowTest.luax" />
     <EmbeddedResource Include="TestSources\IfTest.luax" />
