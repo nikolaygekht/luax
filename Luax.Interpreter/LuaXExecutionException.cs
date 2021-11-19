@@ -10,7 +10,7 @@ namespace Luax.Interpreter
     [Serializable]
     public class LuaXExecutionException : Exception
     {
-        public LuaXStackTrace LuaXStackTrace = new LuaXStackTrace();
+        public LuaXStackTrace LuaXStackTrace { get; } = new LuaXStackTrace();
         public LuaXVariableInstanceSet Properties { get; } = new LuaXVariableInstanceSet();
 
         public LuaXExecutionException(LuaXElementLocation location, string message) : base(message)
