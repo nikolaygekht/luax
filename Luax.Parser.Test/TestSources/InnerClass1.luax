@@ -1,5 +1,10 @@
 ﻿class complexClass
-   class innerClass
+   class parent
+      private function parentMethod() : int
+         return 1;
+      end
+   end
+   class innerClass : parent
       public var a : int;
       public static var b : int;
       public var parent : complexClass;
@@ -7,7 +12,7 @@
          b = 12;
       end
       public function method() : int
-         return 1;
+         return parentMethod();
       end
    end
    public function dummy() : int

@@ -528,7 +528,7 @@ namespace Luax.Parser.Test
             @class.Constructor.Should().BeNull();
             @class.SearchMethod("dummy", out var method).Should().BeTrue();
             method.Statements.Should().HaveCount(5);
-            @class.Classes.Should().HaveCount(1);
+            @class.Classes.Should().HaveCount(2);
             @class.Classes.Search("innerClass", out var innerClass).Should().BeTrue();
             innerClass.Constructor.Should().NotBeNull();
             innerClass.SearchMethod("method", out var anotherMethod).Should().BeTrue();
