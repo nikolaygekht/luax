@@ -348,21 +348,36 @@ namespace Luax.Interpreter.Expression
 
             if (initialExp is int initial)
             {
-                int increment;
+                int increment = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
                 int condition = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Limit, types, currentClass, variables);
 
                 CompareOperation compareOperation;
                 if (initial <= condition)
+                {
+                    if (increment < 1)
+                    {
+                        result = null;
+                        return ResultType.ReachForEnd;
+                    }
                     compareOperation = (int x, int y) => x <= y;
+                }
                 else
+                {
+                    if (increment > -1)
+                    {
+                        result = null;
+                        return ResultType.ReachForEnd;
+                    }
                     compareOperation = (int x, int y) => x >= y;
+                }
 
+                variables[variableName].Value = initial;
                 for (int i = initial; compareOperation(i, condition); i += increment)
                 {
                     ResultType statementsResult = ExecuteStatements(forStatement.Statements, types, currentClass, variables, out result);
                     if (statementsResult == ResultType.Break)
                         break;
-                    else if (statementsResult != ResultType.Continue && statementsResult != ResultType.ReachForEnd)
+                    if (statementsResult != ResultType.Continue && statementsResult != ResultType.ReachForEnd)
                         return statementsResult;
 
                     increment = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);

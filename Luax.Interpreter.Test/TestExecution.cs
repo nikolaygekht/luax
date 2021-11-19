@@ -299,6 +299,8 @@ namespace Luax.Interpreter.Test
         }
 
         [Theory]
+        [InlineData(0, 2, -1, 0)]
+        [InlineData(2, 0, 1, 0)]
         [InlineData(0, 2, 1, 3)]
         [InlineData(1, 2, 1, 2)]
         [InlineData(2, 0, -1, 3)]
