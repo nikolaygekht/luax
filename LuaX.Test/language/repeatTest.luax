@@ -1,6 +1,6 @@
 @TestSuite()
 class repeatTest
-    public static function factorial(a : int) : real
+    public static function factorial(a : int) : int
        assert.isTrue(a >= 1, "The value must be greater than 0");
        var result : int, i : int;
        result = 1;
@@ -13,12 +13,14 @@ class repeatTest
     end
 
     @Theory()
-    @TheoryData(1, 1.0)
-    @TheoryData(2, 2.0)
-    @TheoryData(3, 6.0)
-    @TheoryData(10, 3628800.0)
-    public function testFactorial(arg : int, expected : real) : void
-       assert.isTrue(factorial(arg) == expected, "");
+    @TheoryData(1, 1)
+    @TheoryData(2, 2)
+    @TheoryData(3, 6)
+    @TheoryData(10, 3628800)
+    public function testFactorial(arg : int, expected : int) : void
+      var r: int;
+      r = factorial(arg);
+      assert.isTrue(r == expected, "expected: " .. expected .. ", but found: " .. r);
     end
     ------------------------------------------------------------
 
@@ -50,7 +52,9 @@ class repeatTest
     @TheoryData(13, 233)
     @TheoryData(15, 610)
     public function testFibonacci(arg : int, expected : int) : void
-       assert.isTrue(fibonacci(arg) == expected, "");
+      var r: int;
+      r = fibonacci(arg);
+      assert.isTrue(r == expected, "expected: " .. expected .. ", but found: " .. r);
     end
     ------------------------------------------------------------
 
@@ -79,13 +83,15 @@ class repeatTest
     @TheoryData(10, "3_6_9")
     @TheoryData(15, "3_6_9_12_15")
     public function testDividesByThree(arg : int, expected : string) : void
-       assert.isTrue(dividesByThree(arg) == expected, "");
+      var r: string;
+      r = dividesByThree(arg);
+      assert.isTrue(r == expected, "expected: " .. expected .. ", but found: " .. r);
     end
     ------------------------------------------------------------
 
-    -- Test nested While operators
+    -- Test nested Repeat operators
     ------------------------------------------------------------
-    public static function nestedWhileAction(sourceVal : int, multRep : int, rep : int) : int
+    public static function nestedRepeatAction(sourceVal : int, multRep : int, rep : int) : int
        var i : int, j : int, subVal : int, val : int;
        i = rep;
        val = 0;
@@ -107,7 +113,9 @@ class repeatTest
     @TheoryData(1, 3, 4, 8)
     @TheoryData(2, 2, 3, 15)
     @TheoryData(3, 3, 5, 140)
-    public function testNestedWhile(sourceVal : int, multRep : int, rep : int, expected : int) : void
-       assert.isTrue(nestedWhileAction(sourceVal, multRep, rep) == expected, "");
+    public function testNestedRepeat(sourceVal : int, multRep : int, rep : int, expected : int) : void
+      var r: int;
+      r = nestedRepeatAction(sourceVal, multRep, rep);
+      assert.isTrue(r == expected, "expected: " .. expected .. ", but found: " .. r);
     end
 end
