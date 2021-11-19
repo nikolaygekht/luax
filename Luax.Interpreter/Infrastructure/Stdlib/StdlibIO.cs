@@ -126,8 +126,8 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("io", "fullPath")]
         public static object FullPath(string name) => Path.GetFullPath(name);
 
-        //public static extern currentDirectory() : string;
-        [LuaXExternMethod("io", "currentDirectory")]
+        //public static extern currentFolder() : string;
+        [LuaXExternMethod("io", "currentFolder")]
         public static object CurrentDirectory() => Directory.GetCurrentDirectory();
 
         //public static extern createFolder(name : string) : void;
@@ -275,6 +275,25 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 throw new ArgumentException("The buffer object isn't properly initialized", nameof(buffer));
 
             fs.Write(arr, offset, length);
+            return null;
+        }
+
+        //public extern lock(offset : int, length : int) : void;
+        [LuaXExternMethod("file", "lock")]
+        public static object Lock(LuaXObjectInstance @this, int offset, int length)
+        {
+            if (@this.Properties["__file"]?.Value is not FileStream fs)
+                throw new ArgumentException("The file object isn't properly initialized", nameof(@this));
+            fs.Lock(offset, length);
+            return null;
+        }
+        //public extern unlock(offset : int, length : int) : void;
+        [LuaXExternMethod("file", "unlock")]
+        public static object Unlock(LuaXObjectInstance @this, int offset, int length)
+        {
+            if (@this.Properties["__file"]?.Value is not FileStream fs)
+                throw new ArgumentException("The file object isn't properly initialized", nameof(@this));
+            fs.Unlock(offset, length);
             return null;
         }
 

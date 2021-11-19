@@ -89,5 +89,20 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
 
             return null;
         }
+
+        //public static extern approximatelyEquals(value : real, expected : real, delta : real, message : string) : void;
+        [LuaXExternMethod("assert", "approximatelyEquals")]
+        public static object approximatelyEquals(double value, double expected, double delta, string message)
+        {
+            if (delta == 0)
+                delta = 1e-14;
+            if (Math.Abs(value - expected) >= delta)
+            {
+                if (!string.IsNullOrEmpty(message))
+                    message = " because " + message;
+                throw new LuaXAssertionException($"Expected the value to be {expected}+-{delta} but it is {value}" + (message ?? ""));
+            }
+            return null;
+        }
     }
 }

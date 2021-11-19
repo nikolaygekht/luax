@@ -30,6 +30,7 @@ namespace Luax.Interpreter.Infrastructure
                 mTypes.Add(@class.Name, new LuaXClassInstance(@class));
 
             ExternMethods.Add(this, typeof(StdlibString));
+            ExternMethods.Add(this, typeof(StdlibMath));
             ExternMethods.Add(this, typeof(StdlibDate));
             ExternMethods.Add(this, typeof(StdlibMix));
             ExternMethods.Add(this, typeof(StdlibAssert));
@@ -38,6 +39,7 @@ namespace Luax.Interpreter.Infrastructure
             ExternMethods.Add(this, typeof(StdlibStack));
             ExternMethods.Add(this, typeof(StdlibBuffer));
             ExternMethods.Add(this, typeof(StdlibIO));
+            
         }
 
         public string[] GetClassNames() => mTypes.Keys.ToArray();

@@ -1,0 +1,3582 @@
+﻿
+@class
+    @name=stdlib
+    @brief=The library of standard math, string and date functions
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=PI
+        @type=property
+        @scope=class
+        @brief=Pi number
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const PI = 3.141592653589793;
+        ```
+    @end
+
+    @member
+        @name=E
+        @type=property
+        @scope=class
+        @brief=Euler constant
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const E = 2.718281828459045;
+        ```
+    @end
+
+    @member
+        @name=len
+        @type=method
+        @scope=class
+        @brief=Returns the length of the string
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=s : string
+        @end
+
+        @param
+            @name=s
+        @end
+    @end
+
+    @member
+        @name=indexOf
+        @type=method
+        @scope=class
+        @brief=Finds a substring in a string
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=s : string, sub : string, caseSenstitive : boolean
+        @end
+
+        @param
+            @name=s
+        @end
+
+        @param
+            @name=sub
+        @end
+
+        @param
+            @name=caseSenstitive
+        @end
+    @end
+
+    @member
+        @name=left
+        @type=method
+        @scope=class
+        @brief=Returns a left part of the string
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public static
+            @params=s : string, length : int
+        @end
+
+        @param
+            @name=s
+        @end
+
+        @param
+            @name=length
+        @end
+    @end
+
+    @member
+        @name=trim
+        @type=method
+        @scope=class
+        @brief=Trims white space from the both sides of the string
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public static
+            @params=s : string
+        @end
+
+        @param
+            @name=s
+        @end
+    @end
+
+    @member
+        @name=rtrim
+        @type=method
+        @scope=class
+        @brief=Trims white space from the right side of the string
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public static
+            @params=s : string
+        @end
+
+        @param
+            @name=s
+        @end
+    @end
+
+    @member
+        @name=ltrim
+        @type=method
+        @scope=class
+        @brief=Trims white space from the left side of the string
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public static
+            @params=s : string
+        @end
+
+        @param
+            @name=s
+        @end
+    @end
+
+    @member
+        @name=right
+        @type=method
+        @scope=class
+        @brief=Returns the right part of the string
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public static
+            @params=s : string, length : int
+        @end
+
+        @param
+            @name=s
+        @end
+
+        @param
+            @name=length
+        @end
+    @end
+
+    @member
+        @name=substring
+        @type=method
+        @scope=class
+        @brief=Returns a substring
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public static
+            @params=s : string, from : int, length : int
+        @end
+
+        @param
+            @name=s
+        @end
+
+        @param
+            @name=from
+        @end
+
+        @param
+            @name=length
+        @end
+    @end
+
+    @member
+        @name=match
+        @type=method
+        @scope=class
+        @brief=Checks whether the string matches the specified regular expression
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public static
+            @params=s : string, re : string
+        @end
+
+        @param
+            @name=s
+        @end
+
+        @param
+            @name=re
+        @end
+    @end
+
+    @member
+        @name=unicode
+        @type=method
+        @scope=class
+        @brief=Returns an unicode character by the position specified
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=s : string, position : int
+        @end
+
+        @param
+            @name=s
+        @end
+
+        @param
+            @name=position
+        @end
+    @end
+
+    @member
+        @name=char
+        @type=method
+        @scope=class
+        @brief=Creates a string by unicode character
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public static
+            @params=unicode : int
+        @end
+
+        @param
+            @name=unicode
+        @end
+    @end
+
+    @member
+        @name=iabs
+        @type=method
+        @scope=class
+        @brief=Returns the absolute value of an integer value
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=x : int
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=isgn
+        @type=method
+        @scope=class
+        @brief=Returns the sign of an integer value
+        @visibility=public
+        @divisor=.
+
+        The function returns `1` for positive numbers, `-1` for negative numbers and `0` if parameter is zero
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=x : int
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=abs
+        @type=method
+        @scope=class
+        @brief=Returns the absolute value of a real value
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=x : real
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=sgn
+        @type=method
+        @scope=class
+        @brief=Returns the sign of a real value
+        @visibility=public
+        @divisor=.
+
+        The function returns `1` for positive numbers, `-1` for negative numbers and `0` if parameter is zero
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=x : real
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=sin
+        @type=method
+        @scope=class
+        @brief=Returns sine value
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=x : real
+        @end
+
+        @param
+            @name=x
+            The value in radians
+        @end
+    @end
+
+    @member
+        @name=cos
+        @type=method
+        @scope=class
+        @brief=Returns cosine value
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=x : real
+        @end
+
+        @param
+            @name=x
+            The value in radians
+        @end
+    @end
+
+    @member
+        @name=tan
+        @type=method
+        @scope=class
+        @brief=Returns tangent value
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=x : real
+        @end
+
+        @param
+            @name=x
+            The value in radians
+        @end
+    @end
+
+    @member
+        @name=asin
+        @type=method
+        @scope=class
+        @brief=Returns arcsine value
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The function returns the value in radians
+        @end
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=x : real
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=acos
+        @type=method
+        @scope=class
+        @brief=Returns arccosine value
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The function returns the value in radians
+        @end
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=x : real
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=atan
+        @type=method
+        @scope=class
+        @brief=Returns arctangent value
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The function returns the value in radians
+        @end
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=x : real
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=atan2
+        @type=method
+        @scope=class
+        @brief=Returns arctangent value by cartesian coordinates
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The function returns the value in radians
+        @end
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=y : real, x : real
+        @end
+
+        @param
+            @name=y
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=sqrt
+        @type=method
+        @scope=class
+        @brief=Returns a square root of the value
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=x : real
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=ceil
+        @type=method
+        @scope=class
+        @brief=Returns the smallest integral value that is greater than or equal to the specified decimal number.
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=x : real
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=floor
+        @type=method
+        @scope=class
+        @brief=Returns the largest integral value less than or equal to the specified decimal number.
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=x : real
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=round
+        @type=method
+        @scope=class
+        @brief=Rounds the number to the specified number of digits
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=x : real, digits : int
+        @end
+
+        @param
+            @name=x
+        @end
+
+        @param
+            @name=digits
+        @end
+    @end
+
+    @member
+        @name=log
+        @type=method
+        @scope=class
+        @brief=Returns the natural logarithm of
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=x : real
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=mkdate
+        @type=method
+        @scope=class
+        @brief=Creates a date
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=datetime
+            @prefix=public static
+            @params=year : int, month : int, day : int
+        @end
+
+        @param
+            @name=year
+        @end
+
+        @param
+            @name=month
+        @end
+
+        @param
+            @name=day
+        @end
+    @end
+
+    @member
+        @name=mkdatetime
+        @type=method
+        @scope=class
+        @brief=Creates a date and time
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=datetime
+            @prefix=public static
+            @params=year : int, month : int, day : int, hour : int, minute : int, second : int, milliseconds : int
+        @end
+
+        @param
+            @name=year
+        @end
+
+        @param
+            @name=month
+        @end
+
+        @param
+            @name=day
+        @end
+
+        @param
+            @name=hour
+        @end
+
+        @param
+            @name=minute
+        @end
+
+        @param
+            @name=second
+        @end
+
+        @param
+            @name=milliseconds
+        @end
+    @end
+
+    @member
+        @name=day
+        @type=method
+        @scope=class
+        @brief=Returns the day of month of the date
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=x : datetime
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=dayOfWeek
+        @type=method
+        @scope=class
+        @brief=Returns the day of week of the date
+        @visibility=public
+        @divisor=.
+
+        The week day numeration starts with Sunday. Sunday is `0`, Monday `1` and so on to Saturday which is `6`
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=x : datetime
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=month
+        @type=method
+        @scope=class
+        @brief=Returns the month number
+        @visibility=public
+        @divisor=.
+
+        The January is `1` and so on to December which is `12`
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=x : datetime
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=year
+        @type=method
+        @scope=class
+        @brief=Returns the year
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=x : datetime
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=leapYear
+        @type=method
+        @scope=class
+        @brief=Checks whether the date belongs to a leap year
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public static
+            @params=x : datetime
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=hour
+        @type=method
+        @scope=class
+        @brief=Returns the hour
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=x : datetime
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=minute
+        @type=method
+        @scope=class
+        @brief=Returns the minute
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=x : datetime
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=second
+        @type=method
+        @scope=class
+        @brief=Returns the second
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=x : datetime
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=seconds
+        @type=method
+        @scope=class
+        @brief=Returns the seconds with fractions of seconds
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=x : datetime
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=millisecond
+        @type=method
+        @scope=class
+        @brief=Returns a millisecond
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=x : datetime
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=nowlocal
+        @type=method
+        @scope=class
+        @brief=Returns the current local time
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=datetime
+            @prefix=public static
+            @params=
+        @end
+    @end
+
+    @member
+        @name=nowutc
+        @type=method
+        @scope=class
+        @brief=Returns the current UTC time
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=datetime
+            @prefix=public static
+            @params=
+        @end
+    @end
+
+    @member
+        @name=toJdn
+        @type=method
+        @scope=class
+        @brief=Converts the datetime to a Julian day number
+        @visibility=public
+        @divisor=.
+
+        The integer part of the returned value is a [eurl=https://en.wikipedia.org/wiki/Julian_day#Converting_Gregorian_calendar_date_to_Julian_Day_Number]julian day number[/eurl]
+        The fractinal part of the returned value is a time as a part of the day. The value is calculated as `(hour * 3600 + minute * 60 + seconds) / 86400.0`
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public static
+            @params=x : datetime
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=fromJdn
+        @type=method
+        @scope=class
+        @brief=Converts the Julia day number to a day
+        @visibility=public
+        @divisor=.
+
+        The integer part of the parameter value is a [eurl=https://en.wikipedia.org/wiki/Julian_day#Converting_Gregorian_calendar_date_to_Julian_Day_Number]julian day number[/eurl]
+        The fractinal part of the parameter value is a time as a part of the day. The value is calculated as `(hour * 3600 + minute * 60 + seconds) / 86400.0`
+
+
+        @declaration
+            @language=luax
+            @return=datetime
+            @prefix=public static
+            @params=x : real
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+
+    @member
+        @name=print
+        @type=method
+        @scope=class
+        @brief=Prints the string specified to the default output
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=x : string
+        @end
+
+        @param
+            @name=x
+        @end
+    @end
+@end
+
+@class
+    @name=match
+    @brief=Regular expression macth
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=succesful
+        @type=method
+        @scope=instance
+        @brief=Returns flag indicating whether the match was succesful
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=groupsCount
+        @type=method
+        @scope=instance
+        @brief=Returns the number of the captured groups
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=groupValue
+        @type=method
+        @scope=instance
+        @brief=Returns the captured value for the group
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+        @end
+    @end
+
+    @member
+        @name=groupPosition
+        @type=method
+        @scope=instance
+        @brief=Returns the position of the captured value in the text for the group
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+        @end
+    @end
+
+    @member
+        @name=groupLength
+        @type=method
+        @scope=instance
+        @brief=Returns the length of the captured value
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+        @end
+    @end
+@end
+
+@class
+    @name=regexp
+    @brief=Regular expression
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=create
+        @type=method
+        @scope=class
+        @brief=Creates a new regular expression
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=regexp
+            @prefix=public static
+            @params=expression : string
+        @end
+
+        @param
+            @name=expression
+        @end
+    @end
+
+    @member
+        @name=match
+        @type=method
+        @scope=instance
+        @brief=Matches the text and returns the matches
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=match
+            @prefix=public
+            @params=text : string
+        @end
+
+        @param
+            @name=text
+        @end
+    @end
+@end
+
+@class
+    @name=io
+    @brief=The library of filesystem functions
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=M_OPEN
+        @type=property
+        @scope=class
+        @brief=File open mode - open file.
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const M_OPEN = 1;
+        ```
+    @end
+
+    @member
+        @name=M_CREATE
+        @type=property
+        @scope=class
+        @brief=File open mode - create file if not exists.
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const M_CREATE = 2;
+        ```
+    @end
+
+    @member
+        @name=M_READ
+        @type=property
+        @scope=class
+        @brief=File open mode - open file for reading.
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const M_READ = 16;
+        ```
+    @end
+
+    @member
+        @name=M_WRITE
+        @type=property
+        @scope=class
+        @brief=File open mode - open file for writing.
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const M_WRITE = 32;
+        ```
+    @end
+
+    @member
+        @name=M_READWRITE
+        @type=property
+        @scope=class
+        @brief=File open mode - open file for reading and writing.
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const M_READWRITE = 48;
+        ```
+    @end
+
+    @member
+        @name=M_SHARE_READ
+        @type=property
+        @scope=class
+        @brief=File open mode - open file allow sharing it for reading.
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const M_SHARE_READ = 64;
+        ```
+    @end
+
+    @member
+        @name=M_SHARE_WRITE
+        @type=property
+        @scope=class
+        @brief=File open mode - open file allow sharing it for writing.
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const M_SHARE_WRITE = 128;
+        ```
+    @end
+
+    @member
+        @name=M_SHARE
+        @type=property
+        @scope=class
+        @brief=File open mode - open file allow sharing it for both reading and writing.
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const M_SHARE = 192;
+        ```
+    @end
+
+    @member
+        @name=CP_ANSI
+        @type=property
+        @scope=class
+        @brief=Codepage identifier: ANSI codepage
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const CP_ANSI = 437;
+        ```
+    @end
+
+    @member
+        @name=CP_UTF7
+        @type=property
+        @scope=class
+        @brief=Codepage identifier: UTF-7 codepage
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const CP_UTF7 = 65000;
+        ```
+    @end
+
+    @member
+        @name=CP_UTF8
+        @type=property
+        @scope=class
+        @brief=Codepage identifier: UTF-8 codepage
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const CP_UTF8 = 65001;
+        ```
+    @end
+
+    @member
+        @name=exists
+        @type=method
+        @scope=class
+        @brief=Checks whether a file or a directory exists
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public static
+            @params=filename : string
+        @end
+
+        @param
+            @name=filename
+        @end
+    @end
+
+    @member
+        @name=size
+        @type=method
+        @scope=class
+        @brief=Returns the size of the file specified
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=filename : string
+        @end
+
+        @param
+            @name=filename
+        @end
+    @end
+
+    @member
+        @name=isFolder
+        @type=method
+        @scope=class
+        @brief=Checks whether the specified path points at a folder
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public static
+            @params=filename : string
+        @end
+
+        @param
+            @name=filename
+        @end
+    @end
+
+    @member
+        @name=isFile
+        @type=method
+        @scope=class
+        @brief=Checks whether the specified path points at a file
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public static
+            @params=filename : string
+        @end
+
+        @param
+            @name=filename
+        @end
+    @end
+
+    @member
+        @name=files
+        @type=method
+        @scope=class
+        @brief=Returns the files in the folder specified
+        @visibility=public
+        @divisor=.
+
+        The names of the files will include the name of the folder
+
+
+        @declaration
+            @language=luax
+            @return=string[]
+            @prefix=public static
+            @params=path : string
+        @end
+
+        @param
+            @name=path
+        @end
+    @end
+
+    @member
+        @name=folders
+        @type=method
+        @scope=class
+        @brief=Returns the sub-folders in the folder specified
+        @visibility=public
+        @divisor=.
+
+        The names of the folders will include the name of the parent folder
+
+
+        @declaration
+            @language=luax
+            @return=string[]
+            @prefix=public static
+            @params=path : string
+        @end
+
+        @param
+            @name=path
+        @end
+    @end
+
+    @member
+        @name=delete
+        @type=method
+        @scope=class
+        @brief=Returns the file or a the folder specified
+        @visibility=public
+        @divisor=.
+
+        If a folder name is specified, all contained files and subfolders will be also removed
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=path : string
+        @end
+
+        @param
+            @name=path
+        @end
+    @end
+
+    @member
+        @name=writeTextToFile
+        @type=method
+        @scope=class
+        @brief=Writes text to the file
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=path : string, text : string, codepage : int
+        @end
+
+        @param
+            @name=path
+        @end
+
+        @param
+            @name=text
+        @end
+
+        @param
+            @name=codepage
+        @end
+    @end
+
+    @member
+        @name=readTextFromFile
+        @type=method
+        @scope=class
+        @brief=Reads the whole file as a text
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public static
+            @params=path : string, codepage : int
+        @end
+
+        @param
+            @name=path
+        @end
+
+        @param
+            @name=codepage
+        @end
+    @end
+
+    @member
+        @name=tempFolder
+        @type=method
+        @scope=class
+        @brief=Returns the path to the system temporary folder
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public static
+            @params=
+        @end
+    @end
+
+    @member
+        @name=combinePath
+        @type=method
+        @scope=class
+        @brief=Combines two paths
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public static
+            @params=p1 : string, p2 : string
+        @end
+
+        @param
+            @name=p1
+        @end
+
+        @param
+            @name=p2
+        @end
+    @end
+
+    @member
+        @name=fullPath
+        @type=method
+        @scope=class
+        @brief=Converts a relative path to an absolute path
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public static
+            @params=p1 : string
+        @end
+
+        @param
+            @name=p1
+        @end
+    @end
+
+    @member
+        @name=currentFolder
+        @type=method
+        @scope=class
+        @brief=Returns the full path to the current working folder
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public static
+            @params=
+        @end
+    @end
+
+    @member
+        @name=createFolder
+        @type=method
+        @scope=class
+        @brief=Creates a new folder.
+        @visibility=public
+        @divisor=.
+
+        The method creates all non-existing folder in the path specified
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=name : string
+        @end
+
+        @param
+            @name=name
+        @end
+    @end
+
+    @member
+        @name=open
+        @type=method
+        @scope=class
+        @brief=Opens a file
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=file
+            @prefix=public static
+            @params=filename : string, mode : int, codepage : int
+        @end
+
+        @param
+            @name=filename
+            The name of the file to be opened
+        @end
+
+        @param
+            @name=mode
+            The combination of the constants that defines mode of the file. See for `M_` constants of the class. The modes may be concatenated using `+` operator.
+        @end
+
+        @param
+            @name=codepage
+            The codepage to be used when text is written or read from the file. See for `CP_` constants of the class
+        @end
+    @end
+@end
+
+@class
+    @name=buffer
+    @brief=The buffer of bytes
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=length
+        @type=method
+        @scope=instance
+        @brief=Returns the length of the buffer
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=get
+        @type=method
+        @scope=instance
+        @brief=Gets the byte value at the index specified
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+        @end
+    @end
+
+    @member
+        @name=set
+        @type=method
+        @scope=instance
+        @brief=Sets the byte value at the index specified
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=index : int, value : int
+        @end
+
+        @param
+            @name=index
+        @end
+
+        @param
+            @name=value
+        @end
+    @end
+
+    @member
+        @name=create
+        @type=method
+        @scope=class
+        @brief=Creates a new buffer of the specified length
+        @visibility=public
+        @divisor=.
+
+        The new buffer is initialized with `0` values
+
+
+        @declaration
+            @language=luax
+            @return=buffer
+            @prefix=public static
+            @params=length : int
+        @end
+
+        @param
+            @name=length
+        @end
+    @end
+@end
+
+@class
+    @name=file
+    @brief=The read/write operations for a file
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=size
+        @type=method
+        @scope=instance
+        @brief=Returns the length of the file
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=position
+        @type=method
+        @scope=instance
+        @brief=Returns the current read/write pointer position
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=seek
+        @type=method
+        @scope=instance
+        @brief=Sets the read/write pointer position
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=position : int
+        @end
+
+        @param
+            @name=position
+        @end
+    @end
+
+    @member
+        @name=readLine
+        @type=method
+        @scope=instance
+        @brief=Reads a line of text
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=readByte
+        @type=method
+        @scope=instance
+        @brief=Reads one byte
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=readBuffer
+        @type=method
+        @scope=instance
+        @brief=Reads a buffer of the specified length
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=buffer
+            @prefix=public
+            @params=length : int
+        @end
+
+        @param
+            @name=length
+        @end
+    @end
+
+    @member
+        @name=writeLine
+        @type=method
+        @scope=instance
+        @brief=Writes a line of text
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=v : string
+        @end
+
+        @param
+            @name=v
+        @end
+    @end
+
+    @member
+        @name=writeByte
+        @type=method
+        @scope=instance
+        @brief=Writers a byte
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=v : int
+        @end
+
+        @param
+            @name=v
+        @end
+    @end
+
+    @member
+        @name=writeBuffer
+        @type=method
+        @scope=instance
+        @brief=Writes a buffer
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=v : buffer, offset : int, length : int
+        @end
+
+        @param
+            @name=v
+            The buffer to write
+        @end
+
+        @param
+            @name=offset
+            The offset of the piece of the buffer to write
+        @end
+
+        @param
+            @name=length
+            The length of the piece of the buffer to write
+        @end
+    @end
+
+    @member
+        @name=close
+        @type=method
+        @scope=instance
+        @brief=Closes the file and frees all associated resources
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=lock
+        @type=method
+        @scope=instance
+        @brief=Lock a portion of the file
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=offset : int, length : int
+        @end
+
+        @param
+            @name=offset
+            The position of the file piece to be locked
+        @end
+
+        @param
+            @name=length
+            The length of the file piece to be locked
+        @end
+    @end
+
+    @member
+        @name=unlock
+        @type=method
+        @scope=instance
+        @brief=Lock a portion of the file
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=offset : int, length : int
+        @end
+
+        @param
+            @name=offset
+            The position of the file piece to be locked
+        @end
+
+        @param
+            @name=length
+            The length of the file piece to be locked
+        @end
+    @end
+@end
+
+@class
+    @name=csvParser
+    @brief=The parser for CSV (comma-separated values) text format
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=setSeparator
+        @type=method
+        @scope=instance
+        @brief=Sets value separator
+        @visibility=public
+        @divisor=.
+
+        The default separator is comma (`","`)
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=separator : string
+        @end
+
+        @param
+            @name=separator
+        @end
+    @end
+
+    @member
+        @name=getSeparator
+        @type=method
+        @scope=instance
+        @brief=Gets value separator
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=setAllowStrings
+        @type=method
+        @scope=instance
+        @brief=Sets the flag indicating that string values allowed
+        @visibility=public
+        @divisor=.
+
+        By default the strings aren't enabled
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=flag : boolean
+        @end
+
+        @param
+            @name=flag
+        @end
+    @end
+
+    @member
+        @name=getAllowString
+        @type=method
+        @scope=instance
+        @brief=Gets the flag indicating that string values allowed
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=setAllowComments
+        @type=method
+        @scope=instance
+        @brief=Sets the flag indicating that comments are allowed
+        @visibility=public
+        @divisor=.
+
+        By default the comments aren't enabled
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=flag : boolean
+        @end
+
+        @param
+            @name=flag
+        @end
+    @end
+
+    @member
+        @name=getAllowComments
+        @type=method
+        @scope=instance
+        @brief=Gets the flag indicating that comments are allowed
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=setCommentPrefix
+        @type=method
+        @scope=instance
+        @brief=Sets the character(s) used to start the comment
+        @visibility=public
+        @divisor=.
+
+        By default the comments prefix is `"#"`
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=commentPrefix : string
+        @end
+
+        @param
+            @name=commentPrefix
+        @end
+    @end
+
+    @member
+        @name=getCommentPrefix
+        @type=method
+        @scope=instance
+        @brief=Gets the character(s) used to start the comment
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=splitLine
+        @type=method
+        @scope=instance
+        @brief=Splits the line of the text into values.
+        @visibility=public
+        @divisor=.
+
+        If line is a comment a `nil` value is returned
+
+
+        @declaration
+            @language=luax
+            @return=string[]
+            @prefix=public
+            @params=line : string
+        @end
+
+        @param
+            @name=line
+        @end
+    @end
+
+    @member
+        @name=csvParser
+        @type=method
+        @scope=instance
+        @brief=Constructor
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=
+        @end
+    @end
+@end
+
+@class
+    @name=xmlNode
+    @brief=A node of an XML document
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=ELEMENT
+        @type=property
+        @scope=class
+        @brief=
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const ELEMENT = element;
+        ```
+    @end
+
+    @member
+        @name=TEXT
+        @type=property
+        @scope=class
+        @brief=
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const TEXT = text;
+        ```
+    @end
+
+    @member
+        @name=COMMENT
+        @type=property
+        @scope=class
+        @brief=
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const COMMENT = comment;
+        ```
+    @end
+
+    @member
+        @name=CDATA
+        @type=property
+        @scope=class
+        @brief=
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const CDATA = cdata;
+        ```
+    @end
+
+    @member
+        @name=ATTRIBUTE
+        @type=property
+        @scope=class
+        @brief=
+        @visibility=public
+        @divisor=.
+
+
+        Declaration:
+        ```luax
+        const ATTRIBUTE = attribute;
+        ```
+    @end
+
+    @member
+        @name=getType
+        @type=method
+        @scope=instance
+        @brief=Returns the type of the node
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The return value could be `ELEMENT`, `TEXT`, `COMMENT`, `CDATA` or `ATTRIBUTE`
+        @end
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=getName
+        @type=method
+        @scope=instance
+        @brief=Returns the name of the node
+        @visibility=public
+        @divisor=.
+
+        The name is returned only for `ELEMENT` and `ATTRIBUTE` nodes
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=getValue
+        @type=method
+        @scope=instance
+        @brief=Returns the value of the node
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=getChildrenCount
+        @type=method
+        @scope=instance
+        @brief=Returns the number of children nodes
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=getChild
+        @type=method
+        @scope=instance
+        @brief=Returns the child node by its index
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=xmlNode
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+        @end
+    @end
+@end
+
+@class
+    @name=xmlParser
+    @brief=The parser for XML documents
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=parse
+        @type=method
+        @scope=instance
+        @brief=Parses the XML and returns the root node of the document
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=xmlNode
+            @prefix=public
+            @params=xml : string
+        @end
+
+        @param
+            @name=xml
+        @end
+    @end
+
+    @member
+        @name=xmlParser
+        @type=method
+        @scope=instance
+        @brief=Constructor
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=
+        @end
+    @end
+@end
+
+@class
+    @name=list
+    @brief=The list of objects
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=length
+        @type=method
+        @scope=instance
+        @brief=Returns the number of the elements in the collection
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=get
+        @type=method
+        @scope=instance
+        @brief=Gets the element by the index specified
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=object
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+        @end
+    @end
+
+    @member
+        @name=set
+        @type=method
+        @scope=instance
+        @brief=Sets the element by the index specified
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=index : int, value : object
+        @end
+
+        @param
+            @name=index
+        @end
+
+        @param
+            @name=value
+        @end
+    @end
+
+    @member
+        @name=add
+        @type=method
+        @scope=instance
+        @brief=Adds a new element at the end of the list
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=value : object
+        @end
+
+        @param
+            @name=value
+        @end
+    @end
+
+    @member
+        @name=insert
+        @type=method
+        @scope=instance
+        @brief=Adds a new element at the specified position in the list
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=index : int, value : object
+        @end
+
+        @param
+            @name=index
+        @end
+
+        @param
+            @name=value
+        @end
+    @end
+
+    @member
+        @name=remove
+        @type=method
+        @scope=instance
+        @brief=Removes the element at the specified position
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+        @end
+    @end
+
+    @member
+        @name=clear
+        @type=method
+        @scope=instance
+        @brief=Removes all elements from the collection
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=toArray
+        @type=method
+        @scope=instance
+        @brief=Saves the list into an array of objects
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=object[]
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=list
+        @type=method
+        @scope=instance
+        @brief=The constructor
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=create
+        @type=method
+        @scope=class
+        @brief=Creates a new list and initializes it with the specified array of object
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=list
+            @prefix=public static
+            @params=initial : object[]
+        @end
+
+        @param
+            @name=initial
+        @end
+    @end
+@end
+
+@class
+    @name=int_map
+    @brief=The map of objects with an integer key
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=length
+        @type=method
+        @scope=instance
+        @brief=Returns the number of the elements in the collection
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=contains
+        @type=method
+        @scope=instance
+        @brief=Checks whether the map contains the key specified
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public
+            @params=key : int
+        @end
+
+        @param
+            @name=key
+        @end
+    @end
+
+    @member
+        @name=get
+        @type=method
+        @scope=instance
+        @brief=Returns an element by the key
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=object
+            @prefix=public
+            @params=key : int
+        @end
+
+        @param
+            @name=key
+        @end
+    @end
+
+    @member
+        @name=set
+        @type=method
+        @scope=instance
+        @brief=Adds a new element or replaces an existing by the key
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=key : int, value : object
+        @end
+
+        @param
+            @name=key
+        @end
+
+        @param
+            @name=value
+        @end
+    @end
+
+    @member
+        @name=remove
+        @type=method
+        @scope=instance
+        @brief=Removes the element by the key
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=key : int
+        @end
+
+        @param
+            @name=key
+        @end
+    @end
+
+    @member
+        @name=keys
+        @type=method
+        @scope=instance
+        @brief=Returns all keys in the map
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int[]
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=clear
+        @type=method
+        @scope=instance
+        @brief=Removes all elements from the collection
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=int_map
+        @type=method
+        @scope=instance
+        @brief=The constructor
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=
+        @end
+    @end
+@end
+
+@class
+    @name=string_map
+    @brief=The map of objects with an string key
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=length
+        @type=method
+        @scope=instance
+        @brief=Returns the number of the elements in the collection
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=contains
+        @type=method
+        @scope=instance
+        @brief=Checks whether the map contains the key specified
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public
+            @params=key : string
+        @end
+
+        @param
+            @name=key
+        @end
+    @end
+
+    @member
+        @name=get
+        @type=method
+        @scope=instance
+        @brief=Returns an element by the key
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=object
+            @prefix=public
+            @params=key : string
+        @end
+
+        @param
+            @name=key
+        @end
+    @end
+
+    @member
+        @name=set
+        @type=method
+        @scope=instance
+        @brief=Adds a new element or replaces an existing by the key
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=key : string, value : object
+        @end
+
+        @param
+            @name=key
+        @end
+
+        @param
+            @name=value
+        @end
+    @end
+
+    @member
+        @name=remove
+        @type=method
+        @scope=instance
+        @brief=Removes the element by the key
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=key : string
+        @end
+
+        @param
+            @name=key
+        @end
+    @end
+
+    @member
+        @name=keys
+        @type=method
+        @scope=instance
+        @brief=Returns all keys in the map
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string[]
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=clear
+        @type=method
+        @scope=instance
+        @brief=Removes all elements from the collection
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=string_map
+        @type=method
+        @scope=instance
+        @brief=The constructor
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=
+        @end
+    @end
+@end
+
+@class
+    @name=queue
+    @brief=The queue of objects
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=length
+        @type=method
+        @scope=instance
+        @brief=Returns the number of the elements in the collection
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=enqueue
+        @type=method
+        @scope=instance
+        @brief=Enqueues the object
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=value : object
+        @end
+
+        @param
+            @name=value
+        @end
+    @end
+
+    @member
+        @name=peek
+        @type=method
+        @scope=instance
+        @brief=Returns the element on the top of the queue without removing
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=object
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=dequeue
+        @type=method
+        @scope=instance
+        @brief=Dequeues the object
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=object
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=clear
+        @type=method
+        @scope=instance
+        @brief=Removes all elements from the collection
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=queue
+        @type=method
+        @scope=instance
+        @brief=The constructor
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=
+        @end
+    @end
+@end
+
+@class
+    @name=stack
+    @brief=The stack of objects
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=length
+        @type=method
+        @scope=instance
+        @brief=Returns the number of the elements in the collection
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=push
+        @type=method
+        @scope=instance
+        @brief=Pushes an object into stack
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=value : object
+        @end
+
+        @param
+            @name=value
+        @end
+    @end
+
+    @member
+        @name=peek
+        @type=method
+        @scope=instance
+        @brief=Returns the object on the top of the stack without removing
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=object
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=pop
+        @type=method
+        @scope=instance
+        @brief=Pops the object on the top of the stack
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=object
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=clear
+        @type=method
+        @scope=instance
+        @brief=Removes all elements from the collection
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=stack
+        @type=method
+        @scope=instance
+        @brief=The constructor
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=
+        @end
+    @end
+@end
+
+@class
+    @name=action
+    @brief=The interface to an action
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=invoke
+        @type=method
+        @scope=instance
+        @brief=The action method to be invoked
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=
+        @end
+    @end
+@end
+
+@class
+    @name=assert
+    @brief=The library of assertions
+    @ingroup=stdlib
+    @type=class
+    @parent=object
+
+
+
+    @member
+        @name=isTrue
+        @type=method
+        @scope=class
+        @brief=Asserts when the expresion is not true
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=condition : boolean, message : string
+        @end
+
+        @param
+            @name=condition
+            The boolean condition to check
+        @end
+
+        @param
+            @name=message
+            The message to add to a standard message of the assertion
+        @end
+    @end
+
+    @member
+        @name=isFalse
+        @type=method
+        @scope=class
+        @brief=Asserts when the expresion is not false
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=condition : boolean, message : string
+        @end
+
+        @param
+            @name=condition
+            The boolean condition to check
+        @end
+
+        @param
+            @name=message
+            The message to add to a standard message of the assertion
+        @end
+    @end
+
+    @member
+        @name=throws
+        @type=method
+        @scope=class
+        @brief=Asserts when the action does not throw an exception
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=action : action, message : string
+        @end
+
+        @param
+            @name=action
+            The action object to execute
+        @end
+
+        @param
+            @name=message
+            The message to add to a standard message of the assertion
+        @end
+    @end
+
+    @member
+        @name=doesNotThrow
+        @type=method
+        @scope=class
+        @brief=Asserts when the action throws an exception
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=action : action, message : string
+        @end
+
+        @param
+            @name=action
+            The action object to execute
+        @end
+
+        @param
+            @name=message
+            The message to add to a standard message of the assertion
+        @end
+    @end
+@end

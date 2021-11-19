@@ -5,6 +5,7 @@ namespace LuaX.Doc
 {
     internal class SourceDocumentation
     {
+        public bool Ignore { get; set; }
         public string Brief { get; set; }
         public List<string> Description { get; } = new List<string>();
         public string Return { get; set; }
@@ -14,13 +15,15 @@ namespace LuaX.Doc
         {
             foreach (var attribute in attributes)
             {
-                if (attribute.Name == "DocBrief" && attribute.Parameters.Count > 0)
+                if (attribute.Name == "DocHide")
+                    Ignore = true;
+                else if (attribute.Name == "DocBrief" && attribute.Parameters.Count > 0)
                     Brief = attribute.Parameters[0].Value?.ToString() ?? "";
-                if (attribute.Name == "DocDescription" && attribute.Parameters.Count > 0)
+                else if (attribute.Name == "DocDescription" && attribute.Parameters.Count > 0)
                     Description.Add(attribute.Parameters[0].Value?.ToString() ?? "");
-                if (attribute.Name == "DocReturn" && attribute.Parameters.Count > 0)
+                else if (attribute.Name == "DocReturn" && attribute.Parameters.Count > 0)
                     Return = attribute.Parameters[0].Value?.ToString() ?? "";
-                if (attribute.Name == "DocParameter" && attribute.Parameters.Count > 1)
+                else if (attribute.Name == "DocParameter" && attribute.Parameters.Count > 1)
                     Params.Add(new SourceDocumentationParam() { Name = attribute.Parameters[0].Value?.ToString() ?? "", Description = attribute.Parameters[1].Value?.ToString() ?? "" });
             }
         }

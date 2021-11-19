@@ -1,39 +1,11 @@
-class assertTestAction_CheckTrueForTrue : action
+class throwingAction : action
     public function invoke() : void
-        assert.isTrue(true, "");
+        throw new exception();
     end
 end
 
-class assertTestAction_CheckTrueForFalse : action
+class nonThrowingAction : action
     public function invoke() : void
-        assert.isFalse(true, "");
-    end
-end
-
-class assertTestAction_CheckFalseForTrue : action
-    public function invoke() : void
-        assert.isTrue(false, "");
-    end
-end
-
-class assertTestAction_CheckFalseForFalse : action
-    public function invoke() : void
-        assert.isFalse(false, "");
-    end
-end
-
-class assertTestAction_CheckInvoked : action
-    public var invoked : boolean;
-    public function invoke() : void
-        invoked = true;
-    end
-end
-
-class assertTestAction_SuppressThrow : action
-    public var invoked : boolean;
-    public function invoke() : void
-        var i : int;
-        i = 1 / 0;
     end
 end
 
@@ -41,36 +13,123 @@ end
 class assertionTest
 
     @Fact()
-    public function checkInvoked() : void
-        var action : assertTestAction_CheckInvoked;
-        action = new assertTestAction_CheckInvoked();
-        assert.isFalse(action.invoked, "before");
-        assert.doesNotThrow(action, "");
-        assert.isTrue(action.invoked, "after");
-    end
-
-    @Fact()
-    public function suppressThrow() : void
-        assert.throws(new assertTestAction_SuppressThrow(), "");
-    end
-
-    @Fact()
     public function isTrue_Success() : void
-        assert.doesNotThrow(new assertTestAction_CheckTrueForTrue(), "");
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.isTrue(true, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
     end
 
     @Fact()
     public function isFalse_Success() : void
-        assert.doesNotThrow(new assertTestAction_CheckFalseForFalse(), "");
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.isFalse(false, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+
     end
 
     @Fact()
     public function isTrue_Fail() : void
-        assert.throws(new assertTestAction_CheckFalseForTrue(), "");
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.isTrue(false, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
     end
 
     @Fact()
     public function isFalse_Fail() : void
-        assert.throws(new assertTestAction_CheckTrueForFalse(), "");
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.isFalse(true, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function throws_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.throws(new throwingAction(), "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function throws_Fail() : void
+    var thrown : boolean, ex : exception;
+
+        try
+            assert.throws(new nonThrowingAction(), "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function notThrows_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotThrow(new nonThrowingAction(), "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function notThrows_Fail() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotThrow(new throwingAction(), "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function approximatelyEquals_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.approximatelyEquals(1, 1.000_000_1, 0.000_001, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function approximatelyEquals_Fail() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.approximatelyEquals(1, 1.000_001, 0.000_000_1, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
     end
 end
