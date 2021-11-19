@@ -36,6 +36,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\RepeatBreakTest.luax" />
+    <EmbeddedResource Include="TestSources\RepeatContinueTest.luax" />
+    <EmbeddedResource Include="TestSources\RepeatNestedTest.luax" />
+    <EmbeddedResource Include="TestSources\RepeatTest.luax" />
     <EmbeddedResource Include="TestSources\TryCatchTest.luax" />
     <EmbeddedResource Include="TestSources\ThrowTest.luax" />
     <EmbeddedResource Include="TestSources\IfTest.luax" />

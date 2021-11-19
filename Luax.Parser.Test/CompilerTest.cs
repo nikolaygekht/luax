@@ -389,6 +389,43 @@ namespace Luax.Parser.Test
         }
 
         [Fact]
+        public void RepeatBreakContinue()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("Repeat");
+            app.Pass2();
+            app.Classes.Search("test", out var @class).Should().BeTrue();
+            @class.SearchMethod("test1", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(3);
+            method.Statements[0].Should().BeOfType<LuaXAssignVariableStatement>();
+            method.Statements[1].Should().BeOfType<LuaXRepeatStatement>();
+            method.Statements[2].Should().BeOfType<LuaXReturnStatement>();
+
+            var @repeat = method.Statements[1].As<LuaXRepeatStatement>();
+            @repeat.UntilCondition.ToString().Should().Be("(var:i Greater const:int:0)");
+            @repeat.Statements.Should().HaveCount(4);
+            @repeat.Statements[0].Should().BeOfType<LuaXIfStatement>();
+
+            var @if = @repeat.Statements[0].As<LuaXIfStatement>();
+            @if.Clauses.Should().HaveCount(1);
+            @if.Clauses[0].Condition.ToString().Should().Be("(arg:arg1 Equal var:i)");
+            @if.Clauses[0].Statements.Should().HaveCount(1);
+            @if.Clauses[0].Statements[0].Should().BeOfType<LuaXBreakStatement>();
+
+            @repeat.Statements[1].Should().BeOfType<LuaXAssignVariableStatement>();
+            var assign = @repeat.Statements[1].As<LuaXAssignVariableStatement>();
+            assign.VariableName.Should().Be("i");
+            assign.Expression.ToString().Should().Be("(var:i Subtract const:int:1)");
+            
+            @repeat.Statements[2].Should().BeOfType<LuaXContinueStatement>();
+            
+            @repeat.Statements[3].Should().BeOfType<LuaXAssignVariableStatement>();
+            var assign2 = @repeat.Statements[3].As<LuaXAssignVariableStatement>();
+            assign2.VariableName.Should().Be("i");
+            assign2.Expression.ToString().Should().Be("(var:i Subtract const:int:1000)");
+        }
+
+        [Fact]
         public void BreakOutOfLoop1()
         {
             var app = new LuaXApplication();

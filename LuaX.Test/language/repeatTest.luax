@@ -1,0 +1,113 @@
+@TestSuite()
+class repeatTest
+    public static function factorial(a : int) : real
+       assert.isTrue(a >= 1, "The value must be greater than 0");
+       var result : int, i : int;
+       result = 1;
+       i = 1;
+       repeat
+          result = result * i;
+          i = i + 1;
+       until i <= a
+       return result;
+    end
+
+    @Theory()
+    @TheoryData(1, 1.0)
+    @TheoryData(2, 2.0)
+    @TheoryData(3, 6.0)
+    @TheoryData(10, 3628800.0)
+    public function testFactorial(arg : int, expected : real) : void
+       assert.isTrue(factorial(arg) == expected, "");
+    end
+    ------------------------------------------------------------
+
+    -- Test Break
+    ------------------------------------------------------------
+    private static function fibonacci(arg : int) : int
+       var i : int, a : int, b : int, c : int;
+       i = 3;
+       a = 1;
+       b = 1;
+       repeat
+         if i <= arg then
+            c = a + b;
+            a = b;
+            b = c;
+         else
+            break;
+         end
+         i = i + 1;
+       until true
+       return b;
+    end
+
+    @Theory()
+    @TheoryData(1, 1)
+    @TheoryData(2, 1)
+    @TheoryData(3, 2)
+    @TheoryData(7, 13)
+    @TheoryData(13, 233)
+    @TheoryData(15, 610)
+    public function testFibonacci(arg : int, expected : int) : void
+       assert.isTrue(fibonacci(arg) == expected, "");
+    end
+    ------------------------------------------------------------
+
+    -- Test Continue
+    ------------------------------------------------------------
+    private static function dividesByThree(arg : int) : string
+       var i : int, result : string;
+       i = 0;
+       result = "";
+       repeat
+         i = i + 1;
+         if i % 3 ~= 0 then
+            continue;
+         end
+         if stdlib.len(result) ~= 0 then
+            result = result .. "_";
+         end
+         result = result .. i;
+       until i <= arg
+       return result;
+    end
+
+    @Theory()
+    @TheoryData(1, "")
+    @TheoryData(3, "3")
+    @TheoryData(10, "3_6_9")
+    @TheoryData(15, "3_6_9_12_15")
+    public function testDividesByThree(arg : int, expected : string) : void
+       assert.isTrue(dividesByThree(arg) == expected, "");
+    end
+    ------------------------------------------------------------
+
+    -- Test nested While operators
+    ------------------------------------------------------------
+    public static function nestedWhileAction(sourceVal : int, multRep : int, rep : int) : int
+       var i : int, j : int, subVal : int, val : int;
+       i = rep;
+       val = 0;
+       repeat
+         j = multRep;
+         subVal = 1;
+         repeat
+            subVal = subVal * sourceVal;
+            j = j - 1;
+         until j > 0
+         val = val + subVal + 1;
+         i = i - 1;
+       until i > 0
+       return val;
+    end
+
+    @Theory()
+    @TheoryData(1, -1, -1, 2)
+    @TheoryData(1, 3, 4, 8)
+    @TheoryData(2, 2, 3, 15)
+    @TheoryData(3, 3, 5, 140)
+    public function testNestedWhile(sourceVal : int, multRep : int, rep : int, expected : int) : void
+       assert.isTrue(nestedWhileAction(sourceVal, multRep, rep) == expected, "");
+    end
+end
