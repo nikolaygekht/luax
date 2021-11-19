@@ -86,6 +86,28 @@ namespace Luax.Parser.Ast
             Location = location;
         }
 
+        internal bool HasInParents(LuaXClass parent)
+        {
+            IClassesContainer currentContainer = OwnerContainer;
+            string currentClassName = Name;
+            string parentName = parent.Name;
+            while (!string.IsNullOrEmpty(currentClassName) && currentClassName != "object")
+            {
+                if (currentClassName.Equals(parentName))
+                    return true;
+                currentContainer.Classes.Search(currentClassName, out var @class);
+                if (@class == null)
+                {
+                    if (currentContainer.OwnerContainer == null)
+                        return false;
+                    currentContainer = currentContainer.OwnerContainer;
+                    continue;
+                }
+                currentClassName = @class.Parent;
+            }
+            return false;
+        }
+
         private void ValidateParentChain(IClassesContainer classesContainer)
         {
             HashSet<string> parents = new HashSet<string>();
@@ -107,27 +129,6 @@ namespace Luax.Parser.Ast
                 }
                 name = @class.Parent;
             }
-        }
-
-        internal bool CheckOnParent(LuaXClass parent)
-        {
-            IClassesContainer currentContainer = OwnerContainer;
-            string name = Name;
-            while (!string.IsNullOrEmpty(name) && name != "object")
-            {
-                if (name.Equals(parent.Name))
-                    return true;
-                currentContainer.Classes.Search(name, out var @class);
-                if (@class == null)
-                {
-                    if (currentContainer.OwnerContainer == null)
-                        return false;
-                    currentContainer = currentContainer.OwnerContainer;
-                    continue;
-                }
-                name = @class.Parent;
-            }
-            return false;
         }
 
         internal void Pass2(IClassesContainer classesContainer, LuaXAstTreeCreator creator)
