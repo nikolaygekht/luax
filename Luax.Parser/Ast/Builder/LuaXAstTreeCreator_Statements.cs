@@ -248,18 +248,12 @@ namespace Luax.Parser.Ast.Builder
             {
                 if (!@class.Attributes.Any(attribute => attribute.Name == "Cast"))
                     continue;
-
-                foreach (var method in @class.Methods)
+                castMethod = @class.Methods.FirstOrDefault(method => IsMethodACastCandidate(method, targetType, expression.ReturnType));
+                if (castMethod != null)
                 {
-                    if (IsMethodACastCandidate(method, targetType, expression.ReturnType))
-                    {
-                        castMethod = method;
-                        castClass = @class;
-                        break;
-                    }
-                }
-                if (castClass != null)
+                    castClass = @class;
                     break;
+                }
             }
 
             if (castClass != null)
@@ -270,18 +264,23 @@ namespace Luax.Parser.Ast.Builder
             }
 
             if (expression.ReturnType.IsObject())
+                return FindCustomCastForObject(expression, targetType);
+
+            return null;
+        }
+
+        private LuaXExpression FindCustomCastForObject(LuaXExpression expression, LuaXTypeDefinition targetType)
+        {
+            LuaXClass parent = null;
+            if (expression is LuaXConstantExpression c && c.Value.IsNil)
+                parent = LuaXClass.Object;
+            else
             {
-                LuaXClass parent = null;
-                if (expression is LuaXConstantExpression c && c.Value.IsNil)
-                    parent = LuaXClass.Object;
-                else
-                {
-                    if (Metadata.Search(expression.ReturnType.Class, out var @class))
-                        parent = @class.ParentClass;
-                }
-                if (parent != null)
-                    return FindCustomCastForParent(expression, parent, targetType);
+                if (Metadata.Search(expression.ReturnType.Class, out var @class))
+                    parent = @class.ParentClass;
             }
+            if (parent != null)
+                return FindCustomCastForParent(expression, parent, targetType);
 
             return null;
         }
@@ -306,17 +305,12 @@ namespace Luax.Parser.Ast.Builder
                 if (!@class.Attributes.Any(attribute => attribute.Name == "Cast"))
                     continue;
 
-                foreach (var method in @class.Methods)
+                castMethod = @class.Methods.FirstOrDefault(method => IsMethodACastCandidate(method, targetType, sourceType));
+                if (castMethod != null)
                 {
-                    if (IsMethodACastCandidate(method, targetType, sourceType))
-                    {
-                        castMethod = method;
-                        castClass = @class;
-                        break;
-                    }
-                }
-                if (castClass != null)
+                    castClass = @class;
                     break;
+                }
             }
 
             if (castClass != null)

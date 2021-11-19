@@ -95,7 +95,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return @object;
         }
 
-        private static Regex CreateRegex(string regex)
+        internal static Regex CreateRegex(string regex)
         {
             RegexOptions options = RegexOptions.None;
             if (regex[0] == '/')

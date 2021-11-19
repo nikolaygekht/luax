@@ -274,50 +274,6 @@ class assertionTest
         assert.isFalse(thrown, "");
     end
 
-    @Fact()
-    public function equalsClass_Success1() : void
-        var thrown : boolean, ex : exception, a : equalClassA, b : equalClassA;
-
-        a = equalClassA.create(1, 1.5, "a", 4);
-        b = equalClassA.create(1, 1.5, "a", 4);
-
-        try
-            assert.equals(a, b, "");
-        catch ex
-            thrown = true;
-        end
-        assert.isFalse(thrown, "");
-    end
-
-    @Fact()
-    public function equalsClass_Success2() : void
-        var thrown : boolean, ex : exception, a : equalClassB, b : equalClassB;
-
-        a = equalClassB.create(1, 1.5, "a", 4);
-        b = equalClassB.create(1, 1.5, "a", 4);
-
-        try
-            assert.equals(a, b, "");
-        catch ex
-            thrown = true;
-        end
-        assert.isFalse(thrown, "");
-    end
-
-    @Fact()
-    public function equalsClass_Success_CheckIgnoreAttribute() : void
-        var thrown : boolean, ex : exception, a : equalClassA, b : equalClassA;
-
-        a = equalClassA.create(1, 1.5, "a", 4);
-        b = equalClassA.create(1, 1.5, "a", 5);
-
-        try
-            assert.equals(a, b, "");
-        catch ex
-            thrown = true;
-        end
-        assert.isFalse(thrown, "");
-    end
 
     @Fact()
     public function equalsInt1_Fail() : void
@@ -427,15 +383,158 @@ class assertionTest
         assert.isTrue(thrown, "");
     end
 
+
     @Fact()
-    public function equalsClass_Fail1() : void
+    public function doesNotEqualInt_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotEqual(123, 124, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function doesNotEqualIntToReal1_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotEqual(123.1, 123, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function doesNotEqualIntToReal2_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotEqual(123, 123.1, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function doesNotEqualReal_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotEqual(123.5, 123.51, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function doesNotEqualString_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotEqual("abc", "Abc", "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function doesNotEqualBoolean_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotEqual(true, false, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function doesNotEqualDatetime_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotEqual(stdlib.mkdate(2020, 09, 23), stdlib.mkdate(2020, 09, 24), "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function doesNotEqualNil1_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotEqual(nil, 1, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function doesNotEqualNil2_Success() : void
         var thrown : boolean, ex : exception, a : equalClassA, b : equalClassA;
 
-        a = equalClassA.create(1, 1.5, "a", 4);
-        b = equalClassA.create(2, 1.5, "a", 4);
+        a = equalClassA.create(1, 2.0, "c", 5);
+        try
+            assert.doesNotEqual(a, b, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function doesNotEqualInt1_Success() : void
+        var thrown : boolean, ex : exception;
 
         try
-            assert.equals(a, b, "");
+            assert.doesNotEqual(123, 124, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function doesNotEqualInt2_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotEqual(123, "123", "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function doesNotEqualInt3_Success() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotEqual(123, nil, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function doesNotEqualIntToReal1_Fail() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotEqual(123.0, 123, "");
         catch ex
             thrown = true;
         end
@@ -443,14 +542,11 @@ class assertionTest
     end
 
     @Fact()
-    public function equalsClass_Fail2() : void
-        var thrown : boolean, ex : exception, a : equalClassA, b : equalClassA;
-
-        a = equalClassA.create(1, 1.5, "a", 4);
-        b = equalClassA.create(1, 2.5, "a", 4);
+    public function doesNotEqualIntToReal2_Fail() : void
+        var thrown : boolean, ex : exception;
 
         try
-            assert.equals(a, b, "");
+            assert.doesNotEqual(123, 123.0, "");
         catch ex
             thrown = true;
         end
@@ -458,14 +554,11 @@ class assertionTest
     end
 
     @Fact()
-    public function equalsClass_Fail3() : void
-        var thrown : boolean, ex : exception, a : equalClassA, b : equalClassA;
-
-        a = equalClassA.create(1, 1.5, "a", 4);
-        b = equalClassA.create(1, 1.5, "b", 4);
+    public function doesNotEqualReal_Fail() : void
+        var thrown : boolean, ex : exception;
 
         try
-            assert.equals(a, b, "");
+            assert.doesNotEqual(123.5, 123.5, "");
         catch ex
             thrown = true;
         end
@@ -473,14 +566,11 @@ class assertionTest
     end
 
     @Fact()
-    public function equalsClass_Fail4() : void
-        var thrown : boolean, ex : exception, a : equalClassA, b : equalClassB;
-
-        a = equalClassA.create(1, 1.5, "a", 4);
-        b = equalClassB.create(1, 1.5, "b", 4);
+    public function doesNotEqualString_Fail() : void
+        var thrown : boolean, ex : exception;
 
         try
-            assert.equals(a, b, "");
+            assert.doesNotEqual("abc", "abc", "");
         catch ex
             thrown = true;
         end
@@ -488,7 +578,85 @@ class assertionTest
     end
 
     @Fact()
-    public function equalsClass_Fail5() : void
+    public function doesNotEqualBoolean_Fail() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotEqual(true, true, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Fact()
+    public function doesNotEqualDatetime_Fail() : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotEqual(stdlib.mkdate(2020, 09, 23), stdlib.mkdate(2020, 09, 23), "");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
+
+    @Theory()
+    @TheoryData(1, 1.5, "a", 3,
+                1, 1.5, "a", 3, false)
+    @TheoryData(1, 1.5, "a", 3,
+                1, 1.5, "a", 4, false)
+    @TheoryData(1, 1.5, "a", 3,
+                1, 1.5, "b", 3, true)
+    @TheoryData(1, 1.5, "a", 3,
+                1, 2.5, "a", 3, true)
+    @TheoryData(1, 1.5, "a", 3,
+                2, 1.5, "a", 3, true)
+    public function equalsClass_SameType(a1 : int, b1 : real, c1 : string, d1 : int,
+                                         a2 : int, b2 : real, c2 : string, d2 : int,
+                                         expected : boolean) : void
+        var thrown : boolean, ex : exception, a : equalClassB, b : equalClassB;
+
+        a = equalClassB.create(a1, b1, c1, d1);
+        b = equalClassB.create(a2, b2, c2, d2);
+
+        try
+            assert.equals(a, b, "");
+        catch ex
+            thrown = true;
+        end
+        assert.equals(thrown, expected, "");
+    end
+
+    @Theory()
+    @TheoryData(1, 1.5, "a", 3,
+                1, 1.5, "a", 3, true)
+    @TheoryData(1, 1.5, "a", 3,
+                1, 1.5, "a", 4, true)
+    @TheoryData(1, 1.5, "a", 3,
+                1, 1.5, "b", 3, false)
+    @TheoryData(1, 1.5, "a", 3,
+                1, 2.5, "a", 3, false)
+    @TheoryData(1, 1.5, "a", 3,
+                2, 1.5, "a", 3, false)
+    public function doesNotEqualClass_SameType(a1 : int, b1 : real, c1 : string, d1 : int,
+                                            a2 : int, b2 : real, c2 : string, d2 : int,
+                                            expected : boolean) : void
+        var thrown : boolean, ex : exception, a : equalClassB, b : equalClassB;
+
+        a = equalClassB.create(a1, b1, c1, d1);
+        b = equalClassB.create(a2, b2, c2, d2);
+
+        try
+            assert.doesNotEqual(a, b, "");
+        catch ex
+            thrown = true;
+        end
+        assert.equals(thrown, expected, "");
+    end
+
+    @Fact()
+    public function equalsClass_DifferentTypes() : void
         var thrown : boolean, ex : exception, a : equalClassB, b : equalClassB;
 
         a = equalClassB.create(2, 1.5, "a", 4);
@@ -500,5 +668,105 @@ class assertionTest
             thrown = true;
         end
         assert.isTrue(thrown, "");
+    end
+
+        @Fact()
+    public function notEqualClass_DifferentTypes() : void
+        var thrown : boolean, ex : exception, a : equalClassB, b : equalClassB;
+
+        a = equalClassB.create(2, 1.5, "a", 4);
+        b = equalClassB.create(1, 1.5, "b", 4);
+
+        try
+            assert.doesNotEqual(a, b, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Theory()
+    @TheoryData("abc", "/B/i", false)
+    @TheoryData("abc", "/B/", true)
+    public function match(v : string, p : string, expected : boolean) : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.matches(v, p, "");
+        catch ex
+            thrown = true;
+        end
+        assert.equals(thrown, expected, "");
+    end
+
+    @Theory()
+    @TheoryData("abc", "/B/i", true)
+    @TheoryData("abc", "/B/", false)
+    public function doesNotMatch(v : string, p : string, expected : boolean) : void
+        var thrown : boolean, ex : exception;
+
+        try
+            assert.doesNotMatch(v, p, "");
+        catch ex
+            thrown = true;
+        end
+        assert.equals(thrown, expected, "");
+    end
+
+
+    @Theory()
+    @TheoryData(0.9, 1.0, true)
+    @TheoryData(1.0, 1.0, true)
+    @TheoryData(1.1, 1.0, false)
+    public function greater(v1 : real, v2 : real, expected : boolean) : void
+        var thrown : boolean, ex : exception;
+        try
+            assert.greater(v1, v2, "");
+        catch ex
+            thrown = true;
+        end
+        assert.equals(thrown, expected, "");
+    end
+
+    @Theory()
+    @TheoryData(0.9, 1.0, true)
+    @TheoryData(1.0, 1.0, false)
+    @TheoryData(1.1, 1.0, false)
+    public function greaterOrEqual(v1 : real, v2 : real, expected : boolean) : void
+        var thrown : boolean, ex : exception;
+        try
+            assert.greaterOrEqual(v1, v2, "");
+        catch ex
+            thrown = true;
+        end
+        assert.equals(thrown, expected, "");
+    end
+
+    @Theory()
+    @TheoryData(0.9, 1.0, false)
+    @TheoryData(1.0, 1.0, true)
+    @TheoryData(1.1, 1.0, true)
+    public function less(v1 : real, v2 : real, expected : boolean) : void
+        var thrown : boolean, ex : exception;
+        try
+            assert.less(v1, v2, "");
+        catch ex
+            thrown = true;
+        end
+        assert.equals(thrown, expected, "");
+    end
+
+    @Theory()
+    @TheoryData(0.9, 1.0, false)
+    @TheoryData(1.0, 1.0, false)
+    @TheoryData(1.1, 1.0, true)
+    public function lessOrEqual(v1 : real, v2 : real, expected : boolean) : void
+        var thrown : boolean, ex : exception;
+        try
+            assert.lessOrEqual(v1, v2, "");
+        catch ex
+            thrown = true;
+        end
+        assert.equals(thrown, expected, "");
     end
 end
