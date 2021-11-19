@@ -230,7 +230,7 @@ namespace Luax.Interpreter.Expression
                 throw new LuaXExecutionException(callingMethod, @throw.Location, result.Properties["message"].Value.ToString(), result.Properties);
             }
 
-            throw new Exception("Result of throw statement is not an exception");
+            throw new LuaXExecutionException(@throw.Location, "Result of throw statement is not an exception");
         }
 
         private static void ExecuteAssignVariable(LuaXAssignVariableStatement assign, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables)

@@ -39,16 +39,16 @@ namespace LuaX
         {
             var sb = new StringBuilder();
             sb.Append($"{method.Class.Name}.{method.Name}");
-            sb.Append("(");
+            sb.Append('(');
 
-            for (int i = 0; i < method.Arguments.Count; i++)
+            for (var i = 0; i < method.Arguments.Count; i++)
             {
                 if (i > 0)
                     sb.Append(", ");
                 sb.Append($"{method.Arguments[i].Name} : {(method.Arguments[i].LuaType.IsObject() ? method.Arguments[i].LuaType.Class : method.Arguments[i].LuaType.ToString())}");
             }
 
-            sb.Append(")");
+            sb.Append(')');
 
             return sb.ToString();
         }
