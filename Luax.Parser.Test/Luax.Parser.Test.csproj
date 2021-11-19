@@ -12,6 +12,11 @@
     <None Remove="TestSources\Continue2.luax" />
     <None Remove="TestSources\Debug.luax" />
     <None Remove="TestSources\Expression1.luax" />
+    <None Remove="TestSources\For1.luax" />
+    <None Remove="TestSources\ForBreakContinue.luax" />
+    <None Remove="TestSources\ForInitExprNonIntType.luax" />
+    <None Remove="TestSources\ForLoopPartsWithDifferentType.luax" />
+    <None Remove="TestSources\ForWithoutIteratorExp.luax" />
     <None Remove="TestSources\If1.luax" />
     <None Remove="TestSources\ParseClass.luax" />
     <None Remove="TestSources\ParseClassConstants.luax" />
@@ -30,6 +35,10 @@
     <EmbeddedResource Include="TestSources\Continue1.luax" />
     <EmbeddedResource Include="TestSources\Continue2.luax" />
     <EmbeddedResource Include="TestSources\Debug.luax" />
+    <EmbeddedResource Include="TestSources\ForBreakContinue.luax" />
+    <EmbeddedResource Include="TestSources\ForInitExprNonIntType.luax" />
+    <EmbeddedResource Include="TestSources\ForLoopPartsWithDifferentType.luax" />
+    <EmbeddedResource Include="TestSources\ForWithoutIteratorExp.luax" />
     <EmbeddedResource Include="TestSources\Throw1.luax" />
     <EmbeddedResource Include="TestSources\TryCatch1.luax" />
     <EmbeddedResource Include="TestSources\If1.luax" />

@@ -1,0 +1,59 @@
+﻿class test
+   public static function basicTest(_start : int, _limit : int, _iterator: int) : int
+      var i : int, summ : int, start : int, limit : int, iterator: int;
+
+      start = _start;
+      limit = _limit;
+      iterator = _iterator;
+      summ = 0;
+
+      for i = start, limit, iterator  do
+          summ = summ + 1;
+      end
+
+      return summ;
+   end
+
+   public static function withoutIteratorExprTest(_start : int, _limit : int) : int
+      var i : int, summ : int, start : int, limit : int;
+
+      start = _start;
+      limit = _limit;
+      summ = 0;
+
+      for i = start, limit  do
+          summ = summ + 1;
+      end
+
+      return summ;
+   end
+
+   public static function changeValueOfInitExprTest( _limit : int) : int
+      var i : int, summ : int, limit : int;
+
+      limit = _limit;
+      summ = 0;
+
+      for i = 0, limit  do
+          summ = summ + i;
+      end
+
+      return summ;
+   end
+
+   public static function nestedLoopTest(str : string, strRep : int, rep : int) : string
+      var i : int, j : int, substr : string, resStr : string;
+      resStr = "";
+      for i = 0, rep -1 do
+         substr = "";
+         for j = 0, strRep - 1 do
+            substr = substr .. str;
+         end
+         if i > rep then
+            resStr = resStr .. "_";
+         end
+         resStr = resStr .. substr;
+      end
+      return resStr;
+   end
+end

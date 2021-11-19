@@ -71,10 +71,88 @@ namespace Luax.Parser.Ast.Builder
                     case "CONTINUE_STMT":
                         ProcessesContinueStatement(child, statements);
                         break;
+                    case "FOR_STMT":
+                        ProcessesForStatement(child, @class, method, statements);
+                        break;
                     default:
                         throw new LuaXAstGeneratorException(Name, child, $"Unexpected symbol {child.Symbol}");
                 }
             }
+        }
+
+        /// <summary>
+        /// Processes FOR statement
+        /// </summary>
+        /// <param name="child"></param>
+        /// <param name="class"></param>
+        /// <param name="method"></param>
+        /// <param name="statements"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void ProcessesForStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        {
+            LuaXElementLocation location = new LuaXElementLocation(Name, node);
+            LuaXForLoopStatement forLoopStatement = null;
+            IAstNode body = null;
+
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "END")
+                    break;
+                if (child.Symbol == "FOR" || child.Symbol == "DO")
+                    continue;
+                if (child.Symbol == "STATEMENTS")
+                    body = child;
+                if (child.Symbol == "FOR_STMT_LOOP")
+                    forLoopStatement = ProcessesForLoopStatement(child, @class, method);
+            }
+            LuaXForStatement stmt = new LuaXForStatement(location, forLoopStatement);
+
+            if (body != null)
+            {
+                mLoopDepth++;
+                ProcessStatements(body.Children, @class, method, stmt.Statements);
+                mLoopDepth--;
+            }
+
+            statements.Add(stmt);
+        }
+
+        /// <summary>
+        /// Processes inner FOR_STMT_LOOP statement
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        /// <exception cref="LuaXAstGeneratorException"></exception>
+        private LuaXForLoopStatement ProcessesForLoopStatement(IAstNode node, LuaXClass @class, LuaXMethod method)
+        {
+            if (node.Children[0].Symbol != "IDENTIFIER" ||
+                !method.Variables.Search(node.Children[0].Value, out LuaXVariable identierVar) || identierVar == null ||
+                identierVar.LuaType.TypeId != LuaXType.Integer)
+                throw new LuaXAstGeneratorException(Name, node, "Initialization part of for statement should be declaration and be int type");
+
+            LuaXExpressionCollection forLoopExpressions = new LuaXExpressionCollection();
+            for (var i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "ASSIGN" || child.Symbol == "COMMA" || child.Symbol == "IDENTIFIER")
+                    continue;
+                if (child.Symbol == "EXPR")
+                    forLoopExpressions.Add(ProcessExpression(child, @class, method));
+            }
+
+            foreach (var exp in forLoopExpressions)
+            {
+                if (exp.ReturnType.TypeId != identierVar.LuaType.TypeId)
+                    throw new LuaXAstGeneratorException(Name, node, "Initialization, condition and iteration parts of for statement should all be of the same type");
+            }
+
+            if (forLoopExpressions.Count != 2 && forLoopExpressions.Count != 3)
+                throw new LuaXAstGeneratorException(Name, node, "For statement should has initialization, condition parts and optional iterator part");
+
+            return new LuaXForLoopStatement(node.Children[0].Value, forLoopExpressions, new LuaXElementLocation(Name, node));
         }
 
         private void ProcessThrowStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)

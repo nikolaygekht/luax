@@ -19,6 +19,8 @@
     <None Remove="TestSources\ConstTest.luax" />
     <None Remove="TestSources\ExceptionStackTraceTest.luax" />
     <None Remove="TestSources\ExpressionTest.luax" />
+    <None Remove="TestSources\ForChangingInitialVarTest.luax" />
+    <None Remove="TestSources\ForTest.luax" />
     <None Remove="TestSources\IfTest.luax" />
     <None Remove="TestSources\Project1.ini" />
     <None Remove="TestSources\Project2.ini" />
@@ -36,6 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\ForTest.luax" />
     <EmbeddedResource Include="TestSources\TryCatchTest.luax" />
     <EmbeddedResource Include="TestSources\ThrowTest.luax" />
     <EmbeddedResource Include="TestSources\IfTest.luax" />
