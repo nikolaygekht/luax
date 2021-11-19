@@ -49,7 +49,7 @@
          for j = 0, strRep - 1 do
             substr = substr .. str;
          end
-         if i > rep then
+         if i > 0 then
             resStr = resStr .. "_";
          end
          resStr = resStr .. substr;

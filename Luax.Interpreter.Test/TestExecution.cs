@@ -375,6 +375,8 @@ namespace Luax.Interpreter.Test
 
         [Theory]
         [InlineData("a", 3, 1, "aaa")]
+        [InlineData("b", 4, 2, "bbbb_bbbb")]
+        [InlineData("b", 4, 3, "bbbb_bbbb_bbbb")]
         public void TestForNested(string str, int strRep, int rep, string expectedValue)
         {
             var app = new LuaXApplication();
@@ -391,7 +393,7 @@ namespace Luax.Interpreter.Test
             method.Arguments[2].LuaType.IsInteger().Should().BeTrue();
             method.ReturnType.IsString().Should().BeTrue();
 
-            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { str, rep, strRep }, out var r);
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { str, strRep, rep }, out var r);
             r.Should().BeOfType<string>();
             r.Should().Be(expectedValue);
         }
