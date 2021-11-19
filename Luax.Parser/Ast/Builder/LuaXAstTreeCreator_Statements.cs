@@ -229,6 +229,15 @@ namespace Luax.Parser.Ast.Builder
             return FindCustomCast(expression, targetType);
         }
 
+        private static bool IsMethodACastCandidate(LuaXMethod method, LuaXTypeDefinition targetType, LuaXTypeDefinition sourceType)
+        {
+            return method.Visibility != LuaXVisibility.Private &&
+                   method.Static &&
+                   method.ReturnType.IsTheSame(targetType) &&
+                   method.Arguments.Count == 1 &&
+                   method.Arguments[0].LuaType.IsTheSame(sourceType);
+        }
+
         private LuaXExpression FindCustomCast(LuaXExpression expression, LuaXTypeDefinition targetType)
         {
             LuaXClass castClass = null;
@@ -242,11 +251,7 @@ namespace Luax.Parser.Ast.Builder
 
                 foreach (var method in @class.Methods)
                 {
-                    if (method.Visibility != LuaXVisibility.Private &&
-                        method.Static &&
-                        method.ReturnType.IsTheSame(targetType) &&
-                        method.Arguments.Count == 1 &&
-                        method.Arguments[0].LuaType.IsTheSame(expression.ReturnType))
+                    if (IsMethodACastCandidate(method, targetType, expression.ReturnType))
                     {
                         castMethod = method;
                         castClass = @class;
@@ -264,7 +269,64 @@ namespace Luax.Parser.Ast.Builder
                 return expr;
             }
 
+            if (expression.ReturnType.IsObject())
+            {
+                LuaXClass parent = null;
+                if (expression is LuaXConstantExpression c && c.Value.IsNil)
+                    parent = LuaXClass.Object;
+                else
+                {
+                    if (Metadata.Search(expression.ReturnType.Class, out var @class))
+                        parent = @class.ParentClass;
+                }
+                if (parent != null)
+                    return FindCustomCastForParent(expression, parent, targetType);
+            }
+
             return null;
+        }
+
+        private LuaXExpression FindCustomCastForParent(LuaXExpression expression, LuaXClass targetClass, LuaXTypeDefinition targetType)
+        {
+            if (targetClass == null)
+                return null;
+
+            var sourceType = new LuaXTypeDefinition()
+            {
+                TypeId = LuaXType.Object,
+                Class = targetClass.Name
+            };
+
+            LuaXClass castClass = null;
+            LuaXMethod castMethod = null;
+
+            //try to find custom cast
+            foreach (var @class in Metadata)
+            {
+                if (!@class.Attributes.Any(attribute => attribute.Name == "Cast"))
+                    continue;
+
+                foreach (var method in @class.Methods)
+                {
+                    if (IsMethodACastCandidate(method, targetType, sourceType))
+                    {
+                        castMethod = method;
+                        castClass = @class;
+                        break;
+                    }
+                }
+                if (castClass != null)
+                    break;
+            }
+
+            if (castClass != null)
+            {
+                var expr = new LuaXStaticCallExpression(targetType, castClass.Name, castMethod.Name, expression.Location);
+                expr.Arguments.Add(expression);
+                return expr;
+            }
+
+            return FindCustomCastForParent(expression, targetClass.ParentClass, targetType);
         }
 
         /// <summary>

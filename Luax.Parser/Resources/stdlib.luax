@@ -605,4 +605,16 @@ class assert
    @DocParameter("action", "The action object to execute")
    @DocParameter("message", "The message to add to a standard message of the assertion")
    public static extern doesNotThrow(action : action, message : string) : void;
+
+   @DocBrief("Asserts that values equals")
+   @DocParameter("v1", "The first value")
+   @DocParameter("v2", "The second value")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
+   public static extern equals(v1 : variant, v2 : variant, message : string) : void;
+
+   @DocBrief("Asserts that values not equals")
+   @DocParameter("v1", "The first value")
+   @DocParameter("v2", "The second value")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
+   public static extern notEquals(v1 : variant, v2 : variant, message : string) : void;
 end

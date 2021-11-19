@@ -8,6 +8,8 @@ namespace Luax.Parser.Ast
     /// </summary>
     public class LuaXConstant
     {
+        public static LuaXConstant Nil { get; } = new LuaXConstant(LuaXType.Object, null, new LuaXElementLocation("internal", 0, 0));
+
         /// <summary>
         /// The data type of the constant
         /// </summary>
@@ -50,6 +52,10 @@ namespace Luax.Parser.Ast
         }
 
         internal LuaXConstant(bool value, LuaXElementLocation location) : this(LuaXType.Boolean, value, location)
+        {
+        }
+
+        internal LuaXConstant(DateTime value, LuaXElementLocation location) : this(LuaXType.Datetime, value, location)
         {
         }
 
