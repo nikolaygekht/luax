@@ -280,23 +280,33 @@ namespace Luax.Parser.Ast.Builder
             throw new LuaXAstGeneratorException(Name, astNode, "[] operator can be applied to arrays only");
         }
 
-        private bool SearchClassByName(string className, IClassesContainer container, out LuaXClass @class)
+        private bool SearchClassByName(string className, LuaXClass currentClass, out LuaXClass @class)
         {
-            if(!ClassesPasse2InProgress)
+            if (className.IndexOf('.') > 0)
                 return Metadata.Search(className, out @class);
 
-            return SearchClassByNameInner(className, container, out @class);
-        }
-
-        private bool SearchClassByNameInner(string className, IClassesContainer container, out LuaXClass @class)
-        {
-            if (!container.Classes.Search(className, out @class))
+            string ownerName = currentClass.Name;
+            string name = $"{ownerName}.{className}";
+            while (name.Length > 0)
             {
-                if (container.OwnerContainer == null)
-                    return false;
-                return SearchClassByNameInner(className, container.OwnerContainer, out @class);
+                if (Metadata.Search(name, out @class))
+                    return true;
+                if (ownerName.Length == 0)
+                    break;
+                int index = ownerName.LastIndexOf('.');
+                if (index < 0)
+                {
+                    ownerName = "";
+                    name = className;
+                }
+                else
+                {
+                    ownerName = ownerName.Substring(0, index);
+                    name = $"{ownerName}.{className}";
+                }
             }
-            return true;
+            @class = null;
+            return false;
         }
 
         private bool HasGetMethod(string className, LuaXTypeDefinition returnType, LuaXClass currentClass, out LuaXMethod method)
@@ -338,8 +348,16 @@ namespace Luax.Parser.Ast.Builder
             decl.Add(astNode.Children[2]);
             var type = ProcessTypeDecl(decl, false);
 
-            if (type.TypeId == LuaXType.Object && !SearchClassByName(type.Class, currentClass, out _))
-                throw new LuaXAstGeneratorException(Name, astNode.Children[2], $"The class {type.Class} is not defined");
+            if (type.TypeId == LuaXType.Object)
+                if (!SearchClassByName(type.Class, currentClass, out var realClass))
+                    throw new LuaXAstGeneratorException(Name, astNode.Children[2], $"The class {type.Class} is not defined");
+                else
+                    type = new LuaXTypeDefinition()
+                    {
+                        TypeId = type.TypeId,
+                        Array = type.Array,
+                        Class = realClass.Name
+                    };
 
             var arg = ProcessExpression(astNode.Children[5], currentClass, currentMethod);
 
@@ -496,8 +514,8 @@ namespace Luax.Parser.Ast.Builder
             if (currentClass.SearchConstant(name, out var c2))
                 return new LuaXConstantExpression(c2.Value, location);
 
-            if (SearchClassByName(name, currentClass, out _))
-                return new LuaXClassNameExpression(name, location);
+            if (SearchClassByName(name, currentClass, out var realClass))
+                return new LuaXClassNameExpression(realClass.Name, location);
 
             throw new LuaXAstGeneratorException(Name, astNode, $"Identifier {name} is not an argument, property, method or class name");
         }
@@ -575,10 +593,10 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, astNode, "The identifier is expected");
 
             var @class = astNode.Children[1].Value;
-            if (!SearchClassByName(@class, currentClass, out _))
+            if (!SearchClassByName(@class, currentClass, out var realClass))
                 throw new LuaXAstGeneratorException(Name, astNode, $"The class {@class} is not found");
 
-            return new LuaXNewObjectExpression(@class, new LuaXElementLocation(Name, astNode));
+            return new LuaXNewObjectExpression(realClass.Name, new LuaXElementLocation(Name, astNode));
         }
 
         /// <summary>
@@ -606,8 +624,16 @@ namespace Luax.Parser.Ast.Builder
             decl.Add(astNode.Children[1]);
             var type = ProcessTypeDecl(decl, false);
 
-            if (type.TypeId == LuaXType.Object && !SearchClassByName(type.Class, currentClass, out _))
-                throw new LuaXAstGeneratorException(Name, astNode.Children[3], $"The class {type.Class} is not defined");
+            if (type.TypeId == LuaXType.Object)
+                if (!SearchClassByName(type.Class, currentClass, out var realClass))
+                    throw new LuaXAstGeneratorException(Name, astNode.Children[3], $"The class {type.Class} is not defined");
+                else
+                    type = new LuaXTypeDefinition()
+                    {
+                        TypeId = type.TypeId,
+                        Array = type.Array,
+                        Class = realClass.Name
+                    };
 
             return new LuaXNewArrayExpression(type, size, new LuaXElementLocation(Name, astNode));
         }

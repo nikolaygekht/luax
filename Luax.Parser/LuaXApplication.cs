@@ -6,16 +6,12 @@ namespace Luax.Parser
     /// <summary>
     /// The application
     /// </summary>
-    public class LuaXApplication : IClassesContainer
+    public class LuaXApplication
     {
         /// <summary>
         /// All the classes in the code base
         /// </summary>
         public LuaXClassCollection Classes { get; } = new LuaXClassCollection();
-        /// <summary>
-        /// The reference to the owner container
-        /// </summary>
-        public IClassesContainer OwnerContainer { get; set; } = null;
 
         /// <summary>
         /// Constructor
@@ -54,7 +50,6 @@ namespace Luax.Parser
             for (int i = 0; i < Classes.Count; i++)
             {
                 var parser = new LuaXAstTreeCreator(Classes[i].Location.Source, Classes);
-                parser.ClassesPasse2InProgress = true;
                 Classes[i].Pass2(this, parser);
             }
         }

@@ -11,7 +11,7 @@ namespace Luax.Parser.Ast
     /// <summary>
     /// LuaX class declaration
     /// </summary>
-    public class LuaXClass : ILuaXNamedObject, IClassesContainer
+    public class LuaXClass : ILuaXNamedObject
     {
         public static LuaXClass Object { get; } = new LuaXClass("object", null, new LuaXElementLocation("internal", new AstNodeWrapper()));
 
@@ -22,7 +22,7 @@ namespace Luax.Parser.Ast
         /// <summary>
         /// The parent class
         /// </summary>
-        public string Parent { get; internal init; }
+        public string Parent { get; internal set; }
         /// <summary>
         /// The flag indicating that the class has a parent class
         /// </summary>
@@ -32,11 +32,6 @@ namespace Luax.Parser.Ast
         /// The reference to the parent class
         /// </summary>
         public LuaXClass ParentClass { get; internal set; }
-
-        /// <summary>
-        /// The reference to the owner container
-        /// </summary>
-        public IClassesContainer OwnerContainer { get; set; }
 
         /// <summary>
         /// The reference to a constructor
@@ -66,14 +61,11 @@ namespace Luax.Parser.Ast
         public LuaXMethodCollection Methods { get; } = new LuaXMethodCollection();
 
         /// <summary>
-        /// The collection of classes defined in this class.
-        /// </summary>
-        public LuaXClassCollection Classes { get; } = new LuaXClassCollection();
-
-        /// <summary>
         /// The location of the element in the source
         /// </summary>
         public LuaXElementLocation Location { get; }
+
+        private LuaXClassCollection mMetadata;
 
         internal LuaXClass(string name) : this(name, "object", new LuaXElementLocation("code", new AstNodeWrapper()))
         {
@@ -88,57 +80,40 @@ namespace Luax.Parser.Ast
 
         internal bool HasInParents(LuaXClass parent)
         {
-            IClassesContainer currentContainer = OwnerContainer;
             string currentClassName = Name;
             string parentName = parent.Name;
             while (!string.IsNullOrEmpty(currentClassName) && currentClassName != "object")
             {
                 if (currentClassName.Equals(parentName))
                     return true;
-                currentContainer.Classes.Search(currentClassName, out var @class);
+                mMetadata.Search(currentClassName, out var @class);
                 if (@class == null)
                 {
-                    if (currentContainer.OwnerContainer == null)
-                        return false;
-                    currentContainer = currentContainer.OwnerContainer;
-                    continue;
+                    return false;
                 }
                 currentClassName = @class.Parent;
             }
             return false;
         }
 
-        private void ValidateParentChain(IClassesContainer classesContainer)
+        private void ValidateParentChain(LuaXApplication application)
         {
             HashSet<string> parents = new HashSet<string>();
-            IClassesContainer currentContainer = classesContainer;
             string name = Name;
             while (!string.IsNullOrEmpty(name) && name != "object")
             {
                 if (parents.Contains(name))
                     throw new LuaXAstGeneratorException(Location, "Class contains itself in the class inheritance chain");
                 parents.Add(name);
-                currentContainer.Classes.Search(name, out var @class);
-                if (@class == null)
-                {
-                    if(currentContainer.OwnerContainer == null)
-                        throw new LuaXAstGeneratorException(Location, $"Class with name '{name}' is not found");
-                    currentContainer = currentContainer.OwnerContainer;
-                    parents.Clear();
-                    continue;
-                }
+                application.Classes.Search(name, out var @class);
                 name = @class.Parent;
             }
         }
 
-        internal void Pass2(IClassesContainer classesContainer, LuaXAstTreeCreator creator)
+        internal void Pass2(LuaXApplication application, LuaXAstTreeCreator creator)
         {
-            OwnerContainer = classesContainer;
-            ValidateParentChain(classesContainer);
-
-            // process inner classes
-            foreach (LuaXClass innerClass in Classes)
-                innerClass.Pass2(this, creator);
+            ValidateParentChain(application);
+            mMetadata = application.Classes;
 
             //process methods
             for (int i = 0; i < Methods.Count; i++)
@@ -161,50 +136,122 @@ namespace Luax.Parser.Ast
 
         public bool SearchProperty(string propertyName, out LuaXProperty property)
         {
-            var propertyIndex = Properties.Find(propertyName);
-            if (propertyIndex < 0)
+            LuaXPropertyCollection properties = this.Properties;
+            string className = this.Name;
+            while (!string.IsNullOrEmpty(className))
             {
-                if (ParentClass == null)
+                var propertyIndex = properties.Find(propertyName);
+                if (propertyIndex < 0)
                 {
-                    property = null;
-                    return false;
+                    bool foundInParents = false;
+                    if (ParentClass != null)
+                    {
+                        foundInParents = ParentClass.SearchProperty(propertyName, out property);
+                        if (foundInParents)
+                        {
+                            return true;
+                        }
+                    }
+                    if(!foundInParents)
+                    {
+                        int indexOfPoint = className.LastIndexOf('.');
+                        if (indexOfPoint > 0)
+                        {
+                            className = className.Substring(0, indexOfPoint);
+                            if (mMetadata.Search(className, out var @class))
+                            {
+                                properties = @class.Properties;
+                                continue;
+                            }
+                        }
+                        break;
+                    }
                 }
-                return ParentClass.SearchProperty(propertyName, out property);
+                property = properties[propertyIndex];
+                return true;
             }
-            property = this.Properties[propertyIndex];
-            return true;
+            property = null;
+            return false;
         }
 
         public bool SearchConstant(string propertyName, out LuaXConstantVariable constant)
         {
-            var constantIndex = Constants.Find(propertyName);
-            if (constantIndex < 0)
+            LuaXConstantVariableCollection constants = this.Constants;
+            string className = this.Name;
+            while (!string.IsNullOrEmpty(className))
             {
-                if (ParentClass == null)
+                var constantIndex = constants.Find(propertyName);
+                if (constantIndex < 0)
                 {
-                    constant = null;
-                    return false;
+                    bool foundInParents = false;
+                    if (ParentClass != null)
+                    {
+                        foundInParents = ParentClass.SearchConstant(propertyName, out constant);
+                        if (foundInParents)
+                        {
+                            return true;
+                        }
+                    }
+                    if (!foundInParents)
+                    {
+                        int indexOfPoint = className.LastIndexOf('.');
+                        if (indexOfPoint > 0)
+                        {
+                            className = className.Substring(0, indexOfPoint);
+                            if (mMetadata.Search(className, out var @class))
+                            {
+                                constants = @class.Constants;
+                                continue;
+                            }
+                        }
+                        break;
+                    }
                 }
-                return ParentClass.SearchConstant(propertyName, out constant);
+                constant = constants[constantIndex];
+                return true;
             }
-            constant = this.Constants[constantIndex];
-            return true;
+            constant = null;
+            return false;
         }
 
         public bool SearchMethod(string propertyName, out LuaXMethod method)
         {
-            var methodIndex = Methods.Find(propertyName);
-            if (methodIndex < 0)
+            LuaXMethodCollection methods = this.Methods;
+            string className = this.Name;
+            while (!string.IsNullOrEmpty(className))
             {
-                if (ParentClass == null)
+                var methodIndex = methods.Find(propertyName);
+                if (methodIndex < 0)
                 {
-                    method = null;
-                    return false;
+                    bool foundInParents = false;
+                    if (ParentClass != null)
+                    {
+                        foundInParents = ParentClass.SearchMethod(propertyName, out method);
+                        if (foundInParents)
+                        {
+                            return true;
+                        }
+                    }
+                    if (!foundInParents)
+                    {
+                        int indexOfPoint = className.LastIndexOf('.');
+                        if (indexOfPoint > 0)
+                        {
+                            className = className.Substring(0, indexOfPoint);
+                            if (mMetadata.Search(className, out var @class))
+                            {
+                                methods = @class.Methods;
+                                continue;
+                            }
+                        }
+                        break;
+                    }
                 }
-                return ParentClass.SearchMethod(propertyName, out method);
+                method = methods[methodIndex];
+                return true;
             }
-            method = this.Methods[methodIndex];
-            return true;
+            method = null;
+            return false;
         }
     }
 }
