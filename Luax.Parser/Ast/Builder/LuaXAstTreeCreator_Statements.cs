@@ -229,6 +229,15 @@ namespace Luax.Parser.Ast.Builder
             return FindCustomCast(expression, targetType);
         }
 
+        private static bool IsMethodACastCandidate(LuaXMethod method, LuaXTypeDefinition targetType, LuaXTypeDefinition sourceType)
+        {
+            return method.Visibility != LuaXVisibility.Private &&
+                   method.Static &&
+                   method.ReturnType.IsTheSame(targetType) &&
+                   method.Arguments.Count == 1 &&
+                   method.Arguments[0].LuaType.IsTheSame(sourceType);
+        }
+
         private LuaXExpression FindCustomCast(LuaXExpression expression, LuaXTypeDefinition targetType)
         {
             LuaXClass castClass = null;
@@ -242,11 +251,7 @@ namespace Luax.Parser.Ast.Builder
 
                 foreach (var method in @class.Methods)
                 {
-                    if (method.Visibility != LuaXVisibility.Private &&
-                        method.Static &&
-                        method.ReturnType.IsTheSame(targetType) &&
-                        method.Arguments.Count == 1 &&
-                        method.Arguments[0].LuaType.IsTheSame(expression.ReturnType))
+                    if (IsMethodACastCandidate(method, targetType, expression.ReturnType))
                     {
                         castMethod = method;
                         castClass = @class;
@@ -303,11 +308,7 @@ namespace Luax.Parser.Ast.Builder
 
                 foreach (var method in @class.Methods)
                 {
-                    if (method.Visibility != LuaXVisibility.Private &&
-                        method.Static &&
-                        method.ReturnType.IsTheSame(targetType) &&
-                        method.Arguments.Count == 1 &&
-                        method.Arguments[0].LuaType.IsTheSame(sourceType))
+                    if (IsMethodACastCandidate(method, targetType, sourceType))
                     {
                         castMethod = method;
                         castClass = @class;
