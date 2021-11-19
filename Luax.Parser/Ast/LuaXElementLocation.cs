@@ -58,5 +58,9 @@ namespace Luax.Parser.Ast
             info.AddValue("line", Line);
             info.AddValue("column", Column);
         }
+
+        public bool IsTheSame(LuaXElementLocation otherLocation) => Source == otherLocation.Source &&
+                                                                    Line == otherLocation.Line &&
+                                                                    Column == otherLocation.Column;
     }
 }
