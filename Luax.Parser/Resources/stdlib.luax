@@ -8,34 +8,34 @@ class stdlib
     -- -------------------------------------------------------
     @DocBrief("Returns the length of the string")
     public static extern len(s : string) : int;
-    
+
     @DocBrief("Finds a substring in a string")
     public static extern indexOf(s : string, sub:string, caseSenstitive : boolean) : int;
-    
+
     @DocBrief("Returns a left part of the string")
     public static extern left(s : string, length : int) : string;
-    
+
     @DocBrief("Trims white space from the both sides of the string")
     public static extern trim(s : string) : string;
-    
+
     @DocBrief("Trims white space from the right side of the string")
     public static extern rtrim(s : string) : string;
-    
+
     @DocBrief("Trims white space from the left side of the string")
     public static extern ltrim(s : string) : string;
-    
+
     @DocBrief("Returns the right part of the string")
     public static extern right(s : string, length : int) : string;
-    
+
     @DocBrief("Returns a substring")
     public static extern substring(s : string, from : int, length : int) : string;
-    
+
     @DocBrief("Checks whether the string matches the specified regular expression")
     public static extern match(s : string, re : string) : boolean;
-    
+
     @DocBrief("Returns an unicode character by the position specified")
     public static extern unicode(s : string, position : int) : int;
-    
+
     @DocBrief("Creates a string by unicode character")
     public static extern char(unicode : int) : string;
 
@@ -58,48 +58,48 @@ class stdlib
 
     @DocBrief("Returns the absolute value of a real value")
     public static extern abs(x : real) : real;
-    
+
     @DocBrief("Returns the sign of a real value")
     @DocDescription("The function returns `1` for positive numbers, `-1` for negative numbers and `0` if parameter is zero")
     public static extern sgn(x : real) : int;
-    
+
     @DocBrief("Returns sine value")
     @DocParameter("x", "The value in radians")
     public static extern sin(x : real) : real;
-    
+
     @DocBrief("Returns cosine value")
     @DocParameter("x", "The value in radians")
     public static extern cos(x : real) : real;
-    
+
     @DocBrief("Returns tangent value")
     @DocParameter("x", "The value in radians")
     public static extern tan(x : real) : real;
-    
+
     @DocBrief("Returns arcsine value")
     @DocReturn("The function returns the value in radians")
     public static extern asin(x : real) : real;
-    
+
     @DocBrief("Returns arccosine value")
     @DocReturn("The function returns the value in radians")
     public static extern acos(x : real) : real;
-    
+
     @DocBrief("Returns arctangent value")
     @DocReturn("The function returns the value in radians")
     public static extern atan(x : real) : real;
-    
+
     @DocBrief("Returns arctangent value by cartesian coordinates")
     @DocReturn("The function returns the value in radians")
     public static extern atan2(y : real, x : real) : real;
-    
+
     @DocBrief("Returns a square root of the value")
     public static extern sqrt(x : real) : real;
-    
+
     @DocBrief("Returns the smallest integral value that is greater than or equal to the specified decimal number.")
     public static extern ceil(x : real) : real;
-    
+
     @DocBrief("Returns the largest integral value less than or equal to the specified decimal number.")
     public static extern floor(x : real) : real;
-    
+
     @DocBrief("Rounds the number to the specified number of digits")
     public static extern round(x : real, digits : int) : real;
 
@@ -196,20 +196,20 @@ end
 class io
     @DocBrief("Checks whether a file or a directory exists")
     public static extern exists(filename : string) : boolean;
-    
+
     @DocBrief("Returns the size of the file specified")
     public static extern size(filename : string) : int;
-    
+
     @DocBrief("Checks whether the specified path points at a folder")
     public static extern isFolder(filename : string) : boolean;
-    
+
     @DocBrief("Checks whether the specified path points at a file")
     public static extern isFile(filename : string) : boolean;
 
     @DocBrief("Returns the files in the folder specified")
     @DocDescription("The names of the files will include the name of the folder")
     public static extern files(path : string) : string[];
-    
+
     @DocBrief("Returns the sub-folders in the folder specified")
     @DocDescription("The names of the folders will include the name of the parent folder")
     public static extern folders(path : string) : string[];
@@ -220,14 +220,14 @@ class io
 
     @DocBrief("Writes text to the file")
     public static extern writeTextToFile(path : string, text : string, codepage : int) : void;
-    
+
     @DocBrief("Reads the whole file as a text")
     public static extern readTextFromFile(path : string, codepage : int) : string;
 
 
     @DocBrief("Returns the path to the system temporary folder")
     public static extern tempFolder() : string;
-    
+
     @DocBrief("Combines two paths")
     public static extern combinePath(p1 : string, p2 : string) : string;
 
@@ -319,13 +319,13 @@ class file
 
     @DocBrief("Writers a byte")
     public extern writeByte(v : int) : void;
-    
+
     @DocBrief("Writes a buffer")
     @DocParameter("v", "The buffer to write")
     @DocParameter("offset", "The offset of the piece of the buffer to write")
     @DocParameter("length", "The length of the piece of the buffer to write")
     public extern writeBuffer(v : buffer, offset : int, length : int) : void;
-    
+
     @DocBrief("Closes the file and frees all associated resources")
     public extern close() : void;
 
@@ -605,4 +605,53 @@ class assert
    @DocParameter("action", "The action object to execute")
    @DocParameter("message", "The message to add to a standard message of the assertion")
    public static extern doesNotThrow(action : action, message : string) : void;
+
+   @DocBrief("Asserts that values are equal")
+   @DocParameter("v1", "The first value")
+   @DocParameter("v2", "The second value")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
+   public static extern equals(v1 : variant, v2 : variant, message : string) : void;
+
+   @DocBrief("Asserts that values are not equal")
+   @DocParameter("v1", "The first value")
+   @DocParameter("v2", "The second value")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
+   public static extern doesNotEqual(v1 : variant, v2 : variant, message : string) : void;
+
+   @DocBrief("Asserts that value is greater than expected")
+   @DocParameter("value", "The tested value")
+   @DocParameter("expected", "The expected value")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
+   public static extern greater(value : real, expected : real, message : string) : void;
+
+   @DocBrief("Asserts that value is greater or equal than expected")
+   @DocParameter("value", "The tested value")
+   @DocParameter("expected", "The expected value")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
+   public static extern greaterOrEqual(value : real, expected : real, message : string) : void;
+
+   @DocBrief("Asserts that value is less than expected")
+   @DocParameter("value", "The tested value")
+   @DocParameter("expected", "The expected value")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
+   public static extern less(value : real, expected : real, message : string) : void;
+
+   @DocBrief("Asserts that value is less or equal than expected")
+   @DocParameter("value", "The tested value")
+   @DocParameter("expected", "The expected value")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
+   public static extern lessOrEqual(value : real, expected : real, message : string) : void;
+
+   @DocBrief("Asserts that string value matches the pattern")
+   @DocParameter("value", "The tested value")
+   @DocParameter("pattern", "The regular expression patter value")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
+   public static extern matches(value : string, pattern : string, message : string) : void;
+
+   @DocBrief("Asserts that string value does not match the pattern")
+   @DocParameter("value", "The tested value")
+   @DocParameter("pattern", "The regular expression patter value")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
+   public static extern doesNotMatch(value : string, pattern : string, message : string) : void;
+
 end

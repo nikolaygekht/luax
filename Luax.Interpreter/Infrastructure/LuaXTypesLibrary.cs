@@ -39,7 +39,7 @@ namespace Luax.Interpreter.Infrastructure
             ExternMethods.Add(this, typeof(StdlibStack));
             ExternMethods.Add(this, typeof(StdlibBuffer));
             ExternMethods.Add(this, typeof(StdlibIO));
-            
+            ExternMethods.Add(this, typeof(StdlibVariant));
         }
 
         public string[] GetClassNames() => mTypes.Keys.ToArray();
@@ -49,171 +49,145 @@ namespace Luax.Interpreter.Infrastructure
 
         public bool IsKindOf(string sourceClassName, string targetClassName) =>
             mApplication.Classes.IsKindOf(sourceClassName, targetClassName);
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastInteger(ref object argument)
         {
-                        if (argument is int)
-                            return true;
-                        if (argument is double r)
-                        {
-                            argument = (int)r;
-                            return true;
-                        }
-                        if (argument is bool b)
-                        {
-                            argument = b ? 1 : 0;
-                            return true;
-                        }
-                        if (argument is DateTime d)
-                        {
-                            argument = StdlibDate.ToJDN(d);
-                            return true;
-                        }
-                        if (argument is string s1)
-                        {
-                            if (Int32.TryParse(s1, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i1))
-                            {
-                                argument = i1;
-                                return true;
-                            }
-                            return false;
-                        }
-            else
-                return false;
-                    }
+            switch (argument)
+            {
+                case int:
+                    return true;
+                case double r:
+                    argument = (int)r;
+                    return true;
+                case bool b:
+                    argument = b ? 1 : 0;
+                    return true;
+                case DateTime d:
+                    argument = StdlibDate.ToJDN(d);
+                    return true;
+                case string s1 when int.TryParse(s1, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i1):
+                    argument = i1;
+                    return true;
+                case string :
+                    return false;
+                default:
+                    return false;
+            }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastReal(ref object argument)
-                    {
-                        if (argument is int i)
-                        {
-                            argument = (double)i;
-                            return true;
-                        }
-                        if (argument is double)
-                            return true;
-                        if (argument is bool b)
-                        {
-                            argument = b ? 1.0 : 0.0;
-                            return true;
-                        }
-                        if (argument is DateTime d)
-                        {
-                            argument = StdlibDate.DateToJDN(d);
-                            return true;
-                        }
-                        if (argument is string s2)
-                        {
-                            if (Double.TryParse(s2, NumberStyles.Float, CultureInfo.InvariantCulture, out double i1))
-                            {
-                                argument = i1;
-                                return true;
-                            }
-                            return false;
-                        }
-            else
-                return false;
-                    }
+        {
+            switch (argument)
+            {
+                case int i:
+                    argument = (double)i;
+                    return true;
+                case double:
+                    return true;
+                case bool b:
+                    argument = b ? 1.0 : 0.0;
+                    return true;
+                case DateTime d:
+                    argument = StdlibDate.DateToJDN(d);
+                    return true;
+                case string s2 when double.TryParse(s2, NumberStyles.Float, CultureInfo.InvariantCulture, out double i1):
+                    argument = i1;
+                    return true;
+                case string :
+                    return false;
+                default:
+                    return false;
+            }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastDateTime(ref object argument)
-                    {
-                        if (argument is int i)
-                        {
-                            argument = StdlibDate.JdnToDate(i);
-                            return true;
-                        }
-                        if (argument is double r)
-                        {
-                            argument = StdlibDate.JdnToDate(r);
-                            return true;
-                        }
-                        if (argument is DateTime )
-                        {
-                            return true;
-                        }
-                        if (argument is string s3)
-                        {
-                            if (DateTime.TryParseExact(s3, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d1))
-                            {
-                                argument = d1;
-                                return true;
-                            }
-                            if (DateTime.TryParseExact(s3, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d2))
-                            {
-                                argument = d2;
-                                return true;
-                            }
-                            if (DateTime.TryParseExact(s3, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d3))
-                            {
-                                argument = d3;
-                                return true;
-                            }
-                            if (DateTime.TryParseExact(s3, "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture, DateTimeStyles.None, out var d4))
-                            {
-                                argument = d4;
-                                return true;
-                            }
-                            return false;
-                        }
-            else
-                return false;
-                    }
+        {
+            switch (argument)
+            {
+                case int i:
+                    argument = StdlibDate.JdnToDate(i);
+                    return true;
+                case double r:
+                    argument = StdlibDate.JdnToDate(r);
+                    return true;
+                case DateTime:
+                    return true;
+                case string s3 when DateTime.TryParseExact(s3, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                    out var d1):
+                    argument = d1;
+                    return true;
+                case string s3 when DateTime.TryParseExact(s3, "yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                    out var d2):
+                    argument = d2;
+                    return true;
+                case string s3 when DateTime.TryParseExact(s3, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                    out var d3):
+                    argument = d3;
+                    return true;
+                case string s3 when DateTime.TryParseExact(s3, "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture,
+                    DateTimeStyles.None, out var d4):
+                    argument = d4;
+                    return true;
+                case string :
+                    return false;
+                default:
+                    return false;
+            }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastString(ref object argument)
-                    {
-                        if (argument == null)
-                            return true;
-                        if (argument is int i)
-                        {
-                            argument = i.ToString(CultureInfo.InvariantCulture);
-                            return true;
-                        }
-                        if (argument is double r)
-                        {
-                            argument = r.ToString(CultureInfo.InvariantCulture);
-                            return true;
-                        }
-                        if (argument is bool b)
-                        {
-                            argument = b ? "true" : "false";
-                            return true;
-                        }
-                        if (argument is DateTime d)
-                        {
-                            if (d.Hour == 0 && d.Minute == 0 && d.Second == 0 && d.Millisecond == 0)
-                                argument = d.ToString("yyyy-MM-dd");
-                            else if (d.Millisecond == 0)
-                                argument = d.ToString("yyyy-MM-dd HH:mm:ss");
-                            else
-                                argument = d.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                            return true;
-                        }
-            return argument is string;
-                    }
+        {
+            switch (argument)
+            {
+                case null:
+                    return true;
+                case int i:
+                    argument = i.ToString(CultureInfo.InvariantCulture);
+                    return true;
+                case double r:
+                    argument = r.ToString(CultureInfo.InvariantCulture);
+                    return true;
+                case bool b:
+                    argument = b ? "true" : "false";
+                    return true;
+                case DateTime d:
+                {
+                    if (d.Hour == 0 && d.Minute == 0 && d.Second == 0 && d.Millisecond == 0)
+                        argument = d.ToString("yyyy-MM-dd");
+                    else if (d.Millisecond == 0)
+                        argument = d.ToString("yyyy-MM-dd HH:mm:ss");
+                    else
+                        argument = d.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                    return true;
+                }
+                default:
+                    return argument is string;
+            }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static bool CastBoolean(ref object argument)
-                    {
-                        if (argument is bool)
-                            return true;
-                        if (argument is string s)
-                        {
-                            if (s == "true")
-                            {
-                                argument = true;
-                                return true;
-                            }
-                            if (s == "false")
-                            {
-                                argument = false;
-                                return true;
-                            }
-                            return false;
-                        }
-            return false;
-                    }
+        {
+            switch (argument)
+            {
+                case bool:
+                    return true;
+                case string s when s == "true":
+                    argument = true;
+                    return true;
+                case string s when s == "false":
+                    argument = false;
+                    return true;
+                case string :
+                    return false;
+                default:
+                    return false;
+            }
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal bool CastTo(LuaXTypeDefinition returnType, ref object argument)
@@ -236,8 +210,9 @@ namespace Luax.Interpreter.Infrastructure
                     if (argument is LuaXObjectInstance instance)
                     {
                         return mApplication.Classes.Search(returnType.Class, out var target) &&
-                            mApplication.Classes.IsKindOf(instance.Class.LuaType, target);
+                               mApplication.Classes.IsKindOf(instance.Class.LuaType, target);
                     }
+
                     return false;
                 default:
                     return false;

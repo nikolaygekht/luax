@@ -57,7 +57,7 @@ namespace LuaX.Doc
         private void WriteMethod(LuaXMethod @method)
         {
             var doc = new SourceDocumentation(@method);
-            
+
             if (doc.Ignore)
                 return;
 

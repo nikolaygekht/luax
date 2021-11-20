@@ -1,0 +1,21 @@
+class Program
+    static function Main() : void
+        f1();
+    end
+    static function f1() : void
+        if true then
+            f2();
+        end
+    end
+    static function f2() : void
+        while true do
+            if not false then
+                f3();
+            end
+        end
+    end
+
+    static function f3() : int
+        return 1 / 0;
+    end
+end
