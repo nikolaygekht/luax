@@ -134,7 +134,7 @@ namespace Luax.Parser.Ast
             }
         }
 
-        public bool SearchProperty(string propertyName, out LuaXProperty property)
+        public bool SearchProperty(string propertyName, out LuaXProperty property, out string ownerClassName)
         {
             LuaXPropertyCollection properties = this.Properties;
             string className = this.Name;
@@ -146,7 +146,7 @@ namespace Luax.Parser.Ast
                     bool foundInParents = false;
                     if (ParentClass != null)
                     {
-                        foundInParents = ParentClass.SearchProperty(propertyName, out property);
+                        foundInParents = ParentClass.SearchProperty(propertyName, out property, out ownerClassName);
                         if (foundInParents)
                         {
                             return true;
@@ -167,9 +167,11 @@ namespace Luax.Parser.Ast
                         break;
                     }
                 }
+                ownerClassName = className;
                 property = properties[propertyIndex];
                 return true;
             }
+            ownerClassName = null;
             property = null;
             return false;
         }

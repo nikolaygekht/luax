@@ -427,14 +427,14 @@ namespace Luax.Parser.Ast.Builder
         {
             if (!SearchClassByName(classNameExpression.Name, currentClass, out var leftSideClass))
                 throw new LuaXAstGeneratorException(Name, astNode, $"Class {classNameExpression.Name} is not found in metadata");
-            if (leftSideClass.SearchProperty(name, out var property))
+            if (leftSideClass.SearchProperty(name, out var property, out string ownerClassName))
             {
                 if (!property.Static)
                     throw new LuaXAstGeneratorException(Name, astNode, $"Property {classNameExpression.Name}.{name} is not static");
                 if (property.Visibility == LuaXVisibility.Private && classNameExpression.ReturnType.Class != currentClass.Name)
                     throw new LuaXAstGeneratorException(Name, astNode, $"Property {classNameExpression.Name}.{name} is private and cannot be accessed");
 
-                return new LuaXStaticPropertyExpression(classNameExpression.ReturnType.Class, name, property.LuaType, location);
+                return new LuaXStaticPropertyExpression(ownerClassName, name, property.LuaType, location);
             }
             else if (leftSideClass.SearchConstant(name, out var constant))
                 return new LuaXConstantExpression(constant.Value, location);
@@ -456,7 +456,7 @@ namespace Luax.Parser.Ast.Builder
             {
                 if (!SearchClassByName(leftSideType.Class, currentClass, out var leftSideClass))
                     throw new LuaXAstGeneratorException(Name, astNode, $"Class {leftSideType.Class} is not found in metadata");
-                if (!leftSideClass.SearchProperty(name, out var property))
+                if (!leftSideClass.SearchProperty(name, out var property, out string ownerClassName))
                     throw new LuaXAstGeneratorException(Name, astNode, $"Class {leftSideType.Class} does not contain property {name}");
                 if (property.Static)
                     throw new LuaXAstGeneratorException(Name, astNode, $"Property {leftSideType.Class}.{name} is static");
@@ -508,8 +508,8 @@ namespace Luax.Parser.Ast.Builder
             if (currentMethod.Constants.Search(name, out var c1))
                 return new LuaXConstantExpression(c1.Value, location);
 
-            if (currentClass.SearchProperty(name, out var p1))
-                return ProcessVariableAsProperty(astNode, currentClass, currentMethod, name, p1, location);
+            if (currentClass.SearchProperty(name, out var p1, out string ownerClassName))
+                return ProcessVariableAsProperty(astNode, ownerClassName, currentMethod, name, p1, location);
 
             if (currentClass.SearchConstant(name, out var c2))
                 return new LuaXConstantExpression(c2.Value, location);
@@ -529,16 +529,16 @@ namespace Luax.Parser.Ast.Builder
             => !currentMethod.Static && currentClass.HasParent && name == "super";
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private LuaXExpression ProcessVariableAsProperty(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod, string name, LuaXProperty p1, LuaXElementLocation location)
+        private LuaXExpression ProcessVariableAsProperty(IAstNode astNode, string ownerClassName, LuaXMethod currentMethod, string name, LuaXProperty p1, LuaXElementLocation location)
         {
             if (p1.Static)
-                return new LuaXStaticPropertyExpression(currentClass.Name, name, p1.LuaType, location);
+                return new LuaXStaticPropertyExpression(ownerClassName, name, p1.LuaType, location);
             else
             {
                 if (currentMethod.Static)
                     throw new LuaXAstGeneratorException(Name, astNode, $"Can't access instance property {name} in a static method");
 
-                return new LuaXInstancePropertyExpression(new LuaXVariableExpression("this", new LuaXTypeDefinition { TypeId = LuaXType.Object, Class = currentClass.Name }, location),
+                return new LuaXInstancePropertyExpression(new LuaXVariableExpression("this", new LuaXTypeDefinition { TypeId = LuaXType.Object, Class = ownerClassName }, location),
                     name, p1.LuaType, location);
             }
         }

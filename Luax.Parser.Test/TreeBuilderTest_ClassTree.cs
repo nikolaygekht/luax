@@ -393,13 +393,13 @@ namespace Luax.Parser.Test
 
             metadata.Search("a", out _);    //force index to be build
 
-            b.SearchProperty("pb", out LuaXProperty p).Should().Be(true);
+            b.SearchProperty("pb", out LuaXProperty p, out string _).Should().Be(true);
             p.Name.Should().Be("pb");
-            b.SearchProperty("pa", out p).Should().Be(true);
+            b.SearchProperty("pa", out p, out string _).Should().Be(true);
             p.Name.Should().Be("pa");
 
-            a.SearchProperty("pb", out _).Should().Be(false);
-            a.SearchProperty("pa", out p).Should().Be(true);
+            a.SearchProperty("pb", out _, out string _).Should().Be(false);
+            a.SearchProperty("pa", out p, out string _).Should().Be(true);
             p.Name.Should().Be("pa");
         }
 
