@@ -353,24 +353,28 @@ namespace Luax.Interpreter.Test
             r.Should().Be(expectedValue);
         }
 
-        [Fact]
-        public void TestInnerClasses()
+        [Theory]
+        [InlineData(4, 75)]
+        [InlineData(3, 45)]
+        [InlineData(2, 25)]
+        [InlineData(1, 15)]
+        public void TestInnerClasses(int param, int expectedValue)
         {
             var app = new LuaXApplication();
-            app.CompileResource("InnerClass");
+            app.CompileResource("InnerClass1");
             app.Pass2();
             var typelib = new LuaXTypesLibrary(app);
 
             typelib.SearchClass("complexClass", out var program).Should().BeTrue();
             program.SearchMethod("dummy", null, out var method).Should().BeTrue();
             method.Static.Should().BeTrue();
-            method.Arguments.Should().HaveCount(0);
-            //method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
             method.ReturnType.IsInteger().Should().BeTrue();
 
-            LuaXMethodExecutor.Execute(method, typelib, null, new object[] {}, out var r);
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { param }, out var r);
             r.Should().BeOfType<int>();
-            //r.Should().Be(expectedValue);
+            r.Should().Be(expectedValue);
         }
     }
 }
