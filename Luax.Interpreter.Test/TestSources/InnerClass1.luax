@@ -12,6 +12,7 @@
       public var parent : complexClass;
       public function innerClass() : void
          b = 12;
+         property = property + 1;
       end
       public function method() : int
          return parentMethod();

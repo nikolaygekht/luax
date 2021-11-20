@@ -354,10 +354,10 @@ namespace Luax.Interpreter.Test
         }
 
         [Theory]
-        [InlineData(4, 75)]
-        [InlineData(3, 45)]
-        [InlineData(2, 25)]
-        [InlineData(1, 15)]
+        [InlineData(3, 75)]
+        [InlineData(2, 45)]
+        [InlineData(1, 25)]
+        [InlineData(0, 15)]
         public void TestInnerClasses(int param, int expectedValue)
         {
             var app = new LuaXApplication();

@@ -273,7 +273,17 @@ namespace Luax.Interpreter.Expression
             if (target is not LuaXObjectInstance @object)
                 throw new LuaXExecutionException(assign.Object.Location, "The target is not an object");
             var expr = LuaXExpressionEvaluator.Evaluate(assign.Expression, types, currentClass, variables);
-            @object.Properties[assign.PropertyName].Value = expr;
+
+            LuaXVariableInstance p = null;
+            while (p == null && @object != null)
+            {
+                p = @object.Properties[assign.PropertyName];
+                @object = @object.OwnerObjectInstance;
+            }
+            if(p == null)
+                throw new LuaXExecutionException(assign.Object.Location, $"Property {assign.PropertyName} is not found");
+
+            p.Value = expr;
         }
 
         private static void ExecuteAssignArrayItem(LuaXAssignArrayItemStatement assign, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables)

@@ -410,14 +410,13 @@ namespace Luax.Interpreter.Expression
         {
             if (!types.SearchClass(expression.ClassName, out var @class))
                 throw new LuaXExecutionException(expression.Location, $"Class {expression.ClassName} is not found");
-            LuaXObjectInstance newInstance = @class.New(types);
 
             LuaXVariableInstance variable = variables["this"];
             if (variable != null && variable.Value is LuaXObjectInstance currentInstance)
                 if (expression.ClassName.StartsWith($"{currentInstance.Class.LuaType.Name}."))
-                    newInstance.OwnerObjectInstance = currentInstance;
+                    return @class.New(types, currentInstance);
 
-            return newInstance;
+            return @class.New(types);
         }
 
         /// <summary>
@@ -435,14 +434,15 @@ namespace Luax.Interpreter.Expression
                 throw new LuaXExecutionException(expression.Location, "The expression is not a class instance expression");
 
             LuaXVariableInstance p = null;
-            while(p == null && v != null)
+            string className = v.Class.LuaType.Name;
+            while (p == null && v != null)
             {
                 p = v.Properties[expression.PropertyName];
                 v = v.OwnerObjectInstance;
             }
 
             if (p == null)
-                throw new LuaXExecutionException(expression.Location, $"Instance property {v.Class.LuaType.Name}.{expression.PropertyName} is not found");
+                throw new LuaXExecutionException(expression.Location, $"Instance property {className}.{expression.PropertyName} is not found");
 
             return p.Value;
         }
