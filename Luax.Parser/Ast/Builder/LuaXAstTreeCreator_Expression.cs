@@ -456,7 +456,7 @@ namespace Luax.Parser.Ast.Builder
             {
                 if (!SearchClassByName(leftSideType.Class, currentClass, out var leftSideClass))
                     throw new LuaXAstGeneratorException(Name, astNode, $"Class {leftSideType.Class} is not found in metadata");
-                if (!leftSideClass.SearchProperty(name, out var property, out string ownerClassName))
+                if (!leftSideClass.SearchProperty(name, out var property, out var _))
                     throw new LuaXAstGeneratorException(Name, astNode, $"Class {leftSideType.Class} does not contain property {name}");
                 if (property.Static)
                     throw new LuaXAstGeneratorException(Name, astNode, $"Property {leftSideType.Class}.{name} is static");
