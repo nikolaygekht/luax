@@ -183,7 +183,7 @@
 		},
 		"var-declaration": {
 			"name": "meta.property.lua",
-			"begin": "\\b([_[:alpha:]][_[:alnum:]]*)\\s*:\\s*\\b(int|string|real|boolean|datetime|[_[:alpha:]][_[:alnum:]]*)\\b",
+			"begin": "\\b([_[:alpha:]][_[:alnum:]]*)\\s*:\\s*\\b(int|string|real|boolean|datetime|[_[:alpha:]][_[:alnum:]]*)\\b\\s*(\\[\\])?",
 			"beginCaptures": {
 				"1": {
 					"name": "variable.other.lua"
@@ -206,7 +206,7 @@
 		},
  		"param-declaration": {
 			"name": "meta.property.lua",
-			"begin": "\\b([_[:alpha:]][_[:alnum:]]*)\\s*:\\s*\\b(int|string|real|boolean|datetime|[_[:alpha:]][_[:alnum:]]*)\\b",
+			"begin": "\\b([_[:alpha:]][_[:alnum:]]*)\\s*:\\s*\\b(int|string|real|boolean|datetime|[_[:alpha:]][_[:alnum:]]*)\\b\\s*(\\[\\])?",
 			"beginCaptures": {
 				"1": {
 					"name": "variable.parameter.lua"
@@ -605,7 +605,7 @@
 					"name": "entity.name.function.lua"
 				}
 			},
-			"end": "(?<=\\))\\s*(\\:)\\s*\\b(int|string|real|boolean|datetime|void|[_[:alpha:]][_[:alnum:]]*)\\b",
+			"end": "(?<=\\))\\s*(\\:)\\s*\\b(int|string|real|boolean|datetime|void|[_[:alpha:]][_[:alnum:]]*)\\b\\s*(\\[\\])?",
 			"endCaptures": {
 				"1": {
 					"name": "punctuation.separator.parameter.lua"
@@ -637,14 +637,17 @@
 					"name": "entity.name.function.lua"
 				}
 			},
-			"end": "(?<=\\))\\s*(\\:)\\s*\\b(int|string|real|boolean|datetime|void|[_[:alpha:]][_[:alnum:]]*)\\b\\s*;",
+			"end": "(?<=\\))\\s*(\\:)\\s*\\b(int|string|real|boolean|datetime|void|[_[:alpha:]][_[:alnum:]]*)\\b\\s*(\\[\\])?\\s*;",
 			"endCaptures": {
 				"1": {
 					"name": "punctuation.separator.parameter.lua"
 				},
 				"2": {
 					"name": "support.type.lua"
-				}
+				},
+                                "3": {
+                                         "name": "keyword.operator.lua"
+                                }
 			},
 			"patterns": [
 				{
