@@ -1,5 +1,5 @@
 ﻿class test
-   public static function basicTest(_start : int, _limit : int, _iterator: int) : int
+   public static function basicTestInc(_start : int, _limit : int, _iterator: int) : int
       var i : int, summ : int, start : int, limit : int, iterator: int;
 
       start = _start;
@@ -13,6 +13,22 @@
 
       return summ;
    end
+
+   public static function basicTestDec(_start : int, _limit : int, _iterator: int) : int
+      var i : int, summ : int, start : int, limit : int, iterator: int;
+
+      start = _start;
+      limit = _limit;
+      iterator = _iterator;
+      summ = 0;
+
+      for i = start, i >= limit, iterator  do
+          summ = summ + 1;
+      end
+
+      return summ;
+   end
+
 
    public static function withoutIteratorExprTest(_start : int, _limit : int) : int
       var i : int, summ : int, start : int, limit : int;
