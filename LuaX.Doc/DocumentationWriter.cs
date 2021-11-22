@@ -13,11 +13,13 @@ namespace LuaX.Doc
     {
         private readonly LuaXClassCollection mClasses;
         private readonly StreamWriter mWriter;
+        private readonly string mGroup;
 
-        public DocumentationWriter(LuaXClassCollection application, StreamWriter writer)
+        public DocumentationWriter(LuaXClassCollection application, string group, StreamWriter writer)
         {
             mClasses = application;
             mWriter = writer;
+            mGroup = group;
         }
 
         public void Dispose() => mWriter.Dispose();
@@ -38,7 +40,7 @@ namespace LuaX.Doc
             mWriter.WriteLine("@class");
             mWriter.WriteLine("    @name={0}", @class.Name);
             mWriter.WriteLine("    @brief={0}", doc.Brief ?? "");
-            mWriter.WriteLine("    @ingroup=");
+            mWriter.WriteLine("    @ingroup={0}", mGroup);
             mWriter.WriteLine("    @type=class");
             mWriter.WriteLine("    @parent={0}", @class.Parent);
 

@@ -224,7 +224,6 @@ class io
     @DocBrief("Reads the whole file as a text")
     public static extern readTextFromFile(path : string, codepage : int) : string;
 
-
     @DocBrief("Returns the path to the system temporary folder")
     public static extern tempFolder() : string;
 
@@ -285,6 +284,97 @@ class buffer
 
     @DocBrief("Sets the byte value at the index specified")
     public extern set(index : int, value : int) : void;
+
+    @DocBrief("Reads 16-bit integer from the buffer")
+    public extern getInt16(index : int) : int;
+    
+    @DocBrief("Writes 16-bit integer to the buffer")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    @DocParameter("value", "The value to write")
+    @DocReturn("The method returns the number of bytes written")
+    public extern setInt16(index : int, value : int) : int;
+    
+    @DocBrief("Reads 32-bit integer from the buffer")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    public extern getInt32(index : int) : int;
+    
+    @DocBrief("Writes 32-bit integer to the buffer")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    @DocParameter("value", "The value to write")
+    @DocReturn("The method returns the number of bytes written")
+    public extern setInt32(index : int, value : int) : int;
+    
+    @DocBrief("Reads 16-bit integer from the buffer in Big-Endian notation")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    public extern getInt16B(index : int) : int;
+    
+    @DocBrief("Writes 16-bit integer to the buffer in Big-Endian notation")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    @DocParameter("value", "The value to write")
+    @DocReturn("The method returns the number of bytes written")
+    public extern setInt16B(index : int, value : int) : int;
+    
+    @DocBrief("Reads 32-bit integer from the buffer in Big-Endian notation")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    public extern getInt32B(index : int) : int;
+    
+    @DocBrief("Writes 32-bit integer to the buffer in Big-Endian notation")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    @DocParameter("value", "The value to write")
+    @DocReturn("The method returns the number of bytes written")
+    public extern setInt32B(index : int, value : int) : int;
+    
+    @DocBrief("Reads 32-bit single precision float from the buffer in IEEE 754 format")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    public extern getFloat32(index : int) : real;
+    
+    @DocBrief("Writes 32-bit single precision float from the buffer in IEEE 754 format")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    @DocParameter("value", "The value to write")
+    @DocReturn("The method returns the number of bytes written")
+    public extern setFloat32(index : int, value : real) : int;
+    
+    @DocBrief("Reads 64-bit double precision float from the buffer in IEEE 754 format")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    public extern getFloat64(index : int) : real;
+    
+    @DocBrief("Writes 64-bit double precision float from the buffer in IEEE 754 format")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    @DocParameter("value", "The value to write")
+    @DocReturn("The method returns the number of bytes written")
+    public extern setFloat64(index : int, value : real) : int;
+    
+    @DocBrief("Gets a string encoded in SBCS/MBCS code page")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    @DocParameter("encodedLength", "The maximum number of bytes to read. The method stop when the maximum number of bytes is read or when `0x0` byte is reached")
+    @DocParameter("codePage", "The code page to use. Use `437` for ANSI and `65001` for UTF-8")
+    public extern getEncodedString(index : int, encodedLength : int, codePage : int) : string;
+
+    @DocBrief("Writer a string encoded in SBCS/MBCS code page")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    @DocParameter("value", "The value to write")
+    @DocParameter("codePage", "The code page to use. Use `437` for ANSI and `65001` for UTF-8")
+    @DocReturn("The method returns the number of bytes written")
+    public extern setEncodedString(index : int, value : string, codePage : int) : int;
+    
+    @DocBrief("Gets string in 16-bit unicode")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    @DocParameter("encodedLength", "The maximum number of characters to read. The method stop when the maximum number of bytes is read or when a character with a zero code is reached")
+    public extern getUnicodeString(index : int, maximumLength : int) : string;
+    
+    @DocBrief("Writer string in 16-bit unicode")
+    @DocParameter("index", "The offset from the beginning of the buffer in bytes")
+    @DocParameter("value", "The value to write")
+    @DocReturn("The method returns the number of bytes written")
+    public extern setUnicodeString(index : int, value : string) : int;
+
+    @DocBrief("Gets a length of the string encoded in SBCS/MBCS code page")
+    public static extern getEncodedStringLength(value : string, codePage : int) : int;
+
+    @DocBrief("Resize the buffer")
+    @DocDescription("The method resizes the buffer. ")
+    @DocDescription("All data that fit into new size will be preserved. If buffer is extended, the new bytes will be zeroed.")
+    public extern resize(newsize : int) : void;
 
     @DocBrief("Creates a new buffer of the specified length")
     @DocDescription("The new buffer is initialized with `0` values")
@@ -653,5 +743,4 @@ class assert
    @DocParameter("pattern", "The regular expression patter value")
    @DocParameter("message", "The message to add to a standard message of the assertion")
    public static extern doesNotMatch(value : string, pattern : string, message : string) : void;
-
 end

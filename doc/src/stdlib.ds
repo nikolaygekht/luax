@@ -675,7 +675,7 @@
         @name=log
         @type=method
         @scope=class
-        @brief=Returns the natural logarithm of
+        @brief=Returns the natural logarithm of 
         @visibility=public
         @divisor=.
 
@@ -1882,6 +1882,514 @@
 
         @param
             @name=value
+        @end
+    @end
+
+    @member
+        @name=getInt16
+        @type=method
+        @scope=instance
+        @brief=Reads 16-bit integer from the buffer
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+        @end
+    @end
+
+    @member
+        @name=setInt16
+        @type=method
+        @scope=instance
+        @brief=Writes 16-bit integer to the buffer
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+    @end
+
+    @member
+        @name=getInt32
+        @type=method
+        @scope=instance
+        @brief=Reads 32-bit integer from the buffer
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+    @end
+
+    @member
+        @name=setInt32
+        @type=method
+        @scope=instance
+        @brief=Writes 32-bit integer to the buffer
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+    @end
+
+    @member
+        @name=getInt16B
+        @type=method
+        @scope=instance
+        @brief=Reads 16-bit integer from the buffer in Big-Endian notation
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+    @end
+
+    @member
+        @name=setInt16B
+        @type=method
+        @scope=instance
+        @brief=Writes 16-bit integer to the buffer in Big-Endian notation
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+    @end
+
+    @member
+        @name=getInt32B
+        @type=method
+        @scope=instance
+        @brief=Reads 32-bit integer from the buffer in Big-Endian notation
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+    @end
+
+    @member
+        @name=setInt32B
+        @type=method
+        @scope=instance
+        @brief=Writes 32-bit integer to the buffer in Big-Endian notation
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+    @end
+
+    @member
+        @name=getFloat32
+        @type=method
+        @scope=instance
+        @brief=Reads 32-bit single precision float from the buffer in IEEE 754 format
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+    @end
+
+    @member
+        @name=setFloat32
+        @type=method
+        @scope=instance
+        @brief=Writes 32-bit single precision float from the buffer in IEEE 754 format
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : real
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+    @end
+
+    @member
+        @name=getFloat64
+        @type=method
+        @scope=instance
+        @brief=Reads 64-bit double precision float from the buffer in IEEE 754 format
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+    @end
+
+    @member
+        @name=setFloat64
+        @type=method
+        @scope=instance
+        @brief=Writes 64-bit double precision float from the buffer in IEEE 754 format
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : real
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+    @end
+
+    @member
+        @name=getEncodedString
+        @type=method
+        @scope=instance
+        @brief=Gets a string encoded in SBCS/MBCS code page
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=index : int, encodedLength : int, codePage : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=encodedLength
+            The maximum number of bytes to read. The method stop when the maximum number of bytes is read or when `0x0` byte is reached
+        @end
+
+        @param
+            @name=codePage
+            The code page to use. Use `437` for ANSI and `65001` for UTF-8
+        @end
+    @end
+
+    @member
+        @name=setEncodedString
+        @type=method
+        @scope=instance
+        @brief=Writer a string encoded in SBCS/MBCS code page
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : string, codePage : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+
+        @param
+            @name=codePage
+            The code page to use. Use `437` for ANSI and `65001` for UTF-8
+        @end
+    @end
+
+    @member
+        @name=getUnicodeString
+        @type=method
+        @scope=instance
+        @brief=Gets string in 16-bit unicode
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=index : int, maximumLength : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=maximumLength
+        @end
+    @end
+
+    @member
+        @name=setUnicodeString
+        @type=method
+        @scope=instance
+        @brief=Writer string in 16-bit unicode
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : string
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+    @end
+
+    @member
+        @name=getEncodedStringLength
+        @type=method
+        @scope=class
+        @brief=Gets a length of the string encoded in SBCS/MBCS code page
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=value : string, codePage : int
+        @end
+
+        @param
+            @name=value
+        @end
+
+        @param
+            @name=codePage
+        @end
+    @end
+
+    @member
+        @name=resize
+        @type=method
+        @scope=instance
+        @brief=Resize the buffer
+        @visibility=public
+        @divisor=.
+
+        The method resizes the buffer.
+        All data that fit into new size will be preserved. If buffer is extended, the new bytes will be zeroed.
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=newsize : int
+        @end
+
+        @param
+            @name=newsize
         @end
     @end
 
