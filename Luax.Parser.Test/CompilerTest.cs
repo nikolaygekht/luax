@@ -407,9 +407,9 @@ namespace Luax.Parser.Test
             var assign = @repeat.Statements[1].As<LuaXAssignVariableStatement>();
             assign.VariableName.Should().Be("i");
             assign.Expression.ToString().Should().Be("(var:i Subtract const:int:1)");
-            
+
             @repeat.Statements[2].Should().BeOfType<LuaXContinueStatement>();
-            
+
             @repeat.Statements[3].Should().BeOfType<LuaXAssignVariableStatement>();
             var assign2 = @repeat.Statements[3].As<LuaXAssignVariableStatement>();
             assign2.VariableName.Should().Be("i");
