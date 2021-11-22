@@ -232,6 +232,15 @@ namespace Luax.Parser.Ast.Builder
             return FindCustomCast(expression, targetType);
         }
 
+        private static bool IsMethodACastCandidate(LuaXMethod method, LuaXTypeDefinition targetType, LuaXTypeDefinition sourceType)
+        {
+            return method.Visibility != LuaXVisibility.Private &&
+                   method.Static &&
+                   method.ReturnType.IsTheSame(targetType) &&
+                   method.Arguments.Count == 1 &&
+                   method.Arguments[0].LuaType.IsTheSame(sourceType);
+        }
+
         private LuaXExpression FindCustomCast(LuaXExpression expression, LuaXTypeDefinition targetType)
         {
             LuaXClass castClass = null;
@@ -242,22 +251,12 @@ namespace Luax.Parser.Ast.Builder
             {
                 if (!@class.Attributes.Any(attribute => attribute.Name == "Cast"))
                     continue;
-
-                foreach (var method in @class.Methods)
+                castMethod = @class.Methods.FirstOrDefault(method => IsMethodACastCandidate(method, targetType, expression.ReturnType));
+                if (castMethod != null)
                 {
-                    if (method.Visibility != LuaXVisibility.Private &&
-                        method.Static &&
-                        method.ReturnType.IsTheSame(targetType) &&
-                        method.Arguments.Count == 1 &&
-                        method.Arguments[0].LuaType.IsTheSame(expression.ReturnType))
-                    {
-                        castMethod = method;
-                        castClass = @class;
-                        break;
-                    }
-                }
-                if (castClass != null)
+                    castClass = @class;
                     break;
+                }
             }
 
             if (castClass != null)
@@ -267,7 +266,64 @@ namespace Luax.Parser.Ast.Builder
                 return expr;
             }
 
+            if (expression.ReturnType.IsObject())
+                return FindCustomCastForObject(expression, targetType);
+
             return null;
+        }
+
+        private LuaXExpression FindCustomCastForObject(LuaXExpression expression, LuaXTypeDefinition targetType)
+        {
+            LuaXClass parent = null;
+            if (expression is LuaXConstantExpression c && c.Value.IsNil)
+                parent = LuaXClass.Object;
+            else
+            {
+                if (Metadata.Search(expression.ReturnType.Class, out var @class))
+                    parent = @class.ParentClass;
+            }
+            if (parent != null)
+                return FindCustomCastForParent(expression, parent, targetType);
+
+            return null;
+        }
+
+        private LuaXExpression FindCustomCastForParent(LuaXExpression expression, LuaXClass targetClass, LuaXTypeDefinition targetType)
+        {
+            if (targetClass == null)
+                return null;
+
+            var sourceType = new LuaXTypeDefinition()
+            {
+                TypeId = LuaXType.Object,
+                Class = targetClass.Name
+            };
+
+            LuaXClass castClass = null;
+            LuaXMethod castMethod = null;
+
+            //try to find custom cast
+            foreach (var @class in Metadata)
+            {
+                if (!@class.Attributes.Any(attribute => attribute.Name == "Cast"))
+                    continue;
+
+                castMethod = @class.Methods.FirstOrDefault(method => IsMethodACastCandidate(method, targetType, sourceType));
+                if (castMethod != null)
+                {
+                    castClass = @class;
+                    break;
+                }
+            }
+
+            if (castClass != null)
+            {
+                var expr = new LuaXStaticCallExpression(targetType, castClass.Name, castMethod.Name, expression.Location);
+                expr.Arguments.Add(expression);
+                return expr;
+            }
+
+            return FindCustomCastForParent(expression, targetClass.ParentClass, targetType);
         }
 
         /// <summary>

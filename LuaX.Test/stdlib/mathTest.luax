@@ -1,0 +1,61 @@
+@TestSuite()
+class mathTest
+    const EPS = 1.0e-14;
+
+    @Fact()
+    public function sin() : void
+        assert.approximatelyEquals(stdlib.sin(stdlib.PI / 8), 0.38268343236509, EPS, "sin");
+        assert.approximatelyEquals(stdlib.asin(0.38268343236509), stdlib.PI / 8, EPS, "asin");
+    end
+
+    @Fact()
+    public function cos() : void
+        assert.approximatelyEquals(stdlib.cos(stdlib.PI / 8), 0.923879532511287, EPS, "cos");
+        assert.approximatelyEquals(stdlib.acos(0.923879532511287), stdlib.PI / 8, EPS, "acos");
+    end
+
+    @Fact()
+    public function tan() : void
+        assert.approximatelyEquals(stdlib.tan(stdlib.PI / 8), 0.414213562373095, EPS, "tan");
+        assert.approximatelyEquals(stdlib.atan(0.414213562373095), stdlib.PI / 8, EPS, "atan");
+        assert.approximatelyEquals(stdlib.atan2(12, 25), 0.44751997515717, EPS, "atan2");
+    end
+
+    @Fact()
+    public function sqrt() : void
+        assert.approximatelyEquals(stdlib.sqrt(12), 3.46410161513775, EPS, "sqrt");
+    end
+
+    @Fact()
+    public function log() : void
+        assert.approximatelyEquals(stdlib.log(12), 2.484906649788, EPS, "log");
+        assert.approximatelyEquals(stdlib.E ^ 2.484906649788, 12, EPS, "exp");
+    end
+
+    @Fact()
+    public function ceil() : void
+        assert.approximatelyEquals(stdlib.ceil(12.2), 13, EPS, "ceil1");
+        assert.approximatelyEquals(stdlib.ceil(12.7), 13, EPS, "ceil2");
+        assert.approximatelyEquals(stdlib.ceil(-12.7), -12, EPS, "ceil3");
+    end
+
+    @Fact()
+    public function floor() : void
+        assert.approximatelyEquals(stdlib.floor(12.2), 12, EPS, "floor1");
+        assert.approximatelyEquals(stdlib.floor(12.7), 12, EPS, "floor2");
+        assert.approximatelyEquals(stdlib.floor(-12.7), -13, EPS, "floor3");
+    end
+
+    @Fact()
+    public function round() : void
+        assert.approximatelyEquals(stdlib.round(12.2, 0), 12, EPS, "round1");
+        assert.approximatelyEquals(stdlib.round(12.7, 0), 13, EPS, "round2");
+        assert.approximatelyEquals(stdlib.round(-12.7, 0), -13, EPS, "round3");
+        assert.approximatelyEquals(stdlib.round(-12.2, 0), -12, EPS, "round4");
+
+        assert.approximatelyEquals(stdlib.round(1.22, 1), 1.2, EPS, "round5");
+        assert.approximatelyEquals(stdlib.round(1.27, 1), 1.3, EPS, "round6");
+        assert.approximatelyEquals(stdlib.round(-1.27, 1), -1.3, EPS, "round7");
+        assert.approximatelyEquals(stdlib.round(-1.22, 1), -1.2, EPS, "round8");
+    end
+end

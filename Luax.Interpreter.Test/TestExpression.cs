@@ -282,16 +282,25 @@ namespace Luax.Interpreter.Test
 
         //string functions
         [InlineData("int", "stdlib.len(\"string\")", 6, typeof(int))]
-        [InlineData("int", "stdlib.indexOf(\"string\", \"i\")", 3, typeof(int))]
+        [InlineData("int", "stdlib.indexOf(\"string\", \"i\", false)", 3, typeof(int))]
+        [InlineData("int", "stdlib.indexOf(\"string\", \"I\", false)", -1, typeof(int))]
+        [InlineData("int", "stdlib.indexOf(\"string\", \"I\", true)", 3, typeof(int))]
         [InlineData("string", "stdlib.left(\"string\", 3)", "str", typeof(string))]
         [InlineData("string", "stdlib.trim(\" string    \")", "string", typeof(string))]
         [InlineData("string", "stdlib.right(\"string\", 3)", "ing", typeof(string))]
         [InlineData("string", "stdlib.substring(\"string\", 2, 2)", "ri", typeof(string))]
         [InlineData("boolean", "stdlib.match(\"string\", \"^[\\\\w]*$\")", true, typeof(bool))]
         [InlineData("boolean", "stdlib.match(\"string\", \"^[\\\\d]*$\")", false, typeof(bool))]
-        [InlineData("int", "stdlib.unicode(\"s\")", 115, typeof(int))]
+        [InlineData("boolean", "stdlib.match(\"string\", \"i\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"string\", \"/i/\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"string\", \"/I/\")", false, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"string\", \"/I/i\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"str\\ning\", \"/^i/\")", false, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"str\\ning\", \"/^i/m\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"str ing\", \"/\\\\si/\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"str\\ning\", \"/\\\\si/s\")", true, typeof(bool))]
+        [InlineData("int", "stdlib.unicode(\"s\", 0)", 115, typeof(int))]
         [InlineData("string", "stdlib.char(115)", "s", typeof(string))]
-        [InlineData("string[]", "stdlib.parse(\"some small text\", \"[\\\\w]+\")", new[] { "some", "small", "text" }, typeof(string[]))]
         public void TestStdlib(string @return, string expr, object expectedValue, Type expectedType)
         {
             expectedValue = TestValue.Translate(expectedType, expectedValue);
@@ -379,6 +388,7 @@ namespace Luax.Interpreter.Test
         }
     }
 }
+
 
 
 

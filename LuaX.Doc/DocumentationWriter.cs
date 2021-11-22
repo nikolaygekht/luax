@@ -13,11 +13,13 @@ namespace LuaX.Doc
     {
         private readonly LuaXClassCollection mClasses;
         private readonly StreamWriter mWriter;
+        private readonly string mGroup;
 
-        public DocumentationWriter(LuaXClassCollection application, StreamWriter writer)
+        public DocumentationWriter(LuaXClassCollection application, string group, StreamWriter writer)
         {
             mClasses = application;
             mWriter = writer;
+            mGroup = group;
         }
 
         public void Dispose() => mWriter.Dispose();
@@ -31,12 +33,14 @@ namespace LuaX.Doc
         private void WriteClass(LuaXClass @class)
         {
             var doc = new SourceDocumentation(@class);
+            if (doc.Ignore)
+                return;
 
             mWriter.WriteLine();
             mWriter.WriteLine("@class");
             mWriter.WriteLine("    @name={0}", @class.Name);
             mWriter.WriteLine("    @brief={0}", doc.Brief ?? "");
-            mWriter.WriteLine("    @ingroup=");
+            mWriter.WriteLine("    @ingroup={0}", mGroup);
             mWriter.WriteLine("    @type=class");
             mWriter.WriteLine("    @parent={0}", @class.Parent);
 
@@ -55,6 +59,9 @@ namespace LuaX.Doc
         private void WriteMethod(LuaXMethod @method)
         {
             var doc = new SourceDocumentation(@method);
+
+            if (doc.Ignore)
+                return;
 
             mWriter.WriteLine();
             mWriter.WriteLine("    @member");
@@ -99,6 +106,9 @@ namespace LuaX.Doc
         private void WriteProperty(LuaXProperty @property)
         {
             var doc = new SourceDocumentation(@property);
+            if (doc.Ignore)
+                return;
+
             mWriter.WriteLine();
             mWriter.WriteLine("    @member");
             mWriter.WriteLine("        @name={0}", property.Name);
@@ -153,6 +163,9 @@ namespace LuaX.Doc
         private void WriteConstant(LuaXConstantVariable @constant)
         {
             var doc = new SourceDocumentation(@constant);
+            if (doc.Ignore)
+                return;
+
             mWriter.WriteLine();
             mWriter.WriteLine("    @member");
             mWriter.WriteLine("        @name={0}", constant.Name);

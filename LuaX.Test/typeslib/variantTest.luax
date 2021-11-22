@@ -1,0 +1,129 @@
+@TestSuite()
+class variantTest
+    @Fact()
+    public function testInt() : void
+        var x : variant;
+
+        x = 1;
+        assert.isTrue(x.type() == "int", "type");
+        assert.isTrue(x.asInt() == 1, "value");
+        assert.isTrue(cast<int>(x) == 1, "back cast");
+    end
+
+    @Fact()
+    public function testReal() : void
+        var x : variant;
+
+        x = 1.5;
+        assert.isTrue(x.type() == "real", "type");
+        assert.isTrue(x.asReal() == 1.5, "value");
+        assert.isTrue(cast<real>(x) == 1.5, "back cast");
+    end
+
+    @Fact()
+    public function testString() : void
+        var x : variant;
+
+        x = "abc";
+        assert.isTrue(x.type() == "string", "type");
+        assert.isTrue(x.asString() == "abc", "value");
+        assert.isTrue(cast<string>(x) == "abc", "back cast");
+    end
+
+    @Fact()
+    public function testBoolean() : void
+        var x : variant;
+
+        x = true;
+        assert.isTrue(x.type() == "boolean", "type");
+        assert.isTrue(x.asBoolean() == true, "value");
+        assert.isTrue(cast<boolean>(x) == true, "back cast");
+    end
+
+    @Fact()
+    public function testDatetime() : void
+        var x : variant, d : datetime;
+
+        d = stdlib.mkdatetime(2015, 8, 27, 13, 45, 15, 0);
+        x = d;
+        assert.isTrue(x.type() == "datetime", "type");
+        assert.isTrue(x.asDatetime() == d, "value");
+        assert.isTrue(cast<datetime>(x) == d, "back cast");
+    end
+
+    @Fact()
+    public function testObject() : void
+        var x : variant, e : exception;
+
+        e = exception.create(123, "abc");
+        x = e;
+        assert.isTrue(x.type() == "exception", "type");
+        assert.isTrue((cast<exception>(x.asObject())).getCode() == 123, "code");
+        assert.isTrue((cast<exception>(x.asObject())).getMessage() == "abc", "message");
+    end
+
+    @Fact()
+    public function testNilAssign() : void
+        var x : variant;
+
+        x = cast<object>(nil);
+
+        assert.isTrue(x.type() == "object", "type");
+        assert.isTrue(x.asObject() == nil, "value");
+        assert.isTrue(cast<object>(x) == nil, "back cast");
+    end
+
+    @Fact()
+    public function testCrossCast_Int() : void
+        var x : variant;
+        x = 2459517;
+        assert.isTrue(x.asReal() == 2459517.0, "real");
+        assert.isTrue(x.asString() == "2459517", "string");
+        assert.isTrue(x.asDatetime() == stdlib.fromJdn(2459517.0), "datetime");
+    end
+
+    @Fact()
+    public function testCrossCast_Real() : void
+        var x : variant;
+        x = 2459517.5;
+        assert.isTrue(x.asInt() == 2459517, "int");
+        assert.isTrue(x.asString() == "2459517.5", "string");
+        assert.isTrue(x.asDatetime() == stdlib.fromJdn(2459517.5), "datetime");
+    end
+
+    @Fact()
+    public function testCrossCast_String() : void
+        var x : variant;
+        x = "123";
+        assert.isTrue(x.asInt() == 123, "int");
+
+        x = "123.5";
+        assert.isTrue(x.asReal() == 123.5, "real");
+
+        x = "true";
+        assert.isTrue(x.asBoolean() == true, "bool");
+
+        x = "2020-07-15";
+        assert.isTrue(x.asDatetime() == stdlib.mkdatetime(2020, 07, 15, 0, 0, 0, 0), "dt1");
+
+        x = "2020-07-15 12:44";
+        assert.isTrue(x.asDatetime() == stdlib.mkdatetime(2020, 07, 15, 12, 44, 0, 0), "dt2");
+
+        x = "2020-07-15 12:44:55";
+        assert.isTrue(x.asDatetime() == stdlib.mkdatetime(2020, 07, 15, 12, 44, 55, 0), "dt3");
+
+        x = "2020-07-15 12:44:55.123";
+        assert.isTrue(x.asDatetime() == stdlib.mkdatetime(2020, 07, 15, 12, 44, 55, 123), "dt4");
+    end
+
+    @Fact()
+    public function testCrossCast_Datetime() : void
+        var x : variant;
+
+        x = stdlib.mkdatetime(2021, 10, 29, 11, 46, 55, 500);
+
+        assert.isTrue(x.asInt() == 2459517, "int");
+        assert.approximatelyEquals(x.asReal(), 2459517.490920139, 1.15741e-06, "real");
+        assert.isTrue(x.asString() == "2021-10-29 11:46:55.500", "string");
+    end
+end

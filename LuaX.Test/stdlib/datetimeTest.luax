@@ -4,22 +4,40 @@ class datetimeTest
     public function mkdate() : void
         var d : datetime;
         d = stdlib.mkdate(2020, 5, 22);
-        assert.isTrue(stdlib.day(d) == 22, "");
-        assert.isTrue(stdlib.month(d) == 5, "");
-        assert.isTrue(stdlib.year(d) == 2020, "");
+        assert.isTrue(stdlib.day(d) == 22, "d");
+        assert.isTrue(stdlib.month(d) == 5, "mo");
+        assert.isTrue(stdlib.year(d) == 2020, "yr");
     end
 
     @Fact()
     public function mkdatetime() : void
         var d : datetime;
         d = stdlib.mkdatetime(2020, 5, 22, 11, 46, 55, 123);
-        assert.isTrue(stdlib.millisecond(d) == 123, "");
-        assert.isTrue(stdlib.second(d) == 55, "");
-        assert.isTrue(stdlib.minute(d) == 46, "");
-        assert.isTrue(stdlib.hour(d) == 11, "");
-        assert.isTrue(stdlib.day(d) == 22, "");
-        assert.isTrue(stdlib.month(d) == 5, "");
-        assert.isTrue(stdlib.year(d) == 2020, "");
+        assert.isTrue(stdlib.millisecond(d) == 123, "ms");
+        assert.isTrue(stdlib.second(d) == 55, "s");
+        assert.isTrue(stdlib.minute(d) == 46, "m");
+        assert.isTrue(stdlib.hour(d) == 11, "h");
+        assert.isTrue(stdlib.day(d) == 22, "d");
+        assert.isTrue(stdlib.month(d) == 5, "mo");
+        assert.isTrue(stdlib.year(d) == 2020, "yr");
+    end
+
+    @Fact()
+    public function toJdnAndBack() : void
+        var d : datetime, r : real;
+        d = stdlib.mkdatetime(2021, 10, 29, 11, 46, 55, 500);
+
+        r = stdlib.toJdn(d);
+        assert.approximatelyEquals(r, 2459517.490920139, 1.15741e-06, "jdn");
+
+        d = stdlib.fromJdn(r);
+        assert.isTrue(stdlib.millisecond(d) == 500, "ms");
+        assert.isTrue(stdlib.second(d) == 55, "s");
+        assert.isTrue(stdlib.minute(d) == 46, "m");
+        assert.isTrue(stdlib.hour(d) == 11, "h");
+        assert.isTrue(stdlib.day(d) == 29, "d");
+        assert.isTrue(stdlib.month(d) == 10, "mo");
+        assert.isTrue(stdlib.year(d) == 2021, "yr");
     end
 
     @Fact()

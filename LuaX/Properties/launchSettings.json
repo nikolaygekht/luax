@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "LuaX": {
-      "commandName": "Project",
-      "commandLineArgs": "project.ini",
-      "workingDirectory": "C:\\Sources\\gehtsoft-luax\\LuaX.Test"
-    }
-  }
-}
