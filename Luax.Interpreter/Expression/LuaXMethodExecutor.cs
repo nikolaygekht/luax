@@ -154,6 +154,13 @@ namespace Luax.Interpreter.Expression
                                 return r;
                         }
                             break;
+                        case LuaXRepeatStatement @repeat:
+                            {
+                                var r = ExecuteRepeat(callingMethod, @repeat, types, currentClass, variables, out result);
+                                if (r != ResultType.ReachForEnd)
+                                    return r;
+                            }
+                            break;
                         case LuaXBreakStatement:
                         {
                             result = null;
@@ -333,6 +340,31 @@ namespace Luax.Interpreter.Expression
             }
 
             result = null;
+            return ResultType.ReachForEnd;
+        }
+        
+        private static ResultType ExecuteRepeat(LuaXMethod callingMethod, LuaXRepeatStatement repeatStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
+        {
+            result = null;
+
+            while (true)
+            {
+                ResultType statementsResult = ExecuteStatements(callingMethod, repeatStatement.Statements, types, currentClass, variables, out result);
+                if (statementsResult == ResultType.Break)
+                    break;
+                if (statementsResult != ResultType.Continue && statementsResult != ResultType.ReachForEnd)
+                    return statementsResult;
+
+                var v = LuaXExpressionEvaluator.Evaluate(repeatStatement.UntilCondition, types, currentClass, variables);
+                if (v is bool b)
+                {
+                    if (!b)
+                        break;
+                }
+                else
+                    throw new LuaXExecutionException(repeatStatement.Location, "Condition of until statement is not a boolean value");
+            }
+
             return ResultType.ReachForEnd;
         }
     }
