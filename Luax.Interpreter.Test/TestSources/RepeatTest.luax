@@ -1,0 +1,12 @@
+﻿class test
+   public static function dummy(arg : int) : int
+      var i : int, summ : int;
+      i = arg;
+      summ = 0;
+      repeat
+        summ = summ + i;
+        i = i - 1;
+      until i > 0
+      return summ;
+   end
+end

@@ -62,6 +62,9 @@ namespace Luax.Parser.Ast.Builder
                     case "RETURN_STMT":
                         ProcessesReturnStatement(child, @class, method, statements);
                         break;
+                    case "REPEAT_STMT":
+                        ProcessesRepeatStatement(child, @class, method, statements);
+                        break;
                     case "WHILE_STMT":
                         ProcessesWhileStatement(child, @class, method, statements);
                         break;
@@ -511,6 +514,50 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, new LuaXParserError(location, "The while condition should be in while statement"));
 
             LuaXWhileStatement stmt = new LuaXWhileStatement(location, condition);
+
+            if (body != null)
+            {
+                mLoopDepth++;
+                ProcessStatements(body.Children, @class, method, stmt.Statements);
+                mLoopDepth--;
+            }
+
+            statements.Add(stmt);
+        }
+
+        /// <summary>
+        /// Processes REPEAT statement
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        /// <param name="method"></param>
+        /// <param name="statements"></param>
+        private void ProcessesRepeatStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        {
+            LuaXElementLocation location = new LuaXElementLocation(Name, node);
+            LuaXExpression condition = null;
+            IAstNode body = null;
+
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "REPEAT" || child.Symbol == "UNTIL")
+                    continue;
+                if (child.Symbol == "STATEMENTS")
+                    body = child;
+                if (child.Symbol == "EXPR")
+                    condition = ProcessExpression(child, @class, method);
+            }
+
+            if (condition != null)
+            {
+                if (!condition.ReturnType.IsBoolean())
+                    throw new LuaXAstGeneratorException(Name, new LuaXParserError(condition.Location, "The until condition should be a boolean expression"));
+            }
+            else
+                throw new LuaXAstGeneratorException(Name, new LuaXParserError(location, "The until condition should be in repeat statement"));
+
+            LuaXRepeatStatement stmt = new LuaXRepeatStatement(location, condition);
 
             if (body != null)
             {
