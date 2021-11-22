@@ -60,4 +60,162 @@ class bufferTest
         assert.throws(new bufferTestSetOutOfRangeAction1(), "set1");
         assert.throws(new bufferTestSetOutOfRangeAction2(), "set2");
     end
+
+    @Fact()
+    public function resize_upsize() : void
+        var v : buffer;
+        v = buffer.create(3);
+        v.set(0, 1);
+        v.set(1, 127);
+        v.set(2, 255);
+
+        v.resize(5);
+        assert.equals(v.length(), 5, "length");
+        assert.equals(v[0], 1, "0");
+        assert.equals(v[1], 127, "1");
+        assert.equals(v[2], 255, "2");
+        assert.equals(v[3], 0, "3");
+        assert.equals(v[4], 0, "4");
+    end
+
+    @Fact()
+    public function resize_downsize() : void
+        var v : buffer;
+        v = buffer.create(3);
+        v.set(0, 1);
+        v.set(1, 127);
+        v.set(2, 255);
+
+        v.resize(2);
+        assert.equals(v.length(), 2, "length");
+        assert.equals(v[0], 1, "0");
+        assert.equals(v[1], 127, "1");
+    end
+
+    @Fact()
+    public function int16() : void
+        var v : buffer;
+        v = buffer.create(5);
+        assert.equals(v.setInt16(1, 0x12F4), 2, "w");
+        assert.equals(v[1], 0xF4, "0");
+        assert.equals(v[2], 0x12, "1");
+        assert.equals(v.getInt16(1), 0x12F4, "r");
+    end
+
+    @Fact()
+    public function int32() : void
+        var v : buffer;
+        v = buffer.create(5);
+        assert.equals(v.setInt32(1, 0x12F4abe8), 4, "w");
+        assert.equals(v[1], 0xe8, "0");
+        assert.equals(v[2], 0xab, "1");
+        assert.equals(v[3], 0xf4, "2");
+        assert.equals(v[4], 0x12, "3");
+        assert.equals(v.getInt32(1), 0x12F4abe8, "r");
+    end
+
+    @Fact()
+    public function int16b() : void
+        var v : buffer;
+        v = buffer.create(5);
+        assert.equals(v.setInt16B(1, 0x12F4), 2, "w");
+        assert.equals(v[2], 0xF4, "0");
+        assert.equals(v[1], 0x12, "1");
+        assert.equals(v.getInt16B(1), 0x12F4, "r");
+    end
+
+    @Fact()
+    public function int32b() : void
+        var v : buffer;
+        v = buffer.create(5);
+        assert.equals(v.setInt32B(1, 0x12F4abe8), 4, "w");
+        assert.equals(v[4], 0xe8, "0");
+        assert.equals(v[3], 0xab, "1");
+        assert.equals(v[2], 0xf4, "2");
+        assert.equals(v[1], 0x12, "3");
+        assert.equals(v.getInt32B(1), 0x12F4abe8, "r");
+    end
+
+    -- data for float geneated here
+    -- https://babbage.cs.qc.cuny.edu/ieee-754.old/decimal.html
+    @Fact()
+    public function real32() : void
+        var v : buffer;
+        v = buffer.create(5);
+        assert.equals(v.setFloat32(1, 123.45679), 4, "w");
+        assert.equals(v.getInt32(1), 0x42F6_E9E0, "b");
+        assert.approximatelyEquals(v.getFloat32(1), 123.45679, 5.0e-6, "r");
+    end
+
+    @Fact()
+    public function real64() : void
+        var v : buffer;
+        v = buffer.create(10);
+        assert.equals(v.setFloat64(1, 123.45679), 8, "w");
+        --assert.equals(v.getInt32(1), 0x07EE_0B0B, "bl");
+        assert.equals(v.getInt32(5), 0x405E_DD3C, "bh");
+        assert.approximatelyEquals(v.getFloat64(1), 123.45679, 5.0e-6, "r");
+    end
+
+    @Theory()
+    @TheoryData("abcd", 437, 4)
+    @TheoryData("abвг", 1251, 4)
+    @TheoryData("abвг", 65001, 6)
+    public function stringLength(v : string, cp : int, l : int) : void
+        assert.equals(buffer.getEncodedStringLength(v, cp), l, "");
+    end
+
+    @Fact()
+    public function stringEncodedFixedLength() : void
+        var v : buffer;
+        v = buffer.create(10);
+        assert.equals(v.setEncodedString(1, "abвг", 65001), 6, "write");
+        assert.equals(v[1], 0x61, "0");
+        assert.equals(v[2], 0x62, "1");
+        assert.equals(v[3], 0xd0, "2");
+        assert.equals(v[4], 0xb2, "3");
+        assert.equals(v[5], 0xd0, "4");
+        assert.equals(v[6], 0xb3, "5");
+        assert.equals(v.getEncodedString(1, 6, 65001), "abвг", "read");
+    end
+
+    @Fact()
+    public function stringEncodedZeroTerminated() : void
+        var v : buffer;
+        v = buffer.create(10);
+        v[1] = 0x61;
+        v[2] = 0x62;
+        v[3] = 0;
+        assert.equals(v.getEncodedString(1, 6, 65001), "ab", "read");
+    end
+
+    @Fact()
+    public function stringUnicodeFixedLength() : void
+        var v : buffer;
+        v = buffer.create(10);
+        assert.equals(v.setUnicodeString(1, "abаб"), 8, "write");
+        assert.equals(v[1], 0x61, "1");
+        assert.equals(v[2], 0x00, "2");
+        assert.equals(v[3], 0x62, "3");
+        assert.equals(v[4], 0x00, "4");
+        assert.equals(v[5], 0x30, "5");
+        assert.equals(v[6], 0x04, "6");
+        assert.equals(v[7], 0x31, "7");
+        assert.equals(v[8], 0x04, "8");
+        assert.equals(v.getUnicodeString(1, 4), "abаб", "read");
+    end
+
+    @Fact()
+    public function stringUnicodeZeroTerminated() : void
+        var v : buffer;
+        v = buffer.create(20);
+        v[1] = 0x62;
+        v[2] = 0x0;
+        v[3] = 0x31;
+        v[4] = 0x04;
+        v[5] = 0x0;
+        v[6] = 0x0;
+        assert.equals(v.getUnicodeString(1, 6), "bб", "read");
+    end
+
 end

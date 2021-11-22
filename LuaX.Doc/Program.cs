@@ -12,9 +12,9 @@ namespace LuaX.Doc
     {
         public static void Main(string[] args)
         {
-            if (args.Length != 2)
+            if (args.Length != 3)
             {
-                Console.WriteLine("Usage: LuaX.Doc luaxFile dsFile");
+                Console.WriteLine("Usage: LuaX.Doc luaxFile dsFile group");
                 Environment.ExitCode = -1;
                 return;
             }
@@ -25,6 +25,7 @@ namespace LuaX.Doc
                 var body = parser.Compile(args[0], File.ReadAllText(args[0]));
                 using var output = new DocumentationWriter(
                     body.Classes,
+                    args[2],
                     new StreamWriter(
                         new FileStream(args[1], FileMode.Create, FileAccess.Write, FileShare.None), Encoding.UTF8));
                 output.Write();

@@ -1,0 +1,1 @@
+start ./dst/index.html
