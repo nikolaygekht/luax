@@ -1,25 +1,35 @@
 ﻿class complexClass
    private var property : int;
    const const1 = 5;
+
    class parent
       private function parentMethod() : int
          return property + const1 * privateFunc();
       end
    end
+
    class innerClass : parent
       public var a : int;
       public static var b : int;
       public var parent : complexClass;
+
       public function innerClass() : void
          b = 12;
       end
+
       public function method() : int
          return parentMethod();
       end
+
+      public function crossAccessTest(v : parent) : parent
+        return v;
+      end
    end
+
    private function privateFunc() : int
       return const1;
    end
+
    public function dummy() : int
       var inner : innerClass;
       property = 1;

@@ -47,9 +47,8 @@ namespace Luax.Interpreter.Expression
                         break;
                     owner = owner.OwnerObjectInstance;
                 }
-                if (owner == null)
-                    throw new LuaXExecutionException(method.Location, $"Owner instance {currentClass.LuaType.Name} is not found");
-                @this = owner;
+
+                @this = owner ?? throw new LuaXExecutionException(method.Location, $"Owner instance {currentClass.LuaType.Name} is not found");
             }
 
             if (method.Extern)

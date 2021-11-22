@@ -10,6 +10,7 @@
          return 1;
       end
    end
+
    public function dummy() : int
       var inner : innerClass;
       inner = new innerClass();
