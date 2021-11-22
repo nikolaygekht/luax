@@ -9,6 +9,7 @@ namespace LuaX
     {
         public static void Main(string[] args)
         {
+            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
             if (args.Length < 1)
             {
                 Console.WriteLine("Usage: LuaX project_or_source arg1, arg2, arg3");

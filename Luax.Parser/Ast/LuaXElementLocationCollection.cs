@@ -11,7 +11,7 @@ namespace Luax.Parser.Ast
     [Serializable]
     public class LuaXElementLocationCollection : LuaXAstCollection<LuaXElementLocation>, ISerializable
     {
-        public LuaXElementLocationCollection() : base()
+        public LuaXElementLocationCollection()
         {
         }
 

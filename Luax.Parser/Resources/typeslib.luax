@@ -29,3 +29,67 @@ class exception : object
         return ex;
     end
 end
+
+
+@DocIgnore()
+@Cast()
+class variantCast
+    public static extern fromInt(v : int) : variant;
+    public static extern fromReal(v : real) : variant;
+    public static extern fromDatetime(v : datetime) : variant;
+    public static extern fromBoolean(v : boolean) : variant;
+    public static extern fromString(v : string) : variant;
+    public static extern fromObject(v : object) : variant;
+
+    public static extern castToInt(v : variant) : int;
+    public static extern castToReal(v : variant) : real;
+    public static extern castToDatetime(v : variant) : datetime;
+    public static extern castToBoolean(v : variant) : boolean;
+    public static extern castToString(v : variant) : string;
+    public static extern castToObject(v : variant) : object;
+end
+
+@DocBrief("The class to convert any primitive type into an object")
+@DocDescription("Use the regular `cast` to create an instance of the `variant` object.")
+@DocDescription("To convert `nil` constant to a `variant`, first cast `nil` to `object`.")
+class variant
+    @DocBrief("Return the name of the type")
+    @DocDescription("The method returns the same value as `typename` operator for a contained value")
+    public extern type() : string;
+    
+    @DocBrief("Casts and returns the contained value as int")
+    public extern asInt() : int;
+    
+    @DocBrief("Casts and returns the contained value as real")
+    public extern asReal() : real;
+    
+    @DocBrief("Casts and returns the contained value as datetime")
+    public extern asDatetime() : datetime;
+    
+    @DocBrief("Casts and returns the contained value as boolean")
+    public extern asBoolean() : boolean;
+    
+    @DocBrief("Casts and returns the contained value as string")
+    public extern asString() : string;
+    
+    @DocBrief("Casts and returns the contained value as object")
+    public extern asObject() : object;
+
+    @DocBrief("Checks whether the contained value is an integer")
+    public extern isInt() : boolean;
+    
+    @DocBrief("Checks whether the contained value is a real")
+    public extern isReal() : boolean;
+    
+    @DocBrief("Checks whether the contained value is a datetime")
+    public extern isDatetime() : boolean;
+    
+    @DocBrief("Checks whether the contained value is a boolean")
+    public extern isBoolean() : boolean;
+    
+    @DocBrief("Checks whether the contained value is a string")
+    public extern isString() : boolean;
+    
+    @DocBrief("Checks whether the contained value is an object")
+    public extern isObject() : boolean;
+end

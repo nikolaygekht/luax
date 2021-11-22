@@ -2,7 +2,7 @@
 @class
     @name=stdlib
     @brief=The library of standard math, string and date functions
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -675,7 +675,7 @@
         @name=log
         @type=method
         @scope=class
-        @brief=Returns the natural logarithm of
+        @brief=Returns the natural logarithm of 
         @visibility=public
         @divisor=.
 
@@ -1100,18 +1100,18 @@
 
 @class
     @name=match
-    @brief=Regular expression macth
-    @ingroup=stdlib
+    @brief=Regular expression match
+    @ingroup=runtime
     @type=class
     @parent=object
 
 
 
     @member
-        @name=succesful
+        @name=successful
         @type=method
         @scope=instance
-        @brief=Returns flag indicating whether the match was succesful
+        @brief=Returns flag indicating whether the match was successful
         @visibility=public
         @divisor=.
 
@@ -1177,7 +1177,7 @@
 
         @declaration
             @language=luax
-            @return=string
+            @return=int
             @prefix=public
             @params=index : int
         @end
@@ -1199,7 +1199,7 @@
 
         @declaration
             @language=luax
-            @return=string
+            @return=int
             @prefix=public
             @params=index : int
         @end
@@ -1208,12 +1208,30 @@
             @name=index
         @end
     @end
+
+    @member
+        @name=next
+        @type=method
+        @scope=instance
+        @brief=Returns the next match
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=match
+            @prefix=public
+            @params=
+        @end
+    @end
 @end
 
 @class
     @name=regexp
     @brief=Regular expression
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -1267,7 +1285,7 @@
 @class
     @name=io
     @brief=The library of filesystem functions
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -1795,7 +1813,7 @@
 @class
     @name=buffer
     @brief=The buffer of bytes
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -1868,6 +1886,514 @@
     @end
 
     @member
+        @name=getInt16
+        @type=method
+        @scope=instance
+        @brief=Reads 16-bit integer from the buffer
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+        @end
+    @end
+
+    @member
+        @name=setInt16
+        @type=method
+        @scope=instance
+        @brief=Writes 16-bit integer to the buffer
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+    @end
+
+    @member
+        @name=getInt32
+        @type=method
+        @scope=instance
+        @brief=Reads 32-bit integer from the buffer
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+    @end
+
+    @member
+        @name=setInt32
+        @type=method
+        @scope=instance
+        @brief=Writes 32-bit integer to the buffer
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+    @end
+
+    @member
+        @name=getInt16B
+        @type=method
+        @scope=instance
+        @brief=Reads 16-bit integer from the buffer in Big-Endian notation
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+    @end
+
+    @member
+        @name=setInt16B
+        @type=method
+        @scope=instance
+        @brief=Writes 16-bit integer to the buffer in Big-Endian notation
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+    @end
+
+    @member
+        @name=getInt32B
+        @type=method
+        @scope=instance
+        @brief=Reads 32-bit integer from the buffer in Big-Endian notation
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+    @end
+
+    @member
+        @name=setInt32B
+        @type=method
+        @scope=instance
+        @brief=Writes 32-bit integer to the buffer in Big-Endian notation
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+    @end
+
+    @member
+        @name=getFloat32
+        @type=method
+        @scope=instance
+        @brief=Reads 32-bit single precision float from the buffer in IEEE 754 format
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+    @end
+
+    @member
+        @name=setFloat32
+        @type=method
+        @scope=instance
+        @brief=Writes 32-bit single precision float from the buffer in IEEE 754 format
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : real
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+    @end
+
+    @member
+        @name=getFloat64
+        @type=method
+        @scope=instance
+        @brief=Reads 64-bit double precision float from the buffer in IEEE 754 format
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public
+            @params=index : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+    @end
+
+    @member
+        @name=setFloat64
+        @type=method
+        @scope=instance
+        @brief=Writes 64-bit double precision float from the buffer in IEEE 754 format
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : real
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+    @end
+
+    @member
+        @name=getEncodedString
+        @type=method
+        @scope=instance
+        @brief=Gets a string encoded in SBCS/MBCS code page
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=index : int, encodedLength : int, codePage : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=encodedLength
+            The maximum number of bytes to read. The method stop when the maximum number of bytes is read or when `0x0` byte is reached
+        @end
+
+        @param
+            @name=codePage
+            The code page to use. Use `437` for ANSI and `65001` for UTF-8
+        @end
+    @end
+
+    @member
+        @name=setEncodedString
+        @type=method
+        @scope=instance
+        @brief=Writer a string encoded in SBCS/MBCS code page
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : string, codePage : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+
+        @param
+            @name=codePage
+            The code page to use. Use `437` for ANSI and `65001` for UTF-8
+        @end
+    @end
+
+    @member
+        @name=getUnicodeString
+        @type=method
+        @scope=instance
+        @brief=Gets string in 16-bit unicode
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=index : int, maximumLength : int
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=maximumLength
+        @end
+    @end
+
+    @member
+        @name=setUnicodeString
+        @type=method
+        @scope=instance
+        @brief=Writer string in 16-bit unicode
+        @visibility=public
+        @divisor=.
+
+
+
+        @return
+            The method returns the number of bytes written
+        @end
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=index : int, value : string
+        @end
+
+        @param
+            @name=index
+            The offset from the beginning of the buffer in bytes
+        @end
+
+        @param
+            @name=value
+            The value to write
+        @end
+    @end
+
+    @member
+        @name=getEncodedStringLength
+        @type=method
+        @scope=class
+        @brief=Gets a length of the string encoded in SBCS/MBCS code page
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public static
+            @params=value : string, codePage : int
+        @end
+
+        @param
+            @name=value
+        @end
+
+        @param
+            @name=codePage
+        @end
+    @end
+
+    @member
+        @name=resize
+        @type=method
+        @scope=instance
+        @brief=Resize the buffer
+        @visibility=public
+        @divisor=.
+
+        The method resizes the buffer.
+        All data that fit into new size will be preserved. If buffer is extended, the new bytes will be zeroed.
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public
+            @params=newsize : int
+        @end
+
+        @param
+            @name=newsize
+        @end
+    @end
+
+    @member
         @name=create
         @type=method
         @scope=class
@@ -1894,7 +2420,7 @@
 @class
     @name=file
     @brief=The read/write operations for a file
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -2171,7 +2697,7 @@
 @class
     @name=csvParser
     @brief=The parser for CSV (comma-separated values) text format
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -2386,7 +2912,7 @@
 @class
     @name=xmlNode
     @brief=A node of an XML document
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -2570,7 +3096,7 @@
 @class
     @name=xmlParser
     @brief=The parser for XML documents
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -2620,7 +3146,7 @@
 @class
     @name=list
     @brief=The list of objects
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -2842,7 +3368,7 @@
 @class
     @name=int_map
     @brief=The map of objects with an integer key
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -3016,7 +3542,7 @@
 @class
     @name=string_map
     @brief=The map of objects with an string key
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -3190,7 +3716,7 @@
 @class
     @name=queue
     @brief=The queue of objects
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -3312,7 +3838,7 @@
 @class
     @name=stack
     @brief=The stack of objects
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -3434,7 +3960,7 @@
 @class
     @name=action
     @brief=The interface to an action
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -3462,7 +3988,7 @@
 @class
     @name=assert
     @brief=The library of assertions
-    @ingroup=stdlib
+    @ingroup=runtime
     @type=class
     @parent=object
 
@@ -3472,7 +3998,7 @@
         @name=isTrue
         @type=method
         @scope=class
-        @brief=Asserts when the expresion is not true
+        @brief=Asserts when the expression is not true
         @visibility=public
         @divisor=.
 
@@ -3500,7 +4026,7 @@
         @name=isFalse
         @type=method
         @scope=class
-        @brief=Asserts when the expresion is not false
+        @brief=Asserts when the expression is not false
         @visibility=public
         @divisor=.
 
@@ -3516,6 +4042,44 @@
         @param
             @name=condition
             The boolean condition to check
+        @end
+
+        @param
+            @name=message
+            The message to add to a standard message of the assertion
+        @end
+    @end
+
+    @member
+        @name=approximatelyEquals
+        @type=method
+        @scope=class
+        @brief=Asserts when two real values are not approximately equals
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=value : real, expected : real, delta : real, message : string
+        @end
+
+        @param
+            @name=value
+            The value to check
+        @end
+
+        @param
+            @name=expected
+            The expected value
+        @end
+
+        @param
+            @name=delta
+            The acceptable delta between values
         @end
 
         @param
@@ -3572,6 +4136,270 @@
         @param
             @name=action
             The action object to execute
+        @end
+
+        @param
+            @name=message
+            The message to add to a standard message of the assertion
+        @end
+    @end
+
+    @member
+        @name=equals
+        @type=method
+        @scope=class
+        @brief=Asserts that values are equal
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=v1 : variant, v2 : variant, message : string
+        @end
+
+        @param
+            @name=v1
+            The first value
+        @end
+
+        @param
+            @name=v2
+            The second value
+        @end
+
+        @param
+            @name=message
+            The message to add to a standard message of the assertion
+        @end
+    @end
+
+    @member
+        @name=doesNotEqual
+        @type=method
+        @scope=class
+        @brief=Asserts that values are not equal
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=v1 : variant, v2 : variant, message : string
+        @end
+
+        @param
+            @name=v1
+            The first value
+        @end
+
+        @param
+            @name=v2
+            The second value
+        @end
+
+        @param
+            @name=message
+            The message to add to a standard message of the assertion
+        @end
+    @end
+
+    @member
+        @name=greater
+        @type=method
+        @scope=class
+        @brief=Asserts that value is greater than expected
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=value : real, expected : real, message : string
+        @end
+
+        @param
+            @name=value
+            The tested value
+        @end
+
+        @param
+            @name=expected
+            The expected value
+        @end
+
+        @param
+            @name=message
+            The message to add to a standard message of the assertion
+        @end
+    @end
+
+    @member
+        @name=greaterOrEqual
+        @type=method
+        @scope=class
+        @brief=Asserts that value is greater or equal than expected
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=value : real, expected : real, message : string
+        @end
+
+        @param
+            @name=value
+            The tested value
+        @end
+
+        @param
+            @name=expected
+            The expected value
+        @end
+
+        @param
+            @name=message
+            The message to add to a standard message of the assertion
+        @end
+    @end
+
+    @member
+        @name=less
+        @type=method
+        @scope=class
+        @brief=Asserts that value is less than expected
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=value : real, expected : real, message : string
+        @end
+
+        @param
+            @name=value
+            The tested value
+        @end
+
+        @param
+            @name=expected
+            The expected value
+        @end
+
+        @param
+            @name=message
+            The message to add to a standard message of the assertion
+        @end
+    @end
+
+    @member
+        @name=lessOrEqual
+        @type=method
+        @scope=class
+        @brief=Asserts that value is less or equal than expected
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=value : real, expected : real, message : string
+        @end
+
+        @param
+            @name=value
+            The tested value
+        @end
+
+        @param
+            @name=expected
+            The expected value
+        @end
+
+        @param
+            @name=message
+            The message to add to a standard message of the assertion
+        @end
+    @end
+
+    @member
+        @name=matches
+        @type=method
+        @scope=class
+        @brief=Asserts that string value matches the pattern
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=value : string, pattern : string, message : string
+        @end
+
+        @param
+            @name=value
+            The tested value
+        @end
+
+        @param
+            @name=pattern
+            The regular expression patter value
+        @end
+
+        @param
+            @name=message
+            The message to add to a standard message of the assertion
+        @end
+    @end
+
+    @member
+        @name=doesNotMatch
+        @type=method
+        @scope=class
+        @brief=Asserts that string value does not match the pattern
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=void
+            @prefix=public static
+            @params=value : string, pattern : string, message : string
+        @end
+
+        @param
+            @name=value
+            The tested value
+        @end
+
+        @param
+            @name=pattern
+            The regular expression patter value
         @end
 
         @param
