@@ -369,7 +369,7 @@ namespace Luax.Interpreter.Expression
                     }
                 }
                 else
-                    throw new LuaXExecutionException(forStatement.Location, "Condition of for statement is not a boolean value");
+                    throw new LuaXExecutionException(forStatement.Location, "Condition part of for statement is not a boolean value");
             }
             else
             {

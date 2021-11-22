@@ -4,7 +4,7 @@ class forTest
        assert.isTrue(a >= 1, "The value must be greater than 0");
        var result : int, i : int;
        result = 1;
-       for i = 1, i <= a, 1 do
+       for i = 1, a, 1 do
          result = result * i;
        end
        return result;
@@ -28,7 +28,7 @@ class forTest
       var i : int, a : int, b : int, c : int;
       a = 1;
       b = 1;
-      for i = 3, i <= arg, 1 do
+      for i = 3, arg, 1 do
          if i > arg then
             break;
          end
@@ -58,7 +58,7 @@ class forTest
     private static function dividesByThree(arg : int) : string
       var i : int, result : string;
       result = "";
-      for i = 1, i <= arg, 1 do
+      for i = 1, arg, 1 do
          if i % 3 ~= 0 then
             continue;
          end
@@ -87,9 +87,9 @@ class forTest
     public static function nestedForAction(sourceVal : int, multRep : int, rep : int) : int
       var i : int, j : int, subVal : int, val : int;
       val = 0;
-      for i = rep, i >= 1, -1 do
+      for i = rep, 1, -1 do
          subVal = 1;
-         for j = multRep, j >= 1, -1 do
+         for j = multRep, 1, -1 do
             subVal = subVal * sourceVal;
          end
          val = val + subVal + 1;

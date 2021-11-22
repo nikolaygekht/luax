@@ -525,8 +525,47 @@ namespace Luax.Parser.Test
 
             var @for = method.Statements[1].As<LuaXForStatement>();
             @for.ForLoopStatement.Start.ToString().Should().Be("const:int:0");
-            @for.ForLoopStatement.Condition.ToString().Should().Be("(var:i Less const:int:10)");
+            @for.ForLoopStatement.Condition.ToString().Should().Be("(var:i LessOrEqual const:int:10)");
             @for.ForLoopStatement.Iterator.ToString().Should().Be("const:int:1");
+            @for.ForLoopStatement.VariableName.Should().Be("i");
+
+            @for.Statements.Should().HaveCount(3);
+
+            var ifContinue = @for.Statements[0].As<LuaXIfStatement>();
+            ifContinue.Clauses.Should().HaveCount(1);
+            ifContinue.Clauses[0].Condition.ToString().Should().Be("(var:i Equal const:int:0)");
+            ifContinue.Clauses[0].Statements.Should().HaveCount(1);
+            ifContinue.Clauses[0].Statements[0].Should().BeOfType<LuaXContinueStatement>();
+
+            @for.Statements[1].Should().BeOfType<LuaXAssignVariableStatement>();
+            var assign = @for.Statements[1].As<LuaXAssignVariableStatement>();
+            assign.Expression.ToString().Should().Be("(var:i Add const:int:1)");
+
+            var ifBreak = @for.Statements[2].As<LuaXIfStatement>();
+            ifBreak.Clauses.Should().HaveCount(1);
+            ifBreak.Clauses[0].Condition.ToString().Should().Be("(var:j Equal var:i)");
+            ifBreak.Clauses[0].Statements.Should().HaveCount(1);
+            ifBreak.Clauses[0].Statements[0].Should().BeOfType<LuaXBreakStatement>();
+        }
+
+        [Fact]
+        public void ForReverseBreakContinue()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForReverseBreakContinue");
+            app.Pass2();
+            app.Classes.Search("test", out var @class).Should().BeTrue();
+
+            @class.SearchMethod("test1", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(3);
+
+            method.Statements[0].Should().BeOfType<LuaXAssignVariableStatement>();
+            method.Statements[1].Should().BeOfType<LuaXForStatement>();
+
+            var @for = method.Statements[1].As<LuaXForStatement>();
+            @for.ForLoopStatement.Start.ToString().Should().Be("const:int:10");
+            @for.ForLoopStatement.Condition.ToString().Should().Be("(var:i GreaterOrEqual const:int:0)");
+            @for.ForLoopStatement.Iterator.ToString().Should().Be("const:int:-1");
             @for.ForLoopStatement.VariableName.Should().Be("i");
 
             @for.Statements.Should().HaveCount(3);
@@ -564,7 +603,7 @@ namespace Luax.Parser.Test
 
             var @for = method.Statements[1].As<LuaXForStatement>();
             @for.ForLoopStatement.Start.ToString().Should().Be("const:int:0");
-            @for.ForLoopStatement.Condition.ToString().Should().Be("(var:i Less const:int:10)");
+            @for.ForLoopStatement.Condition.ToString().Should().Be("(var:i LessOrEqual const:int:10)");
             @for.ForLoopStatement.Iterator.ToString().Should().Be("const:int:1");
             @for.ForLoopStatement.VariableName.Should().Be("i");
 
