@@ -166,7 +166,7 @@ namespace Luax.Interpreter.Expression
                         }
                         case LuaXForStatement @for:
                             {
-                                var r = ExecuteFor(@for, types, currentClass, variables, out result);
+                                var r = ExecuteFor(callingMethod, @for, types, currentClass, variables, out result);
                                 if (r != ResultType.ReachForEnd)
                                     return r;
                             }
@@ -343,7 +343,7 @@ namespace Luax.Interpreter.Expression
             return ResultType.ReachForEnd;
         }
 
-        private static ResultType ExecuteFor(LuaXForStatement forStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
+        private static ResultType ExecuteFor(LuaXMethod callingMethod, LuaXForStatement forStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
         {
             var initialExp = LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Start, types, currentClass, variables);
             var variableName = forStatement.ForLoopStatement.VariableName;
@@ -357,7 +357,7 @@ namespace Luax.Interpreter.Expression
                 {
                     for (int i = initial; boolCondition; i += increment)
                     {
-                        ResultType statementsResult = ExecuteStatements(forStatement.Statements, types, currentClass, variables, out result);
+                        ResultType statementsResult = ExecuteStatements(callingMethod, forStatement.Statements, types, currentClass, variables, out result);
                         if (statementsResult == ResultType.Break)
                             break;
                         if (statementsResult != ResultType.Continue && statementsResult != ResultType.ReachForEnd)
