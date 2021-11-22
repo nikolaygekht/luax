@@ -476,6 +476,58 @@ namespace Luax.Interpreter.Test
             r.Should().BeOfType<string>();
             r.Should().Be(expectedValue);
         }
+
+        [Theory]
+        [InlineData(6, 15)]
+        [InlineData(5, 0)]
+        [InlineData(4, 5)]
+        [InlineData(3, 9)]
+        [InlineData(2, 12)]
+        [InlineData(1, 14)]
+        public void TestForBreak(int argument, int expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("breakTest", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsInteger().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { argument }, out var r);
+            r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData(6, 16)]
+        [InlineData(5, 10)]
+        [InlineData(4, 10)]
+        [InlineData(3, 6)]
+        [InlineData(2, 3)]
+        [InlineData(1, 1)]
+        public void TestForContinue(int argument, int expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("continueTest", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsInteger().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { argument }, out var r);
+            r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
     }
 }
 
