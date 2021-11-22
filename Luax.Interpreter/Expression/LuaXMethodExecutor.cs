@@ -334,56 +334,33 @@ namespace Luax.Interpreter.Expression
             return ResultType.ReachForEnd;
         }
 
-        private delegate bool CompareOperation(int x, int y);
-
         private static ResultType ExecuteFor(LuaXForStatement forStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
         {
             var initialExp = LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Start, types, currentClass, variables);
             var variableName = forStatement.ForLoopStatement.VariableName;
-            
-            var initialTest = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Start, types, currentClass, variables);
-            var incrementTest = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
-            var conditionTest = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Limit, types, currentClass, variables);
-
 
             if (initialExp is int initial)
             {
-                int increment = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
-                int condition = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Limit, types, currentClass, variables);
-
-                CompareOperation compareOperation;
-                if (initial <= condition)
+                variables[variableName].Value = initial;
+                var condition = LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Condition, types, currentClass, variables);
+                int increment;
+                if (condition is bool boolCondition)
                 {
-                    if (increment < 1)
+                    for (int i = initial; boolCondition; i += increment)
                     {
-                        result = null;
-                        return ResultType.ReachForEnd;
+                        ResultType statementsResult = ExecuteStatements(forStatement.Statements, types, currentClass, variables, out result);
+                        if (statementsResult == ResultType.Break)
+                            break;
+                        if (statementsResult != ResultType.Continue && statementsResult != ResultType.ReachForEnd)
+                            return statementsResult;
+
+                        increment = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
+                        variables[variableName].Value = i + increment;
+                        boolCondition = (bool)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Condition, types, currentClass, variables);
                     }
-                    compareOperation = (int x, int y) => x <= y;
                 }
                 else
-                {
-                    if (increment > -1)
-                    {
-                        result = null;
-                        return ResultType.ReachForEnd;
-                    }
-                    compareOperation = (int x, int y) => x >= y;
-                }
-
-                variables[variableName].Value = initial;
-                for (int i = initial; compareOperation(i, condition); i += increment)
-                {
-                    ResultType statementsResult = ExecuteStatements(forStatement.Statements, types, currentClass, variables, out result);
-                    if (statementsResult == ResultType.Break)
-                        break;
-                    if (statementsResult != ResultType.Continue && statementsResult != ResultType.ReachForEnd)
-                        return statementsResult;
-
-                    increment = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
-                    variables[variableName].Value = i + increment;
-                    condition = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Limit, types, currentClass, variables);
-                }
+                    throw new LuaXExecutionException(forStatement.Location, "Condition of for statement is not a boolean value");
             }
             else
             {

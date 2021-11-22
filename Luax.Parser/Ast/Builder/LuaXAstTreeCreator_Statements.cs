@@ -143,13 +143,20 @@ namespace Luax.Parser.Ast.Builder
                     forLoopExpressions.Add(ProcessExpression(child, @class, method));
             }
 
-            foreach (var exp in forLoopExpressions)
+            if (forLoopExpressions.Count == 2)
             {
-                if (exp.ReturnType.TypeId != identierVar.LuaType.TypeId)
-                    throw new LuaXAstGeneratorException(Name, node, "Initialization, condition and iteration parts of for statement should all be of the same type");
+                if (forLoopExpressions[0].ReturnType.TypeId != LuaXType.Integer ||
+                    forLoopExpressions[1].ReturnType.TypeId != LuaXType.Boolean)
+                    throw new LuaXAstGeneratorException(Name, node, "Initialization part of for statement should be integer type, condition part of for statement should be boolean type");
             }
-
-            if (forLoopExpressions.Count != 2 && forLoopExpressions.Count != 3)
+            else if (forLoopExpressions.Count == 3)
+            {
+                if (forLoopExpressions[0].ReturnType.TypeId != LuaXType.Integer ||
+                    forLoopExpressions[1].ReturnType.TypeId != LuaXType.Boolean ||
+                    forLoopExpressions[2].ReturnType.TypeId != LuaXType.Integer)
+                    throw new LuaXAstGeneratorException(Name, node, "Initialization, iteration parts of for statement should be integer type, condition part of for statement should be boolean type");
+            }
+            else
                 throw new LuaXAstGeneratorException(Name, node, "For statement should has initialization, condition parts and optional iterator part");
 
             return new LuaXForLoopStatement(node.Children[0].Value, forLoopExpressions, new LuaXElementLocation(Name, node));

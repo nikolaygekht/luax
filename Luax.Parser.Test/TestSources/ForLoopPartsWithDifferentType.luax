@@ -6,7 +6,7 @@
 
       j = 0;
       max = 1;
-      for i = 0, max do
+      for i = 0, i < max do
           j = j + 1;
       end
       
@@ -21,7 +21,7 @@
 
       j = 0;
       max = 1;
-      for i = 0, max, iterator do
+      for i = 0, i < max, iterator do
           j = j + 1;
       end
       

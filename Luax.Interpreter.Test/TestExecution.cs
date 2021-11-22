@@ -299,13 +299,13 @@ namespace Luax.Interpreter.Test
         }
 
         [Theory]
-        [InlineData(0, 2, -1, 0)]
-        [InlineData(2, 0, 1, 0)]
         [InlineData(0, 2, 1, 3)]
         [InlineData(1, 2, 1, 2)]
-        [InlineData(2, 0, -1, 3)]
-        [InlineData(5, 2, -1, 4)]
-        public void TestFor(int start, int limit, int iterator, int expectedValue)
+        [InlineData(2, 0, 1, 0)]
+        //[InlineData(0, 2, -1, 0)]
+        //[InlineData(2, 0, -1, 3)]
+        //[InlineData(5, 2, -1, 4)]
+        public void TestFor(int start, int condition, int iterator, int expectedValue)
         {
             var app = new LuaXApplication();
             app.CompileResource("ForTest");
@@ -321,7 +321,7 @@ namespace Luax.Interpreter.Test
             method.Arguments[2].LuaType.IsInteger().Should().BeTrue();
             method.ReturnType.IsInteger().Should().BeTrue();
 
-            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { start, limit, iterator }, out var r);
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { start, condition, iterator }, out var r);
             r.Should().BeOfType<int>();
             r.Should().Be(expectedValue);
         }

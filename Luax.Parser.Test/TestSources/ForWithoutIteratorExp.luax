@@ -4,7 +4,7 @@
       var j : int;
 
       j = 0;
-      for i = 0, 10 do
+      for i = 0, i < 10 do
           j = j + 1;
       end
       

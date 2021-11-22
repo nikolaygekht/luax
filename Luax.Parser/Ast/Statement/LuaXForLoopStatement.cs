@@ -10,7 +10,7 @@ namespace Luax.Parser.Ast.Statement
     {
         public LuaXExpression Start { get; }
 
-        public LuaXExpression Limit { get; }
+        public LuaXExpression Condition { get; }
 
         public LuaXExpression Iterator { get; }
 
@@ -20,7 +20,7 @@ namespace Luax.Parser.Ast.Statement
         {
             VariableName = variableName;
             Start = expressions[0];
-            Limit = expressions[1];
+            Condition = expressions[1];
             if (expressions.Count == 3)
                 Iterator = expressions[2];
             else
