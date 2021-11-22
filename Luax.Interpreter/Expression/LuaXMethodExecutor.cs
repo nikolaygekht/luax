@@ -156,7 +156,7 @@ namespace Luax.Interpreter.Expression
                             break;
                         case LuaXRepeatStatement @repeat:
                             {
-                                var r = ExecuteRepeat(@repeat, types, currentClass, variables, out result);
+                                var r = ExecuteRepeat(callingMethod, @repeat, types, currentClass, variables, out result);
                                 if (r != ResultType.ReachForEnd)
                                     return r;
                             }
@@ -343,13 +343,13 @@ namespace Luax.Interpreter.Expression
             return ResultType.ReachForEnd;
         }
         
-        private static ResultType ExecuteRepeat(LuaXRepeatStatement repeatStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
+        private static ResultType ExecuteRepeat(LuaXMethod callingMethod, LuaXRepeatStatement repeatStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
         {
             result = null;
 
             while (true)
             {
-                ResultType statementsResult = ExecuteStatements(repeatStatement.Statements, types, currentClass, variables, out result);
+                ResultType statementsResult = ExecuteStatements(callingMethod, repeatStatement.Statements, types, currentClass, variables, out result);
                 if (statementsResult == ResultType.Break)
                     break;
                 if (statementsResult != ResultType.Continue && statementsResult != ResultType.ReachForEnd)
@@ -362,7 +362,7 @@ namespace Luax.Interpreter.Expression
                         break;
                 }
                 else
-                    throw new LuaXExecutionException(repeatStatement.Location, "Condition of while statement is not a boolean value");
+                    throw new LuaXExecutionException(repeatStatement.Location, "Condition of until statement is not a boolean value");
             }
 
             return ResultType.ReachForEnd;

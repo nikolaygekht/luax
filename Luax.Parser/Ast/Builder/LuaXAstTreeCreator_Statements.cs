@@ -473,10 +473,10 @@ namespace Luax.Parser.Ast.Builder
             if (condition != null)
             {
                 if (!condition.ReturnType.IsBoolean())
-                    throw new LuaXAstGeneratorException(Name, new LuaXParserError(condition.Location, "The while condition should be a boolean expression"));
+                    throw new LuaXAstGeneratorException(Name, new LuaXParserError(condition.Location, "The until condition should be a boolean expression"));
             }
             else
-                throw new LuaXAstGeneratorException(Name, new LuaXParserError(location, "The while condition should be in while statement"));
+                throw new LuaXAstGeneratorException(Name, new LuaXParserError(location, "The until condition should be in repeat statement"));
 
             LuaXRepeatStatement stmt = new LuaXRepeatStatement(location, condition);
 
