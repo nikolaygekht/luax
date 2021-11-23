@@ -282,9 +282,10 @@ namespace Luax.Parser.Ast.Builder
 
         private bool SearchClassByName(string className, LuaXClass currentClass, out LuaXClass @class)
         {
+#pragma warning disable S2692 // "IndexOf" checks should not be for positive numbers: NG: false positive!
             if (className.IndexOf('.') > 0)
                 return Metadata.Search(className, out @class);
-
+#pragma warning restore S2692 // 
             string ownerName = currentClass.Name;
             string name = $"{ownerName}.{className}";
             while (name.Length > 0)

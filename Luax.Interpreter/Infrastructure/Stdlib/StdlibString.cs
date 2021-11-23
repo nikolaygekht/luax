@@ -214,5 +214,62 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
 
             return CreateMatch(@this.Properties["__text"].Value as string, m.NextMatch());
         }
+
+        //public static extern compareStrings(a : string, b : string, caseSenstitive : boolean) : int;
+        [LuaXExternMethod("stdlib", "compareStrings")]
+        public static object CompareStrings(string a, string b, bool caseSensitive)
+        {
+            int rc = string.Compare(a, b, caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
+            if (rc < 0)
+                return -1;
+            else if (rc > 0)
+                return 1;
+            else
+                return 0;
+        }
+
+        //public static extern charIndex(s : string, char : int, startOffset : int, caseSenstitive : boolean) : int;
+        [LuaXExternMethod("stdlib", "charIndex")]
+        public static object CharIndex(string s, int c, int offset, bool caseSensitive)
+        {
+            if (s == null)
+                return -1;
+
+            char sc;
+            if (caseSensitive)
+                sc = (char)c;
+            else
+                sc = char.ToUpper((char)c);
+
+            for (int i = offset; i < s.Length; i++)
+            {
+                char cc = caseSensitive ? s[i] : char.ToUpper(s[i]);
+                if (cc == sc)
+                    return i;
+            }
+            return -1;
+        }
+
+        //public static extern lastCharIndex(s : string, char : int, startOffset : int, caseSenstitive : boolean) : int;
+        [LuaXExternMethod("stdlib", "lastCharIndex")]
+        public static object LastCharIndex(string s, int c, int offset, bool caseSensitive)
+        {
+            if (s == null)
+                return -1;
+
+            char sc;
+            if (caseSensitive)
+                sc = (char)c;
+            else
+                sc = char.ToUpper((char)c);
+
+            for (int i = s.Length - offset - 1; i >= 0; i--)
+            {
+                char cc = caseSensitive ? s[i] : char.ToUpper(s[i]);
+                if (cc == sc)
+                    return i;
+            }
+            return -1;
+        }
     }
 }

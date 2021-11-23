@@ -61,9 +61,8 @@ namespace Luax.Parser.Ast.Builder
         {
             foreach (LuaXClass @class in Metadata)
             {
-                if (@class.HasParent)
-                    if (SearchClassByName(@class.Parent, @class, out var realParent) && realParent.Name != @class.Parent)
-                        @class.Parent = realParent.Name;
+                if (@class.HasParent && SearchClassByName(@class.Parent, @class, out var realParent) && realParent.Name != @class.Parent)
+                    @class.Parent = realParent.Name;
 
                 foreach (LuaXProperty property in @class.Properties)
                 {
@@ -85,19 +84,17 @@ namespace Luax.Parser.Ast.Builder
 
         private bool CheckLuaTypeOnInnerClassName(LuaXClass @class, LuaXTypeDefinition sourceLuaType, out LuaXTypeDefinition resultLuaType)
         {
-            if (sourceLuaType.TypeId == LuaXType.Object)
+            if (sourceLuaType.TypeId == LuaXType.Object &&
+                SearchClassByName(sourceLuaType.Class, @class, out var realClass) &&
+                realClass.Name != sourceLuaType.Class)
             {
-                if (SearchClassByName(sourceLuaType.Class, @class, out var realClass) &&
-                    realClass.Name != sourceLuaType.Class)
+                resultLuaType = new LuaXTypeDefinition()
                 {
-                    resultLuaType = new LuaXTypeDefinition()
-                    {
-                        TypeId = sourceLuaType.TypeId,
-                        Array = sourceLuaType.Array,
-                        Class = realClass.Name
-                    };
-                    return true;
-                }
+                    TypeId = sourceLuaType.TypeId,
+                    Array = sourceLuaType.Array,
+                    Class = realClass.Name
+                };
+                return true;
             }
             resultLuaType = null;
             return false;
@@ -266,6 +263,7 @@ namespace Luax.Parser.Ast.Builder
             {
                 "INTEGER" => new LuaXConstant(ProcessIntegerConstant(astNode.Children[0]), l),
                 "HEX_INTEGER" => new LuaXConstant(ProcessIntegerConstant(astNode.Children[0]), l),
+                "CHAR_CODE" => new LuaXConstant(ProcessCharConstant(astNode.Children[0]), l),
                 "STRING" => new LuaXConstant(ProcessStringConstant(astNode.Children[0]), l),
                 "BOOLEAN" => new LuaXConstant(ProcessBooleanConstant(astNode.Children[0]), l),
                 "NEGATIVE_INTEGER" => new LuaXConstant(ProcessNegativeIntegerConstant(astNode.Children[0]), l),
@@ -303,6 +301,19 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, astNode, "A REAL symbol is expected");
 
             return -ProcessRealConstant(astNode.Children[1]);
+        }
+
+        /// <summary>
+        /// Processes the negative real constant node
+        /// </summary>
+        /// <param name="astNode"></param>
+        /// <returns></returns>
+        private int ProcessCharConstant(IAstNode astNode)
+        {
+            if (string.IsNullOrEmpty(astNode.Value) || astNode.Value.Length != 3)
+                throw new LuaXAstGeneratorException(Name, astNode, "A character value is expected");
+
+            return (int)(uint)astNode.Value[1];
         }
 
         /// <summary>
@@ -843,7 +854,7 @@ namespace Luax.Parser.Ast.Builder
             string className = @class.Name;
             int pointIndex = className.LastIndexOf('.');
             if (pointIndex > 0)
-                className = className.Substring(pointIndex + 1);
+                className = className[(pointIndex + 1)..];
 
             if (!method.Static && method.Name == className && method.ReturnType.IsVoid() &&
                  method.Arguments.Count == 0)

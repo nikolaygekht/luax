@@ -1,4 +1,3 @@
-
 @TestSuite()
 class assertionTest
     class throwingAction : action
