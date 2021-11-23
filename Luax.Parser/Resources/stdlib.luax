@@ -700,7 +700,6 @@ end
 -- -----------------------------------------------------------
 @DocBrief("The stack of objects")
 class stack
-
     @DocBrief("Returns the number of the elements in the collection")
     public extern length() : int;
 
@@ -720,6 +719,36 @@ class stack
     public extern stack() : void;
 end
 
+-- ------------------------------------------------------------
+-- Sorted list of objects
+-- ------------------------------------------------------------
+@DocBrief("The interface to object comparer for a sorted list")
+@Interface()
+class object_comparer
+    public function compare(a : object, b : object) : int
+    end
+end
+
+@DocBrief("The sorted list of objects")
+class sorted_list
+    @DocBrief("Returns the number of the elements in the collection")
+    public extern length() : int;
+
+    @DocBrief("Gets the element by the index specified")
+    public extern get(index : int) : object;
+
+    @DocBrief("Adds a new element at the end of the list")
+    public extern add(value : object) : void;
+
+    @DocBrief("Finds an element in the list")
+    public extern find(value : object) : int;
+
+    @DocBrief("Removes the element from the list")
+    public extern remove(index : int) : void;
+
+    @DocBrief("Creates a list using the comparer specified")
+    public extern initialize(comparer : object_comparer) : void;
+end
 -- ------------------------------------------------------------
 -- action class
 -- ------------------------------------------------------------
