@@ -10,7 +10,7 @@ namespace Luax.Parser.Ast.Statement
     {
         public LuaXExpression Start { get; }
 
-        public LuaXExpression Condition { get; private set; }
+        public LuaXExpression Limit { get; private set; }
 
         public LuaXExpression Iterator { get; }
 
@@ -22,28 +22,11 @@ namespace Luax.Parser.Ast.Statement
         {
             Variable = identierVar;
             Start = expressions[0];
-            Condition = expressions[1];
+            Limit = expressions[1];
             if (expressions.Count == 3)
                 Iterator = expressions[2];
             else
                 Iterator = new LuaXConstantExpression(new LuaXConstant(1, location));
-
-            TransformCondition(identierVar);
-        }
-
-        private void TransformCondition(LuaXVariable identierVar)
-        {
-            if (Iterator is LuaXConstantExpression it && !it.Value.IsNil)
-            {
-                var operation = it.Value.AsInteger() >= 0 ? LuaXBinaryOperator.LessOrEqual : LuaXBinaryOperator.GreaterOrEqual;
-
-                Condition = new LuaXBinaryOperatorExpression(operation,
-                                new LuaXVariableExpression(identierVar.Name, identierVar.LuaType, identierVar.Location),
-                                Condition, LuaXTypeDefinition.Boolean, Condition.Location);
-                NeedDetectConditionAtRuntime = false;
-            }
-            else
-                NeedDetectConditionAtRuntime = true;
         }
     }
 }

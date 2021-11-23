@@ -562,7 +562,7 @@ namespace Luax.Parser.Test
 
             var @for = method.Statements[1].As<LuaXForStatement>();
             @for.ForLoopStatement.Start.ToString().Should().Be("const:int:0");
-            @for.ForLoopStatement.Condition.ToString().Should().Be("(var:i LessOrEqual const:int:10)");
+            @for.ForLoopStatement.Limit.ToString().Should().Be("const:int:10");
             @for.ForLoopStatement.Iterator.ToString().Should().Be("const:int:1");
             @for.ForLoopStatement.Variable.Name.Should().Be("i");
 
@@ -601,7 +601,7 @@ namespace Luax.Parser.Test
 
             var @for = method.Statements[1].As<LuaXForStatement>();
             @for.ForLoopStatement.Start.ToString().Should().Be("const:int:10");
-            @for.ForLoopStatement.Condition.ToString().Should().Be("(var:i GreaterOrEqual const:int:0)");
+            @for.ForLoopStatement.Limit.ToString().Should().Be("const:int:0");
             @for.ForLoopStatement.Iterator.ToString().Should().Be("const:int:-1");
             @for.ForLoopStatement.Variable.Name.Should().Be("i");
 
@@ -640,7 +640,7 @@ namespace Luax.Parser.Test
 
             var @for = method.Statements[1].As<LuaXForStatement>();
             @for.ForLoopStatement.Start.ToString().Should().Be("const:int:0");
-            @for.ForLoopStatement.Condition.ToString().Should().Be("(var:i LessOrEqual const:int:10)");
+            @for.ForLoopStatement.Limit.ToString().Should().Be("const:int:10");
             @for.ForLoopStatement.Iterator.ToString().Should().Be("const:int:1");
             @for.ForLoopStatement.Variable.Name.Should().Be("i");
 

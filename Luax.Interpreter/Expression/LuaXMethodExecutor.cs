@@ -359,18 +359,15 @@ namespace Luax.Interpreter.Expression
             if (initialExp is int initial)
             {
                 variables[variableName].Value = initial;
-                var condition = forStatement.ForLoopStatement.Condition;
-                if (forStatement.ForLoopStatement.NeedDetectConditionAtRuntime)
-                {
-                    var iterator = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
-                    var operation = iterator >= 0 ? LuaXBinaryOperator.LessOrEqual : LuaXBinaryOperator.GreaterOrEqual;
 
-                    condition = new LuaXBinaryOperatorExpression(operation,
-                                    new LuaXVariableExpression(forStatement.ForLoopStatement.Variable.Name,
-                                    forStatement.ForLoopStatement.Variable.LuaType, forStatement.ForLoopStatement.Variable.Location),
-                                    forStatement.ForLoopStatement.Condition, LuaXTypeDefinition.Boolean,
-                                    forStatement.ForLoopStatement.Condition.Location);
-                }
+                var iterator = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
+                var operation = iterator >= 0 ? LuaXBinaryOperator.LessOrEqual : LuaXBinaryOperator.GreaterOrEqual;
+
+                var condition = new LuaXBinaryOperatorExpression(operation,
+                                new LuaXVariableExpression(forStatement.ForLoopStatement.Variable.Name,
+                                forStatement.ForLoopStatement.Variable.LuaType, forStatement.ForLoopStatement.Variable.Location),
+                                forStatement.ForLoopStatement.Limit, LuaXTypeDefinition.Boolean,
+                                forStatement.ForLoopStatement.Limit.Location);
 
                 var conditionValue = LuaXExpressionEvaluator.Evaluate(condition, types, currentClass, variables);
                 int increment;
