@@ -1,0 +1,102 @@
+@TestSuite()
+class xmlTest
+    const xmlSource = "<?xml version='1.0'?><root xmlns:nsx='http://nsx'><node1 attribute1='value1' attribute2='value2'><!--comment--><![CDATA[cdata is here]]>and text is here<nsx:node11/></node1><node2 attribute3='value3'/></root>";
+
+    class parseAction : action
+        public function Invoke() : void
+            var parser : xmlParser;
+            parser = new xmlParser();
+            parser.parse(xmlSource);
+        end
+    end
+
+    @Fact()
+    public function parse() : void
+        assert.doesNotThrow(new parseAction(), "");
+    end
+
+    @Fact()
+    public function type() : void
+        var parser : xmlParser, node : xmlNode, root : xmlNode;
+        parser = new xmlParser();
+        root = parser.parse(xmlSource);
+
+        assert.equals(root.getType(), xmlNode.ELEMENT, "element");
+
+        node = root.getChild(0).getChild(0);
+        assert.equals(node.getType(), xmlNode.COMMENT, "comment");
+
+        node = root.getChild(0).getChild(1);
+        assert.equals(node.getType(), xmlNode.CDATA, "cdata");
+
+        node = root.getChild(0).getChild(2);
+        assert.equals(node.getType(), xmlNode.TEXT, "text");
+
+        node = root.getChild(0).getAttribute(0);
+        assert.equals(node.getType(), xmlNode.ATTRIBUTE, "attribute");
+    end
+
+    @Fact()
+    public function name() : void
+        var parser : xmlParser, node : xmlNode, root : xmlNode;
+        parser = new xmlParser();
+        root = parser.parse(xmlSource);
+        assert.equals(root.getName(), "root", "root");
+
+        node = root.getChild(0).getChild(3);
+        assert.equals(node.getName(), "nsx:node11", "node in ns:name");
+        assert.equals(node.getLocalName(), "node11", "node in ns:localName");
+        assert.equals(node.getNamespaceURI(), "http://nsx", "node in ns:uri");
+
+        node = root.getChild(0).getAttribute(0);
+        assert.equals(node.getName(), "attribute1", "attribute");
+    end
+
+    @Fact()
+    public function value() : void
+        var parser : xmlParser, node : xmlNode, root : xmlNode;
+        parser = new xmlParser();
+        root = parser.parse(xmlSource);
+        assert.equals(root.getValue(), "", "root");
+
+        assert.equals(root.getChildrenCount(), 2, "count1");
+        assert.equals(root.getChild(0).getChildrenCount(), 4, "count2");
+
+        node = root.getChild(0).getChild(0);
+        assert.equals(node.getValue(), "comment", "comment");
+
+        node = root.getChild(0).getChild(1);
+        assert.equals(node.getValue(), "cdata is here", "cdata");
+
+        node = root.getChild(0).getChild(2);
+        assert.equals(node.getValue(), "and text is here", "text");
+
+        node = root.getChild(0).getAttribute(0);
+        assert.equals(node.getValue(), "value1", "attribute");
+    end
+
+    @Fact()
+    public function attributes() : void
+        var parser : xmlParser, node : xmlNode, root : xmlNode, attr : xmlNode;
+        parser = new xmlParser();
+        root = parser.parse(xmlSource);
+        assert.equals(root.getName(), "root", "root");
+
+        node = root.getChild(0);
+        assert.equals(node.getAttributesCount(), 2, "count");
+        attr = node.getAttribute(0);
+        assert.equals(attr.getName(), "attribute1", "a1name");
+        assert.equals(attr.getValue(), "value1", "a1value");
+
+        attr = node.getAttribute(1);
+        assert.equals(attr.getName(), "attribute2", "a2name");
+        assert.equals(attr.getValue(), "value2", "a2value");
+
+        attr = node.getAttributeByName("attribute1");
+        assert.equals(attr.getName(), "attribute1", "a3name");
+        assert.equals(attr.getValue(), "value1", "a3value");
+
+        attr = node.getAttributeByName("notExistent");
+        assert.equals(attr, nil, "a4");
+    end
+end

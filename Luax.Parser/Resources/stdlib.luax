@@ -532,9 +532,17 @@ class xmlNode
     @DocReturn("The return value could be `ELEMENT`, `TEXT`, `COMMENT`, `CDATA` or `ATTRIBUTE`")
     public extern getType() : string;
 
-    @DocBrief("Returns the name of the node")
+    @DocBrief("Returns the full name of the node")
     @DocDescription("The name is returned only for `ELEMENT` and `ATTRIBUTE` nodes")
     public extern getName() : string;
+
+    @DocBrief("Returns the local name of the node")
+    @DocDescription("The name is returned only for `ELEMENT` and `ATTRIBUTE` nodes")
+    public extern getLocalName() : string;
+
+    @DocBrief("Returns the namespace URI of the node")
+    @DocDescription("The name is returned only for `ELEMENT` and `ATTRIBUTE` nodes")
+    public extern getNamespaceURI() : string;
 
     @DocBrief("Returns the value of the node")
     public extern getValue() : string;
@@ -544,6 +552,15 @@ class xmlNode
 
     @DocBrief("Returns the child node by its index")
     public extern getChild(index : int) : xmlNode;
+
+    @DocBrief("Returns the number of attributes")
+    public extern getAttributesCount() : int;
+
+    @DocBrief("Returns the attribute by its index")
+    public extern getAttribute(index : int) : xmlNode;
+
+    @DocBrief("Returns the attribute by its local name")
+    public extern getAttributeByName(localName : string) : xmlNode;
 end
 
 -- -------------------------------------------------------
