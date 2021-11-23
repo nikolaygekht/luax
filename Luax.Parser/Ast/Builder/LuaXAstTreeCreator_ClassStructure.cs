@@ -58,13 +58,14 @@ namespace Luax.Parser.Ast.Builder
             {
                 if (@class.HasParent)
                     if (SearchClassByName(@class.Parent, @class, out var realParent))
-                        @class.Parent = realParent.Name;
+                        if (realParent.Name != @class.Parent)
+                            @class.Parent = realParent.Name;
                 foreach (LuaXProperty property in @class.Properties)
                 {
                     if (property.LuaType.TypeId == LuaXType.Object)
                     {
                         SearchClassByName(property.LuaType.Class, @class, out var realClass);
-                        if (realClass != null)
+                        if (realClass != null && realClass.Name != property.LuaType.Class)
                         {
                             property.LuaType = new LuaXTypeDefinition()
                             {
@@ -80,7 +81,7 @@ namespace Luax.Parser.Ast.Builder
                     if (method.ReturnType.TypeId == LuaXType.Object)
                     {
                         SearchClassByName(method.ReturnType.Class, @class, out var realClass);
-                        if (realClass != null)
+                        if (realClass != null && realClass.Name != method.ReturnType.Class)
                         {
                             method.ReturnType = new LuaXTypeDefinition()
                             {
@@ -89,6 +90,22 @@ namespace Luax.Parser.Ast.Builder
                                 Class = realClass.Name
                             };
                         };
+                    }
+                    foreach (LuaXVariable argument in method.Arguments)
+                    {
+                        if (argument.LuaType.TypeId == LuaXType.Object)
+                        {
+                            SearchClassByName(argument.LuaType.Class, @class, out var realClass);
+                            if (realClass != null && realClass.Name != argument.LuaType.Class)
+                            {
+                                argument.LuaType = new LuaXTypeDefinition()
+                                {
+                                    TypeId = argument.LuaType.TypeId,
+                                    Array = argument.LuaType.Array,
+                                    Class = realClass.Name
+                                };
+                            }
+                        }
                     }
                 }
             }
