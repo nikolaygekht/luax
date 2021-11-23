@@ -175,7 +175,7 @@ end
 -- ----------------------------------------------------------
 -- string -> object map
 -- ----------------------------------------------------------
-class stringMap 
+class string_map 
     public extern length() : int;
     public extern contains(key : string) : boolean;
     public extern get(key : string) : object;

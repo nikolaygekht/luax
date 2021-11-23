@@ -17,12 +17,12 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         public static void Initialize(LuaXTypesLibrary typeLibrary)
         {
             mTypeLibrary = typeLibrary;
-            typeLibrary.SearchClass("stringMap", out mStringMapClass);
+            typeLibrary.SearchClass("string_map", out mStringMapClass);
             mStringMapClass.LuaType.Properties.Add(new LuaXProperty() { Name = PropertyName, Visibility = LuaXVisibility.Private, LuaType = LuaXTypeDefinition.Void });
         }
 
         //public extern length() : int;
-        [LuaXExternMethod("stringMap", "length")]
+        [LuaXExternMethod("string_map", "length")]
         public static object MapLength(LuaXObjectInstance @this)
         {
             if (@this == null)
@@ -33,7 +33,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         }
         
         //public extern contains(key : string) : boolean;
-        [LuaXExternMethod("stringMap", "contains")]
+        [LuaXExternMethod("string_map", "contains")]
         public static object MapContains(LuaXObjectInstance @this, string key)
         {
             if (@this == null)
@@ -44,7 +44,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         }
         
         //public extern get(key : string) : object;
-        [LuaXExternMethod("stringMap", "get")]
+        [LuaXExternMethod("string_map", "get")]
         public static object MapGet(LuaXObjectInstance @this, string key)
         {
             if (@this == null)
@@ -55,7 +55,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         }
         
         //public extern set(key : string, value : object) : void;
-        [LuaXExternMethod("stringMap", "set")]
+        [LuaXExternMethod("string_map", "set")]
         public static object MapSet(LuaXObjectInstance @this, string key, LuaXObjectInstance v)
         {
             if (@this == null)
@@ -67,7 +67,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         }
 
         //public extern remove(key : string) : void;
-        [LuaXExternMethod("stringMap", "remove")]
+        [LuaXExternMethod("string_map", "remove")]
         public static object MapRemove(LuaXObjectInstance @this, string key)
         {
             if (@this == null)
@@ -79,7 +79,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         }
         
         //public extern keys() : string[];
-        [LuaXExternMethod("stringMap", "keys")]
+        [LuaXExternMethod("string_map", "keys")]
         public static object MapKeys(LuaXObjectInstance @this)
         {
             if (@this == null)
@@ -91,7 +91,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
 
 
         //public extern clear() : void;
-        [LuaXExternMethod("stringMap", "clear")]
+        [LuaXExternMethod("string_map", "clear")]
         public static object MapClear(LuaXObjectInstance @this)
         {
             if (@this == null)
@@ -103,7 +103,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         }
 
         //public extern list() : void;
-        [LuaXExternMethod("stringMap", "stringMap")]
+        [LuaXExternMethod("string_map", "stringMap")]
         public static object MapMap(LuaXObjectInstance @this)
         {
             @this.Properties[PropertyName].Value = new Dictionary<string, LuaXObjectInstance>();
