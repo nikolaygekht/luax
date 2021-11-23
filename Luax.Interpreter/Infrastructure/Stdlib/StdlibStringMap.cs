@@ -103,7 +103,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         }
 
         //public extern list() : void;
-        [LuaXExternMethod("string_map", "stringMap")]
+        [LuaXExternMethod("string_map", "string_map")]
         public static object MapMap(LuaXObjectInstance @this)
         {
             @this.Properties[PropertyName].Value = new Dictionary<string, LuaXObjectInstance>();

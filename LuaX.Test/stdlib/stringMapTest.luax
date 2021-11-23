@@ -1,0 +1,70 @@
+class mapItem
+    public var name : string;
+
+    public static function create(name : string) : mapItem
+        var m : mapItem;
+        m = new mapItem();
+        m.name = name;
+        return m;
+    end
+end
+
+@TestSuite()
+class stringMapTest
+    @Fact()
+    public function create_empty_viaNew() : void
+        var m : string_map;
+        m = new string_map();
+        assert.isTrue(m ~= nil, "value");
+        assert.isTrue(typename(m) == "string_map", "type");
+        assert.isTrue(m.length() == 0, "size");
+    end
+
+    @Fact()
+    public function set_get() : void
+        var m : string_map;
+        m = new string_map();
+        m.set("key", mapItem.create("value1"));
+        m.set("key2", mapItem.create("value2"));
+        assert.isTrue(m.length() == 2, "size");
+        assert.isTrue((cast<mapItem>(m.get("key"))).name == "value1", "item 1");
+        assert.isTrue((cast<mapItem>(m.get("key2"))).name == "value2", "item 2");
+    end
+
+    @Fact()
+    public function contins() : void
+        var m : string_map;
+        m = new string_map();
+        m.set("key", mapItem.create("value1"));
+        m.set("key2", mapItem.create("value2"));
+        assert.isTrue(m.contains("key"), "item 1");
+        assert.isTrue(m.contains("key2"), "item 2");
+        assert.isFalse(m.contains("key3"), "item 3");
+    end
+
+    @Fact()
+    public function remove() : void
+        var m : string_map;
+        m = new string_map();
+        m.set("key", mapItem.create("value1"));
+        m.set("key2", mapItem.create("value2"));
+        m.remove("key");
+        assert.isFalse(m.contains("key"), "item 1");
+        assert.isTrue(m.contains("key2"), "item 2");
+    end
+
+    @Fact()
+    public function keys() : void
+        var m : string_map;
+        var keys: string[];
+        m = new string_map();
+        m.set("key", mapItem.create("value1"));
+        m.set("key2", mapItem.create("value2"));
+        keys = m.keys();
+        assert.isTrue(keys.length == 2, "size");
+        assert.isTrue(keys[0] == "key", "item 1");
+        assert.isTrue(keys[0] == "key2", "item 2");
+    end
+
+end
+
