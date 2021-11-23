@@ -1,49 +1,49 @@
-class throwingAction : action
-    public function invoke() : void
-        throw new exception();
-    end
-end
-
-class nonThrowingAction : action
-    public function invoke() : void
-    end
-end
-
-class equalClassA
-    public var x1 : int;
-    public var x2 : real;
-    public var x3 : string;
-    @IgnoreInEquals()
-    public var x4 : int;
-
-    public static function create(a : int, b : real, c : string, d : int) : equalClassA
-        var x : equalClassA;
-        x = new equalClassA();
-        x.x1 = a;
-        x.x2 = b;
-        x.x3 = c;
-        x.x4 = d;
-        return x;
-    end
-end
-
-class equalClassB
-    public var a : equalClassA;
-
-    public static function create(a : int, b : real, c : string, d : int) : equalClassB
-        var x : equalClassB;
-        x = new equalClassB();
-        x.a = new equalClassA();
-        x.a.x1 = a;
-        x.a.x2 = b;
-        x.a.x3 = c;
-        x.a.x4 = d;
-        return x;
-    end
-end
 
 @TestSuite()
 class assertionTest
+    class throwingAction : action
+        public function invoke() : void
+            throw new exception();
+        end
+    end
+
+    class nonThrowingAction : action
+        public function invoke() : void
+        end
+    end
+
+    class equalClassA
+        public var x1 : int;
+        public var x2 : real;
+        public var x3 : string;
+        @IgnoreInEquals()
+        public var x4 : int;
+
+        public static function create(a : int, b : real, c : string, d : int) : equalClassA
+            var x : equalClassA;
+            x = new equalClassA();
+            x.x1 = a;
+            x.x2 = b;
+            x.x3 = c;
+            x.x4 = d;
+            return x;
+        end
+    end
+
+    class equalClassB
+        public var a : equalClassA;
+
+        public static function create(a : int, b : real, c : string, d : int) : equalClassB
+            var x : equalClassB;
+            x = new equalClassB();
+            x.a = new equalClassA();
+            x.a.x1 = a;
+            x.a.x2 = b;
+            x.a.x3 = c;
+            x.a.x4 = d;
+            return x;
+        end
+    end
 
     @Fact()
     public function isTrue_Success() : void
