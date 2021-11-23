@@ -357,8 +357,8 @@ namespace Luax.Interpreter.Test
 
         [Theory]
         [InlineData(0, 2, 1, 3)]
-        //[InlineData(1, 2, 1, 2)]
-        //[InlineData(2, 0, 1, 0)]
+        [InlineData(1, 2, 1, 2)]
+        [InlineData(2, 0, 1, 0)]
         public void TestForInc(int start, int condition, int iterator, int expectedValue)
         {
             var app = new LuaXApplication();
@@ -380,10 +380,10 @@ namespace Luax.Interpreter.Test
             r.Should().Be(expectedValue);
         }
 
-        //[Theory]
-        //[InlineData(0, 2, -1, 0)]
-        //[InlineData(2, 0, -1, 3)]
-        //[InlineData(5, 2, -1, 4)]
+        [Theory]
+        [InlineData(0, 2, -1, 0)]
+        [InlineData(2, 0, -1, 3)]
+        [InlineData(5, 2, -1, 4)]
         public void TestForDec(int start, int condition, int iterator, int expectedValue)
         {
             var app = new LuaXApplication();
@@ -530,7 +530,6 @@ namespace Luax.Interpreter.Test
             r.Should().BeOfType<int>();
             r.Should().Be(expectedValue);
         }
-        
 
         [Theory]
         [InlineData(6, 21)]

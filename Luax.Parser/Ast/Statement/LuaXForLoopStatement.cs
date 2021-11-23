@@ -8,39 +8,42 @@ namespace Luax.Parser.Ast.Statement
 {
     public class LuaXForLoopStatement : LuaXStatement
     {
-        private LuaXExpressionCollection forLoopExpressions;
-        private LuaXElementLocation luaXElementLocation;
-
         public LuaXExpression Start { get; }
 
-        public LuaXExpression Condition { get; }
+        public LuaXExpression Condition { get; private set; }
 
         public LuaXExpression Iterator { get; }
 
-        public string VariableName { get; }
+        public LuaXVariable Variable { get; }
+
+        public bool NeedDetectConditionAtRuntime { get; private set; }
 
         internal LuaXForLoopStatement(LuaXVariable identierVar, LuaXExpressionCollection expressions, LuaXElementLocation location) : base(location)
         {
-            VariableName = identierVar.Name;
+            Variable = identierVar;
             Start = expressions[0];
+            Condition = expressions[1];
             if (expressions.Count == 3)
                 Iterator = expressions[2];
             else
                 Iterator = new LuaXConstantExpression(new LuaXConstant(1, location));
 
-            var operation = SelectConditionOperation(Iterator);
-
-            Condition = new LuaXBinaryOperatorExpression(operation,
-                new LuaXVariableExpression(identierVar.Name, identierVar.LuaType, identierVar.Location),
-                expressions[1], LuaXTypeDefinition.Boolean, expressions[1].Location);
+            TransformCondition(identierVar);
         }
 
-        private static LuaXBinaryOperator SelectConditionOperation(LuaXExpression expression)
+        private void TransformCondition(LuaXVariable identierVar)
         {
-            if (expression is LuaXConstantExpression c && !c.Value.IsNil && c.Value.AsInteger() < 0)
-                return LuaXBinaryOperator.GreaterOrEqual;
+            if (Iterator is LuaXConstantExpression it && !it.Value.IsNil)
+            {
+                var operation = it.Value.AsInteger() >= 0 ? LuaXBinaryOperator.LessOrEqual : LuaXBinaryOperator.GreaterOrEqual;
+
+                Condition = new LuaXBinaryOperatorExpression(operation,
+                                new LuaXVariableExpression(identierVar.Name, identierVar.LuaType, identierVar.Location),
+                                Condition, LuaXTypeDefinition.Boolean, Condition.Location);
+                NeedDetectConditionAtRuntime = false;
+            }
             else
-                return LuaXBinaryOperator.LessOrEqual;
+                NeedDetectConditionAtRuntime = true;
         }
     }
 }

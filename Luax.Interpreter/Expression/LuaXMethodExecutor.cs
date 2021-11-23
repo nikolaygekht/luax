@@ -3,6 +3,7 @@ using System.Reflection;
 using Luax.Interpreter.Infrastructure;
 using Luax.Interpreter.Infrastructure.Stdlib;
 using Luax.Parser.Ast;
+using Luax.Parser.Ast.LuaExpression;
 using Luax.Parser.Ast.Statement;
 
 namespace Luax.Interpreter.Expression
@@ -353,14 +354,27 @@ namespace Luax.Interpreter.Expression
         private static ResultType ExecuteFor(LuaXMethod callingMethod, LuaXForStatement forStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
         {
             var initialExp = LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Start, types, currentClass, variables);
-            var variableName = forStatement.ForLoopStatement.VariableName;
+            var variableName = forStatement.ForLoopStatement.Variable.Name;
 
             if (initialExp is int initial)
             {
                 variables[variableName].Value = initial;
-                var condition = LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Condition, types, currentClass, variables);
+                var condition = forStatement.ForLoopStatement.Condition;
+                if (forStatement.ForLoopStatement.NeedDetectConditionAtRuntime)
+                {
+                    var iterator = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
+                    var operation = iterator >= 0 ? LuaXBinaryOperator.LessOrEqual : LuaXBinaryOperator.GreaterOrEqual;
+
+                    condition = new LuaXBinaryOperatorExpression(operation,
+                                    new LuaXVariableExpression(forStatement.ForLoopStatement.Variable.Name,
+                                    forStatement.ForLoopStatement.Variable.LuaType, forStatement.ForLoopStatement.Variable.Location),
+                                    forStatement.ForLoopStatement.Condition, LuaXTypeDefinition.Boolean,
+                                    forStatement.ForLoopStatement.Condition.Location);
+                }
+
+                var conditionValue = LuaXExpressionEvaluator.Evaluate(condition, types, currentClass, variables);
                 int increment;
-                if (condition is bool boolCondition)
+                if (conditionValue is bool boolCondition)
                 {
                     for (int i = initial; boolCondition; i += increment)
                     {
@@ -372,7 +386,7 @@ namespace Luax.Interpreter.Expression
 
                         increment = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
                         variables[variableName].Value = i + increment;
-                        boolCondition = (bool)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Condition, types, currentClass, variables);
+                        boolCondition = (bool)LuaXExpressionEvaluator.Evaluate(condition, types, currentClass, variables);
                     }
                 }
                 else
@@ -386,7 +400,6 @@ namespace Luax.Interpreter.Expression
             result = null;
             return ResultType.ReachForEnd;
         }
-        
 
         private static ResultType ExecuteRepeat(LuaXMethod callingMethod, LuaXRepeatStatement repeatStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
         {
