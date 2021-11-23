@@ -1,0 +1,10 @@
+﻿class a
+    private static function method() : int
+        return 1;
+    end
+end
+class b
+   public function dummy() : int
+      return a.method();
+   end
+end

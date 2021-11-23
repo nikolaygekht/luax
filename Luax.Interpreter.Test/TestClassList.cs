@@ -130,6 +130,28 @@ namespace Luax.Interpreter.Test
         }
 
         [Theory]
+        [InlineData("a")]
+        [InlineData("b")]
+        [InlineData("c")]
+        [InlineData("d")]
+        public void NotHaveOwner(string sourceClassName)
+        {
+            mTypeLib.SearchClass(sourceClassName, out var @class).Should().BeTrue();
+            LuaXObjectInstance instance = @class.New(null);
+            instance.OwnerObjectInstance.Should().BeNull();
+        }
+
+        [Fact]
+        public void HaveOwner()
+        {
+            mTypeLib.SearchClass("a", out var @classA);
+            LuaXObjectInstance instanceA = @classA.New(null);
+            mTypeLib.SearchClass("b", out var @classB);
+            LuaXObjectInstance instanceB = @classB.New(null, instanceA);
+            instanceB.OwnerObjectInstance.Should().BeSameAs(instanceA);
+        }
+
+        [Theory]
         [InlineData("a", "a")]
         [InlineData("b", "a")]
         [InlineData("c", "a")]

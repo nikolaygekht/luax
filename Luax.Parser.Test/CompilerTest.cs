@@ -547,6 +547,88 @@ namespace Luax.Parser.Test
         }
 
         [Fact]
+        public void InnerClassValid()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("InnerClass1");
+            app.Pass2();
+            app.Classes.Search("complexClass", out var @class).Should().BeTrue();
+            @class.Constructor.Should().BeNull();
+            @class.SearchMethod("dummy", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(6);
+            app.Classes.Search("complexClass.innerClass", out var innerClass).Should().BeTrue();
+            innerClass.Constructor.Should().NotBeNull();
+            innerClass.SearchMethod("method", out var anotherMethod).Should().BeTrue();
+            anotherMethod.ReturnType.TypeId.Should().Be(LuaXType.Integer);
+            anotherMethod.Statements.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public void InnerClassInvalid1()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("InnerClass2");
+            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
+            Assert.Contains("is a private method", ex.Message);
+        }
+
+        [Fact]
+        public void OtherClassMethodCallValid1()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("OtherClassMethodCall1");
+            app.Pass2();
+            app.Classes.Search("a", out var @classA).Should().BeTrue();
+            app.Classes.Search("b", out var @classB).Should().BeTrue();
+            @classB.Parent.Should().Be("a");
+            @classA.SearchMethod("method", out _).Should().BeTrue();
+            @classB.SearchMethod("dummy", out _).Should().BeTrue();
+        }
+
+        [Fact]
+        public void OtherClassMethodCallInvalid1()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("OtherClassMethodCall2");
+            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
+            Assert.Contains("is a private method", ex.Message);
+        }
+
+        [Fact]
+        public void OtherClassMethodCallInvalid2()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("OtherClassMethodCall4");
+            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
+            Assert.Contains("is a private method", ex.Message);
+        }
+
+        [Fact]
+        public void OtherClassMethodCallValid2()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("OtherClassMethodCall3");
+            app.Pass2();
+            app.Classes.Search("a", out var @classA).Should().BeTrue();
+            app.Classes.Search("b", out var @classB).Should().BeTrue();
+            @classA.SearchMethod("method", out _).Should().BeTrue();
+            @classB.SearchMethod("dummy", out _).Should().BeTrue();
+        }
+
+        [Fact]
+        public void OtherClassMethodCallValid3()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("OtherClassMethodCall5");
+            app.Pass2();
+            app.Classes.Search("a", out var @classA).Should().BeTrue();
+            app.Classes.Search("b", out var @classB).Should().BeTrue();
+            @classA.SearchMethod("method", out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            @classB.SearchMethod("dummy", out _).Should().BeTrue();
+        }
+
+        [Fact]
         public void ForBreakContinue()
         {
             var app = new LuaXApplication();

@@ -10,10 +10,24 @@ class stdlib
     public static extern len(s : string) : int;
 
     @DocBrief("Finds a substring in a string")
-    public static extern indexOf(s : string, sub:string, caseSenstitive : boolean) : int;
+    public static extern indexOf(s : string, sub : string, caseSenstitive : boolean) : int;
+
+    @DocBrief("Finds the last occurrence of a substring in a string")
+    public static extern lastIndexOf(s : string, sub : string, caseSenstitive : boolean) : int;
+
+    @DocBrief("Compare two strings")
+    @DocReturn("The method returns 0 if strings are equal, 1 if the first string is greater, and -1 if the second string is greater")
+    public static extern compareStrings(a : string, b : string, caseSenstitive : boolean) : int;
+
+    @DocBrief("Finds a character in a string")
+    @DocParameter("startOffset", "The offset to start the search from the beginning of the string")
+    @DocReturn("The method return the index of the character or -1 if the character is not found")
+    public static extern charIndex(s : string, char : int, startOffset : int, caseSenstitive : boolean) : int;
     
-    @DocBrief("Finds last occurrence of a substring in a string")
-    public static extern lastIndexOf(s : string, sub:string, caseSenstitive : boolean) : int;
+    @DocBrief("Finds the last occurrence of a character in a string")
+    @DocParameter("startOffset", "The offset to start the search from the end of the string")
+    @DocReturn("The method return the index of the character or -1 if the character is not found")
+    public static extern lastCharIndex(s : string, char : int, startOffset : int, caseSenstitive : boolean) : int;
 
     @DocBrief("Converts the string to uppercase")
     public static extern upper(s : string) : string;
@@ -379,6 +393,9 @@ class buffer
 
     @DocBrief("Gets a length of the string encoded in SBCS/MBCS code page")
     public static extern getEncodedStringLength(value : string, codePage : int) : int;
+
+    @DocBrief("Write content of one buffer to another buffer")
+    public extern setBuffer(index : int, value : buffer, sourceIndex : int, sourceLength : int) : int;
 
     @DocBrief("Resize the buffer")
     @DocDescription("The method resizes the buffer. ")

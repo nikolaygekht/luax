@@ -356,6 +356,104 @@ namespace Luax.Interpreter.Test
         }
 
         [Theory]
+        [InlineData(3, 75)]
+        [InlineData(2, 45)]
+        [InlineData(1, 25)]
+        [InlineData(0, 15)]
+        public void TestInnerClasses1(int param, int expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("InnerClass1");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("complexClass", out var program).Should().BeTrue();
+            program.SearchMethod("dummy", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsInteger().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { param }, out var r);
+            r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData(1, "a", "a")]
+        [InlineData(5, "b", "bbbbb")]
+        [InlineData(3, "ab", "ababab")]
+        public void TestInnerClasses2(int param1, string param2, string expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("InnerClass2");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("program", out var program).Should().BeTrue();
+            program.SearchMethod("main", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(2);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.Arguments[1].LuaType.IsString().Should().BeTrue();
+            method.ReturnType.IsString().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { param1, param2 }, out var r);
+            r.Should().BeOfType<string>();
+            r.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(2, 4)]
+        [InlineData(3, 27)]
+        [InlineData(4, 256)]
+        [InlineData(5, 3125)]
+        public void TestInnerClasses3(int param1, int expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("InnerClass3");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("program", out var program).Should().BeTrue();
+            program.SearchMethod("main", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsInteger().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { param1 }, out var r);
+            r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(2, 2)]
+        [InlineData(3, 15)]
+        [InlineData(4, 172)]
+        [InlineData(5, 2345)]
+        public void TestInnerClasses4(int param1, int expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("InnerClass4");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("program", out var program).Should().BeTrue();
+            program.SearchMethod("main", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsInteger().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { param1 }, out var r);
+            r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
+
+        [Theory]
         [InlineData(0, 2, 1, 3)]
         [InlineData(1, 2, 1, 2)]
         [InlineData(2, 0, 1, 0)]
@@ -548,11 +646,6 @@ namespace Luax.Interpreter.Test
 
             typelib.SearchClass("test", out var program).Should().BeTrue();
             program.SearchMethod("dummy", null, out var method).Should().BeTrue();
-            method.Static.Should().BeTrue();
-            method.Arguments.Should().HaveCount(1);
-            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
-            method.ReturnType.IsInteger().Should().BeTrue();
-
             LuaXMethodExecutor.Execute(method, typelib, null, new object[] { argument }, out var r);
             r.Should().BeOfType<int>();
             r.Should().Be(expectedValue);
@@ -604,7 +697,6 @@ namespace Luax.Interpreter.Test
             method.Arguments.Should().HaveCount(1);
             method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
             method.ReturnType.IsInteger().Should().BeTrue();
-
             LuaXMethodExecutor.Execute(method, typelib, null, new object[] { argument }, out var r);
             r.Should().BeOfType<int>();
             r.Should().Be(expectedValue);
@@ -637,6 +729,3 @@ namespace Luax.Interpreter.Test
         }
     }
 }
-
-
-

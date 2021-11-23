@@ -19,6 +19,13 @@
     <None Remove="TestSources\ForReverseBreakContinue.luax" />
     <None Remove="TestSources\ForWithoutIteratorExp.luax" />
     <None Remove="TestSources\If1.luax" />
+    <None Remove="TestSources\InnerClass1.luax" />
+    <None Remove="TestSources\InnerClass2.luax" />
+    <None Remove="TestSources\OtherClassMethodCall1.luax" />
+    <None Remove="TestSources\OtherClassMethodCall2.luax" />
+    <None Remove="TestSources\OtherClassMethodCall3.luax" />
+    <None Remove="TestSources\OtherClassMethodCall4.luax" />
+    <None Remove="TestSources\OtherClassMethodCall5.luax" />
     <None Remove="TestSources\ParseClass.luax" />
     <None Remove="TestSources\ParseClassConstants.luax" />
     <None Remove="TestSources\ParseClassMethods.luax" />
@@ -36,6 +43,13 @@
     <EmbeddedResource Include="TestSources\Continue1.luax" />
     <EmbeddedResource Include="TestSources\Continue2.luax" />
     <EmbeddedResource Include="TestSources\Debug.luax" />
+    <EmbeddedResource Include="TestSources\InnerClass1.luax" />
+    <EmbeddedResource Include="TestSources\InnerClass2.luax" />
+    <EmbeddedResource Include="TestSources\OtherClassMethodCall1.luax" />
+    <EmbeddedResource Include="TestSources\OtherClassMethodCall2.luax" />
+    <EmbeddedResource Include="TestSources\OtherClassMethodCall3.luax" />
+    <EmbeddedResource Include="TestSources\OtherClassMethodCall4.luax" />
+    <EmbeddedResource Include="TestSources\OtherClassMethodCall5.luax" />
     <EmbeddedResource Include="TestSources\Repeat.luax" />
     <EmbeddedResource Include="TestSources\ForBreakContinue.luax" />
     <EmbeddedResource Include="TestSources\ForInitExprNonIntType.luax" />

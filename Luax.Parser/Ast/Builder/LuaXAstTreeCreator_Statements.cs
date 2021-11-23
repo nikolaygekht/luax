@@ -39,7 +39,7 @@ namespace Luax.Parser.Ast.Builder
                 switch (child.Symbol)
                 {
                     case "DECLARATION":
-                        ProcessDeclarationStatement(child, method);
+                        ProcessDeclarationStatement(child, @class, method);
                         break;
                     case "CONST_DECLARATION":
                         ProcessConstantDeclarationInMethod(child, method);
@@ -215,7 +215,7 @@ namespace Luax.Parser.Ast.Builder
             statements.Add(stmt);
         }
 
-        private void ProcessDeclarationStatement(IAstNode node, LuaXMethod method)
+        private void ProcessDeclarationStatement(IAstNode node, LuaXClass @class, LuaXMethod method)
         {
             if (node.Children.Count < 2 || node.Children[1].Symbol != "DECL_LIST")
                 throw new LuaXAstGeneratorException(Name, node, "One or more DECL is expected here");
@@ -226,6 +226,14 @@ namespace Luax.Parser.Ast.Builder
                     throw new LuaXAstGeneratorException(Name, node, $"Variable {v.Name} already exists");
                 if (method.Constants.Contains(v.Name))
                     throw new LuaXAstGeneratorException(Name, node, $"Constant {v.Name} already exists");
+                if(v.LuaType.TypeId == LuaXType.Object && SearchClassByName(v.LuaType.Class, @class, out var realClass))
+                    v.LuaType = new LuaXTypeDefinition()
+                    {
+                        TypeId = v.LuaType.TypeId,
+                        Array = v.LuaType.Array,
+                        Class = realClass.Name
+                    };
+
                 method.Variables.Add(v);
             });
         }
@@ -266,7 +274,7 @@ namespace Luax.Parser.Ast.Builder
                 e5.Arguments.Count == 1 &&
                 e5.ReturnType.IsTheSame(source.ReturnType))
             {
-                Metadata.Search(e5.Object.ReturnType.Class, out var @class1);
+                SearchClassByName(e5.Object.ReturnType.Class, @class, out var @class1);
                 var found = class1.SearchMethod("set", out var @method1);
                 if (!found || method1.Static || method1.Visibility == LuaXVisibility.Private ||
                     !method1.ReturnType.IsVoid() ||

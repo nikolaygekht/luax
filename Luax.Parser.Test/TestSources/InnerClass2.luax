@@ -1,0 +1,23 @@
+﻿class complexClass
+   class innerClass
+      public var a : int;
+      public static var b : int;
+      public var parent : complexClass;
+      public function innerClass() : void
+         b = 12;
+      end
+      private function method() : int
+         return 1;
+      end
+   end
+
+   public function dummy() : int
+      var inner : innerClass;
+      inner = new innerClass();
+      inner.parent = this;
+      inner.a = 3;
+      var summ : int;
+      summ = inner.a + innerClass.b + inner.method();
+      return summ;
+   end
+end
