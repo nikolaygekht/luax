@@ -52,65 +52,55 @@ namespace Luax.Parser.Ast.Builder
             }
 
             Metadata = body.Classes;
+            SetFullClassNames();
 
-            // set real class names
+            return body;
+        }
+
+        private void SetFullClassNames()
+        {
             foreach (LuaXClass @class in Metadata)
             {
                 if (@class.HasParent)
-                    if (SearchClassByName(@class.Parent, @class, out var realParent))
-                        if (realParent.Name != @class.Parent)
-                            @class.Parent = realParent.Name;
+                    if (SearchClassByName(@class.Parent, @class, out var realParent) && realParent.Name != @class.Parent)
+                        @class.Parent = realParent.Name;
+
                 foreach (LuaXProperty property in @class.Properties)
                 {
-                    if (property.LuaType.TypeId == LuaXType.Object)
-                    {
-                        SearchClassByName(property.LuaType.Class, @class, out var realClass);
-                        if (realClass != null && realClass.Name != property.LuaType.Class)
-                        {
-                            property.LuaType = new LuaXTypeDefinition()
-                            {
-                                TypeId = property.LuaType.TypeId,
-                                Array = property.LuaType.Array,
-                                Class = realClass.Name
-                            };
-                        }
-                    }
+                    if (CheckLuaTypeOnInnerClassName(@class, property.LuaType, out var newLuaType))
+                        property.LuaType = newLuaType;
                 }
                 foreach (LuaXMethod method in @class.Methods)
                 {
-                    if (method.ReturnType.TypeId == LuaXType.Object)
-                    {
-                        SearchClassByName(method.ReturnType.Class, @class, out var realClass);
-                        if (realClass != null && realClass.Name != method.ReturnType.Class)
-                        {
-                            method.ReturnType = new LuaXTypeDefinition()
-                            {
-                                TypeId = method.ReturnType.TypeId,
-                                Array = method.ReturnType.Array,
-                                Class = realClass.Name
-                            };
-                        };
-                    }
+                    if (CheckLuaTypeOnInnerClassName(@class, method.ReturnType, out var newLuaType))
+                        method.ReturnType = newLuaType;
                     foreach (LuaXVariable argument in method.Arguments)
                     {
-                        if (argument.LuaType.TypeId == LuaXType.Object)
-                        {
-                            SearchClassByName(argument.LuaType.Class, @class, out var realClass);
-                            if (realClass != null && realClass.Name != argument.LuaType.Class)
-                            {
-                                argument.LuaType = new LuaXTypeDefinition()
-                                {
-                                    TypeId = argument.LuaType.TypeId,
-                                    Array = argument.LuaType.Array,
-                                    Class = realClass.Name
-                                };
-                            }
-                        }
+                        if (CheckLuaTypeOnInnerClassName(@class, argument.LuaType, out var newArgumentLuaType))
+                            argument.LuaType = newArgumentLuaType;
                     }
                 }
             }
+        }
 
-            return body;
+        private bool CheckLuaTypeOnInnerClassName(LuaXClass @class, LuaXTypeDefinition sourceLuaType, out LuaXTypeDefinition resultLuaType)
+        {
+            if (sourceLuaType.TypeId == LuaXType.Object)
+            {
+                if (SearchClassByName(sourceLuaType.Class, @class, out var realClass) &&
+                    realClass.Name != sourceLuaType.Class)
+                {
+                    resultLuaType = new LuaXTypeDefinition()
+                    {
+                        TypeId = sourceLuaType.TypeId,
+                        Array = sourceLuaType.Array,
+                        Class = realClass.Name
+                    };
+                    return true;
+                }
+            }
+            resultLuaType = null;
+            return false;
         }
 
         /// <summary>
