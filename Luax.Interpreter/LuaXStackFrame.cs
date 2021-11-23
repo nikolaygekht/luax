@@ -19,7 +19,7 @@ namespace Luax.Interpreter
                 Location == null && Location != otherFrame.Location)
                 return false;
 
-            return Location != null && Location.IsTheSame(otherFrame.Location) && CallSite != null &&
+            return Location?.IsTheSame(otherFrame.Location) == true && CallSite != null &&
                    CallSite.Class.Name == otherFrame.CallSite.Class.Name && CallSite.Name == otherFrame.CallSite.Name;
         }
     }

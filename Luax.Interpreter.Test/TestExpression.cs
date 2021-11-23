@@ -189,9 +189,11 @@ namespace Luax.Interpreter.Test
             instance.Properties["p"].Value = 2;
             instance.Properties["i"].Value = 3;
 
-            var variables = new LuaXVariableInstanceSet();
-            variables.Add(@class.LuaType.TypeOf(), "this", instance);
-            variables.Add(LuaXTypeDefinition.String, "x", "abc");
+            var variables = new LuaXVariableInstanceSet
+            {
+                { @class.LuaType.TypeOf(), "this", instance },
+                { LuaXTypeDefinition.String, "x", "abc" }
+            };
 
             var arr = new LuaXVariableInstanceArray(LuaXTypeDefinition.Integer.ArrayOf(), 10);
             for (int i = 0; i < 10; i++)
@@ -301,6 +303,27 @@ namespace Luax.Interpreter.Test
         [InlineData("boolean", "stdlib.match(\"str\\ning\", \"/\\\\si/s\")", true, typeof(bool))]
         [InlineData("int", "stdlib.unicode(\"s\", 0)", 115, typeof(int))]
         [InlineData("string", "stdlib.char(115)", "s", typeof(string))]
+        [InlineData("int", "stdlib.lastIndexOf(\"aba\", \"a\", false)", 2, typeof(int))]
+        [InlineData("int", "stdlib.lastIndexOf(\"aba\", \"A\", false)", -1, typeof(int))]
+        [InlineData("int", "stdlib.lastIndexOf(\"abaa\", \"A\", true)", 3, typeof(int))]
+        [InlineData("string", "stdlib.upper(\"aBаБ\")", "ABАБ", typeof(string))]
+        [InlineData("string", "stdlib.lower(\"aBаБ\")", "abаб", typeof(string))]
+        [InlineData("int", "bitwise._and(0, 0)", 0, typeof(int))]
+        [InlineData("int", "bitwise._and(0, 1)", 0, typeof(int))]
+        [InlineData("int", "bitwise._and(1, 0)", 0, typeof(int))]
+        [InlineData("int", "bitwise._and(1, 1)", 1, typeof(int))]
+        [InlineData("int", "bitwise._or(0, 0)", 0, typeof(int))]
+        [InlineData("int", "bitwise._or(0, 1)", 1, typeof(int))]
+        [InlineData("int", "bitwise._or(1, 0)", 1, typeof(int))]
+        [InlineData("int", "bitwise._or(1, 1)", 1, typeof(int))]
+        [InlineData("int", "bitwise._xor(0, 0)", 0, typeof(int))]
+        [InlineData("int", "bitwise._xor(0, 1)", 1, typeof(int))]
+        [InlineData("int", "bitwise._xor(1, 0)", 1, typeof(int))]
+        [InlineData("int", "bitwise._xor(1, 1)", 0, typeof(int))]
+        [InlineData("int", "bitwise._not(0)", -1, typeof(int))]
+        [InlineData("int", "bitwise._not(1)", -2, typeof(int))]
+        [InlineData("int", "bitwise._shl(0x07ff_ffff, 4)", 0x7fff_fff0, typeof(int))]
+        [InlineData("int", "bitwise._shr(0xffff_ffff, 4)", 0x0fff_ffff, typeof(int))]
         public void TestStdlib(string @return, string expr, object expectedValue, Type expectedType)
         {
             expectedValue = TestValue.Translate(expectedType, expectedValue);
@@ -388,7 +411,3 @@ namespace Luax.Interpreter.Test
         }
     }
 }
-
-
-
-

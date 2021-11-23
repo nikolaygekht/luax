@@ -340,5 +340,96 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             @this.Properties["__array"].Value = new byte[length];
             return @this;
         }
+
+        //public extern toHexString() : string;
+        [LuaXExternMethod("buffer", "toHexString")]
+        public static object toHexString(LuaXObjectInstance @this)
+        {
+            if (@this.Properties["__array"]?.Value is not byte[] buffer)
+                throw new ArgumentException("The object isn't properly initialized", nameof(@this));
+            return Convert.ToHexString(buffer);
+        }
+
+        //public extern toBase64() : string;
+        [LuaXExternMethod("buffer", "toBase64")]
+        public static object toBase64(LuaXObjectInstance @this)
+        {
+            if (@this.Properties["__array"]?.Value is not byte[] buffer)
+                throw new ArgumentException("The object isn't properly initialized", nameof(@this));
+            return Convert.ToBase64String(buffer);
+        }
+
+        //public extern MD5() : buffer;
+        [LuaXExternMethod("cryptography", "MD5")]
+        public static object MD5(LuaXObjectInstance @this)
+        {
+            if (@this.Properties["__array"]?.Value is not byte[] buffer)
+                throw new ArgumentException("The object isn't properly initialized", nameof(@this));
+            using (System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5.Create()) //NOSONAR
+            {
+                var @new = mBufferClass.New(mTypeLibrary);
+                @new.Properties["__array"].Value = md5.ComputeHash(buffer);
+                return @new;
+            }
+        }
+
+        //public extern SHA1() : buffer;
+        [LuaXExternMethod("cryptography", "SHA1")]
+        public static object SHA1(LuaXObjectInstance @this)
+        {
+            if (@this.Properties["__array"]?.Value is not byte[] buffer)
+                throw new ArgumentException("The object isn't properly initialized", nameof(@this));
+            using (System.Security.Cryptography.SHA1 sha = System.Security.Cryptography.SHA1.Create()) //NOSONAR
+            {
+                var @new = mBufferClass.New(mTypeLibrary);
+                @new.Properties["__array"].Value = sha.ComputeHash(buffer);
+                return @new;
+            }
+        }
+
+        //public extern SHA256() : buffer;
+        [LuaXExternMethod("cryptography", "SHA256")]
+        public static object SHA256(LuaXObjectInstance @this)
+        {
+            if (@this.Properties["__array"]?.Value is not byte[] buffer)
+                throw new ArgumentException("The object isn't properly initialized", nameof(@this));
+            using (System.Security.Cryptography.SHA256 sha = System.Security.Cryptography.SHA256.Create())
+            {
+                var @new = mBufferClass.New(mTypeLibrary);
+                @new.Properties["__array"].Value = sha.ComputeHash(buffer);
+                return @new;
+            }
+        }
+
+        //public extern SHA512() : buffer;
+        [LuaXExternMethod("cryptography", "SHA512")]
+        public static object SHA512(LuaXObjectInstance @this)
+        {
+            if (@this.Properties["__array"]?.Value is not byte[] buffer)
+                throw new ArgumentException("The object isn't properly initialized", nameof(@this));
+            using (System.Security.Cryptography.SHA512 sha = System.Security.Cryptography.SHA512.Create())
+            {
+                var @new = mBufferClass.New(mTypeLibrary);
+                @new.Properties["__array"].Value = sha.ComputeHash(buffer);
+                return @new;
+            }
+        }
+        //public static extern fromHexString(v : string) : buffer;
+        [LuaXExternMethod("buffer", "fromHexString")]
+        public static object FromHexString(string v)
+        {
+            var @this = mBufferClass.New(mTypeLibrary);
+            @this.Properties["__array"].Value = Convert.FromHexString(v);
+            return @this;
+        }
+
+        //public static extern fromBase64(v : string) : buffer;
+        [LuaXExternMethod("buffer", "fromBase64")]
+        public static object FromBase64(string v)
+        {
+            var @this = mBufferClass.New(mTypeLibrary);
+            @this.Properties["__array"].Value = Convert.FromBase64String(v);
+            return @this;
+        }
     }
 }

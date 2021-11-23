@@ -55,21 +55,21 @@ namespace Luax.Interpreter.Execution
         private static string ProcessTheoryParams(LuaXAttribute attribute, List<object> args)
         {
             var sb = new StringBuilder();
-            foreach (var p in attribute.Parameters)
+            foreach (var p in attribute.Parameters.Select(p => p.Value))
             {
                 if (sb.Length > 0)
                     sb.Append(", ");
-                if (p.Value == null)
+                if (p == null)
                     sb.Append("nil");
-                else if (p.Value is int i)
+                else if (p is int i)
                     sb.Append(i);
-                else if (p.Value is double v)
+                else if (p is double v)
                     sb.Append(v);
-                else if (p.Value is bool b)
+                else if (p is bool b)
                     sb.Append(b ? "true" : "false");
-                else if (p.Value is string s)
+                else if (p is string s)
                     sb.Append('"').Append(s).Append('"');
-                args.Add(p.Value);
+                args.Add(p);
             }
 
             return sb.ToString();

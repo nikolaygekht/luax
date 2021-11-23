@@ -531,6 +531,7 @@ namespace Luax.Interpreter.Test
             r.Should().Be(expectedValue);
         }
         
+
         [Theory]
         [InlineData(6, 21)]
         [InlineData(5, 15)]

@@ -387,10 +387,9 @@ namespace Luax.Interpreter.Expression
             return ResultType.ReachForEnd;
         }
         
+
         private static ResultType ExecuteRepeat(LuaXMethod callingMethod, LuaXRepeatStatement repeatStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
         {
-            result = null;
-
             while (true)
             {
                 ResultType statementsResult = ExecuteStatements(callingMethod, repeatStatement.Statements, types, currentClass, variables, out result);
