@@ -1,0 +1,96 @@
+-- action with parameterized invoke method
+@TestSuite()
+class innerClassesTest
+    @interface()
+    class actionWithParameter
+        public function invoke(foundText : string) : void
+        end
+    end
+
+    class textProcessor
+        -- actions list
+        class actionList : list
+            public function actionList() : void
+                super.list();
+            end
+
+            public function get(index : int) : actionWithParameter
+                return cast<actionWithParameter>(super.get(index));
+            end
+
+            public function set(index : int, value : actionWithParameter) : void
+                super.set(index, value);
+            end
+        end
+        -- actions list to be invoked
+        private var actions : actionList;
+
+        -- add action
+        public function addAction(action : actionWithParameter) : void
+            actions.insert(actions.length(), action);
+        end
+
+        -- constructor
+        public function textProcessor() : void
+            actions = new actionList();
+        end
+
+        -- invoke all subscribed actions
+        private function invoke(foundText : string) : void
+            var n : int;
+            n = actions.length() - 1;
+            while n >= 0 do
+                actions.get(n).invoke(foundText);
+                n = n - 1;
+            end
+        end
+
+        -- process the string
+        public function process(sourceText : string) : void
+            var currentText : string;
+            var substr : string;
+            var index : int, len : int;
+            currentText = sourceText;
+            len = stdlib.len(currentText);
+            index = stdlib.indexOf(currentText, "\n", false);
+            while index >= 0 do
+                substr = stdlib.substring(currentText, 0, index);
+                currentText = stdlib.substring(currentText, index + 1, len - index - 1);
+                len = stdlib.len(currentText);
+                index = stdlib.indexOf(currentText, "\n", false);
+                invoke(substr);
+            end
+            invoke(currentText);
+        end
+    end
+
+    class getFirstLetters
+        private var result : string;
+        private var processor : textProcessor;
+        class handler : actionWithParameter
+            public function invoke(foundText : string) : void
+                if stdlib.len(foundText) > 0 then
+                    result = result .. stdlib.substring(foundText, 0, 1);
+                end
+            end
+        end
+        public function getFirstLetters() : void
+            processor = new textProcessor();
+            processor.addAction(new handler());
+        end
+        public function process(sourceString : string) : string
+            result = "";
+            processor.process(sourceString);
+            return result;
+        end
+    end
+
+    @Theory()
+    @TheoryData("", "")
+    @TheoryData("abc", "a")
+    @TheoryData("abcde\nqwerty", "aq")
+    @TheoryData("abcdef\nqwerty\n12345", "aq1")
+    public function testGetFirstLetters(arg : string, expected : string) : void
+       assert.isTrue((new getFirstLetters()).process(arg) == expected, "");
+    end
+end

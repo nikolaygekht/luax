@@ -29,7 +29,7 @@ namespace Luax.Parser.Ast
         /// <summary>
         /// The return type of the method
         /// </summary>
-        public LuaXTypeDefinition ReturnType { get; internal init; }
+        public LuaXTypeDefinition ReturnType { get; internal set; }
 
         /// <summary>
         /// The attributes associated with the method

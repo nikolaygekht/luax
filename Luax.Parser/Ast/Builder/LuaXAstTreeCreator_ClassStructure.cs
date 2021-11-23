@@ -14,7 +14,7 @@ namespace Luax.Parser.Ast.Builder
     {
         public string Name { get; }
 
-        public LuaXClassCollection Metadata { get; }
+        public LuaXClassCollection Metadata { get; private set; }
 
         public LuaXAstTreeCreator(string name, LuaXClassCollection metadata = null)
         {
@@ -45,20 +45,70 @@ namespace Luax.Parser.Ast.Builder
             {
                 if (root.Children[i].Symbol != "CLASS_DECLARATION")
                     throw new LuaXAstGeneratorException(Name, root, $"Unexpected element {root.Symbol}. Class declaration is expected");
-                var @class = ProcessClass(root.Children[i]);
+                var @class = ProcessClass(root.Children[i], "", body);
                 if (body.Classes.Contains(@class.Name))
                     throw new LuaXAstGeneratorException(Name, root, $"The class with the name {@class.Name} already defined");
                 body.Classes.Add(@class);
             }
+
+            Metadata = body.Classes;
+            SetFullClassNames();
+
             return body;
+        }
+
+        private void SetFullClassNames()
+        {
+            foreach (LuaXClass @class in Metadata)
+            {
+                if (@class.HasParent)
+                    if (SearchClassByName(@class.Parent, @class, out var realParent) && realParent.Name != @class.Parent)
+                        @class.Parent = realParent.Name;
+
+                foreach (LuaXProperty property in @class.Properties)
+                {
+                    if (CheckLuaTypeOnInnerClassName(@class, property.LuaType, out var newLuaType))
+                        property.LuaType = newLuaType;
+                }
+                foreach (LuaXMethod method in @class.Methods)
+                {
+                    if (CheckLuaTypeOnInnerClassName(@class, method.ReturnType, out var newLuaType))
+                        method.ReturnType = newLuaType;
+                    foreach (LuaXVariable argument in method.Arguments)
+                    {
+                        if (CheckLuaTypeOnInnerClassName(@class, argument.LuaType, out var newArgumentLuaType))
+                            argument.LuaType = newArgumentLuaType;
+                    }
+                }
+            }
+        }
+
+        private bool CheckLuaTypeOnInnerClassName(LuaXClass @class, LuaXTypeDefinition sourceLuaType, out LuaXTypeDefinition resultLuaType)
+        {
+            if (sourceLuaType.TypeId == LuaXType.Object)
+            {
+                if (SearchClassByName(sourceLuaType.Class, @class, out var realClass) &&
+                    realClass.Name != sourceLuaType.Class)
+                {
+                    resultLuaType = new LuaXTypeDefinition()
+                    {
+                        TypeId = sourceLuaType.TypeId,
+                        Array = sourceLuaType.Array,
+                        Class = realClass.Name
+                    };
+                    return true;
+                }
+            }
+            resultLuaType = null;
+            return false;
         }
 
         /// <summary>
         /// Processes the class declaration
         /// </summary>
-        /// <param name="classNode"></param>
+        /// <param name="classNode">correspondent AST node</param>
         /// <returns></returns>
-        public LuaXClass ProcessClass(IAstNode astNode)
+        public LuaXClass ProcessClass(IAstNode astNode, string prefix = "", LuaXBody body = null)
         {
             IAstNode attributes = null;
             string name = null;
@@ -79,7 +129,7 @@ namespace Luax.Parser.Ast.Builder
                         attributes = child;
                         continue;
                     case "IDENTIFIER":
-                        name = child.Value;
+                        name = prefix + child.Value;
                         continue;
                     case "PARENT_CLASS":
                         parent = FindParentClassName(child);
@@ -104,7 +154,7 @@ namespace Luax.Parser.Ast.Builder
                 {
                     var child = astNode.Children[i];
                     if (child.Symbol == "CLASS_ELEMENT")
-                        ProcessClassElement(child, @class);
+                        ProcessClassElement(child, @class, body);
                 }
             }
             return @class;
@@ -397,7 +447,7 @@ namespace Luax.Parser.Ast.Builder
         /// </summary>
         /// <param name="node"></param>
         /// <param name="class"></param>
-        public void ProcessClassElement(IAstNode node, LuaXClass @class)
+        public void ProcessClassElement(IAstNode node, LuaXClass @class, LuaXBody body)
         {
             for (int j = 0; j < node.Children.Count; j++)
             {
@@ -411,6 +461,16 @@ namespace Luax.Parser.Ast.Builder
                     ProcessConstantDeclarationInClass(child, @class);
                 else if (child.Symbol == "EXTERN_DECLARATION")
                     ProcessExtern(child, @class);
+                else if (child.Symbol == "CLASS_DECLARATION")
+                {
+                    if (body != null)
+                    {
+                        var innerClass = ProcessClass(child, $"{@class.Name}.", body);
+                        if (body.Classes.Contains(innerClass.Name))
+                            throw new LuaXAstGeneratorException(innerClass.Name, node, $"The class with the name {@class.Name} already defined");
+                        body.Classes.Add(innerClass);
+                    }
+                }
                 else
                     throw new LuaXAstGeneratorException(Name, node, $"Unexpected symbol {child.Symbol}");
             }
@@ -780,7 +840,12 @@ namespace Luax.Parser.Ast.Builder
             if (@class.Methods.Contains(method.Name))
                 throw new LuaXAstGeneratorException(Name, node, $"The method with the name {method.Name} already exists");
 
-            if (!method.Static && method.Name == @class.Name && method.ReturnType.IsVoid() &&
+            string className = @class.Name;
+            int pointIndex = className.LastIndexOf('.');
+            if (pointIndex > 0)
+                className = className.Substring(pointIndex + 1);
+
+            if (!method.Static && method.Name == className && method.ReturnType.IsVoid() &&
                  method.Arguments.Count == 0)
             {
                 method.IsConstructor = true;

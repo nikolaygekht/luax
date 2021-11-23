@@ -37,6 +37,9 @@
                                 {
                                         "include": "#attribute"
                                 },
+                                {
+                                         "include": "#class-definition"
+                                },
 				{
 					"include": "#function"
 				},

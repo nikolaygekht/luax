@@ -1,0 +1,38 @@
+﻿class processor
+	private var handler : action;
+	public function setHandler(hnd : action) : void
+		handler = hnd;
+	end
+	public function touchHandler() : void
+		handler.invoke();
+	end
+end
+class runner
+	private var result : int, initValue : int;
+	private var processorInstance : processor;
+	class myAction : action
+		public function invoke() : void
+			result = result * initValue;
+		end
+	end
+	public function run(par1 : int) : int
+		var n : int;
+		n = par1;
+		initValue = par1;
+		while n > 0 do
+			processorInstance.touchHandler();
+			n = n - 1;
+		end
+		return result;
+	end
+	public function runner() : void
+		result = 1;
+		processorInstance = new processor();
+		processorInstance.setHandler(new myAction());
+	end
+end
+class program
+	public static function main(par1 : int) : int
+		return (new runner()).run(par1);
+	end
+end

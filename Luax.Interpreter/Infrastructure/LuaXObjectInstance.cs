@@ -15,6 +15,8 @@
         /// </summary>
         public LuaXVariableInstanceSet Properties { get; set; }
 
+        internal LuaXObjectInstance OwnerObjectInstance { get; set; }
+
         internal LuaXObjectInstance(LuaXClassInstance @class)
         {
             Class = @class;
