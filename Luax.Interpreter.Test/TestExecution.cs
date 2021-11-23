@@ -204,6 +204,7 @@ namespace Luax.Interpreter.Test
         [InlineData(3, 6)]
         [InlineData(2, 3)]
         [InlineData(1, 1)]
+        [InlineData(-1, 0)]
         public void TestWhile(int argument, int expectedValue)
         {
             var app = new LuaXApplication();
@@ -332,6 +333,7 @@ namespace Luax.Interpreter.Test
         [InlineData("a", 3, 1, "aaa")]
         [InlineData("b", 4, 2, "bbbb_bbbb")]
         [InlineData("b", 4, 3, "bbbb_bbbb_bbbb")]
+        [InlineData("c", -1, -1, "")]
         public void TestWhileNested(string str, int strRep, int rep, string expectedValue)
         {
             var app = new LuaXApplication();
@@ -448,6 +450,105 @@ namespace Luax.Interpreter.Test
 
             LuaXMethodExecutor.Execute(method, typelib, null, new object[] { param1 }, out var r);
             r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData(6, 21)]
+        [InlineData(5, 15)]
+        [InlineData(4, 10)]
+        [InlineData(3, 6)]
+        [InlineData(2, 3)]
+        [InlineData(1, 1)]
+        [InlineData(-1, -1)]
+        public void TestRepeat(int argument, int expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("RepeatTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("dummy", null, out var method).Should().BeTrue();
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { argument }, out var r);
+            r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData(6, 15)]
+        [InlineData(5, 0)]
+        [InlineData(4, 5)]
+        [InlineData(3, 9)]
+        [InlineData(2, 12)]
+        [InlineData(1, 14)]
+        public void TestRepeatBreak(int argument, int expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("RepeatBreakTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("dummy", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsInteger().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { argument }, out var r);
+            r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData(6, 16)]
+        [InlineData(5, 10)]
+        [InlineData(4, 10)]
+        [InlineData(3, 6)]
+        [InlineData(2, 3)]
+        [InlineData(1, 1)]
+        public void TestRepeatContinue(int argument, int expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("RepeatContinueTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("dummy", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsInteger().Should().BeTrue();
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { argument }, out var r);
+            r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData("a", 3, 1, "aaa")]
+        [InlineData("b", 4, 2, "bbbb_bbbb")]
+        [InlineData("b", 4, 3, "bbbb_bbbb_bbbb")]
+        [InlineData("c", -1, -1, "c")]
+        public void TestRepeatNested(string str, int strRep, int rep, string expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("RepeatNestedTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("stringMaker", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(3);
+            method.Arguments[0].LuaType.IsString().Should().BeTrue();
+            method.Arguments[1].LuaType.IsInteger().Should().BeTrue();
+            method.Arguments[2].LuaType.IsInteger().Should().BeTrue();
+            method.ReturnType.IsString().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { str, strRep, rep }, out var r);
+            r.Should().BeOfType<string>();
             r.Should().Be(expectedValue);
         }
     }

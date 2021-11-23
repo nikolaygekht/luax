@@ -1,0 +1,109 @@
+@TestSuite()
+class csvParserTest
+    @Fact()
+    public function SimpleCase_EmptyString() : void
+        var parser : csvParser, r : string[];
+        parser = new csvParser();
+
+        r = parser.splitLine("");
+        assert.equals(r.length, 1, "length");
+        assert.equals(r[0], "", "0");
+    end
+
+    @Fact()
+    public function SimpleCase_OneValue() : void
+        var parser : csvParser, r : string[];
+        parser = new csvParser();
+
+        r = parser.splitLine("123");
+        assert.equals(r.length, 1, "length");
+        assert.equals(r[0], "123", "0");
+    end
+
+    @Fact()
+    public function SimpleCase_LastValueExists() : void
+        var parser : csvParser, r : string[];
+        parser = new csvParser();
+
+        r = parser.splitLine("1,abc,456.6");
+        assert.equals(r.length, 3, "length");
+        assert.equals(r[0], "1", "0");
+        assert.equals(r[1], "abc", "1");
+        assert.equals(r[2], "456.6", "2");
+    end
+
+    @Fact()
+    public function SimpleCase_LastValueNotExists() : void
+        var parser : csvParser, r : string[];
+        parser = new csvParser();
+
+        r = parser.splitLine("1,abc,456.6,");
+        assert.equals(r.length, 4, "length");
+        assert.equals(r[0], "1", "0");
+        assert.equals(r[1], "abc", "1");
+        assert.equals(r[2], "456.6", "2");
+        assert.equals(r[3], "", "3");
+    end
+
+    @Fact()
+    public function Comments_Disabled() : void
+        var parser : csvParser, r : string[];
+        parser = new csvParser();
+        parser.allowComments = false;
+        parser.commentPrefix = "--";
+
+        r = parser.splitLine("--1,2");
+        assert.equals(r.length, 2, "length");
+        assert.equals(r[0], "--1", "0");
+        assert.equals(r[1], "2", "1");
+    end
+
+    @Fact()
+    public function Comments_Enabled() : void
+        var parser : csvParser, r : string[];
+        parser = new csvParser();
+        parser.allowComments = true;
+        parser.commentPrefix = "--";
+
+        r = parser.splitLine("--1,2");
+        assert.isTrue(r == nil, "");
+    end
+
+    @Fact()
+    public function SimpleCase_CustomSeparator() : void
+        var parser : csvParser, r : string[];
+        parser = new csvParser();
+        parser.valueSeparator = ";";
+
+        r = parser.splitLine("1;abc;456.6");
+        assert.equals(r.length, 3, "length");
+        assert.equals(r[0], "1", "0");
+        assert.equals(r[1], "abc", "1");
+        assert.equals(r[2], "456.6", "2");
+    end
+
+    @Fact()
+    public function Strings_Disabled() : void
+        var parser : csvParser, r : string[];
+        parser = new csvParser();
+        parser.allowStrings = false;
+
+        r = parser.splitLine("\"1,abc\",456.6");
+        assert.equals(r.length, 3, "length");
+        assert.equals(r[0], "\"1", "0");
+        assert.equals(r[1], "abc\"", "1");
+        assert.equals(r[2], "456.6", "2");
+    end
+
+    @Fact()
+    public function Strings_Enabled() : void
+        var parser : csvParser, r : string[];
+        parser = new csvParser();
+        parser.allowStrings = true;
+
+        r = parser.splitLine("\"1,abc\",456.6");
+        assert.equals(r.length, 2, "length");
+        assert.equals(r[0], "1,abc", "0");
+        assert.equals(r[1], "456.6", "2");
+    end
+end

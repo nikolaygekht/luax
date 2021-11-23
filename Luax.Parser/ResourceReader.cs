@@ -38,15 +38,7 @@ namespace Luax.Parser
                 throw new ArgumentException("Assembly containing the resource specified is not found", nameof(assembly));
 
             var names = assembly.GetManifestResourceNames();
-            string fullName = null;
-            foreach (var name in names)
-            {
-                if (name.EndsWith(resourceName))
-                {
-                    fullName = name;
-                    break;
-                }
-            }
+            var fullName = Array.Find(names, name => name.EndsWith(resourceName));
 
             if (fullName == null)
                 throw new ArgumentException($"Resource with the name that ends with {resourceName} is not found in the assembly specified", nameof(resourceName));

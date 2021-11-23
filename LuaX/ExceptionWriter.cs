@@ -38,14 +38,20 @@ namespace LuaX
         private static string BuildMethodSignature(LuaXMethod method)
         {
             var sb = new StringBuilder();
-            sb.Append($"{method.Class.Name}.{method.Name}");
+            sb.Append(method.Class.Name)
+                .Append('.')
+                .Append(method.Name);
             sb.Append('(');
 
             for (var i = 0; i < method.Arguments.Count; i++)
             {
                 if (i > 0)
                     sb.Append(", ");
-                sb.Append($"{method.Arguments[i].Name} : {(method.Arguments[i].LuaType.IsObject() ? method.Arguments[i].LuaType.Class : method.Arguments[i].LuaType.ToString())}");
+                sb.Append(method.Arguments[i].Name)
+                    .Append(" : ")
+                    .Append(method.Arguments[i].LuaType.IsObject() ?
+                                method.Arguments[i].LuaType.Class :
+                                method.Arguments[i].LuaType.ToString());
             }
 
             sb.Append(')');

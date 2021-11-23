@@ -46,6 +46,10 @@
     <EmbeddedResource Include="TestSources\InnerClass3.luax" />
     <EmbeddedResource Include="TestSources\InnerClass4.luax" />
     <EmbeddedResource Include="TestSources\LuaXStackTraceFramesTest.luax" />
+    <EmbeddedResource Include="TestSources\RepeatBreakTest.luax" />
+    <EmbeddedResource Include="TestSources\RepeatContinueTest.luax" />
+    <EmbeddedResource Include="TestSources\RepeatNestedTest.luax" />
+    <EmbeddedResource Include="TestSources\RepeatTest.luax" />
     <EmbeddedResource Include="TestSources\TryCatchTest.luax" />
     <EmbeddedResource Include="TestSources\ThrowTest.luax" />
     <EmbeddedResource Include="TestSources\IfTest.luax" />
@@ -78,10 +82,10 @@
 
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="FluentAssertions" Version="6.0.0" />
+    <PackageReference Include="FluentAssertions" Version="6.2.0" />
     <PackageReference Include="System.Runtime" Version="4.3.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

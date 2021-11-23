@@ -28,23 +28,23 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         //public static extern fromInt(v : int) : variant;
         [LuaXExternMethod("variantCast", "fromInt")]
         public static object variant_fromInt(int v) => CreateVariant(v);
-        
+
         //public static extern fromReal(v : real) : variant;
         [LuaXExternMethod("variantCast", "fromReal")]
         public static object variant_fromReal(double v) => CreateVariant(v);
-        
+
         //public static extern fromDatetime(v : datetime) : variant;
         [LuaXExternMethod("variantCast", "fromDatetime")]
         public static object variant_fromDatetime(DateTime v) => CreateVariant(v);
-        
+
         //public static extern fromBoolean(v : boolean) : variant;
         [LuaXExternMethod("variantCast", "fromBoolean")]
         public static object variant_fromBoolean(bool v) => CreateVariant(v);
-        
+
         //public static extern fromString(v : string) : variant;
         [LuaXExternMethod("variantCast", "fromString")]
         public static object variant_fromString(string v) => CreateVariant(v);
-        
+
         //public static extern fromObject(v : object) : variant;
         [LuaXExternMethod("variantCast", "fromObject")]
         public static object variant_fromObject(LuaXObjectInstance v) => CreateVariant(v);
@@ -56,7 +56,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         //public static extern castToReal(v : variant) : real;
         [LuaXExternMethod("variantCast", "castToReal")]
         public static object variant_castToReal(LuaXObjectInstance v) => variant_asReal(v);
-        
+
         //public static extern castToDatetime(v : variant) : datetime;
         [LuaXExternMethod("variantCast", "castToDatetime")]
         public static object variant_castToDatetime(LuaXObjectInstance v) => variant_asDatetime(v);
@@ -64,11 +64,11 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         //public static extern castToBoolean(v : variant) : boolean;
         [LuaXExternMethod("variantCast", "castToBoolean")]
         public static object variant_castToBoolean(LuaXObjectInstance v) => variant_asBoolean(v);
-        
+
         //public static extern castToString(v : variant) : string;
         [LuaXExternMethod("variantCast", "castToString")]
         public static object variant_castToString(LuaXObjectInstance v) => variant_asString(v);
-        
+
         //public static extern castToObject(v : variant) : object;
         [LuaXExternMethod("variantCast", "castToObject")]
         public static object variant_castToObject(LuaXObjectInstance v) => variant_asObject(v);
@@ -91,7 +91,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             if (v is bool)
                 return "boolean";
             if (v is LuaXObjectInstance obj)
-                return obj.Class.LuaType.Name.ToString();
+                return obj.Class.LuaType.Name;
             return "native";
         }
 
@@ -113,7 +113,6 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return v;
         }
 
-
         //public extern asDatetime() : datetime;
         [LuaXExternMethod("variant", "asDatetime")]
         public static object variant_asDatetime(LuaXObjectInstance @this)
@@ -132,7 +131,6 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return v;
         }
 
-
         //public extern asString() : string;
         [LuaXExternMethod("variant", "asString")]
         public static object variant_asString(LuaXObjectInstance @this)
@@ -141,7 +139,6 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             mTypeLibrary.CastTo(LuaXTypeDefinition.String, ref v);
             return v;
         }
-
 
         //public extern asObject() : object;
         [LuaXExternMethod("variant", "asObject")]
@@ -154,7 +151,6 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 return obj;
             return @this;
         }
-
 
         //public extern isInt() : boolean;
         [LuaXExternMethod("variant", "isInt")]
@@ -170,7 +166,6 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             var v = @this.Properties["__data"].Value;
             return v is double;
-
         }
 
         //public extern isDatetime() : boolean;
@@ -189,7 +184,6 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return v is bool;
         }
 
-
         //public extern isString() : boolean;
         [LuaXExternMethod("variant", "isString")]
         public static object variant_isString(LuaXObjectInstance @this)
@@ -197,7 +191,6 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             var v = @this.Properties["__data"].Value;
             return v is string;
         }
-
 
         //public extern isObject() : boolean;
         [LuaXExternMethod("variant", "isObject")]

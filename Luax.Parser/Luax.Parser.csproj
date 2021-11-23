@@ -15,10 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Hime.SDK" Version="3.5.1" />
     <PackageReference Include="Hime.Build.Task" Version="0.1.6" IncludeAssets="build" />
   </ItemGroup>

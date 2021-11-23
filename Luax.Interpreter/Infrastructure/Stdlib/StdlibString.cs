@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using Luax.Parser.Ast;
 
@@ -36,11 +37,32 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return s.IndexOf(sub, caseInsensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
         }
 
+        //public static extern lastIndexOf(s : string, sub:string) : int;
+        [LuaXExternMethod("stdlib", "lastIndexOf")]
+        public static object Extern_lastIndexOf(string s, string sub, bool caseInsensitive)
+        {
+            return s.LastIndexOf(sub, caseInsensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+        }
+
         //public static extern left(s : string, length : int) : string;
         [LuaXExternMethod("stdlib", "left")]
         public static object Extern_left(string s, int length)
         {
             return s[..length];
+        }
+
+        //public static extern upper(s : string) : string;
+        [LuaXExternMethod("stdlib", "upper")]
+        public static object Extern_upper(string s)
+        {
+            return s.ToUpper(CultureInfo.InvariantCulture);
+        }
+
+        //public static extern upper(s : string) : string;
+        [LuaXExternMethod("stdlib", "lower")]
+        public static object Extern_lower(string s)
+        {
+            return s.ToLower(CultureInfo.InvariantCulture);
         }
 
         //public static extern trim(s : string) : string;

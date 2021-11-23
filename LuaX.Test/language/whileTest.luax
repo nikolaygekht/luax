@@ -103,6 +103,7 @@ class whileTest
     end
 
     @Theory()
+    @TheoryData(1, -1, -1, 0)
     @TheoryData(1, 3, 4, 8)
     @TheoryData(2, 2, 3, 15)
     @TheoryData(3, 3, 5, 140)

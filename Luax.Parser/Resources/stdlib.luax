@@ -11,7 +11,16 @@ class stdlib
 
     @DocBrief("Finds a substring in a string")
     public static extern indexOf(s : string, sub:string, caseSenstitive : boolean) : int;
+    
+    @DocBrief("Finds last occurrence of a substring in a string")
+    public static extern lastIndexOf(s : string, sub:string, caseSenstitive : boolean) : int;
 
+    @DocBrief("Converts the string to uppercase")
+    public static extern upper(s : string) : string;
+
+    @DocBrief("Converts the string to lowercase")
+    public static extern lower(s : string) : string;
+    
     @DocBrief("Returns a left part of the string")
     public static extern left(s : string, length : int) : string;
 
@@ -379,6 +388,33 @@ class buffer
     @DocBrief("Creates a new buffer of the specified length")
     @DocDescription("The new buffer is initialized with `0` values")
     public static extern create(length : int) : buffer;
+
+    @DocBrief("Buffer as a hexadecimal string")
+    public extern toHexString() : string;
+
+    @DocBrief("Buffer as a base64 string")
+    public extern toBase64() : string;
+
+    @DocBrief("Converts a hexadecimal string to a buffer")
+    public static extern fromHexString(v : string) : buffer;
+
+    @DocBrief("Converts a base64 string to a buffer")
+    public static extern fromBase64(v : string) : buffer;
+end
+
+@DocBrief("The platform cryptography functions")
+class cryptography
+    @DocBrief("Calculates MD5 hash")
+    public static extern MD5(v : buffer) : buffer;
+
+    @DocBrief("Calculates SHA1 hash")
+    public static extern SHA1(v : buffer) : buffer;
+
+    @DocBrief("Calculates SHA256 hash")
+    public static extern SHA256(v : buffer) : buffer;
+
+    @DocBrief("Calculates SHA512 hash")
+    public static extern SHA512(v : buffer) : buffer;
 end
 
 -- -------------------------------------------------------
@@ -435,36 +471,33 @@ end
 -- -------------------------------------------------------
 @DocBrief("The parser for CSV (comma-separated values) text format")
 class csvParser
-    @DocBrief("Sets value separator")
+    @DocBrief("The value separator")
     @DocDescription("The default separator is comma (`\",\"`)")
-    public extern setSeparator(separator : string) : void;
-    @DocBrief("Gets value separator")
-    public extern getSeparator() : string;
+    public var valueSeparator : string;
 
-    @DocBrief("Sets the flag indicating that string values allowed")
+    @DocBrief("The flag indicating that string values allowed")
     @DocDescription("By default the strings aren't enabled")
-    public extern setAllowStrings(flag : boolean) : void;
-    @DocBrief("Gets the flag indicating that string values allowed")
-    public extern getAllowString() : boolean;
-
+    public var allowStrings : boolean;
+    
     @DocBrief("Sets the flag indicating that comments are allowed")
     @DocDescription("By default the comments aren't enabled")
-    public extern setAllowComments(flag : boolean) : void;
-    @DocBrief("Gets the flag indicating that comments are allowed")
-    public extern getAllowComments() : boolean;
+    public var allowComments : boolean;
 
     @DocBrief("Sets the character(s) used to start the comment")
     @DocDescription("By default the comments prefix is `\"#\"`")
-    public extern setCommentPrefix(commentPrefix : string) : void;
-    @DocBrief("Gets the character(s) used to start the comment")
-    public extern getCommentPrefix() : string;
+    public var commentPrefix : string;
 
     @DocBrief("Splits the line of the text into values.")
     @DocDescription("If line is a comment a `nil` value is returned")
     public extern splitLine(line : string) : string[];
 
     @DocBrief("Constructor")
-    public extern csvParser() : void;
+    public function csvParser() : void
+        allowStrings = false;
+        allowComments = false;
+        commentPrefix = "#";
+        valueSeparator = ",";
+    end
 end
 
 -- -------------------------------------------------------
@@ -743,4 +776,20 @@ class assert
    @DocParameter("pattern", "The regular expression patter value")
    @DocParameter("message", "The message to add to a standard message of the assertion")
    public static extern doesNotMatch(value : string, pattern : string, message : string) : void;
+end
+
+@DocBrief("Bitwise operations")
+class bitwise
+    @DocBrief("Bitwise AND")
+    public static extern _and(a : int, b : int) : int;
+    @DocBrief("Bitwise OR")
+    public static extern _or(a : int, b : int) : int;
+    @DocBrief("Bitwise Exclusive OR")
+    public static extern _xor(a : int, b : int) : int;
+    @DocBrief("Bitwise NOT")
+    public static extern _not(a : int) : int;
+    @DocBrief("Bitwise zero-fill left shift")
+    public static extern _shl(a : int, n : int) : int;
+    @DocBrief("Bitwise zero-fill right shift")
+    public static extern _shr(a : int, n : int) : int;
 end
