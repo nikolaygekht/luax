@@ -3,5 +3,6 @@
     static var b : real, c : string[];
     public var d : boolean;
     private static var e : object;
+    @attr()
     internal static var f : datetime;
 end

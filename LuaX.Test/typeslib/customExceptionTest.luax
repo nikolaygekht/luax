@@ -1,0 +1,45 @@
+class myException : exception
+    private var innerException : exception;
+
+    public function getInnerException() : exception
+        return innerException;
+    end
+
+    public static function createWithInner(codeValue: int, messageText: string, inner : exception) : myException
+        var ex : myException;
+        ex = new myException();
+        ex.code = codeValue;
+        ex.message = messageText;
+        ex.innerException = inner;
+        return ex;
+    end
+end
+
+class assertTestAction_customException : action
+    public function invoke() : void
+        var ex : myException;
+        try
+            var ex2 : exception;
+            try
+                throw exception.create(-1, "This is the inner exception");
+            catch ex2
+                assert.isTrue(ex2.getMessage() == "This is the inner exception", "");
+                assert.isTrue(ex2.getCode() == -1, "");
+                throw myException.createWithInner(-2, "This is the main exception that wraps the inner exception", ex2);
+            end
+        catch ex
+            assert.isTrue(ex.getMessage() == "This is the main exception that wraps the inner exception", "");
+            assert.isTrue(ex.getCode() == -2, "");
+            assert.isTrue(ex.getInnerException().getMessage() == "This is the inner exception", "");
+            assert.isTrue(ex.getInnerException().getCode() == -1, "");
+        end
+    end   
+end
+
+@TestSuite()
+class customExceptionTest
+    @Fact()
+    public function customExceptionCatch() : void
+        assert.doesNotThrow(new assertTestAction_customException(), "");
+    end
+end

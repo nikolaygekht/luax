@@ -1,4 +1,4 @@
-﻿class a 
+﻿class a
   public static var s : int;
   public static var arr : int[];
   public var p : int;
@@ -15,23 +15,23 @@ class b
   public function test1(x : int) : int
       var A : a, v : int;
       A = new a();
-      
+
       a.s = x + 1;      -- static of other class
       s = x + 2;        -- static of this class
       p = x + 3;        -- property of this class
-      
+
       A.p = x + 4;      -- property of other class
       A.Dup();
-      
+
       -- array
-      a.arr = new int[3]; 
+      a.arr = new int[3];
       a.arr[0] = x + 5;
       a.arr[1] = x + 6;
       a.arr[2] = x + 7;
 
       -- variable
       v = x + 8 + A.p;
-      
+
       return v;
   end
 end

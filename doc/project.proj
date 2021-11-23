@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DocTargetDir>$(MSBuildProjectDirectory)/dst</DocTargetDir>
+    <RawDir>$(MSBuildProjectDirectory)/src/raw</RawDir>
+    <DocgenVersion>0.1.27</DocgenVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Gehtsoft.Build.DocGen" Version="$(DocgenVersion)" IncludeAssets="build" />
+    <PackageReference Include="Gehtsoft.Build.ContentDelivery" Version="0.1.10" IncludeAssets="build" />
+  </ItemGroup>
+
+ <ItemGroup>
+    <CustomFile Include="$(MSBuildProjectDirectory)/img/**/*.png;$(MSBuildProjectDirectory)/html/**/*.*" />
+    <CurrentDocTargetDir Include="$(DocTargetDir)" />
+    <CurrentRawDir Include="$(RawDir)" />
+    <ResFiles Include="$(ResDir)/*.*" />
+ </ItemGroup>
+
+ <Target Name="CleanDoc">
+  <RemoveDir Directories="@(CurrentDocTargetDir)" />
+  <RemoveDir Directories="@(CurrentRawDir)" />
+ </Target>
+
+
+ <Target Name="MakeDoc">
+  <RemoveDir Directories="@(CurrentDocTargetDir)" />
+  <MakeDir Directories="$(DocTargetDir)" />
+  <MakeDir Directories="$(RawDir)" />
+  <DocGen Project="project.xml" />
+  <Copy SourceFiles="@(CustomFile)" DestinationFolder="$(DocTargetDir)" />
+  <ContentFromPackage Package="gehtsoft.build.docgen" Source="Content/template/html/res" Version="$(DocgenVersion)" Destination="$(DocTargetDir)/res" />
+  <ContentFromPackage Package="gehtsoft.build.docgen" Source="Content/template/html/highlighter" Version="$(DocgenVersion)" Destination="$(DocTargetDir)/highlighter" />
+  <ContentFromPackage Package="gehtsoft.build.docgen" Source="Content/template/html/menu" Version="$(DocgenVersion)" Destination="$(DocTargetDir)/menu" />
+  <ContentFromPackage Package="gehtsoft.build.docgen" Source="Content/template/html/pageImages" Version="$(DocgenVersion)" Destination="$(DocTargetDir)/pageImages" />
+ </Target>
+</Project>

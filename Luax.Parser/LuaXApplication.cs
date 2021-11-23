@@ -18,7 +18,9 @@ namespace Luax.Parser
         /// </summary>
         public LuaXApplication()
         {
-            var body = StdlibHeader.ReadStdlib();
+            var body = TypesLibHeader.ReadTypesLib();
+            Classes.AddRange(body.Classes);
+            body = StdlibHeader.ReadStdlib();
             Classes.AddRange(body.Classes);
         }
 
@@ -48,7 +50,7 @@ namespace Luax.Parser
             for (int i = 0; i < Classes.Count; i++)
             {
                 var parser = new LuaXAstTreeCreator(Classes[i].Location.Source, Classes);
-                Classes[i].Pass2(parser);
+                Classes[i].Pass2(this, parser);
             }
         }
     }

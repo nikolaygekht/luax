@@ -1,5 +1,5 @@
-﻿class program
-   public static function main() : void
+﻿class Program
+   public static function Main() : void
        x();
    end
 
@@ -12,6 +12,6 @@
    end
 
    static function z() : void
-		assert.isTrue(false, "throw!");
+        assert.isTrue(false, "throw!");
    end
 end

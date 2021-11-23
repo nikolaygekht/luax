@@ -10,61 +10,61 @@ end
 class test
   public function f1() : a
     var x : c;
-	x = new c();
-	return cast<a>(x);
+    x = new c();
+    return cast<a>(x);
   end
 
   public function f2() : c
     var x : a;
-	x = new a();
-	return cast<c>(x);
+    x = new a();
+    return cast<c>(x);
   end
 
   public function f3() : b
     var x : a;
-	x = new a();
-	return cast<b>(x);
+    x = new a();
+    return cast<b>(x);
   end
 
    public function f4() : c
     var x : object;
-	x = new c();
-	return cast<c>(x);
+    x = new c();
+    return cast<c>(x);
   end
 
   public function f5() : a
     var x : object;
-	x = new c();
-	return cast<a>(x);
+    x = new c();
+    return cast<a>(x);
   end
 
   public function f6() : b
     var x : object;
-	x = new c();
-	return cast<b>(x);
+    x = new c();
+    return cast<b>(x);
   end
 
   public function f7() : a
     var x : object;
-	x = nil;
-	return cast<a>(x);
+    x = nil;
+    return cast<a>(x);
   end
 
   public function f8() : b
     var x : object;
-	x = nil;
-	return cast<b>(x);
+    x = nil;
+    return cast<b>(x);
   end
 
    public function f9() : string
     var x : object;
-	x = nil;
-	return cast<string>(x);
+    x = nil;
+    return cast<string>(x);
   end
 
   public function f10() : int
     var x : object;
-	x = nil;
-	return cast<int>(x);
+    x = nil;
+    return cast<int>(x);
   end
 end

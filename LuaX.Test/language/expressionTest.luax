@@ -1,0 +1,477 @@
+class expressionTestSubject
+    const c = 1;
+    public static function s() : string
+        return "2";
+    end
+end
+
+
+@TestSuite()
+class expressionTest
+    const EPS = 1.0e-14;
+
+    @Fact()
+    public function typeName() : void
+        assert.isTrue(typename(1) == "int", "int");
+        assert.isTrue(typename(1.0) == "real", "real");
+        assert.isTrue(typename(new int[1]) == "int[]", "primitves array");
+        assert.isTrue(typename(stdlib.nowutc()) == "datetime", "datetime");
+        assert.isTrue(typename(true) == "boolean", "boolean");
+        assert.isTrue(typename(this) == "expressionTest", "class");
+        assert.isTrue(typename(new expressionTest[1]) == "expressionTest[]", "primitves array");
+    end
+
+    @Fact()
+    public function castInt() : void
+        assert.isTrue(typename(cast<real>(10)) == "real", "int to real 1");
+        assert.isTrue(cast<real>(10) == 10.0, "int to real 2");
+
+        assert.isTrue(typename(cast<string>(10)) == "string", "int to string 1");
+        assert.isTrue(cast<string>(10) == "10", "int to string 2");
+
+        assert.isTrue(typename(cast<datetime>(2459517)) == "datetime", "int to date 1");
+        assert.isTrue(cast<datetime>(2459517) == stdlib.mkdate(2021, 10, 29), "int to date 2");
+    end
+
+    @Fact()
+    public function castReal() : void
+        assert.isTrue(typename(cast<int>(10.5)) == "int", "real to int 1");
+        assert.isTrue(cast<int>(10.5) == 10, "real to int 2");
+
+        assert.isTrue(typename(cast<string>(10.5)) == "string", "real to string 1");
+        assert.isTrue(cast<string>(10.5) == "10.5", "real to string 2");
+
+        assert.isTrue(typename(cast<datetime>(2459517.5)) == "datetime", "real to date 1");
+        assert.isTrue(cast<datetime>(2459517.5) == stdlib.mkdatetime(2021, 10, 29, 12, 0 , 0, 0), "real to date 2");
+    end
+
+    @Fact()
+    public function castString() : void
+        assert.isTrue(typename(cast<int>("10")) == "int", "string to int 1");
+        assert.isTrue(cast<int>("10") == 10, "string to int 2");
+
+        assert.isTrue(typename(cast<real>("10.5")) == "real", "string to real 1");
+        assert.isTrue(cast<real>("10.5") == 10.5, "string to real 2");
+
+        assert.isTrue(cast<datetime>("2020-11-25") == stdlib.mkdatetime(2020, 11, 25, 0, 0, 0, 0), "string to date 1");
+        assert.isTrue(cast<datetime>("2020-11-25 13:47") == stdlib.mkdatetime(2020, 11, 25, 13, 47, 0, 0), "string to date 2");
+        assert.isTrue(cast<datetime>("2020-11-25 13:47:55") == stdlib.mkdatetime(2020, 11, 25, 13, 47, 55, 0), "string to date 3");
+        assert.isTrue(cast<datetime>("2020-11-25 13:47:55.123") == stdlib.mkdatetime(2020, 11, 25, 13, 47, 55, 123), "string to date 4");
+    end
+
+    @Fact()
+    public function numericConstantTypes() : void
+        assert.isTrue(1.0e2 == 100.0, "e-form");
+        assert.isTrue(1.5 == 150.0 / 100.0, "regular form");
+        assert.isTrue(0xffff == 65535, "hexadecimal form");
+        assert.isTrue(0x12ab_de89 == 0x12abde89, "underscore in hexadecimal");
+        assert.isTrue(1_234_567 == 1234567, "underscore in integer");
+        assert.isTrue(1_234.567_890e2 == 123456.789, "underscore in real");
+    end
+
+    @Fact()
+    public function callPriority() : void
+        assert.isTrue(2 .. expressionTestSubject.c == "21", "property");
+        assert.isTrue(2 .. expressionTestSubject.s() == "22", "method");
+    end
+
+    private static function arrayPriority_CreateArray() : string[]
+        var s : string[];
+        s = new string[2];
+        s[0] = "a";
+        s[1] = "b";
+        return s;
+    end
+
+    @Fact()
+    public function arrayPriority() : void
+        var s : string[];
+        s = arrayPriority_CreateArray();
+        assert.isTrue(s[0] .. s[1] == "ab", "direct");
+        assert.isTrue(arrayPriority_CreateArray()[0] .. arrayPriority_CreateArray()[1] == "ab", "returnvalue");
+    end
+
+    @Fact()
+    public function concat() : void
+        assert.isTrue("a" .. "b" == "ab", "string to string");
+        assert.isTrue("a" .. "b" .. "c" == "abc", "chain");
+        assert.isTrue(1 .. "b" == "1b", "int to string");
+        assert.isTrue("b" .. 1 == "b1", "string to int");
+        assert.isTrue(1 .. 2 == "12", "int to int");
+        assert.isTrue(1.5 .. "b" == "1.5b", "real to string");
+        assert.isTrue("b" .. 1.5 == "b1.5", "string to real");
+    end
+
+    @Fact()
+    public function add() : void
+        assert.isTrue(1 + 1 == 2, "int1");
+        assert.isTrue(-1 + -1 == -2, "int2");
+        assert.isTrue(1 + -1 == 0, "int3");
+
+        assert.approximatelyEquals(1.1 + 1.0, 2.1, EPS, "real1");
+        assert.approximatelyEquals(-1.0 + -1.1, -2.1, EPS, "real2");
+        assert.approximatelyEquals(1.0 + -1.1, -0.1, EPS, "real3");
+
+        assert.approximatelyEquals(1.1 + 1, 2.1, EPS, "mix2");
+        assert.approximatelyEquals(1 + 1.1, 2.1, EPS, "mix1");
+    end
+
+    @Fact()
+    public function subtract() : void
+        assert.isTrue(2 - 1 == 1, "int1");
+        assert.isTrue(2 - -1 == 3, "int2");
+        assert.isTrue(-2 - 1 == -3, "int3");
+
+        assert.approximatelyEquals(2.0 - 1.1, 0.9, EPS, "real1");
+        assert.approximatelyEquals(2.0 - -1.1, 3.1, EPS, "real2");
+        assert.approximatelyEquals(-2.0 - 1.1, -3.1, EPS, "real3");
+
+        assert.approximatelyEquals(2.1 - 1, 1.1, EPS, "mix1");
+        assert.approximatelyEquals(2 - 1.1, 0.9, EPS, "mix1");
+
+    end
+
+    public function negate() : void
+        assert.isTrue(-3 == 0 - 3, "int");
+        assert.approximatelyEquals(-3.1, 0.0 - 3.1, EPS, "real");
+    end
+
+    @Fact()
+    public function multiply() : void
+        assert.isTrue(1 * 0 == 0, "int1");
+        assert.isTrue(1 * 2 == 2, "int2");
+        assert.isTrue(5 * 7 == 35, "int3");
+
+        assert.approximatelyEquals(1.0 * 0.0, 0.0, EPS, "real1");
+        assert.approximatelyEquals(1.0 * 2.0, 2.0, EPS, "real2");
+        assert.approximatelyEquals(2.0 * 0.25, 0.5, EPS, "real3");
+        assert.approximatelyEquals(1.5 * 2.0, 3.0, EPS, "real4");
+        assert.approximatelyEquals(5.0 * 7.0, 35.0, EPS, "real5");
+
+        assert.approximatelyEquals(2 * 0.25, 0.5, EPS, "mix1");
+        assert.approximatelyEquals(0.25 * 2, 0.5, EPS, "mix2");
+    end
+
+    @Fact()
+    public function divide() : void
+        assert.isTrue(0 / 1 == 0, "int1");
+        assert.isTrue(1 / 2 == 0, "int2");
+        assert.isTrue(4 / 2 == 2, "int3");
+        assert.isTrue(5 / 2 == 2, "int4");
+        assert.isTrue(125 / 2 == 62, "int5");
+
+        assert.approximatelyEquals(0.0 / 1.0, 0.0, EPS, "real1");
+        assert.approximatelyEquals(1.0 / 2.0, 0.5, EPS, "real2");
+        assert.approximatelyEquals(4.0 / 2.0, 2.0, EPS, "real3");
+        assert.approximatelyEquals(5.0 / 2.0, 2.5, EPS, "real4");
+        assert.approximatelyEquals(125.0 / 2.0, 62.5, EPS, "real5");
+
+        assert.approximatelyEquals(5 / 2.0, 2.5, EPS, "mix1");
+        assert.approximatelyEquals(125.0 / 2, 62.5, EPS, "mix2");
+    end
+
+    @Fact()
+    public function modulus() : void
+        assert.isTrue(0 % 1 == 0, "int1");
+        assert.isTrue(1 % 2 == 1, "int2");
+        assert.isTrue(4 % 2 == 0, "int3");
+        assert.isTrue(5 % 2 == 1, "int4");
+        assert.isTrue(125 % 10 == 5, "int5");
+
+        assert.approximatelyEquals(0.0 % 1.0, 0, EPS, "real1");
+        assert.approximatelyEquals(1.0 % 2.0, 0, EPS, "real2");
+        assert.approximatelyEquals(4.0 % 2.0, 0, EPS, "real3");
+        assert.approximatelyEquals(5.0 % 2.0, 0, EPS, "real4");
+        assert.approximatelyEquals(125.0 % 2.0, 0, EPS, "real5");
+
+        assert.approximatelyEquals(1 % 2.0, 0, EPS, "mix1");
+        assert.approximatelyEquals(1.0 % 2, 0, EPS, "mix2");
+    end
+
+    @Fact()
+    public function power() : void
+        assert.isTrue(2 ^ 2 == 4, "int1");
+        assert.isTrue(3 ^ 5 == 243, "int2");
+
+        assert.approximatelyEquals(2.0 ^ 2.0, 4.0, EPS, "real1");
+        assert.approximatelyEquals(2.5 ^ 2.1, 6.8497389149076081809689669643046, EPS, "real2");
+    end
+
+    @Fact()
+    public function priorityMath() : void
+        assert.isTrue(6 / 3 * 4 == 8, "priority1");
+        assert.isTrue(6 / 3 + 4 == 6, "priority2");
+        assert.isTrue(2 + 3 * 4 == 14, "priority3");
+        assert.isTrue((2 + 3) * 4 == 20, "priority4");
+        assert.isTrue(3 * 4 + 2 == 14, "priority5");
+        assert.isTrue(3 * (4 + 2) == 18, "priority6");
+        assert.isTrue(3 * 4 ^ 2 == 48, "priority7");
+        assert.isTrue((3 * 4) ^ 2 == 144, "priority8");
+    end
+
+    @Fact()
+    public function compareInt() : void
+        assert.isTrue(2 == 2, "equals yes");
+        assert.isFalse(2 == 0, "equals no");
+        assert.isFalse(2 ~= 2, "not equals yes");
+        assert.isTrue(2 ~= 1, "not equals no");
+
+        assert.isTrue(2 > 1, "greater yes");
+        assert.isFalse(2 > 2, "greater no 1");
+        assert.isFalse(0 > 2, "greater no 2");
+
+        assert.isTrue(1 < 2, "less yes");
+        assert.isFalse(2 < 2, "less no 1");
+        assert.isFalse(2 < 1, "less no 2");
+
+        assert.isTrue(2 >= 1, "greater or eq yes 1");
+        assert.isTrue(2 >= 2, "greater or eq yes 2");
+        assert.isFalse(1 >= 2, "greater or eq no 1");
+
+        assert.isTrue(1 <= 2, "less or eq yes 1");
+        assert.isTrue(2 <= 2, "less or eq yes 2");
+        assert.isFalse(3 <= 1, "less or eq no 1");
+    end
+
+    @Fact()
+    public function compareReal() : void
+        assert.isTrue(1.0 == 1.0, "equals yes");
+        assert.isFalse(1.0 == 1.1, "equals no");
+        assert.isFalse(1.0 ~= 1.0, "not equals yes");
+        assert.isTrue(1.1 ~= 1.0, "not equals no");
+
+        assert.isTrue(1.1 > 1.0, "greater yes");
+        assert.isFalse(1.1 > 1.1, "greater no 1");
+        assert.isFalse(1.0 > 1.1, "greater no 2");
+
+        assert.isTrue(1.0 < 1.1, "less yes");
+        assert.isFalse(1.1 < 1.1, "less no 1");
+        assert.isFalse(1.1 < 1.0, "less no 2");
+
+        assert.isTrue(1.1 >= 1.0, "greater or eq yes 1");
+        assert.isTrue(1.1 >= 1.1, "greater or eq yes 2");
+        assert.isFalse(1.1 >= 1.2, "greater or eq no 1");
+
+        assert.isTrue(1.1 <= 1.1, "less or eq yes 1");
+        assert.isTrue(1.0 <= 1.1, "less or eq yes 2");
+        assert.isFalse(1.2 <= 1.1, "less or eq no 1");
+    end
+
+    @Fact()
+    public function compareNumbersMix() : void
+        assert.isTrue(1 == 1.0, "equals yes");
+        assert.isFalse(1.1 == 1, "equals no");
+        assert.isFalse(1 == 1.1, "equals no");
+        assert.isTrue(1 ~= 1.1, "neq yes");
+        assert.isFalse(1.0 ~= 1, "neq no");
+
+        assert.isTrue(1.1 > 1, "greater yes");
+        assert.isTrue(1 < 1.1, "less yes");
+        assert.isTrue(1.1 >= 1, "greater or eq yes 1");
+        assert.isTrue(1 <= 1.1, "less or eq yes 1");
+    end
+
+    @Fact()
+    public function compareDate() : void
+        assert.isTrue(stdlib.mkdate(2021, 1, 2) == stdlib.mkdate(2021, 1, 2), "equals yes");
+        assert.isFalse(stdlib.mkdate(2021, 1, 2) == stdlib.mkdate(2021, 1, 1), "equals no");
+        assert.isFalse(stdlib.mkdate(2021, 1, 2) ~= stdlib.mkdate(2021, 1, 2), "not equals yes");
+        assert.isTrue(stdlib.mkdate(2021, 1, 2) ~= stdlib.mkdate(2021, 1, 1), "not equals no");
+
+        assert.isTrue(stdlib.mkdate(2021, 1, 2) > stdlib.mkdate(2021, 1, 1), "greater yes");
+        assert.isFalse(stdlib.mkdate(2021, 1, 2) > stdlib.mkdate(2021, 1, 2), "greater no 1");
+        assert.isFalse(stdlib.mkdate(2021, 1, 1) > stdlib.mkdate(2021, 1, 2), "greater no 2");
+
+        assert.isTrue(stdlib.mkdate(2021, 1, 1) < stdlib.mkdate(2021, 1, 2), "less yes");
+        assert.isFalse(stdlib.mkdate(2021, 1, 2) < stdlib.mkdate(2021, 1, 2), "less no 1");
+        assert.isFalse(stdlib.mkdate(2021, 1, 2) < stdlib.mkdate(2021, 1, 1), "less no 2");
+
+        assert.isTrue(stdlib.mkdate(2021, 1, 2) >= stdlib.mkdate(2021, 1, 1), "greater or eq yes 1");
+        assert.isTrue(stdlib.mkdate(2021, 1, 2) >= stdlib.mkdate(2021, 1, 2), "greater or eq yes 2");
+        assert.isFalse(stdlib.mkdate(2021, 1, 1) >= stdlib.mkdate(2021, 1, 2), "greater or eq no 1");
+
+        assert.isTrue(stdlib.mkdate(2021, 1, 1) <= stdlib.mkdate(2021, 1, 2), "less or eq yes 1");
+        assert.isTrue(stdlib.mkdate(2021, 1, 2) <= stdlib.mkdate(2021, 1, 2), "less or eq yes 2");
+        assert.isFalse(stdlib.mkdate(2021, 1, 3) <= stdlib.mkdate(2021, 1, 1), "less or eq no 1");
+    end
+
+    @Fact()
+    public function compareStrings() : void
+        var s1 : string, s2 : string;
+        s1 = "a";
+        s2 = nil;
+
+
+        assert.isTrue("a" == "a", "equals yes");
+        assert.isFalse("a" == "A", "equals no 1");
+        assert.isFalse("a" == "aa", "equals no 2");
+        assert.isFalse("a" == nil, "equals no 3");
+        assert.isFalse(nil == "a", "equals no 4");
+
+        assert.isTrue(s1 != nil, "equals no 5");
+        assert.isTrue(s2 == nil, "equals no 6");
+        assert.isFalse(s1 == nil, "equals no 7");
+        assert.isFalse(s2 != nil, "equals no 8");
+
+        assert.isTrue("a" ~= "A", "not equals yes 1");
+        assert.isTrue("a" ~= "aa", "not equals yes 2");
+        assert.isFalse("a" ~= "a", "equals no");
+
+        assert.isTrue("b" > "a", "greater yes 1");
+        assert.isTrue("aa" > "a", "greater yes 2");
+        assert.isTrue("a" > "A", "greater yes 3");
+        assert.isTrue("9" > "0", "greater yes 4");
+        assert.isTrue("a" > "9", "greater yes 5");
+
+        assert.isFalse("a" > "b", "greater no 1");
+        assert.isFalse("a" > "a", "greater no 2");
+        assert.isFalse("a" > "aa", "greater no 3");
+        assert.isFalse("A" > "a", "greater no 4");
+        assert.isFalse("0" > "9", "greater no 5");
+        assert.isFalse("9" > "a", "greater no 6");
+
+        assert.isTrue("b" >= "a", "greater or equal yes 1");
+        assert.isTrue("a" >= "a", "greater or equal yes 2");
+        assert.isTrue("aa" >= "a", "greater or equal yes 3");
+        assert.isTrue("a" >= "A", "greater or equal yes 4");
+        assert.isTrue("9" >= "0", "greater or equal yes 5");
+        assert.isTrue("a" >= "9", "greater or equal yes 6");
+
+        assert.isFalse("a" >= "b", "greater or equal no 1");
+        assert.isFalse("a" >= "aa", "greater or equal no 2");
+        assert.isFalse("A" >= "a", "greater or equal no 3");
+        assert.isFalse("0" >= "9", "greater or equal no 4");
+        assert.isFalse("9" >= "a", "greater or equal no 5");
+
+        assert.isTrue("a" < "b", "less no 1");
+        assert.isTrue("a" < "aa", "less no 2");
+        assert.isTrue("A" < "a", "less no 3");
+        assert.isTrue("0" < "9", "less no 4");
+        assert.isTrue("9" < "a", "less no 5");
+
+        assert.isFalse("b" < "a", "less no 1");
+        assert.isFalse("a" < "a", "less no 2");
+        assert.isFalse("aa" < "a", "less no 3");
+        assert.isFalse("a" < "A", "less no 4");
+        assert.isFalse("9" < "0", "less no 5");
+        assert.isFalse("a" < "9", "less no 6");
+
+        assert.isTrue("a" <= "b", "less or equal no 1");
+        assert.isTrue("a" <= "aa", "less or equal no 2");
+        assert.isTrue("A" <= "a", "less or equal no 3");
+        assert.isTrue("0" <= "9", "less or equal no 4");
+        assert.isTrue("9" <= "a", "less or equal no 5");
+        assert.isTrue("a" <= "a", "less or equal no 6");
+
+        assert.isFalse("b" <= "a", "less or equal no 1");
+        assert.isFalse("aa" <= "a", "less or equal no 2");
+        assert.isFalse("a" <= "A", "less or equal no 3");
+        assert.isFalse("9" <= "0", "less or equal no 4");
+        assert.isFalse("a" <= "9", "less or equal no 5");
+    end
+
+    @Fact()
+    public function compareBoolean() : void
+        assert.isTrue(true == true, "eq 1");
+        assert.isTrue(false == false, "eq 2");
+        assert.isFalse(true == false, "eq 3");
+        assert.isFalse(true == false, "eq 4");
+
+        assert.isFalse(true ~= true, "neq 1");
+        assert.isFalse(false ~= false, "neq 2");
+        assert.isTrue(true ~= false, "neq 3");
+        assert.isTrue(true ~= false, "neq 4");
+    end
+
+    @Fact()
+    public function compareObjectReferences() : void
+        var o1 : object, o2 : object, o3 : object, o4 : object;
+
+        o1 = new object();
+        o2 = o1;
+        o3 = new object();
+        o4 = nil;
+
+        assert.isTrue(o1 == o2, "object 1");
+        assert.isTrue(o4 == nil, "object 2");
+        assert.isFalse(o1 ~= o2, "object 3");
+        assert.isFalse(o4 ~= nil, "object 4");
+
+        assert.isTrue(o1 ~= o3, "object 5");
+        assert.isTrue(o1 ~= nil, "object 6");
+        assert.isTrue(o1 ~= o4, "object 7");
+        assert.isFalse(o1 == o3, "object 8");
+        assert.isFalse(o1 == nil, "object 9");
+        assert.isFalse(o1 == o4, "object 10");
+    end
+
+    @Fact()
+    public function compareArrayReferences() : void
+        var a1 : int[], a2 : int[], a3 : int[], a4 : int[];
+
+        a1 = new int[1];
+        a4 = nil;
+
+        assert.isTrue(a4 == nil, "array 1");
+        assert.isFalse(a4 ~= nil, "array 2");
+
+        assert.isTrue(a1 ~= nil, "array 3");
+        assert.isFalse(a1 == nil, "array 4");
+    end
+
+    @Fact()
+    public function logicalNot() : void
+        assert.isTrue(not false, "1");
+        assert.isFalse(not true, "2");
+    end
+
+    @Fact()
+    public function logicalAnd() : void
+        assert.isTrue(true and true, "1");
+        assert.isFalse(true and false, "2");
+        assert.isFalse(false and true, "3");
+        assert.isFalse(false and false, "4");
+    end
+
+    var logicalSecondArgumentCalled : boolean;
+
+    private function logicalSecondArgument(b : boolean) : boolean
+        logicalSecondArgumentCalled = true;
+        return b;
+    end
+
+    @Fact()
+    public function logicalSkipSecondArgument() : void
+        logicalSecondArgumentCalled = false;
+        assert.isFalse(false and logicalSecondArgument(false), "false and result");
+        assert.isFalse(logicalSecondArgumentCalled, "false and called");
+
+        logicalSecondArgumentCalled = false;
+        assert.isTrue(true or logicalSecondArgument(false), "true or result");
+        assert.isFalse(logicalSecondArgumentCalled, "true or called");
+
+        logicalSecondArgumentCalled = false;
+        assert.isFalse(true and logicalSecondArgument(false), "true and result");
+        assert.isTrue(logicalSecondArgumentCalled, "false and called");
+
+        logicalSecondArgumentCalled = false;
+        assert.isTrue(false or logicalSecondArgument(true), "false or result");
+        assert.isTrue(logicalSecondArgumentCalled, "false or called");
+
+    end
+
+    @Fact()
+    public function logicalOr() : void
+        assert.isTrue(true or true, "1");
+        assert.isTrue(true or false, "2");
+        assert.isTrue(false or true, "3");
+        assert.isFalse(false or false, "4");
+    end
+
+    @Fact()
+    public function logicalPriority() : void
+        assert.isTrue(false or true and true, "1");
+        assert.isTrue(false and true or true, "2");
+    end
+end
+

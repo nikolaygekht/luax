@@ -1,0 +1,21 @@
+﻿class test
+   public static function stringMaker(str : string, strRep : int, rep : int) : string
+      var i : int, j : int, substr : string, resStr : string;
+      i = rep;
+      resStr = "";
+      repeat
+        j = strRep;
+        substr = "";
+        repeat
+           substr = substr .. str;
+           j = j - 1;
+        until j > 0
+        if i < rep then
+           resStr = resStr .. "_";
+        end
+        resStr = resStr .. substr;
+        i = i - 1;
+      until i > 0
+      return resStr;
+   end
+end

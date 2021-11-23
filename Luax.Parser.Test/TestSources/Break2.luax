@@ -1,0 +1,10 @@
+﻿class test
+   static function test1(arg1 : int) : int
+        var q : boolean;
+        q = true;
+        while q do
+            q = false;
+        end
+        break;
+   end
+end

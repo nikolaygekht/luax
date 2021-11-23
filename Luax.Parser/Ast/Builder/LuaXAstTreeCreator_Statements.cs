@@ -14,12 +14,19 @@ namespace Luax.Parser.Ast.Builder
     internal partial class LuaXAstTreeCreator
     {
         /// <summary>
+        /// Depth of nested loops
+        /// </summary>
+        private int mLoopDepth;
+        /// <summary>
         /// Processes the method body
         /// </summary>
         /// <param name="node"></param>
         /// <param name="method"></param>
         public void ProcessBody(IAstNode node, LuaXClass @class, LuaXMethod method)
-            => ProcessStatements(node.Children, @class, method, method.Statements);
+        {
+            mLoopDepth = 0;
+            ProcessStatements(node.Children, @class, method, method.Statements);
+        }
 
         private void ProcessStatements(IReadOnlyList<IAstNode> nodes, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
         {
@@ -46,13 +53,87 @@ namespace Luax.Parser.Ast.Builder
                     case "IF_STMT":
                         ProcessesIfStatement(child, @class, method, statements);
                         break;
+                    case "TRY_STMT":
+                        ProcessTryStatement(child, @class, method, statements);
+                        break;
+                    case "THROW_STMT":
+                        ProcessThrowStatement(child, @class, method, statements);
+                        break;
                     case "RETURN_STMT":
                         ProcessesReturnStatement(child, @class, method, statements);
+                        break;
+                    case "REPEAT_STMT":
+                        ProcessesRepeatStatement(child, @class, method, statements);
+                        break;
+                    case "WHILE_STMT":
+                        ProcessesWhileStatement(child, @class, method, statements);
+                        break;
+                    case "BREAK_STMT":
+                        ProcessesBreakStatement(child, statements);
+                        break;
+                    case "CONTINUE_STMT":
+                        ProcessesContinueStatement(child, statements);
                         break;
                     default:
                         throw new LuaXAstGeneratorException(Name, child, $"Unexpected symbol {child.Symbol}");
                 }
             }
+        }
+
+        private void ProcessThrowStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        {
+            if (node.Children.Count == 3 && node.Children[1].Symbol != "REXPR")
+                throw new LuaXAstGeneratorException(Name, node, "Expression is expected here");
+
+            var throwExpr = ProcessExpression(node.Children[1], @class, method);
+
+            if (!throwExpr.ReturnType.IsObject() || !Metadata.IsKindOf(throwExpr.ReturnType.Class, "exception"))
+                throw new LuaXAstGeneratorException(Name, node, "Expression with return type exception is expected here");
+
+            var throwStmt = new LuaXThrowStatement(throwExpr, new LuaXElementLocation(Name, node));
+
+            statements.Add(throwStmt);
+        }
+
+        private LuaXCatchClause ProcessCatchClause(IAstNode node, LuaXClass @class, LuaXMethod method)
+        {
+            if (node.Children.Count < 3 || node.Children[1].Symbol != "IDENTIFIER" ||
+                !method.Variables.Search(node.Children[1].Value, out var v1) || v1 == null ||
+                !Metadata.IsKindOf(v1.LuaType.Class, "exception"))
+                throw new LuaXAstGeneratorException(Name, node, "Identifier of declared variable of type exception is expected here");
+
+            var catchClause = new LuaXCatchClause(node.Children[1].Value, new LuaXElementLocation(Name, node));
+            ProcessStatements(node.Children[2].Children, @class, method, catchClause.CatchStatements);
+            return catchClause;
+        }
+
+        private void ProcessTryStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        {
+            if (node.Children.Count < 3 || node.Children[2].Symbol != "CATCH_CLAUSE")
+                throw new LuaXAstGeneratorException(Name, node, "Catch clause is expected here");
+
+            var tryStatements = new LuaXStatementCollection();
+            LuaXCatchClause catchClause = null;
+            foreach (var child in node.Children)
+            {
+                if (child.Symbol == "END")
+                    break;
+
+                switch (child.Symbol)
+                {
+                    case "STATEMENTS":
+                        ProcessStatements(child.Children, @class, method, tryStatements);
+                        break;
+                    case "CATCH_CLAUSE":
+                        catchClause = ProcessCatchClause(node.Children[2], @class, method);
+                        break;
+                    default:
+                        continue;
+                }
+            }
+
+            var stmt = new LuaXTryStatement(new LuaXElementLocation(Name, node), catchClause, tryStatements);
+            statements.Add(stmt);
         }
 
         private void ProcessDeclarationStatement(IAstNode node, LuaXMethod method)
@@ -102,8 +183,26 @@ namespace Luax.Parser.Ast.Builder
                 stmt = new LuaXAssignInstancePropertyStatement(e3.Object, e3.PropertyName, source, location);
             else if (target is LuaXArrayAccessExpression e4)
                 stmt = new LuaXAssignArrayItemStatement(e4.ArrayExpression, e4.IndexExpression, source, location);
+            else if (target is LuaXInstanceCallExpression e5 && e5.MethodName == "get" &&
+                e5.Arguments.Count == 1 &&
+                e5.ReturnType.IsTheSame(source.ReturnType))
+            {
+                Metadata.Search(e5.Object.ReturnType.Class, out var @class1);
+                var found = class1.SearchMethod("set", out var @method1);
+                if (!found || method1.Static || method1.Visibility == LuaXVisibility.Private ||
+                    !method1.ReturnType.IsVoid() ||
+                     method1.Arguments.Count != 2 ||
+                    !method1.Arguments[0].LuaType.IsTheSame(e5.Arguments[0].ReturnType) ||
+                    !method1.Arguments[1].LuaType.IsTheSame(source.ReturnType))
+                    throw new LuaXAstGeneratorException(Name, node, $"The class {class1.Name} does not have public instance method set({e5.Arguments[0].ReturnType}, {source.ReturnType}) : void");
+
+                var expr = new LuaXInstanceCallExpression(LuaXTypeDefinition.Void, e5.Object, "set", null, location);
+                expr.Arguments.Add(e5.Arguments[0]);
+                expr.Arguments.Add(source);
+                stmt = new LuaXCallStatement(expr, location);
+            }
             else
-                throw new LuaXAstGeneratorException(Name, node, "Assigned the target specified is not supported");
+                throw new LuaXAstGeneratorException(Name, node, "Assign to the target specified is not supported");
             statements.Add(stmt);
         }
 
@@ -130,7 +229,101 @@ namespace Luax.Parser.Ast.Builder
             else if (targetType.IsObject() && expression.ReturnType.IsObject() && Metadata.IsKindOf(expression.ReturnType.Class, targetType.Class))
                 return expression.CastTo(targetType);
 
+            return FindCustomCast(expression, targetType);
+        }
+
+        private static bool IsMethodACastCandidate(LuaXMethod method, LuaXTypeDefinition targetType, LuaXTypeDefinition sourceType)
+        {
+            return method.Visibility != LuaXVisibility.Private &&
+                   method.Static &&
+                   method.ReturnType.IsTheSame(targetType) &&
+                   method.Arguments.Count == 1 &&
+                   method.Arguments[0].LuaType.IsTheSame(sourceType);
+        }
+
+        private LuaXExpression FindCustomCast(LuaXExpression expression, LuaXTypeDefinition targetType)
+        {
+            LuaXClass castClass = null;
+            LuaXMethod castMethod = null;
+
+            //try to find custom cast
+            foreach (var @class in Metadata)
+            {
+                if (!@class.Attributes.Any(attribute => attribute.Name == "Cast"))
+                    continue;
+                castMethod = @class.Methods.FirstOrDefault(method => IsMethodACastCandidate(method, targetType, expression.ReturnType));
+                if (castMethod != null)
+                {
+                    castClass = @class;
+                    break;
+                }
+            }
+
+            if (castClass != null)
+            {
+                var expr = new LuaXStaticCallExpression(targetType, castClass.Name, castMethod.Name, expression.Location);
+                expr.Arguments.Add(expression);
+                return expr;
+            }
+
+            if (expression.ReturnType.IsObject())
+                return FindCustomCastForObject(expression, targetType);
+
             return null;
+        }
+
+        private LuaXExpression FindCustomCastForObject(LuaXExpression expression, LuaXTypeDefinition targetType)
+        {
+            LuaXClass parent = null;
+            if (expression is LuaXConstantExpression c && c.Value.IsNil)
+                parent = LuaXClass.Object;
+            else
+            {
+                if (Metadata.Search(expression.ReturnType.Class, out var @class))
+                    parent = @class.ParentClass;
+            }
+            if (parent != null)
+                return FindCustomCastForParent(expression, parent, targetType);
+
+            return null;
+        }
+
+        private LuaXExpression FindCustomCastForParent(LuaXExpression expression, LuaXClass targetClass, LuaXTypeDefinition targetType)
+        {
+            if (targetClass == null)
+                return null;
+
+            var sourceType = new LuaXTypeDefinition()
+            {
+                TypeId = LuaXType.Object,
+                Class = targetClass.Name
+            };
+
+            LuaXClass castClass = null;
+            LuaXMethod castMethod = null;
+
+            //try to find custom cast
+            foreach (var @class in Metadata)
+            {
+                if (!@class.Attributes.Any(attribute => attribute.Name == "Cast"))
+                    continue;
+
+                castMethod = @class.Methods.FirstOrDefault(method => IsMethodACastCandidate(method, targetType, sourceType));
+                if (castMethod != null)
+                {
+                    castClass = @class;
+                    break;
+                }
+            }
+
+            if (castClass != null)
+            {
+                var expr = new LuaXStaticCallExpression(targetType, castClass.Name, castMethod.Name, expression.Location);
+                expr.Arguments.Add(expression);
+                return expr;
+            }
+
+            return FindCustomCastForParent(expression, targetClass.ParentClass, targetType);
         }
 
         /// <summary>
@@ -208,6 +401,126 @@ namespace Luax.Parser.Ast.Builder
         }
 
         /// <summary>
+        /// Processes WHILE statement
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        /// <param name="method"></param>
+        /// <param name="statements"></param>
+        private void ProcessesWhileStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        {
+            LuaXElementLocation location = new LuaXElementLocation(Name, node);
+            LuaXExpression condition = null;
+            IAstNode body = null;
+
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "END")
+                    break;
+                if (child.Symbol == "WHILE" || child.Symbol == "DO")
+                    continue;
+                if (child.Symbol == "STATEMENTS")
+                    body = child;
+                if (child.Symbol == "EXPR")
+                    condition = ProcessExpression(child, @class, method);
+            }
+
+            if (condition != null)
+            {
+                if (!condition.ReturnType.IsBoolean())
+                    throw new LuaXAstGeneratorException(Name, new LuaXParserError(condition.Location, "The while condition should be a boolean expression"));
+            }
+            else
+                throw new LuaXAstGeneratorException(Name, new LuaXParserError(location, "The while condition should be in while statement"));
+
+            LuaXWhileStatement stmt = new LuaXWhileStatement(location, condition);
+
+            if (body != null)
+            {
+                mLoopDepth++;
+                ProcessStatements(body.Children, @class, method, stmt.Statements);
+                mLoopDepth--;
+            }
+
+            statements.Add(stmt);
+        }
+
+        /// <summary>
+        /// Processes REPEAT statement
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        /// <param name="method"></param>
+        /// <param name="statements"></param>
+        private void ProcessesRepeatStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        {
+            LuaXElementLocation location = new LuaXElementLocation(Name, node);
+            LuaXExpression condition = null;
+            IAstNode body = null;
+
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "REPEAT" || child.Symbol == "UNTIL")
+                    continue;
+                if (child.Symbol == "STATEMENTS")
+                    body = child;
+                if (child.Symbol == "EXPR")
+                    condition = ProcessExpression(child, @class, method);
+            }
+
+            if (condition != null)
+            {
+                if (!condition.ReturnType.IsBoolean())
+                    throw new LuaXAstGeneratorException(Name, new LuaXParserError(condition.Location, "The until condition should be a boolean expression"));
+            }
+            else
+                throw new LuaXAstGeneratorException(Name, new LuaXParserError(location, "The until condition should be in repeat statement"));
+
+            LuaXRepeatStatement stmt = new LuaXRepeatStatement(location, condition);
+
+            if (body != null)
+            {
+                mLoopDepth++;
+                ProcessStatements(body.Children, @class, method, stmt.Statements);
+                mLoopDepth--;
+            }
+
+            statements.Add(stmt);
+        }
+
+        /// <summary>
+        /// Processes BREAK statement
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        /// <param name="method"></param>
+        /// <param name="statements"></param>
+        private void ProcessesBreakStatement(IAstNode node, LuaXStatementCollection statements)
+        {
+            LuaXBreakStatement stmt = new LuaXBreakStatement(new LuaXElementLocation(Name, node));
+            if (mLoopDepth <= 0)
+                throw new LuaXAstGeneratorException(Name, new LuaXParserError(stmt.Location, "The break statement is not in a loop"));
+            statements.Add(stmt);
+        }
+
+        /// <summary>
+        /// Processes CONTINUE statement
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        /// <param name="method"></param>
+        /// <param name="statements"></param>
+        private void ProcessesContinueStatement(IAstNode node, LuaXStatementCollection statements)
+        {
+            LuaXContinueStatement stmt = new LuaXContinueStatement(new LuaXElementLocation(Name, node));
+            if (mLoopDepth <= 0)
+                throw new LuaXAstGeneratorException(Name, new LuaXParserError(stmt.Location, "The continue statement is not in a loop"));
+            statements.Add(stmt);
+        }
+
+        /// <summary>
         /// Processes RETURN statement
         /// </summary>
         /// <param name="node"></param>
@@ -238,7 +551,7 @@ namespace Luax.Parser.Ast.Builder
         public void ProcessConstantDeclarationInMethod(IAstNode node, LuaXMethod method)
         {
             var decl = ProcessConstantDeclaration(node);
-            
+
             if (method.Constants.Contains(decl.Name))
                 throw new LuaXAstGeneratorException(Name, node, "The constant with the name specified is already defined");
 

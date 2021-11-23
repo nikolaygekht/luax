@@ -189,9 +189,11 @@ namespace Luax.Interpreter.Test
             instance.Properties["p"].Value = 2;
             instance.Properties["i"].Value = 3;
 
-            var variables = new LuaXVariableInstanceSet();
-            variables.Add(@class.LuaType.TypeOf(), "this", instance);
-            variables.Add(LuaXTypeDefinition.String, "x", "abc");
+            var variables = new LuaXVariableInstanceSet
+            {
+                { @class.LuaType.TypeOf(), "this", instance },
+                { LuaXTypeDefinition.String, "x", "abc" }
+            };
 
             var arr = new LuaXVariableInstanceArray(LuaXTypeDefinition.Integer.ArrayOf(), 10);
             for (int i = 0; i < 10; i++)
@@ -279,6 +281,49 @@ namespace Luax.Interpreter.Test
         [InlineData("real", "stdlib.seconds(stdlib.mkdatetime(2021, 10, 15, 22, 15, 47, 125))", 47.125, typeof(double))]
         [InlineData("real", "stdlib.toJdn(stdlib.mkdatetime(2021, 10, 29, 13, 07, 35, 245))", 2459517.546935706018518, typeof(double))]
         [InlineData("datetime", "stdlib.fromJdn(2459517.5)", "2021-10-29 12:00:00", typeof(DateTime))]
+
+        //string functions
+        [InlineData("int", "stdlib.len(\"string\")", 6, typeof(int))]
+        [InlineData("int", "stdlib.indexOf(\"string\", \"i\", false)", 3, typeof(int))]
+        [InlineData("int", "stdlib.indexOf(\"string\", \"I\", false)", -1, typeof(int))]
+        [InlineData("int", "stdlib.indexOf(\"string\", \"I\", true)", 3, typeof(int))]
+        [InlineData("string", "stdlib.left(\"string\", 3)", "str", typeof(string))]
+        [InlineData("string", "stdlib.trim(\" string    \")", "string", typeof(string))]
+        [InlineData("string", "stdlib.right(\"string\", 3)", "ing", typeof(string))]
+        [InlineData("string", "stdlib.substring(\"string\", 2, 2)", "ri", typeof(string))]
+        [InlineData("boolean", "stdlib.match(\"string\", \"^[\\\\w]*$\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"string\", \"^[\\\\d]*$\")", false, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"string\", \"i\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"string\", \"/i/\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"string\", \"/I/\")", false, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"string\", \"/I/i\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"str\\ning\", \"/^i/\")", false, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"str\\ning\", \"/^i/m\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"str ing\", \"/\\\\si/\")", true, typeof(bool))]
+        [InlineData("boolean", "stdlib.match(\"str\\ning\", \"/\\\\si/s\")", true, typeof(bool))]
+        [InlineData("int", "stdlib.unicode(\"s\", 0)", 115, typeof(int))]
+        [InlineData("string", "stdlib.char(115)", "s", typeof(string))]
+        [InlineData("int", "stdlib.lastIndexOf(\"aba\", \"a\", false)", 2, typeof(int))]
+        [InlineData("int", "stdlib.lastIndexOf(\"aba\", \"A\", false)", -1, typeof(int))]
+        [InlineData("int", "stdlib.lastIndexOf(\"abaa\", \"A\", true)", 3, typeof(int))]
+        [InlineData("string", "stdlib.upper(\"aBаБ\")", "ABАБ", typeof(string))]
+        [InlineData("string", "stdlib.lower(\"aBаБ\")", "abаб", typeof(string))]
+        [InlineData("int", "bitwise._and(0, 0)", 0, typeof(int))]
+        [InlineData("int", "bitwise._and(0, 1)", 0, typeof(int))]
+        [InlineData("int", "bitwise._and(1, 0)", 0, typeof(int))]
+        [InlineData("int", "bitwise._and(1, 1)", 1, typeof(int))]
+        [InlineData("int", "bitwise._or(0, 0)", 0, typeof(int))]
+        [InlineData("int", "bitwise._or(0, 1)", 1, typeof(int))]
+        [InlineData("int", "bitwise._or(1, 0)", 1, typeof(int))]
+        [InlineData("int", "bitwise._or(1, 1)", 1, typeof(int))]
+        [InlineData("int", "bitwise._xor(0, 0)", 0, typeof(int))]
+        [InlineData("int", "bitwise._xor(0, 1)", 1, typeof(int))]
+        [InlineData("int", "bitwise._xor(1, 0)", 1, typeof(int))]
+        [InlineData("int", "bitwise._xor(1, 1)", 0, typeof(int))]
+        [InlineData("int", "bitwise._not(0)", -1, typeof(int))]
+        [InlineData("int", "bitwise._not(1)", -2, typeof(int))]
+        [InlineData("int", "bitwise._shl(0x07ff_ffff, 4)", 0x7fff_fff0, typeof(int))]
+        [InlineData("int", "bitwise._shr(0xffff_ffff, 4)", 0x0fff_ffff, typeof(int))]
         public void TestStdlib(string @return, string expr, object expectedValue, Type expectedType)
         {
             expectedValue = TestValue.Translate(expectedType, expectedValue);
@@ -364,42 +409,5 @@ namespace Luax.Interpreter.Test
             r.Should().BeOfType<int>();
             r.Should().Be(expectedValue);
         }
-        
-        [Theory]
-        //string functions
-        [InlineData("int", "stdlib.len(\"string\")", 6, typeof(int))]
-        [InlineData("int", "stdlib.indexOf(\"string\", \"i\")", 3, typeof(int))]
-        [InlineData("string", "stdlib.left(\"string\", 3)", "str", typeof(string))]
-        [InlineData("string", "stdlib.trim(\" string    \")", "string", typeof(string))]
-        [InlineData("string", "stdlib.right(\"string\", 3)", "ing", typeof(string))]
-        [InlineData("string", "stdlib.substring(\"string\", 2, 2)", "ri", typeof(string))]
-        [InlineData("boolean", "stdlib.match(\"string\", \"^[\\\\w]*$\")", true, typeof(bool))]
-        [InlineData("boolean", "stdlib.match(\"string\", \"^[\\\\d]*$\")", false, typeof(bool))]
-        [InlineData("int", "stdlib.unicode(\"s\")", 115, typeof(int))]
-        [InlineData("string", "stdlib.char(115)", "s", typeof(string))]
-        [InlineData("string[]", "stdlib.parse(\"some small text\", \"[\\\\w]+\")", new[] {"some", "small", "text"}, typeof(string[]))]
-        public void TestStdlibString(string @return, string expr, object expectedValue, Type expectedType)
-        {
-            expectedValue = TestValue.Translate(expectedType, expectedValue);
-
-            var app = new LuaXApplication();
-            app.CompileResource("Stdlibtest", new Tuple<string, string>[]
-            {
-                new Tuple<string, string>("$return", @return),
-                new Tuple<string, string>("$expr", expr)
-            });
-            app.Pass2();
-            var typelib = new LuaXTypesLibrary(app);
-
-            typelib.SearchClass("test", out var @class);
-            @class.Should().NotBeNull();
-            @class.SearchMethod("f", null, out var method);
-
-            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
-            r.Should().BeEquivalentTo(expectedValue);
-        }
     }
 }
-
-
-

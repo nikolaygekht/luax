@@ -27,7 +27,6 @@ class inheritanceTestB : inheritanceTestA
 
     -- constructor
     public function inheritanceTestB() : void
-        super.inheritanceTestA();
         propertyB = "initB";
     end
 

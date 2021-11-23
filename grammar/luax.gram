@@ -22,7 +22,7 @@ grammar LuaX
 
         HEX_INTEGER -> '0' 'x' [0-9A-Fa-f] [0-9A-Fa-f_]* [0-9A-Fa-f]?;
 
-        REAL -> [0-9] [0-9_]* [0-9]? '.' [0-9_]* [0-9]? ([Ee] ('+'|'-')? [0-9] [0-9_]*)?; 
+        REAL -> [0-9] [0-9_]* [0-9]? '.' [0-9_]* [0-9]? ([Ee] ('+'|'-')? [0-9] [0-9_]*)?;
 
         STRINGDQ -> '"' ( (. - ('"' | '\\')) |
                                ('\\' ('"' | '\\' | 'r' | 'n' | 'b' | 't')) |
@@ -55,7 +55,7 @@ grammar LuaX
                     STRING |
                     INTEGER |
                     HEX_INTEGER |
-                    NEGATIVE_INTEGER | 
+                    NEGATIVE_INTEGER |
                     REAL |
                     NEGATIVE_REAL;
 
@@ -73,13 +73,12 @@ grammar LuaX
 
         TYPE_CLASS -> IDENTIFIER;
 
-
         TYPE_NAME -> TYPE_INT |
                      TYPE_REAL |
                      TYPE_BOOLEAN |
                      TYPE_STRING |
                      TYPE_DATETIME |
-                     TYPE_VOID | 
+                     TYPE_VOID |
                      IDENTIFIER;
 
         TYPE_DECL -> TYPE_NAME ARRAY_DECL?;
@@ -133,16 +132,16 @@ grammar LuaX
 
         CALLABLE_EXPR -> ASSIGN_TARGET |
                          METHOD |
-                         CALL | 
+                         CALL |
                          BRACKET_EXPR;
 
-        BRACKET_EXPR -> L_ROUND_BRACKET EXPR R_ROUND_BRACKET;
+        BRACKET_EXPR -> L_ROUND_BRACKET REXPR R_ROUND_BRACKET;
 
-        ARRAY_ACCESS -> REXPR L_SQUARE_BRACKET REXPR R_SQUARE_BRACKET;
+        ARRAY_ACCESS -> CALLABLE_EXPR L_SQUARE_BRACKET REXPR R_SQUARE_BRACKET;
 
         SIMPLE_EXPR -> CONSTANT |
                        CALLABLE_EXPR |
-                       BRACKET_EXPR | 
+                       BRACKET_EXPR |
                        ARRAY_ACCESS;
 
         MINUS_OP -> '-';
@@ -185,7 +184,7 @@ grammar LuaX
                     ADD_EXPR MINUS_OP^ MUL_EXPR;
 
         EQ_OP -> '==';
-        NEQ_OP -> '~=';
+        NEQ_OP -> '~=' | '!=';
         GT_OP -> '>';
         GE_OP -> '>=';
         LT_OP -> '<';
@@ -238,11 +237,15 @@ grammar LuaX
 
         END -> 'end';
 
-        CATCH_STMT -> CATCH IDENTIFIER STATEMENTS;
+        CATCH_CLAUSE -> CATCH IDENTIFIER STATEMENTS;
 
         TRY -> 'try';
 
-        TRY_STMT -> TRY STATEMENTS CATCH_STMT END;
+        TRY_STMT -> TRY STATEMENTS CATCH_CLAUSE END;
+
+        THROW -> 'throw';
+
+        THROW_STMT -> THROW REXPR EOS;
 
         CALL_STMT -> CALL EOS;
 
@@ -251,9 +254,9 @@ grammar LuaX
         ELSE -> 'else';
         ELSEIF -> 'elseif';
 
-        ELSEIF_CLAUSE -> ELSEIF EXPR THEN STATEMENTS ;
+        ELSEIF_CLAUSE -> ELSEIF EXPR THEN STATEMENTS;
 
-        ELSE_CLAUSE -> ELSE STATEMENTS ;
+        ELSE_CLAUSE -> ELSE STATEMENTS;
 
         IF_CLAUSE -> IF EXPR THEN STATEMENTS;
 
@@ -292,7 +295,7 @@ grammar LuaX
         CONTINUE_STMT -> CONTINUTE EOS;
 
         STATEMENT -> DECLARATION |
-                     CONST_DECLARATION | 
+                     CONST_DECLARATION |
                      ASSIGN_STMT |
                      RETURN_STMT |
                      CALL_STMT |
@@ -304,6 +307,7 @@ grammar LuaX
                      BREAK_STMT |
                      CONTINUE_STMT |
                      TRY_STMT |
+                     THROW_STMT |
                      NOP;
 
         STATEMENTS -> STATEMENT* ;
@@ -334,18 +338,20 @@ grammar LuaX
 
         EXTERN -> 'extern';
 
-        EXTERN_DECLARATION -> VISIBILITY? STATIC? EXTERN IDENTIFIER FUNCTION_DECLARATION_ARGS ':'! TYPE_DECL EOS;
+        EXTERN_DECLARATION -> ATTRIBUTES? VISIBILITY? STATIC? EXTERN IDENTIFIER FUNCTION_DECLARATION_ARGS ':'! TYPE_DECL EOS;
 
         PARENT_CLASS -> COLON IDENTIFIER;
 
-        PROPERTY -> VISIBILITY? STATIC? DECLARATION;
+        PROPERTY -> ATTRIBUTES? VISIBILITY? STATIC? DECLARATION;
 
-        CLASS_ELEMENT -> PROPERTY | CONST_DECLARATION | FUNCTION_DECLARATION | EXTERN_DECLARATION;
+        CLASS_CONST_DECLARATION ->  ATTRIBUTES? CONST_DECLARATION;
+
+        CLASS_ELEMENT -> PROPERTY | CLASS_CONST_DECLARATION | FUNCTION_DECLARATION | EXTERN_DECLARATION;
 
         CLASS -> 'class';
 
         CLASS_DECLARATION -> ATTRIBUTES? CLASS IDENTIFIER PARENT_CLASS? CLASS_ELEMENT* END;
-        
+
         ROOT -> CLASS_DECLARATION*;
     }
 }

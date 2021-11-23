@@ -6,14 +6,12 @@
 
   <ItemGroup>
     <None Remove="Resources\stdlib.luax" />
+    <None Remove="Resources\typeslib.luax" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\stdlib.luax" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\.editorconfig" Link=".editorconfig" />
+    <EmbeddedResource Include="Resources\typeslib.luax" />
   </ItemGroup>
 
   <ItemGroup>

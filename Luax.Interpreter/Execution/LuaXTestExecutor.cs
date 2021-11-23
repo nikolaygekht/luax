@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Luax.Interpreter.Expression;
@@ -50,6 +51,40 @@ namespace Luax.Interpreter.Execution
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static string ProcessTheoryParams(LuaXAttribute attribute, List<object> args)
+        {
+            var sb = new StringBuilder();
+            foreach (var p in attribute.Parameters.Select(p => p.Value))
+            {
+                if (sb.Length > 0)
+                    sb.Append(", ");
+                if (p == null)
+                    sb.Append("nil");
+                else if (p is int i)
+                    sb.Append(i);
+                else if (p is double v)
+                    sb.Append(v);
+                else if (p is bool b)
+                    sb.Append(b ? "true" : "false");
+                else if (p is string s)
+                    sb.Append('"').Append(s).Append('"');
+                args.Add(p);
+            }
+
+            return sb.ToString();
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsTheoryArgumentValid(object arg, LuaXTypeDefinition type)
+        {
+            return (arg == null && type.IsString()) ||
+                          (arg is string && type.IsString()) ||
+                          (arg is bool && type.IsBoolean()) ||
+                          (arg is int && type.IsInteger()) ||
+                          (arg is double && type.IsReal());
+        }
+
         private bool RunTheory(LuaXClassInstance @class, LuaXMethod method)
         {
             if (method.Arguments.Count == 0 || !method.ReturnType.IsVoid() || method.Static)
@@ -62,26 +97,8 @@ namespace Luax.Interpreter.Execution
 
             foreach (var attribute in method.Attributes.Where(a => a.Name == "TheoryData"))
             {
-                StringBuilder sb = new StringBuilder();
                 List<object> args = new List<object>();
-                foreach (var p in attribute.Parameters)
-                {
-                    if (sb.Length > 0)
-                        sb.Append(", ");
-                    if (p.Value == null)
-                        sb.Append("nil");
-                    else if (p.Value is int i)
-                        sb.Append(i);
-                    else if (p.Value is double v)
-                        sb.Append(v);
-                    else if (p.Value is bool b)
-                        sb.Append(b ? "true" : "false");
-                    else if (p.Value is string s)
-                        sb.Append('"').Append(s).Append('"');
-                    args.Add(p.Value);
-                }
-
-                var argsText = sb.ToString();
+                var argsText = ProcessTheoryParams(attribute, args);
 
                 if (args.Count != method.Arguments.Count)
                 {
@@ -93,17 +110,14 @@ namespace Luax.Interpreter.Execution
                 bool matchargs = true;
                 for (int i = 0; i < args.Count; i++)
                 {
-                    if (!((args[i] == null && method.Arguments[i].LuaType.IsString()) ||
-                          (args[i] is string && method.Arguments[i].LuaType.IsString()) ||
-                          (args[i] is bool && method.Arguments[i].LuaType.IsBoolean()) ||
-                          (args[i] is int && method.Arguments[i].LuaType.IsInteger()) ||
-                          (args[i] is double && method.Arguments[i].LuaType.IsReal())))
+                    if (!IsTheoryArgumentValid(args[i], method.Arguments[i].LuaType))
                     {
                         OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Incorrect, $"The theory data {i + 1}th argument type is does not match to the theory argument type"));
                         success = false;
                         matchargs = false;
                     }
                 }
+
                 if (matchargs)
                     success &= RunCase(@class, method, args.ToArray(), argsText);
             }
@@ -112,7 +126,6 @@ namespace Luax.Interpreter.Execution
 
         private bool RunFact(LuaXClassInstance @class, LuaXMethod method)
         {
-            
             if (method.Arguments.Count != 0 || !method.ReturnType.IsVoid() || method.Static)
             {
                 OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, LuaXTestStatus.Incorrect, "The fact method should be an instance method and should have void return type and no arguments"));
@@ -122,18 +135,12 @@ namespace Luax.Interpreter.Execution
             return RunCase(@class, method, Array.Empty<object>(), "");
         }
 
-        private bool RunCase(LuaXClassInstance @class, LuaXMethod method, object[] args, string argsText)
+        private bool RunStep(Func<bool> action, LuaXClassInstance @class, LuaXMethod method, string argsText)
         {
-            TotalTests++;
             bool success = true;
-
             try
             {
-                var @this = @class.New(TypesLibrary);
-                LuaXMethodExecutor.Execute(method, TypesLibrary, @this, args, out var _);
-                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.OK, ""));
-                SuccessfullTests++;
-                success = true;
+                success = action();
             }
             catch (LuaXAssertionException assertion)
             {
@@ -143,14 +150,10 @@ namespace Luax.Interpreter.Execution
             catch (LuaXExecutionException executionException)
             {
                 if (executionException.InnerException is LuaXAssertionException assertionException1)
-                {
                     OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Assert, $"Assertion: {assertionException1.Message}", executionException));
-                }
                 else
-                {
                     OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Exception, $"Exception: {executionException.Message}", executionException));
-                    success = false;
-                }
+                success = false;
             }
             catch (LuaXAstGeneratorException error)
             {
@@ -162,6 +165,46 @@ namespace Luax.Interpreter.Execution
                 OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.Exception, $"Unexpected exception {exception.GetType().Name}: {exception.Message}", exception));
                 success = false;
             }
+            return success;
+        }
+
+        private bool RunCase(LuaXClassInstance @class, LuaXMethod method, object[] args, string argsText)
+        {
+            TotalTests++;
+            bool success = true;
+            LuaXObjectInstance @this = null;
+
+            success = RunStep(() =>
+            {
+                @this = @class.New(TypesLibrary);
+                return true;
+            }, @class, method, argsText);
+
+            if (success)
+            {
+                success = RunStep(() =>
+                {
+                    LuaXMethodExecutor.Execute(method, TypesLibrary, @this, args, out var _);
+                    return true;
+                }, @class, method, argsText);
+            }
+
+            if (success)
+            {
+                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.OK, ""));
+                SuccessfullTests++;
+            }
+
+            var finalizer = @class.LuaType.Methods.FirstOrDefault(m => m.Attributes.Any(a => a.Name == "TearDown"));
+            if (finalizer != null)
+            {
+                success = RunStep(() =>
+                {
+                    LuaXMethodExecutor.Execute(finalizer, TypesLibrary, @this, Array.Empty<object>(), out var _);
+                    return true;
+                }, @class, finalizer, argsText);
+            }
+
             return success;
         }
     }

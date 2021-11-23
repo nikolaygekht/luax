@@ -1,0 +1,19 @@
+﻿class test
+    public static function test1() : void
+        throw exception.create(-1, "exception from the factory");
+    end
+
+    public static function getError() : exception
+        return exception.create(-2, "exception from the static call");
+    end
+
+    public static function test2() : void
+        throw getError();
+    end
+
+    public static function test3() : void
+        var ex : exception;
+        ex = exception.create(-3, "exception from the variable");
+        throw ex;
+    end
+end

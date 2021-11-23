@@ -7,13 +7,13 @@
     <type name="luax">
         <annotation>
             <documentation><![CDATA[
-                LuaX 5.1 Syntax
-                See https://github.com/nikolaygekht/luax
-                for details
+                Lua 5.1 Syntax 0.2 ftp://ftp.velest.ru
+                Lua http://www.lua.org
+                <filename>/\.(lua)$/i</filename>
                 Depends on C scheme
             ]]></documentation>
             <contributors>
-                Nikolay Gekht
+                Serj Che
             </contributors>
         </annotation>
 
@@ -36,8 +36,8 @@
            <block start="/(\()/" end="/(\))/" scheme="luax" region00="Symbol" region01="def:PairStart" region10="Symbol" region11="def:PairEnd" />
            <block start="/(\[)/" end="/(\])/" scheme="luax" region00="Symbol" region01="def:PairStart" region10="Symbol" region11="def:PairEnd" />
 
-            <inherit scheme="def:Number"/>
-
+           <regexp match="/\b0[xX][0-9a-fA-F]([0-9a-fA-F_]*[0-9a-fA-F])?\b/" region="Number" />
+           <regexp match="/\b[\d]([\d_]*[\d])?(\.[\d]([\d_]*[\d])?(e[+-]?\d+))?\b/" region="Number" />
 
             <block start="/\b(?{Outline}(?{PairStart}(?{Keyword}class))\b\s*\M\S*\s*\()/"
                          end="/\b(?{PairEnd}(?{Keyword}end))\b/" scheme="luax"/>
@@ -87,9 +87,13 @@
                 <word name="string"/>
                 <word name="int"/>
                 <word name="real"/>
+                <word name="datetime"/>
                 <word name="void"/>
                 <word name="function"/>
                 <word name="var"/>
+                <word name="const"/>
+                <word name="this"/>
+                <word name="super"/>
 
                 <word name="else"/>
                 <word name="elseif"/>
@@ -112,6 +116,9 @@
                 <word name="try"/>
                 <word name="catch"/>
                 <word name="throw"/>
+                <word name="static"/>
+                <word name="new"/>
+                <word name="return"/>
             </keywords>
         </scheme>
     </type>

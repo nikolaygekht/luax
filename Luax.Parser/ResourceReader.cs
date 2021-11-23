@@ -10,6 +10,19 @@ namespace Luax.Parser
     /// </summary>
     public static class ResourceReader
     {
+        private static Assembly FindAssembly(string resourceName)
+        {
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (assembly.IsDynamic)
+                    continue;
+                var names1 = assembly.GetManifestResourceNames();
+                if (names1.Any(s => s.EndsWith(resourceName)))
+                    return assembly;
+            }
+            return null;
+        }
+
         /// <summary>
         /// Reads the resource from the assembly specified
         /// </summary>
@@ -19,32 +32,13 @@ namespace Luax.Parser
         public static string Read(Assembly assembly, string resourceName)
         {
             if (assembly == null)
-            {
-                foreach (var assembly1 in AppDomain.CurrentDomain.GetAssemblies())
-                {
-                    if (assembly1.IsDynamic)
-                        continue;
-                    var names1 = assembly1.GetManifestResourceNames();
-                    if (names1.Any(s => s.EndsWith(resourceName)))
-                    {
-                        assembly = assembly1;
-                        break;
-                    }
-                }
-            }
+                assembly = FindAssembly(resourceName);
+
             if (assembly == null)
                 throw new ArgumentException("Assembly containing the resource specified is not found", nameof(assembly));
 
             var names = assembly.GetManifestResourceNames();
-            string fullName = null;
-            foreach (var name in names)
-            {
-                if (name.EndsWith(resourceName))
-                {
-                    fullName = name;
-                    break;
-                }
-            }
+            var fullName = Array.Find(names, name => name.EndsWith(resourceName));
 
             if (fullName == null)
                 throw new ArgumentException($"Resource with the name that ends with {resourceName} is not found in the assembly specified", nameof(resourceName));

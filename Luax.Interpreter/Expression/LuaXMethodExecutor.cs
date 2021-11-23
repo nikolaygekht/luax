@@ -20,6 +20,8 @@ namespace Luax.Interpreter.Expression
             ReachForEnd,
             ReturnDefault,
             Return,
+            Break,
+            Continue,
         };
 
         /// <summary>
@@ -35,6 +37,9 @@ namespace Luax.Interpreter.Expression
         {
             if (method.Extern)
                 return ExecuteExtern(method, types, @this, args, out result);
+
+            if (method.IsConstructor)
+                HandleConstructor(method, types, @this);
 
             //create variables
             var variables = new LuaXVariableInstanceSet(method);
@@ -52,10 +57,16 @@ namespace Luax.Interpreter.Expression
 
             types.SearchClass(method.Class.Name, out var currentClass);
 
-            var rt = ExecuteStatements(method.Statements, types, currentClass, variables, out result);
+            var rt = ExecuteStatements(method, method.Statements, types, currentClass, variables, out result);
             if (rt == ResultType.ReachForEnd || rt == ResultType.ReturnDefault)
                 result = method.ReturnType.DefaultValue();
             return rt;
+        }
+
+        private static void HandleConstructor(LuaXMethod method, LuaXTypesLibrary types, LuaXObjectInstance @this)
+        {
+            if (method.Class.ParentClass?.Constructor != null)
+                Execute(method.Class.ParentClass?.Constructor, types, @this, Array.Empty<object>(), out _);
         }
 
         private static ResultType ExecuteExtern(LuaXMethod method, LuaXTypesLibrary types, LuaXObjectInstance @this, object[] args, out object result)
@@ -76,14 +87,16 @@ namespace Luax.Interpreter.Expression
             }
             catch (Exception e)
             {
-                if (e.GetType() == typeof(TargetInvocationException) && e.InnerException != null)
+                if (e is TargetInvocationException && e.InnerException != null)
                     e = e.InnerException;
-                throw new LuaXExecutionException(method.Location, e.Message, e);
+                throw new LuaXExecutionException(method, method.Location, e.Message, e);
             }
             return ResultType.Return;
         }
 
-        private static ResultType ExecuteStatements(LuaXStatementCollection collection, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
+        private static ResultType ExecuteStatements(LuaXMethod callingMethod, LuaXStatementCollection collection,
+            LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables,
+            out object result)
         {
             foreach (var statement in collection)
             {
@@ -107,39 +120,124 @@ namespace Luax.Interpreter.Expression
                             ExecuteCallStatement(callStatement, types, currentClass, variables);
                             break;
                         case LuaXIfStatement @if:
+                        {
+                            var r = ExecuteIf(callingMethod, @if, types, currentClass, variables, out result);
+                            if (r != ResultType.ReachForEnd)
+                                return r;
+                        }
+                            break;
+                        case LuaXThrowStatement @throw:
+                            ExecuteThrowStatement(callingMethod, @throw, types, currentClass, variables);
+                            break;
+                        case LuaXTryStatement @try:
+                            var tryResult = ExecuteTryStatement(callingMethod, @try, types, currentClass, variables,
+                                out result);
+                            if (tryResult != ResultType.ReachForEnd)
+                                return tryResult;
+                            break;
+                        case LuaXReturnStatement @return:
+                        {
+                            if (@return.Expression == null)
                             {
-                                var r = ExecuteIf(@if, types, currentClass, variables, out result);
+                                result = null;
+                                return ResultType.ReturnDefault;
+                            }
+
+                            result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass,
+                                variables);
+                            return ResultType.Return;
+                        }
+                        case LuaXWhileStatement @while:
+                        {
+                            var r = ExecuteWhile(callingMethod, @while, types, currentClass, variables, out result);
+                            if (r != ResultType.ReachForEnd)
+                                return r;
+                        }
+                            break;
+                        case LuaXRepeatStatement @repeat:
+                            {
+                                var r = ExecuteRepeat(callingMethod, @repeat, types, currentClass, variables, out result);
                                 if (r != ResultType.ReachForEnd)
                                     return r;
                             }
                             break;
-                        case LuaXReturnStatement @return:
-                            {
-                                if (@return.Expression == null)
-                                {
-                                    result = null;
-                                    return ResultType.ReturnDefault;
-                                }
-                                else
-                                {
-                                    result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass, variables);
-                                    return ResultType.Return;
-                                }
-                            }
+                        case LuaXBreakStatement:
+                        {
+                            result = null;
+                            return ResultType.Break;
+                        }
+                        case LuaXContinueStatement:
+                        {
+                            result = null;
+                            return ResultType.Continue;
+                        }
                     }
                 }
                 catch (LuaXExecutionException e1)
                 {
-                    e1.Locations.Add(statement.Location);
+                    var newFrame = new LuaXStackFrame(callingMethod, statement.Location);
+                    //In case if exception was rethrown - we don't need to add duplicate frame. As Well as for each statement in a call
+                    if (!e1.LuaXStackTrace.GetLastFrame().IsTheSame(newFrame) &&
+                        !ReferenceEquals(e1.LuaXStackTrace.GetLastFrame().CallSite, callingMethod))
+                        e1.LuaXStackTrace.Add(newFrame);
                     throw;
                 }
                 catch (Exception e2)
                 {
-                    throw new LuaXExecutionException(statement.Location, e2.Message, e2);
+                    throw new LuaXExecutionException(callingMethod, statement.Location, e2.Message, e2);
                 }
             }
+
             result = null;
             return ResultType.ReachForEnd;
+        }
+
+        private static ResultType ExecuteTryStatement(LuaXMethod callingMethod, LuaXTryStatement @try, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
+        {
+            try
+            {
+                var tryResult = ExecuteStatements(callingMethod, @try.TryStatements, types, currentClass, variables, out result);
+                return tryResult;
+            }
+            catch (Exception ex)
+            {
+                var exceptionVariable = variables[@try.CatchClause.CatchIdentifier];
+                if (types.SearchClass(exceptionVariable.LuaType.Class, out var exceptionClass))
+                {
+                    var exceptionObject = new LuaXObjectInstance(exceptionClass);
+                    exceptionObject.Properties["message"].Value = ex.Message;
+
+                    if (ex is LuaXExecutionException executionException)
+                    {
+                        foreach (var property in executionException.Properties)
+                        {
+                            if (property.Name == "message")
+                                continue;
+
+                            exceptionObject.Properties[property.Name].Value = property.Value;
+                        }
+                    }
+
+                    variables[@try.CatchClause.CatchIdentifier].Value = exceptionObject;
+
+                    var catchResult = ExecuteStatements(callingMethod, @try.CatchClause.CatchStatements, types, currentClass, variables, out result);
+                    return catchResult;
+                }
+
+                throw new LuaXExecutionException(@try.CatchClause.Location, $"Type '{exceptionVariable.LuaType.Class}' is not defined");
+            }
+        }
+
+        private static void ExecuteThrowStatement(LuaXMethod callingMethod, LuaXThrowStatement @throw, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables)
+        {
+            var exprResult = LuaXExpressionEvaluator.Evaluate(@throw.ThrowExpression, types, currentClass, variables);
+
+            if (exprResult is LuaXObjectInstance result && types.IsKindOf(result.Class.LuaType.Name, "exception"))
+            {
+                throw new LuaXExecutionException(callingMethod, @throw.Location, result.Properties["message"].Value.ToString(), result.Properties);
+            }
+
+            throw new LuaXExecutionException(@throw.Location, "Result of throw statement is not an exception");
         }
 
         private static void ExecuteAssignVariable(LuaXAssignVariableStatement assign, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables)
@@ -197,7 +295,7 @@ namespace Luax.Interpreter.Expression
             array[index].Value = expr;
         }
 
-        private static ResultType ExecuteIf(LuaXIfStatement ifStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
+        private static ResultType ExecuteIf(LuaXMethod callingMethod, LuaXIfStatement ifStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
         {
             for (int i = 0; i < ifStatement.Clauses.Count; i++)
             {
@@ -206,16 +304,65 @@ namespace Luax.Interpreter.Expression
                 if (v is bool b)
                 {
                     if (b)
-                        return ExecuteStatements(clause.Statements, types, currentClass, variables, out result);
+                        return ExecuteStatements(callingMethod, clause.Statements, types, currentClass, variables, out result);
                 }
                 else
                     throw new LuaXExecutionException(clause.Location, "Condition of if statement is not a boolean value");
             }
 
             if (ifStatement.ElseClause != null)
-                return ExecuteStatements(ifStatement.ElseClause, types, currentClass, variables, out result);
+                return ExecuteStatements(callingMethod, ifStatement.ElseClause, types, currentClass, variables, out result);
 
             result = null;
+            return ResultType.ReachForEnd;
+        }
+
+        private static ResultType ExecuteWhile(LuaXMethod callingMethod, LuaXWhileStatement whileStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
+        {
+            while (true)
+            {
+                var v = LuaXExpressionEvaluator.Evaluate(whileStatement.WhileCondition, types, currentClass, variables);
+                if (v is bool b)
+                {
+                    if (b)
+                    {
+                        ResultType statementsResult = ExecuteStatements(callingMethod, whileStatement.Statements, types, currentClass, variables, out result);
+                        if (statementsResult == ResultType.Break)
+                            break;
+                        else if (statementsResult != ResultType.Continue && statementsResult != ResultType.ReachForEnd)
+                            return statementsResult;
+                    }
+                    else
+                        break;
+                }
+                else
+                    throw new LuaXExecutionException(whileStatement.Location, "Condition of while statement is not a boolean value");
+            }
+
+            result = null;
+            return ResultType.ReachForEnd;
+        }
+
+        private static ResultType ExecuteRepeat(LuaXMethod callingMethod, LuaXRepeatStatement repeatStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
+        {
+            while (true)
+            {
+                ResultType statementsResult = ExecuteStatements(callingMethod, repeatStatement.Statements, types, currentClass, variables, out result);
+                if (statementsResult == ResultType.Break)
+                    break;
+                if (statementsResult != ResultType.Continue && statementsResult != ResultType.ReachForEnd)
+                    return statementsResult;
+
+                var v = LuaXExpressionEvaluator.Evaluate(repeatStatement.UntilCondition, types, currentClass, variables);
+                if (v is bool b)
+                {
+                    if (!b)
+                        break;
+                }
+                else
+                    throw new LuaXExecutionException(repeatStatement.Location, "Condition of until statement is not a boolean value");
+            }
+
             return ResultType.ReachForEnd;
         }
     }

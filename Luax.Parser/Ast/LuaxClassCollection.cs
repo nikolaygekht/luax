@@ -10,7 +10,7 @@ namespace Luax.Parser.Ast
     {
         public bool Exists(string name) => name == "object" || Find(name) >= 0;
 
-        override protected void UpdateIndex()
+        protected override void UpdateIndex()
         {
             base.UpdateIndex();
 
@@ -31,7 +31,7 @@ namespace Luax.Parser.Ast
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        override public bool Search(string name, out LuaXClass @class)
+        public override bool Search(string name, out LuaXClass @class)
         {
             if (name == "object")
             {

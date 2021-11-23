@@ -8,10 +8,11 @@ end
 -- good test suite
 @TestSuite()
 class suite1
+    
     -- function should be ignored
     public function nofact() : void
     end
-    
+
     -- good fact
     @Fact()
     public function fact1() : void
@@ -56,5 +57,12 @@ class suite1
     @TheoryData(2, 1.5, "abcd", true)
     public function theory1(arg1 : int, arg2 : real, arg3 : string, arg4 : boolean) : void
         assert.isFalse(arg1 == 2, "assert as expected");
+    end
+
+    public static var finalizerCalled : int;
+
+    @TearDown()
+    public function finalize() : void
+        finalizerCalled = finalizerCalled + 1;
     end
 end

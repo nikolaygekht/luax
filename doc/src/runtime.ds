@@ -1,0 +1,358 @@
+@group
+    @key=runtime
+    @brief=LuaX Runtime
+    @title=Runtime
+    @ingroup=main
+    @transform=yes
+    @sortgroups=no
+@end
+
+@class
+    @name=object
+    @brief=The base class for all other classes in the system
+    @ingroup=runtime
+    @type=class
+@end
+
+@class
+    @name=exception
+    @brief=The base class for all exceptions in the system
+    @ingroup=runtime
+    @parent=object
+    @type=class
+
+    @member
+        @type=property
+        @name=code
+        @brief=The exception code
+        @divisor=.
+        @scope=instance
+        @visibility=protected
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=private
+        @end
+    @end
+
+    @member
+        @type=property
+        @name=message
+        @brief=The exception message
+        @divisor=.
+        @scope=instance
+        @visibility=protected
+
+        @declaration
+            @prefix=private
+            @language=luax
+            @return=string
+        @end
+    @end
+
+    @member
+        @type=method
+        @name=getCode
+        @brief=The exception code
+        @divisor=.
+        @scope=instance
+        @visibility=public
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+        @end
+    @end
+
+    @member
+        @type=method
+        @name=getMessage
+        @brief=The exception message
+        @divisor=.
+        @scope=instance
+        @visibility=public
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+        @end
+    @end
+
+    @member
+        @type=method
+        @name=create
+        @brief=Create the exception
+        @divisor=.
+        @scope=class
+        @visibility=public
+
+        @declaration
+            @language=luax
+            @return=exception
+            @params=code : int, message : string
+            @prefix=public static
+        @end
+
+        @param
+            @name=code
+            The code for the exception
+        @end
+
+        @param
+            @name=message
+            The message for the exception
+        @end
+    @end
+@end
+
+@class
+    @name=variant
+    @brief=The class to convert any primitive type into an object
+    @ingroup=runtime
+    @type=class
+    @parent=object
+
+    Use the regular `cast` to create an instance of the `variant` object.
+    To convert `nil` constant to a `variant`, first cast `nil` to `object`.
+
+
+    @member
+        @name=type
+        @type=method
+        @scope=instance
+        @brief=Return the name of the type
+        @visibility=public
+        @divisor=.
+
+        The method returns the same value as `typename` operator for a contained value
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=asInt
+        @type=method
+        @scope=instance
+        @brief=Casts and returns the contained value as int
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=int
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=asReal
+        @type=method
+        @scope=instance
+        @brief=Casts and returns the contained value as real
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=real
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=asDatetime
+        @type=method
+        @scope=instance
+        @brief=Casts and returns the contained value as datetime
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=datetime
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=asBoolean
+        @type=method
+        @scope=instance
+        @brief=Casts and returns the contained value as boolean
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=asString
+        @type=method
+        @scope=instance
+        @brief=Casts and returns the contained value as string
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=string
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=asObject
+        @type=method
+        @scope=instance
+        @brief=Casts and returns the contained value as object
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=object
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=isInt
+        @type=method
+        @scope=instance
+        @brief=Checks whether the contained value is an integer
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=isReal
+        @type=method
+        @scope=instance
+        @brief=Checks whether the contained value is a real
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=isDatetime
+        @type=method
+        @scope=instance
+        @brief=Checks whether the contained value is a datetime
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=isBoolean
+        @type=method
+        @scope=instance
+        @brief=Checks whether the contained value is a boolean
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=isString
+        @type=method
+        @scope=instance
+        @brief=Checks whether the contained value is a string
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public
+            @params=
+        @end
+    @end
+
+    @member
+        @name=isObject
+        @type=method
+        @scope=instance
+        @brief=Checks whether the contained value is an object
+        @visibility=public
+        @divisor=.
+
+
+
+        @declaration
+            @language=luax
+            @return=boolean
+            @prefix=public
+            @params=
+        @end
+    @end
+@end
+
+

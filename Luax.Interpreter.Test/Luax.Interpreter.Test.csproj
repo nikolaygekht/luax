@@ -27,13 +27,29 @@
     <None Remove="TestSources\Project5.ini" />
     <None Remove="TestSources\Stdlibtest.luax" />
     <None Remove="TestSources\TestSuite.luax" />
+    <None Remove="TestSources\WhileBreakTest.luax" />
+    <None Remove="TestSources\WhileContinueTest.luax" />
+    <None Remove="TestSources\WhileNestedTest.luax" />
+    <None Remove="TestSources\WhileTest.luax" />
+    <None Remove="TestSources\ThrowTest.luax" />
+    <None Remove="TestSources\TryCatchTest.luax" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\LuaXStackTraceFramesTest.luax" />
+    <EmbeddedResource Include="TestSources\RepeatBreakTest.luax" />
+    <EmbeddedResource Include="TestSources\RepeatContinueTest.luax" />
+    <EmbeddedResource Include="TestSources\RepeatNestedTest.luax" />
+    <EmbeddedResource Include="TestSources\RepeatTest.luax" />
+    <EmbeddedResource Include="TestSources\TryCatchTest.luax" />
+    <EmbeddedResource Include="TestSources\ThrowTest.luax" />
     <EmbeddedResource Include="TestSources\IfTest.luax" />
     <EmbeddedResource Include="TestSources\ExceptionStackTraceTest.luax" />
     <EmbeddedResource Include="TestSources\ConstTest.luax" />
     <EmbeddedResource Include="TestSources\ConsoleAppError5.luax" />
+    <EmbeddedResource Include="TestSources\WhileBreakTest.luax" />
+    <EmbeddedResource Include="TestSources\WhileContinueTest.luax" />
+    <EmbeddedResource Include="TestSources\WhileNestedTest.luax" />
     <EmbeddedResource Include="TestSources\TestSuite.luax" />
     <EmbeddedResource Include="TestSources\ConsoleAppOK1.luax" />
     <EmbeddedResource Include="TestSources\ConsoleAppError4.luax" />
@@ -52,14 +68,15 @@
     <EmbeddedResource Include="TestSources\CastTest.luax" />
     <EmbeddedResource Include="TestSources\ExpressionTest.luax" />
     <EmbeddedResource Include="TestSources\ClassesTest1.luax" />
+    <EmbeddedResource Include="TestSources\WhileTest.luax" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Moq" Version="4.16.1" />
-    <PackageReference Include="FluentAssertions" Version="6.0.0" />
+    <PackageReference Include="FluentAssertions" Version="6.2.0" />
     <PackageReference Include="System.Runtime" Version="4.3.1" />
     <PackageReference Include="xunit" Version="2.4.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

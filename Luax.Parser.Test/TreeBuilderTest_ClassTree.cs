@@ -124,7 +124,7 @@ namespace Luax.Parser.Test
         {
             var node = AstNodeExtensions.Parse(tree);
             var processor = new LuaXAstTreeCreator("");
-            LuaXClass @class = new LuaXClass("a");
+            var @class = new LuaXClass("a");
             processor.ProcessProperty(node, @class);
 
             @class.Properties.Should().HaveCount(1);
@@ -143,9 +143,9 @@ namespace Luax.Parser.Test
         [Fact]
         public void ParseConstDeclaration_Success()
         {
-            var node = AstNodeExtensions.Parse("[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]");
+            var node = AstNodeExtensions.Parse("[CLASS_CONST_DECLARATION[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]]");
             var processor = new LuaXAstTreeCreator("");
-            LuaXClass @class = new LuaXClass("a");
+            var @class = new LuaXClass("a");
             processor.ProcessConstantDeclarationInClass(node, @class);
 
             @class.Constants.Should().HaveCount(1);
@@ -157,9 +157,9 @@ namespace Luax.Parser.Test
         [Fact]
         public void ParseConstDeclaration_Fail_AlreadyExists()
         {
-            var node = AstNodeExtensions.Parse("[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]");
+            var node = AstNodeExtensions.Parse("[CLASS_CONST_DECLARATION[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]]");
             var processor = new LuaXAstTreeCreator("");
-            LuaXClass @class = new LuaXClass("a");
+            var @class = new LuaXClass("a");
             @class.Constants.Add(new LuaXConstantVariable() { Name = "y" });
             ((Action)(() => processor.ProcessConstantDeclarationInClass(node, @class))).Should().Throw<LuaXAstGeneratorException>();
         }
@@ -167,9 +167,9 @@ namespace Luax.Parser.Test
         [Fact]
         public void ParseConstDeclaration_Fail_PropertyExists()
         {
-            var node = AstNodeExtensions.Parse("[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]");
+            var node = AstNodeExtensions.Parse("[CLASS_CONST_DECLARATION[CONST_DECLARATION[CONST_KW[const(const)]][IDENTIFIER(y)][ASSIGN[=(=)]][CONSTANT[INTEGER(10)]][EOS[;(;)]]]]");
             var processor = new LuaXAstTreeCreator("");
-            LuaXClass @class = new LuaXClass("a");
+            var @class = new LuaXClass("a");
             @class.Properties.Add(new LuaXProperty() { Name = "y" });
             ((Action)(() => processor.ProcessConstantDeclarationInClass(node, @class))).Should().Throw<LuaXAstGeneratorException>();
         }
@@ -186,7 +186,7 @@ namespace Luax.Parser.Test
         {
             var node = AstNodeExtensions.Parse(tree);
             var processor = new LuaXAstTreeCreator("");
-            LuaXClass @class = new LuaXClass("a");
+            var @class = new LuaXClass("a");
             processor.ProcessFunction(node, @class);
 
             @class.Methods.Should().HaveCount(1);
@@ -221,7 +221,7 @@ namespace Luax.Parser.Test
         {
             var node = AstNodeExtensions.Parse(tree);
             var processor = new LuaXAstTreeCreator("");
-            LuaXClass @class = new LuaXClass("a");
+            var @class = new LuaXClass("a");
             processor.ProcessFunction(node, @class);
 
             @class.Methods.Should().HaveCount(1);
@@ -248,7 +248,7 @@ namespace Luax.Parser.Test
         {
             var node = AstNodeExtensions.Parse(tree);
             var processor = new LuaXAstTreeCreator("");
-            LuaXClass @class = new LuaXClass("a");
+            var @class = new LuaXClass("a");
             processor.ProcessFunction(node, @class);
 
             var method = @class.Methods[0];
@@ -459,6 +459,33 @@ namespace Luax.Parser.Test
             decl.Name.Should().Be("y");
             decl.Value.ConstantType.Should().Be(LuaXType.Integer);
             decl.Value.Value.Should().Be(10);
+        }
+
+        [Fact]
+        public void CyclicReference_Self_OK()
+        {
+            var app = new LuaXApplication();
+            app.Classes.Add(new LuaXClass("a", "object", new LuaXElementLocation("", 0, 0)));
+            ((Action)(() => app.Pass2())).Should().NotThrow<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void CyclicReference_Self_Fail()
+        {
+            var app = new LuaXApplication();
+            app.Classes.Add(new LuaXClass("a", "a", new LuaXElementLocation("", 0, 0)));
+            ((Action)(() => app.Pass2())).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void CyclicReference_InChain_Self_Fail()
+        {
+            var app = new LuaXApplication();
+            app.Classes.Add(new LuaXClass("a", "d", new LuaXElementLocation("", 0, 0)));
+            app.Classes.Add(new LuaXClass("b", "a", new LuaXElementLocation("", 0, 0)));
+            app.Classes.Add(new LuaXClass("c", "b", new LuaXElementLocation("", 0, 0)));
+            app.Classes.Add(new LuaXClass("d", "a", new LuaXElementLocation("", 0, 0)));
+            ((Action)(() => app.Pass2())).Should().Throw<LuaXAstGeneratorException>();
         }
     }
 }

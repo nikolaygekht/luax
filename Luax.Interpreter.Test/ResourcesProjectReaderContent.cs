@@ -11,16 +11,16 @@ namespace Luax.Interpreter.Test
 {
     public class ResourcesProjectReaderContent : ILuaXProjectReaderContentProvider
     {
-        private Assembly assembly;
+        private readonly Assembly assembly;
 
         public ResourcesProjectReaderContent(Assembly assembly)
         {
             this.assembly = assembly;
         }
 
-        public TextReader GetContentReader(string projectFilePath)
+        public TextReader GetContentReader(string filePath)
         {
-            return new StringReader(ResourceReader.Read(assembly, projectFilePath));
+            return new StringReader(ResourceReader.Read(assembly, filePath));
         }
 
         public string GetFileFullPath(string projectFullDirPath, string filePath)
@@ -28,7 +28,7 @@ namespace Luax.Interpreter.Test
             return Path.Combine(projectFullDirPath, filePath);
         }
 
-        public string GetProjectFullDirPath(string projectName)
+        public string GetProjectFullDirPath(string projectPath)
         {
             return "";
         }

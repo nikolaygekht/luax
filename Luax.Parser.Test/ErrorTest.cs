@@ -14,8 +14,8 @@ using Luax.Parser.Test.Tools;
 using Moq;
 using Xunit;
 
-#pragma warning disable SYSLIB0011 // Type or member is obsolete
-#pragma warning disable S5773 // Types allowed to be deserialized should be restricted
+#pragma warning disable SYSLIB0011  // Type or member is obsolete
+#pragma warning disable S5773       // Restrict types of the objects to be deseralized
 
 namespace Luax.Parser.Test
 {
