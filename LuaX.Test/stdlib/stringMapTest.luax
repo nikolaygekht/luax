@@ -63,7 +63,20 @@ class stringMapTest
         keys = m.keys();
         assert.isTrue(keys.length == 2, "size");
         assert.isTrue(keys[0] == "key", "item 1");
-        assert.isTrue(keys[0] == "key2", "item 2");
+        assert.isTrue(keys[1] == "key2", "item 2");
+    end
+
+    @Fact()
+    public function clear() : void
+        var m : string_map;
+        m = new string_map();
+        m.set("key", mapItem.create("value1"));
+        m.set("key2", mapItem.create("value2"));
+        assert.isTrue(m.length() == 2, "size");
+        m.clear();
+        assert.isTrue(m.length() == 0, "size");
+        assert.isTrue(keys[0] == "key", "item 1");
+        assert.isTrue(keys[1] == "key2", "item 2");
     end
 
 end
