@@ -1,0 +1,92 @@
+class mapItem
+    public var name : string;
+
+    public static function create(name : string) : mapItem
+        var m : mapItem;
+        m = new mapItem();
+        m.name = name;
+        return m;
+    end
+end
+
+@TestSuite()
+class intMapTest
+    @Fact()
+    public function create_empty() : void
+        var m : int_map;
+        m = new int_map();
+        assert.isTrue(m ~= nil, "value");
+        assert.isTrue(typename(m) == "int_map", "type");
+        assert.isTrue(m.length() == 0, "size");
+    end
+
+    @Fact()
+    public function set_get() : void
+        var m : int_map;
+        m = new int_map();
+        m.set(1, mapItem.create("value1"));
+        m.set(2, mapItem.create("value2"));
+        m.set(2, mapItem.create("changed value2"));
+        assert.isTrue(m.length() == 2, "size");
+        assert.isTrue((cast<mapItem>(m.get(1))).name == "value1", "item 1");
+        assert.isTrue((cast<mapItem>(m.get(2))).name == "changed value2", "item 2");
+    end
+
+    @Fact()
+    public function access() : void
+        var m : int_map;
+        m = new int_map();
+        m.set(1, mapItem.create("value1"));
+        m.set(2, mapItem.create("value2"));
+        m.set(2, mapItem.create("changed value2"));
+        assert.isTrue(m.length() == 2, "size");
+        assert.isTrue((cast<mapItem>(m[1])).name == "value1", "item 1");
+        assert.isTrue((cast<mapItem>(m[2])).name == "changed value2", "item 2");
+    end
+
+    @Fact()
+    public function contains() : void
+        var m : int_map;
+        m = new int_map();
+        m.set(1, mapItem.create("value1"));
+        m.set(2, mapItem.create("value2"));
+        assert.isTrue(m.contains(1), "item 1");
+        assert.isTrue(m.contains(2), "item 2");
+        assert.isFalse(m.contains(3), "item 3");
+    end
+
+    @Fact()
+    public function remove() : void
+        var m : int_map;
+        m = new int_map();
+        m.set(1, mapItem.create("value1"));
+        m.set(2, mapItem.create("value2"));
+        m.remove(1);
+        assert.isFalse(m.contains(1), "item 1");
+        assert.isTrue(m.contains(2), "item 2");
+    end
+
+    @Fact()
+    public function keys() : void
+        var m : int_map;
+        var keys: int[];
+        m = new int_map();
+        m.set(1, mapItem.create("value1"));
+        m.set(2, mapItem.create("value2"));
+        keys = m.keys();
+        assert.isTrue(keys.length == 2, "size");
+        assert.isTrue(keys[0] == 1, "item 1");
+        assert.isTrue(keys[1] == 2, "item 2");
+    end
+
+    @Fact()
+    public function clear() : void
+        var m : int_map;
+        m = new int_map();
+        m.set(1, mapItem.create("value1"));
+        m.set(2, mapItem.create("value2"));
+        assert.isTrue(m.length() == 2, "size");
+        m.clear();
+        assert.isTrue(m.length() == 0, "size");
+    end
+end
