@@ -1,0 +1,71 @@
+@TestSuite()
+class sortedListTest
+    class listItemComparer : object_comparer
+        public function compare(a : listItem, b : listItem) : int
+            return stdlib.compareStrings(a.name, b.name, true);
+        end
+    end
+
+    class itemSortedList : sorted_list
+        public function get(index : int) : listItem
+            return cast<listItem>(super.get(index));
+        end
+
+        public static function create() : itemSortedList
+            var x : itemSortedList;
+            x = new itemSortedList();
+            x.initialize(new listItemComparer());
+            return x;
+        end
+    end
+
+    @Fact()
+    public function Length() : void
+        var x : itemSortedList;
+        x = itemSortedList.create();
+        x.add(listItem.create("a"));
+        x.add(listItem.create("b"));
+        x.add(listItem.create("c"));
+        assert.equals(x.length(), 3, "");
+    end
+
+    @Fact()
+    public function Order() : void
+        var x : itemSortedList;
+        x = itemSortedList.create();
+        x.add(listItem.create("z"));
+        x.add(listItem.create("a"));
+        x.add(listItem.create("y"));
+
+        assert.equals(x[0].name, "a", "0");
+        assert.equals(x[1].name, "y", "1");
+        assert.equals(x[2].name, "z", "2");
+    end
+
+    @Fact()
+    public function Find() : void
+        var x : itemSortedList;
+        x = itemSortedList.create();
+        x.add(listItem.create("z"));
+        x.add(listItem.create("a"));
+        x.add(listItem.create("y"));
+
+        assert.equals(x.find(listItem.create("a")), 0, "a");
+        assert.equals(x.find(listItem.create("y")), 1, "y");
+        assert.equals(x.find(listItem.create("z")), 2, "z");
+        assert.equals(x.find(listItem.create("0")), -1, "non-existent");
+    end
+
+    @Fact()
+    public function Remove() : void
+        var x : itemSortedList;
+        x = itemSortedList.create();
+        x.add(listItem.create("z"));
+        x.add(listItem.create("a"));
+        x.add(listItem.create("y"));
+        x.remove(1);
+        assert.equals(x.length(), 2, "");
+        assert.equals(x[0].name, "a", "0");
+        assert.equals(x[1].name, "z", "1");
+    end
+end

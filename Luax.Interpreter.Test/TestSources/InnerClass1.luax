@@ -1,0 +1,39 @@
+﻿class complexClass
+   private var property : int;
+   const const1 = 5;
+   class parent
+      private function parentMethod() : int
+         return const1 * privateFunc() * property;
+      end
+   end
+   class innerClass : parent
+      public var a : int;
+      public static var b : int;
+      public var parent : complexClass;
+      public function innerClass() : void
+         b = 12;
+         property = property + 1;
+      end
+      public function method() : int
+         return parentMethod();
+      end
+   end
+   private function privateFunc() : int
+      return property - 1;
+   end
+   public static function dummy(par1 : int) : int
+      var instance : complexClass;
+      instance = new complexClass();
+      instance.property = par1;
+      return instance.calculate();
+   end
+   public function calculate() : int
+      var inner : innerClass;
+      inner = new innerClass();
+      inner.parent = this;
+      inner.a = 3;
+      var summ : int;
+      summ = inner.a + innerClass.b + inner.method();
+      return summ;
+   end
+end

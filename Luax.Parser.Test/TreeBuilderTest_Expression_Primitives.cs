@@ -32,6 +32,8 @@ namespace Luax.Parser.Test
         [InlineData("[CONSTANT[STRING[STRINGDQ(\"\\n\")]]]", LuaXType.String, "\n")]
         [InlineData("[CONSTANT[STRING[STRINGDQ(\"\\t\")]]]", LuaXType.String, "\t")]
         [InlineData("[CONSTANT[NIL[nil(nil)]]]", LuaXType.Object, null)]
+        [InlineData("[CONSTANT[CHAR_CODE('a')]]", LuaXType.Integer, 0x61)]
+        [InlineData("[CONSTANT[CHAR_CODE('а')]]", LuaXType.Integer, 0x430)]
         public void ParseConstant_Successful(string tree, LuaXType type, object value)
         {
             var node = AstNodeExtensions.Parse(tree);

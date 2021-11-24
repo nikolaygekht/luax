@@ -324,6 +324,23 @@ namespace Luax.Interpreter.Test
         [InlineData("int", "bitwise._not(1)", -2, typeof(int))]
         [InlineData("int", "bitwise._shl(0x07ff_ffff, 4)", 0x7fff_fff0, typeof(int))]
         [InlineData("int", "bitwise._shr(0xffff_ffff, 4)", 0x0fff_ffff, typeof(int))]
+        [InlineData("int", "stdlib.compareStrings(\"aaa\", \"aaa\", true)", 0, typeof(int))]
+        [InlineData("int", "stdlib.compareStrings(\"aaa\", \"Aaa\", true)", 1, typeof(int))]
+        [InlineData("int", "stdlib.compareStrings(\"aaa\", \"Aaa\", false)", 0, typeof(int))]
+        [InlineData("int", "stdlib.compareStrings(\"aaa\", \"baa\", true)", -1, typeof(int))]
+        [InlineData("int", "stdlib.compareStrings(\"baa\", \"aaa\", true)", 1, typeof(int))]
+        [InlineData("int", "stdlib.charIndex(\"baba\", \'a\', 0, true)", 1, typeof(int))]
+        [InlineData("int", "stdlib.charIndex(\"baba\", \'A\', 0, true)", -1, typeof(int))]
+        [InlineData("int", "stdlib.charIndex(\"baba\", \'A\', 0, false)", 1, typeof(int))]
+        [InlineData("int", "stdlib.charIndex(\"baba\", \'a\', 1, true)", 1, typeof(int))]
+        [InlineData("int", "stdlib.charIndex(\"baba\", \'a\', 2, true)", 3, typeof(int))]
+        [InlineData("int", "stdlib.charIndex(\"baba\", \'c\', 0, true)", -1, typeof(int))]
+        [InlineData("int", "stdlib.lastCharIndex(\"baba\", \'a\', 0, true)", 3, typeof(int))]
+        [InlineData("int", "stdlib.lastCharIndex(\"baba\", \'a\', 1, true)", 1, typeof(int))]
+        [InlineData("int", "stdlib.lastCharIndex(\"baba\", \'a\', 2, true)", 1, typeof(int))]
+        [InlineData("int", "stdlib.lastCharIndex(\"baba\", \'c\', 0, true)", -1, typeof(int))]
+        [InlineData("int", "stdlib.lastCharIndex(\"baba\", \'A\', 0, true)", -1, typeof(int))]
+        [InlineData("int", "stdlib.lastCharIndex(\"baba\", \'A\', 0, false)", 3, typeof(int))]
         public void TestStdlib(string @return, string expr, object expectedValue, Type expectedType)
         {
             expectedValue = TestValue.Translate(expectedType, expectedValue);

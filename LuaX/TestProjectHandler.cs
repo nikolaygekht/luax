@@ -37,7 +37,7 @@ namespace LuaX
             Console.Write(new string(' ', Console.WindowWidth - 2));
             Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
 
-            var message1 = $"{args.Class}::{args.Method}({args.Data}) - ";
+            var message1 = $"{args.Class}::{args.Method}({args.Data.Replace("\n", "\\n")}) - ";
             Console.Write("{0}", message1);
 
             var message2 = $"{args.Status} [{args.Message}]";

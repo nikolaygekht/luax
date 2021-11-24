@@ -22,6 +22,8 @@ grammar LuaX
 
         HEX_INTEGER -> '0' 'x' [0-9A-Fa-f] [0-9A-Fa-f_]* [0-9A-Fa-f]?;
 
+        CHAR_CODE -> '\'' . '\'';
+
         REAL -> [0-9] [0-9_]* [0-9]? '.' [0-9_]* [0-9]? ([Ee] ('+'|'-')? [0-9] [0-9_]*)?;
 
         STRINGDQ -> '"' ( (. - ('"' | '\\')) |
@@ -55,6 +57,7 @@ grammar LuaX
                     STRING |
                     INTEGER |
                     HEX_INTEGER |
+                    CHAR_CODE |
                     NEGATIVE_INTEGER |
                     REAL |
                     NEGATIVE_REAL;
@@ -346,7 +349,7 @@ grammar LuaX
 
         CLASS_CONST_DECLARATION ->  ATTRIBUTES? CONST_DECLARATION;
 
-        CLASS_ELEMENT -> PROPERTY | CLASS_CONST_DECLARATION | FUNCTION_DECLARATION | EXTERN_DECLARATION;
+        CLASS_ELEMENT -> PROPERTY | CLASS_CONST_DECLARATION | FUNCTION_DECLARATION | EXTERN_DECLARATION | CLASS_DECLARATION;
 
         CLASS -> 'class';
 

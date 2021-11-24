@@ -40,6 +40,15 @@ namespace Luax.Interpreter.Infrastructure
             return v;
         }
 
+        public LuaXObjectInstance New(LuaXTypesLibrary types, LuaXObjectInstance ownerInstance)
+        {
+            var v = new LuaXObjectInstance(this);
+            v.OwnerObjectInstance = ownerInstance;
+            if (Constructor != null)
+                LuaXMethodExecutor.Execute(Constructor, types, v, Array.Empty<object>(), out var _);
+            return v;
+        }
+
         internal static LuaXVariableInstanceSet InitializeStatic(LuaXClass definition)
             => InitializeProperties(definition, definition => definition.Properties.Where(p => p.Static));
 

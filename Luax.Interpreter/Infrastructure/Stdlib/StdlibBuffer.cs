@@ -431,5 +431,27 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             @this.Properties["__array"].Value = Convert.FromBase64String(v);
             return @this;
         }
+
+        //public extern setBuffer(index : int, value : buffer, sourceIndex : int, sourceLength : int) : int;
+        [LuaXExternMethod("buffer", "setBuffer")]
+        public static object setBuffer(LuaXObjectInstance @this, int index, LuaXObjectInstance source, int sourceIndex, int sourceLength)
+        {
+            if (@this.Properties["__array"]?.Value is not byte[] buffer)
+                throw new ArgumentException("The object isn't properly initialized", nameof(@this));
+
+            if (source.Properties["__array"]?.Value is not byte[] sourceBuffer)
+                throw new ArgumentException("The object isn't properly initialized", nameof(source));
+
+            if (index < 0 || index > buffer.Length - sourceLength)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            if (sourceIndex < 0 || sourceIndex > sourceBuffer.Length - sourceLength)
+                throw new ArgumentOutOfRangeException(nameof(sourceIndex));
+
+            for (int i = 0; i < sourceLength; i++)
+                buffer[index + i] = sourceBuffer[sourceIndex + i];
+
+            return sourceLength;
+        }
     }
 }

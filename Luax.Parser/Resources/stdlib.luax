@@ -10,10 +10,24 @@ class stdlib
     public static extern len(s : string) : int;
 
     @DocBrief("Finds a substring in a string")
-    public static extern indexOf(s : string, sub:string, caseSenstitive : boolean) : int;
+    public static extern indexOf(s : string, sub : string, caseSenstitive : boolean) : int;
+
+    @DocBrief("Finds the last occurrence of a substring in a string")
+    public static extern lastIndexOf(s : string, sub : string, caseSenstitive : boolean) : int;
+
+    @DocBrief("Compare two strings")
+    @DocReturn("The method returns 0 if strings are equal, 1 if the first string is greater, and -1 if the second string is greater")
+    public static extern compareStrings(a : string, b : string, caseSenstitive : boolean) : int;
+
+    @DocBrief("Finds a character in a string")
+    @DocParameter("startOffset", "The offset to start the search from the beginning of the string")
+    @DocReturn("The method return the index of the character or -1 if the character is not found")
+    public static extern charIndex(s : string, char : int, startOffset : int, caseSenstitive : boolean) : int;
     
-    @DocBrief("Finds last occurrence of a substring in a string")
-    public static extern lastIndexOf(s : string, sub:string, caseSenstitive : boolean) : int;
+    @DocBrief("Finds the last occurrence of a character in a string")
+    @DocParameter("startOffset", "The offset to start the search from the end of the string")
+    @DocReturn("The method return the index of the character or -1 if the character is not found")
+    public static extern lastCharIndex(s : string, char : int, startOffset : int, caseSenstitive : boolean) : int;
 
     @DocBrief("Converts the string to uppercase")
     public static extern upper(s : string) : string;
@@ -380,6 +394,9 @@ class buffer
     @DocBrief("Gets a length of the string encoded in SBCS/MBCS code page")
     public static extern getEncodedStringLength(value : string, codePage : int) : int;
 
+    @DocBrief("Write content of one buffer to another buffer")
+    public extern setBuffer(index : int, value : buffer, sourceIndex : int, sourceLength : int) : int;
+
     @DocBrief("Resize the buffer")
     @DocDescription("The method resizes the buffer. ")
     @DocDescription("All data that fit into new size will be preserved. If buffer is extended, the new bytes will be zeroed.")
@@ -515,9 +532,17 @@ class xmlNode
     @DocReturn("The return value could be `ELEMENT`, `TEXT`, `COMMENT`, `CDATA` or `ATTRIBUTE`")
     public extern getType() : string;
 
-    @DocBrief("Returns the name of the node")
+    @DocBrief("Returns the full name of the node")
     @DocDescription("The name is returned only for `ELEMENT` and `ATTRIBUTE` nodes")
     public extern getName() : string;
+
+    @DocBrief("Returns the local name of the node")
+    @DocDescription("The name is returned only for `ELEMENT` and `ATTRIBUTE` nodes")
+    public extern getLocalName() : string;
+
+    @DocBrief("Returns the namespace URI of the node")
+    @DocDescription("The name is returned only for `ELEMENT` and `ATTRIBUTE` nodes")
+    public extern getNamespaceURI() : string;
 
     @DocBrief("Returns the value of the node")
     public extern getValue() : string;
@@ -527,6 +552,15 @@ class xmlNode
 
     @DocBrief("Returns the child node by its index")
     public extern getChild(index : int) : xmlNode;
+
+    @DocBrief("Returns the number of attributes")
+    public extern getAttributesCount() : int;
+
+    @DocBrief("Returns the attribute by its index")
+    public extern getAttribute(index : int) : xmlNode;
+
+    @DocBrief("Returns the attribute by its local name")
+    public extern getAttributeByName(localName : string) : xmlNode;
 end
 
 -- -------------------------------------------------------
@@ -666,7 +700,6 @@ end
 -- -----------------------------------------------------------
 @DocBrief("The stack of objects")
 class stack
-
     @DocBrief("Returns the number of the elements in the collection")
     public extern length() : int;
 
@@ -686,6 +719,36 @@ class stack
     public extern stack() : void;
 end
 
+-- ------------------------------------------------------------
+-- Sorted list of objects
+-- ------------------------------------------------------------
+@DocBrief("The interface to object comparer for a sorted list")
+@Interface()
+class object_comparer
+    public function compare(a : object, b : object) : int
+    end
+end
+
+@DocBrief("The sorted list of objects")
+class sorted_list
+    @DocBrief("Returns the number of the elements in the collection")
+    public extern length() : int;
+
+    @DocBrief("Gets the element by the index specified")
+    public extern get(index : int) : object;
+
+    @DocBrief("Adds a new element at the end of the list")
+    public extern add(value : object) : void;
+
+    @DocBrief("Finds an element in the list")
+    public extern find(value : object) : int;
+
+    @DocBrief("Removes the element from the list")
+    public extern remove(index : int) : void;
+
+    @DocBrief("Creates a list using the comparer specified")
+    public extern initialize(comparer : object_comparer) : void;
+end
 -- ------------------------------------------------------------
 -- action class
 -- ------------------------------------------------------------

@@ -1,0 +1,66 @@
+﻿class runner
+	class myAction : action
+		public function invoke() : void
+			if result > 1 then
+			   result = result - 1;
+			end
+			result = result * initValue;
+		end
+	end
+	class processor
+		class actionList : list
+			public function actionList() : void
+				super.list();
+			end
+
+			public function get(index : int) : myAction
+				return cast<myAction>(super.get(index));
+			end
+
+			public function set(index : int, value : myAction) : void
+				super.set(index, value);
+			end
+		end
+        private var actions : actionList;
+        public function addAction(action : myAction) : void
+            actions.insert(actions.length(), action);
+        end
+        private function invoke() : void
+            var n : int;
+            n = actions.length() - 1;
+            while n >= 0 do
+                actions.get(n).invoke();
+                n = n - 1;
+            end
+        end
+		public function touchHandler() : void
+			invoke();
+		end
+        public function processor() : void
+            actions = new actionList();
+        end
+	end
+	private var result : int, initValue : int;
+	private var processorInstance : processor;
+
+	public function run(par1 : int) : int
+		var n : int;
+		n = par1;
+		initValue = par1;
+		while n > 0 do
+			processorInstance.touchHandler();
+			n = n - 1;
+		end
+		return result;
+	end
+	public function runner() : void
+		result = 1;
+		processorInstance = new processor();
+		processorInstance.addAction(new myAction());
+	end
+end
+class program
+	public static function main(par1 : int) : int
+		return (new runner()).run(par1);
+	end
+end

@@ -22,7 +22,7 @@ namespace Luax.Parser.Ast
         /// <summary>
         /// The parent class
         /// </summary>
-        public string Parent { get; internal init; }
+        public string Parent { get; internal set; }
         /// <summary>
         /// The flag indicating that the class has a parent class
         /// </summary>
@@ -65,6 +65,8 @@ namespace Luax.Parser.Ast
         /// </summary>
         public LuaXElementLocation Location { get; }
 
+        private LuaXClassCollection mMetadata;
+
         internal LuaXClass(string name) : this(name, "object", new LuaXElementLocation("code", new AstNodeWrapper()))
         {
         }
@@ -74,6 +76,24 @@ namespace Luax.Parser.Ast
             Name = name;
             Parent = parent;
             Location = location;
+        }
+
+        internal bool HasInParents(LuaXClass parent)
+        {
+            string currentClassName = Name;
+            string parentName = parent.Name;
+            while (!string.IsNullOrEmpty(currentClassName) && currentClassName != "object")
+            {
+                if (currentClassName.Equals(parentName))
+                    return true;
+                mMetadata.Search(currentClassName, out var @class);
+                if (@class == null)
+                {
+                    return false;
+                }
+                currentClassName = @class.Parent;
+            }
+            return false;
         }
 
         private void ValidateParentChain(LuaXApplication application)
@@ -93,6 +113,7 @@ namespace Luax.Parser.Ast
         internal void Pass2(LuaXApplication application, LuaXAstTreeCreator creator)
         {
             ValidateParentChain(application);
+            mMetadata = application.Classes;
 
             //process methods
             for (int i = 0; i < Methods.Count; i++)
@@ -112,53 +133,127 @@ namespace Luax.Parser.Ast
                     creator.ProcessBody(method.Body, this, Methods[i]);
             }
         }
-
-        public bool SearchProperty(string propertyName, out LuaXProperty property)
+       
+        public bool SearchProperty(string propertyName, out LuaXProperty property, out string ownerClassName)
         {
-            var propertyIndex = Properties.Find(propertyName);
-            if (propertyIndex < 0)
+            LuaXPropertyCollection properties = this.Properties;
+            string className = this.Name;
+            while (!string.IsNullOrEmpty(className))
             {
-                if (ParentClass == null)
+                var propertyIndex = properties.Find(propertyName);
+                if (propertyIndex < 0)
                 {
-                    property = null;
-                    return false;
+                    bool foundInParents = false;
+                    if (ParentClass != null)
+                    {
+                        foundInParents = ParentClass.SearchProperty(propertyName, out property, out ownerClassName);
+                        if (foundInParents)
+                        {
+                            return true;
+                        }
+                    }
+                    if(!foundInParents)
+                    {
+                        int indexOfPoint = className.LastIndexOf('.');
+                        if (indexOfPoint > 0)
+                        {
+                            className = className.Substring(0, indexOfPoint);
+                            if (mMetadata.Search(className, out var @class))
+                            {
+                                properties = @class.Properties;
+                                continue;
+                            }
+                        }
+                        break;
+                    }
                 }
-                return ParentClass.SearchProperty(propertyName, out property);
+                ownerClassName = className;
+                property = properties[propertyIndex];
+                return true;
             }
-            property = this.Properties[propertyIndex];
-            return true;
+            ownerClassName = null;
+            property = null;
+            return false;
         }
 
         public bool SearchConstant(string propertyName, out LuaXConstantVariable constant)
         {
-            var constantIndex = Constants.Find(propertyName);
-            if (constantIndex < 0)
+            LuaXConstantVariableCollection constants = this.Constants;
+            string className = this.Name;
+            while (!string.IsNullOrEmpty(className))
             {
-                if (ParentClass == null)
+                var constantIndex = constants.Find(propertyName);
+                if (constantIndex < 0)
                 {
-                    constant = null;
-                    return false;
+                    bool foundInParents = false;
+                    if (ParentClass != null)
+                    {
+                        foundInParents = ParentClass.SearchConstant(propertyName, out constant);
+                        if (foundInParents)
+                        {
+                            return true;
+                        }
+                    }
+                    if (!foundInParents)
+                    {
+                        int indexOfPoint = className.LastIndexOf('.');
+                        if (indexOfPoint > 0)
+                        {
+                            className = className.Substring(0, indexOfPoint);
+                            if (mMetadata.Search(className, out var @class))
+                            {
+                                constants = @class.Constants;
+                                continue;
+                            }
+                        }
+                        break;
+                    }
                 }
-                return ParentClass.SearchConstant(propertyName, out constant);
+                constant = constants[constantIndex];
+                return true;
             }
-            constant = this.Constants[constantIndex];
-            return true;
+            constant = null;
+            return false;
         }
 
         public bool SearchMethod(string propertyName, out LuaXMethod method)
         {
-            var methodIndex = Methods.Find(propertyName);
-            if (methodIndex < 0)
+            LuaXMethodCollection methods = this.Methods;
+            string className = this.Name;
+            while (!string.IsNullOrEmpty(className))
             {
-                if (ParentClass == null)
+                var methodIndex = methods.Find(propertyName);
+                if (methodIndex < 0)
                 {
-                    method = null;
-                    return false;
+                    bool foundInParents = false;
+                    if (ParentClass != null)
+                    {
+                        foundInParents = ParentClass.SearchMethod(propertyName, out method);
+                        if (foundInParents)
+                        {
+                            return true;
+                        }
+                    }
+                    if (!foundInParents)
+                    {
+                        int indexOfPoint = className.LastIndexOf('.');
+                        if (indexOfPoint > 0)
+                        {
+                            className = className.Substring(0, indexOfPoint);
+                            if (mMetadata.Search(className, out var @class))
+                            {
+                                methods = @class.Methods;
+                                continue;
+                            }
+                        }
+                        break;
+                    }
                 }
-                return ParentClass.SearchMethod(propertyName, out method);
+                method = methods[methodIndex];
+                return true;
             }
-            method = this.Methods[methodIndex];
-            return true;
+            method = null;
+            return false;
         }
     }
 }

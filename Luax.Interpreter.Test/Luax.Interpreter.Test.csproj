@@ -20,6 +20,11 @@
     <None Remove="TestSources\ExceptionStackTraceTest.luax" />
     <None Remove="TestSources\ExpressionTest.luax" />
     <None Remove="TestSources\IfTest.luax" />
+    <None Remove="TestSources\InnerClass1.luax" />
+    <None Remove="TestSources\InnerClass2.luax" />
+    <None Remove="TestSources\InnerClass3.luax" />
+    <None Remove="TestSources\InnerClass4.luax" />
+    <None Remove="TestSources\LuaXStackTraceFramesTest.luax" />
     <None Remove="TestSources\Project1.ini" />
     <None Remove="TestSources\Project2.ini" />
     <None Remove="TestSources\Project3.ini" />
@@ -36,6 +41,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\InnerClass1.luax" />
+    <EmbeddedResource Include="TestSources\InnerClass2.luax" />
+    <EmbeddedResource Include="TestSources\InnerClass3.luax" />
+    <EmbeddedResource Include="TestSources\InnerClass4.luax" />
     <EmbeddedResource Include="TestSources\LuaXStackTraceFramesTest.luax" />
     <EmbeddedResource Include="TestSources\RepeatBreakTest.luax" />
     <EmbeddedResource Include="TestSources\RepeatContinueTest.luax" />
