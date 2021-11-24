@@ -24,7 +24,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties[PropertyName].Value is Dictionary<string, LuaXObjectInstance> d))
+            if (@this.Properties[PropertyName].Value is not Dictionary<string, LuaXObjectInstance> d)
                 throw new ArgumentException("The map isn't properly initialized", nameof(@this));
             return d.Count;
         }
@@ -35,7 +35,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties[PropertyName].Value is Dictionary<string, LuaXObjectInstance> d))
+            if (@this.Properties[PropertyName].Value is not Dictionary<string, LuaXObjectInstance> d)
                 throw new ArgumentException("The map isn't properly initialized", nameof(@this));
             return d.ContainsKey(key);
         }
@@ -46,7 +46,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties[PropertyName].Value is Dictionary<string, LuaXObjectInstance> d))
+            if (@this.Properties[PropertyName].Value is not Dictionary<string, LuaXObjectInstance> d)
                 throw new ArgumentException("The map isn't properly initialized", nameof(@this));
             return d[key];
         }
@@ -57,16 +57,9 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties[PropertyName].Value is Dictionary<string, LuaXObjectInstance> d))
+            if (@this.Properties[PropertyName].Value is not Dictionary<string, LuaXObjectInstance> d)
                 throw new ArgumentException("The map isn't properly initialized", nameof(@this));
-            if (d.ContainsKey(key))
-            {
-                d[key] = v;
-            }
-            else
-            {
-                d.Add(key, v);
-            }
+            d[key] = v;
             return null;
         }
 
@@ -76,7 +69,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties[PropertyName].Value is Dictionary<string, LuaXObjectInstance> d))
+            if (@this.Properties[PropertyName].Value is not Dictionary<string, LuaXObjectInstance> d)
                 throw new ArgumentException("The map isn't properly initialized", nameof(@this));
             d.Remove(key);
             return null;
@@ -88,7 +81,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties[PropertyName].Value is Dictionary<string, LuaXObjectInstance> d))
+            if (@this.Properties[PropertyName].Value is not Dictionary<string, LuaXObjectInstance> d)
                 throw new ArgumentException("The map isn't properly initialized", nameof(@this));
             var keys = d.Keys.ToArray();
             var result = new LuaXVariableInstanceArray(LuaXTypeDefinition.String, keys.Length);
@@ -104,7 +97,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));
-            if (!(@this.Properties[PropertyName].Value is Dictionary<string, LuaXObjectInstance> d))
+            if (@this.Properties[PropertyName].Value is not Dictionary<string, LuaXObjectInstance> d)
                 throw new ArgumentException("The map isn't properly initialized", nameof(@this));
             d.Clear();
             return null;

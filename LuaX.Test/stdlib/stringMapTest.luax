@@ -45,7 +45,7 @@ class stringMapTest
     end
 
     @Fact()
-    public function contins() : void
+    public function contains() : void
         var m : string_map;
         m = new string_map();
         m.set("key", mapItem.create("value1"));
