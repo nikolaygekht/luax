@@ -11,6 +11,21 @@ end
 
 @TestSuite()
 class intMapTest
+
+    class testMap : int_map
+        public function testMap() : void
+            super.int_map();
+        end
+
+        public function get(index : int) : mapItem
+            return cast<mapItem>(super.get(index));
+        end
+
+        public function set(index : int, value : mapItem) : void
+            super.set(index, value);
+        end
+    end
+
     @Fact()
     public function create_empty() : void
         var m : int_map;
@@ -45,6 +60,20 @@ class intMapTest
     end
 
     @Fact()
+    public function accessViaIndexer() : void
+        var m : testMap;
+        m = new testMap();
+        m.set(1, mapItem.create("value1"));
+        m.set(2, mapItem.create("value2"));
+
+        assert.isTrue(m.length() == 2, "size");
+        assert.isTrue(m[1].name == "value1", "item 1");
+        assert.isTrue(m[2].name == "value2", "item 2");
+        assert.isTrue(m.get(1).name == "value1", "item 1");
+        assert.isTrue(m.get(2).name == "value2", "item 2");
+    end
+
+    @Fact()
     public function contains() : void
         var m : int_map;
         m = new int_map();
@@ -53,6 +82,21 @@ class intMapTest
         assert.isTrue(m.contains(1), "item 1");
         assert.isTrue(m.contains(2), "item 2");
         assert.isFalse(m.contains(3), "item 3");
+    end
+
+    @Fact()
+    public function accessToNonExistentKey() : void
+        var m : int_map, thrown : boolean, ex : exception, item : object;        
+        m = new int_map();
+        m.set(1, mapItem.create("value1"));
+        m.set(2, mapItem.create("value2"));
+        
+        try
+            item = m.get(3);
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");        
     end
 
     @Fact()
