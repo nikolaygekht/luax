@@ -532,9 +532,17 @@ class xmlNode
     @DocReturn("The return value could be `ELEMENT`, `TEXT`, `COMMENT`, `CDATA` or `ATTRIBUTE`")
     public extern getType() : string;
 
-    @DocBrief("Returns the name of the node")
+    @DocBrief("Returns the full name of the node")
     @DocDescription("The name is returned only for `ELEMENT` and `ATTRIBUTE` nodes")
     public extern getName() : string;
+
+    @DocBrief("Returns the local name of the node")
+    @DocDescription("The name is returned only for `ELEMENT` and `ATTRIBUTE` nodes")
+    public extern getLocalName() : string;
+
+    @DocBrief("Returns the namespace URI of the node")
+    @DocDescription("The name is returned only for `ELEMENT` and `ATTRIBUTE` nodes")
+    public extern getNamespaceURI() : string;
 
     @DocBrief("Returns the value of the node")
     public extern getValue() : string;
@@ -544,6 +552,15 @@ class xmlNode
 
     @DocBrief("Returns the child node by its index")
     public extern getChild(index : int) : xmlNode;
+
+    @DocBrief("Returns the number of attributes")
+    public extern getAttributesCount() : int;
+
+    @DocBrief("Returns the attribute by its index")
+    public extern getAttribute(index : int) : xmlNode;
+
+    @DocBrief("Returns the attribute by its local name")
+    public extern getAttributeByName(localName : string) : xmlNode;
 end
 
 -- -------------------------------------------------------
@@ -683,7 +700,6 @@ end
 -- -----------------------------------------------------------
 @DocBrief("The stack of objects")
 class stack
-
     @DocBrief("Returns the number of the elements in the collection")
     public extern length() : int;
 
@@ -703,6 +719,36 @@ class stack
     public extern stack() : void;
 end
 
+-- ------------------------------------------------------------
+-- Sorted list of objects
+-- ------------------------------------------------------------
+@DocBrief("The interface to object comparer for a sorted list")
+@Interface()
+class object_comparer
+    public function compare(a : object, b : object) : int
+    end
+end
+
+@DocBrief("The sorted list of objects")
+class sorted_list
+    @DocBrief("Returns the number of the elements in the collection")
+    public extern length() : int;
+
+    @DocBrief("Gets the element by the index specified")
+    public extern get(index : int) : object;
+
+    @DocBrief("Adds a new element at the end of the list")
+    public extern add(value : object) : void;
+
+    @DocBrief("Finds an element in the list")
+    public extern find(value : object) : int;
+
+    @DocBrief("Removes the element from the list")
+    public extern remove(index : int) : void;
+
+    @DocBrief("Creates a list using the comparer specified")
+    public extern initialize(comparer : object_comparer) : void;
+end
 -- ------------------------------------------------------------
 -- action class
 -- ------------------------------------------------------------

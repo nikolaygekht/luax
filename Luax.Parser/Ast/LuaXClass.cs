@@ -133,7 +133,7 @@ namespace Luax.Parser.Ast
                     creator.ProcessBody(method.Body, this, Methods[i]);
             }
         }
-
+       
         public bool SearchProperty(string propertyName, out LuaXProperty property, out string ownerClassName)
         {
             LuaXPropertyCollection properties = this.Properties;

@@ -9,23 +9,24 @@ class listItem
     end
 end
 
--- subclassing list. pay attention that constructor is overriden!!!
-class testList : list
-    public function testList() : void
-        super.list();
-    end
-
-    public function get(index : int) : listItem
-        return cast<listItem>(super.get(index));
-    end
-
-    public function set(index : int, value : listItem) : void
-        super.set(index, value);
-    end
-end
-
 @TestSuite()
 class listTest
+
+    -- subclassing list. pay attention that constructor is overriden!!!
+    class testList : list
+        public function testList() : void
+            super.list();
+        end
+
+        public function get(index : int) : listItem
+            return cast<listItem>(super.get(index));
+        end
+
+        public function set(index : int, value : listItem) : void
+            super.set(index, value);
+        end
+    end
+
     @Fact()
     public function create_empty_viaNew() : void
         var l : list;
