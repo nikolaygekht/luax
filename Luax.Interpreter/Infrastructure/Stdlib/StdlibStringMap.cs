@@ -48,7 +48,9 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 throw new ArgumentNullException(nameof(@this));
             if (@this.Properties[PropertyName].Value is not Dictionary<string, LuaXObjectInstance> d)
                 throw new ArgumentException("The map isn't properly initialized", nameof(@this));
-            return d[key];
+            if (d.TryGetValue(key, out var obj))
+                return obj;
+            return null;
         }
         
         //public extern set(key : string, value : object) : void;

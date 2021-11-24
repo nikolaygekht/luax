@@ -45,6 +45,7 @@ class stringMapTest
         assert.isTrue(m.length() == 2, "size");
         assert.isTrue(m.get("key").name == "value1", "item 1");
         assert.isTrue(m.get("key2").name == "changed value2", "item 2");
+        assert.isTrue(m.get("key3") == nil, "item 3");
     end
 
     @Fact()
@@ -57,6 +58,7 @@ class stringMapTest
         assert.isTrue(m.length() == 2, "size");
         assert.isTrue(m["key"].name == "value1", "item 1");
         assert.isTrue(m["key2"].name == "changed value2", "item 2");
+        assert.isTrue(m["key3"] == nil, "item 3");
     end
 
     @Fact()
