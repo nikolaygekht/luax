@@ -90,8 +90,6 @@ class intMapTest
         m = new int_map();
         m.set(1, mapItem.create("value1"));
         m.set(2, mapItem.create("value2"));
-
-
         assert.isTrue(m.get(3) == nil, "nil value for non-existent key");     
     end
 
