@@ -10,13 +10,11 @@ namespace Luax.Parser.Ast.Statement
     {
         public LuaXExpression Start { get; }
 
-        public LuaXExpression Limit { get; private set; }
+        public LuaXExpression Limit { get; }
 
         public LuaXExpression Iterator { get; }
 
         public LuaXVariable Variable { get; }
-
-        public bool NeedDetectConditionAtRuntime { get; private set; }
 
         internal LuaXForLoopStatement(LuaXVariable identierVar, LuaXExpressionCollection expressions, LuaXElementLocation location) : base(location)
         {

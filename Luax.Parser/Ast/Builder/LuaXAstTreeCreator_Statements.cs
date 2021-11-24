@@ -137,10 +137,10 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, node, "Initialization part of for statement should be declaration and be int type");
 
             LuaXExpressionCollection forLoopExpressions = new LuaXExpressionCollection();
-            for (var i = 0; i < node.Children.Count; i++)
+            for (var i = 1; i < node.Children.Count; i++)
             {
                 var child = node.Children[i];
-                if (child.Symbol == "ASSIGN" || child.Symbol == "COMMA" || child.Symbol == "IDENTIFIER")
+                if (child.Symbol == "ASSIGN" || child.Symbol == "COMMA")
                     continue;
                 if (child.Symbol == "EXPR")
                     forLoopExpressions.Add(ProcessExpression(child, @class, method));

@@ -395,7 +395,7 @@ namespace Luax.Interpreter.Expression
                                 forStatement.ForLoopStatement.Limit.Location);
 
                 var conditionValue = LuaXExpressionEvaluator.Evaluate(condition, types, currentClass, variables);
-                int increment;
+                var increment = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
                 if (conditionValue is bool boolCondition)
                 {
                     for (int i = initial; boolCondition; i += increment)
@@ -405,8 +405,7 @@ namespace Luax.Interpreter.Expression
                             break;
                         if (statementsResult != ResultType.Continue && statementsResult != ResultType.ReachForEnd)
                             return statementsResult;
-
-                        increment = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
+                        
                         variables[variableName].Value = i + increment;
                         boolCondition = (bool)LuaXExpressionEvaluator.Evaluate(condition, types, currentClass, variables);
                     }
