@@ -10,15 +10,12 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
 {
     internal static class StdlibStringMap
     {
-        private static LuaXClassInstance mStringMapClass;
-        private static LuaXTypesLibrary mTypeLibrary;
         private const string PropertyName = "__map";
 
         public static void Initialize(LuaXTypesLibrary typeLibrary)
         {
-            mTypeLibrary = typeLibrary;
-            typeLibrary.SearchClass("string_map", out mStringMapClass);
-            mStringMapClass.LuaType.Properties.Add(new LuaXProperty() { Name = PropertyName, Visibility = LuaXVisibility.Private, LuaType = LuaXTypeDefinition.Void });
+            typeLibrary.SearchClass("string_map", out var stringMapClass);
+            stringMapClass.LuaType.Properties.Add(new LuaXProperty() { Name = PropertyName, Visibility = LuaXVisibility.Private, LuaType = LuaXTypeDefinition.Void });
         }
 
         //public extern length() : int;
