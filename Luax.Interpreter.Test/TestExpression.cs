@@ -45,7 +45,7 @@ namespace Luax.Interpreter.Test
         [InlineData("boolean", "true", true, typeof(bool))]
         [InlineData("boolean", "false", false, typeof(bool))]
         //
-        //new 
+        //new
         //
         [InlineData("int[]", "new int[32]", nameof(ValidateArray), typeof(Delegate))]
         [InlineData("a", "new a()", nameof(ValidateObject), typeof(Delegate))]
@@ -289,6 +289,8 @@ namespace Luax.Interpreter.Test
         [InlineData("int", "stdlib.indexOf(\"string\", \"I\", true)", 3, typeof(int))]
         [InlineData("string", "stdlib.left(\"string\", 3)", "str", typeof(string))]
         [InlineData("string", "stdlib.trim(\" string    \")", "string", typeof(string))]
+        [InlineData("string", "stdlib.rtrim(\"string    \")", "string", typeof(string))]
+        [InlineData("string", "stdlib.ltrim(\"   string\")", "string", typeof(string))]
         [InlineData("string", "stdlib.right(\"string\", 3)", "ing", typeof(string))]
         [InlineData("string", "stdlib.substring(\"string\", 2, 2)", "ri", typeof(string))]
         [InlineData("boolean", "stdlib.match(\"string\", \"^[\\\\w]*$\")", true, typeof(bool))]
