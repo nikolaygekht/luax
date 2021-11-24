@@ -9,6 +9,21 @@ class mapItem
     end
 end
 
+-- subclassing list. pay attention that constructor is overriden!!!
+class testStringMap : string_map
+    public function testStringMap() : void
+        super.string_map();
+    end
+
+    public function get(key : string) : mapItem
+        return cast<mapItem>(super.get(key));
+    end
+
+    public function set(key : string, value : mapItem) : void
+        super.set(key, value);
+    end
+end
+
 @TestSuite()
 class stringMapTest
     @Fact()
@@ -22,26 +37,26 @@ class stringMapTest
 
     @Fact()
     public function set_get() : void
-        var m : string_map;
-        m = new string_map();
+        var m : testStringMap;
+        m = new testStringMap();
         m.set("key", mapItem.create("value1"));
         m.set("key2", mapItem.create("value2"));
         m.set("key2", mapItem.create("changed value2"));
         assert.isTrue(m.length() == 2, "size");
-        assert.isTrue((cast<mapItem>(m.get("key"))).name == "value1", "item 1");
-        assert.isTrue((cast<mapItem>(m.get("key2"))).name == "changed value2", "item 2");
+        assert.isTrue(m.get("key").name == "value1", "item 1");
+        assert.isTrue(m.get("key2").name == "changed value2", "item 2");
     end
 
     @Fact()
     public function access() : void
-        var m : string_map;
-        m = new string_map();
+        var m : testStringMap;
+        m = new testStringMap();
         m.set("key", mapItem.create("value1"));
         m.set("key2", mapItem.create("value2"));
         m.set("key2", mapItem.create("changed value2"));
         assert.isTrue(m.length() == 2, "size");
-        assert.isTrue((cast<mapItem>(m["key"])).name == "value1", "item 1");
-        assert.isTrue((cast<mapItem>(m["key2"])).name == "changed value2", "item 2");
+        assert.isTrue(m["key"].name == "value1", "item 1");
+        assert.isTrue(m["key2"].name == "changed value2", "item 2");
     end
 
     @Fact()
