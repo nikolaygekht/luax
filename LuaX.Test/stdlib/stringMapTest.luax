@@ -26,9 +26,22 @@ class stringMapTest
         m = new string_map();
         m.set("key", mapItem.create("value1"));
         m.set("key2", mapItem.create("value2"));
+        m.set("key2", mapItem.create("changed value2"));
         assert.isTrue(m.length() == 2, "size");
         assert.isTrue((cast<mapItem>(m.get("key"))).name == "value1", "item 1");
-        assert.isTrue((cast<mapItem>(m.get("key2"))).name == "value2", "item 2");
+        assert.isTrue((cast<mapItem>(m.get("key2"))).name == "changed value2", "item 2");
+    end
+
+    @Fact()
+    public function access() : void
+        var m : string_map;
+        m = new string_map();
+        m.set("key", mapItem.create("value1"));
+        m.set("key2", mapItem.create("value2"));
+        m.set("key2", mapItem.create("changed value2"));
+        assert.isTrue(m.length() == 2, "size");
+        assert.isTrue((cast<mapItem>(m["key"])).name == "value1", "item 1");
+        assert.isTrue((cast<mapItem>(m["key2"])).name == "changed value2", "item 2");
     end
 
     @Fact()
@@ -75,8 +88,6 @@ class stringMapTest
         assert.isTrue(m.length() == 2, "size");
         m.clear();
         assert.isTrue(m.length() == 0, "size");
-        assert.isTrue(keys[0] == "key", "item 1");
-        assert.isTrue(keys[1] == "key2", "item 2");
     end
 
 end
