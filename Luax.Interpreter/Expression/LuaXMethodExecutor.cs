@@ -387,12 +387,14 @@ namespace Luax.Interpreter.Expression
 
                 var iterator = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
                 var operation = iterator >= 0 ? LuaXBinaryOperator.LessOrEqual : LuaXBinaryOperator.GreaterOrEqual;
+                int limit = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Limit, types, currentClass, variables);
+                LuaXConstantExpression limitExpression = new LuaXConstantExpression(new LuaXConstant(limit, forStatement.ForLoopStatement.Limit.Location));
 
                 var condition = new LuaXBinaryOperatorExpression(operation,
                                 new LuaXVariableExpression(forStatement.ForLoopStatement.Variable.Name,
                                 forStatement.ForLoopStatement.Variable.LuaType, forStatement.ForLoopStatement.Variable.Location),
-                                forStatement.ForLoopStatement.Limit, LuaXTypeDefinition.Boolean,
-                                forStatement.ForLoopStatement.Limit.Location);
+                                limitExpression, LuaXTypeDefinition.Boolean,
+                                limitExpression.Location);
 
                 var conditionValue = LuaXExpressionEvaluator.Evaluate(condition, types, currentClass, variables);
                 var increment = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
