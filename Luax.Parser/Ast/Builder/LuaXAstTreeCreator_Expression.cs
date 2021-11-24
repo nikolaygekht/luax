@@ -678,9 +678,10 @@ namespace Luax.Parser.Ast.Builder
                 arrayInitAstNode = arrayInitAstNode.Children[1];
                 for (var i = 0; i < arrayInitAstNode.Children.Count; i++)
                 {
-                    LuaXExpression initExpression = CastToCompatible(ProcessExpression(arrayInitAstNode.Children[i], currentClass, currentMethod), type);
+                    IAstNode expressionAstNode = arrayInitAstNode.Children[i];
+                    LuaXExpression initExpression = CastToCompatible(ProcessExpression(expressionAstNode, currentClass, currentMethod), type);
                     if (initExpression == null)
-                        throw new LuaXAstGeneratorException(Name, astNode, "The initialization expression should have a compatible type");
+                        throw new LuaXAstGeneratorException(Name, expressionAstNode, "The initialization expression should have a compatible type");
                     initExpressions.Add(initExpression);
                 }
             }
