@@ -1,6 +1,6 @@
 @TestSuite()
 class arrayWithInitTest
-    private function double(param : int) : int
+    private function doubleValue(param : int) : int
         return param * 2;
     end
     private function summ(arr : int[]) : int
@@ -18,7 +18,7 @@ class arrayWithInitTest
     @Fact()
     public function testGetFirstLetters() : void
         var intArr : int[];
-        intArr = new int[] { 100, double(1), double(2), double(3), double(4), double(5) + 1 };
+        intArr = new int[] { 100, doubleValue(1), doubleValue(2), doubleValue(3), doubleValue(4), doubleValue(5) + 1 };
         assert.equals(summ(intArr), 131, "");
     end
 end
