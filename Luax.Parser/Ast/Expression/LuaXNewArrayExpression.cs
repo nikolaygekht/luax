@@ -6,7 +6,7 @@
     public class LuaXNewArrayExpression : LuaXExpression
     {
         /// <summary>
-        /// The class name to create
+        /// The type of the array's elements
         /// </summary>
         public LuaXTypeDefinition ElementType { get; }
 
