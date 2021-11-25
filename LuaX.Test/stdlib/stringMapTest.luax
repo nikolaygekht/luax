@@ -1,81 +1,85 @@
-class mapItem
-    public var name : string;
-
-    public static function create(name : string) : mapItem
-        var m : mapItem;
-        m = new mapItem();
-        m.name = name;
-        return m;
-    end
-end
-
--- subclassing list. pay attention that constructor is overriden!!!
-class testStringMap : string_map
-    public function testStringMap() : void
-        super.string_map();
-    end
-
-    public function get(key : string) : mapItem
-        return cast<mapItem>(super.get(key));
-    end
-
-    public function set(key : string, value : mapItem) : void
-        super.set(key, value);
-    end
-end
-
 @TestSuite()
 class stringMapTest
+    -- subclassing list. pay attention that constructor is overriden!!!
+    class testStringMap : string_map
+        public function testStringMap() : void
+            super.string_map();
+        end
+
+        public function get(key : string) : listItem
+            return cast<listItem>(super.get(key));
+        end
+
+        public function set(key : string, value : listItem) : void
+            super.set(key, value);
+        end
+    end
+
     @Fact()
     public function create_empty_viaNew() : void
         var m : string_map;
         m = new string_map();
-        assert.isTrue(m ~= nil, "value");
-        assert.isTrue(typename(m) == "string_map", "type");
-        assert.isTrue(m.length() == 0, "size");
+        assert.doesNotEqual(m, nil, "value");
+        assert.equals(typename(m), "string_map", "type");
+        assert.equals(m.length(), 0, "size");
     end
 
     @Fact()
     public function set_get() : void
         var m : testStringMap;
         m = new testStringMap();
-        m.set("key", mapItem.create("value1"));
-        m.set("key2", mapItem.create("value2"));
-        m.set("key2", mapItem.create("changed value2"));
-        assert.isTrue(m.length() == 2, "size");
-        assert.isTrue(m.get("key").name == "value1", "item 1");
-        assert.isTrue(m.get("key2").name == "changed value2", "item 2");
+        m.set("key", listItem.create("value1"));
+        m.set("key2", listItem.create("value2"));
+        m.set("key2", listItem.create("changed value2"));
+        assert.equals(m.length(), 2, "size");
+        assert.equals(m.get("key").name, "value1", "item 1");
+        assert.equals(m.get("key2").name, "changed value2", "item 2");
     end
 
     @Fact()
     public function access() : void
         var m : testStringMap;
         m = new testStringMap();
-        m.set("key", mapItem.create("value1"));
-        m.set("key2", mapItem.create("value2"));
-        m.set("key2", mapItem.create("changed value2"));
-        assert.isTrue(m.length() == 2, "size");
-        assert.isTrue(m["key"].name == "value1", "item 1");
-        assert.isTrue(m["key2"].name == "changed value2", "item 2");
+        m.set("key", listItem.create("value1"));
+        m.set("key2", listItem.create("value2"));
+        m.set("key2", listItem.create("changed value2"));
+        assert.equals(m.length(), 2, "size");
+        assert.equals(m["key"].name, "value1", "item 1");
+        assert.equals(m["key2"].name, "changed value2", "item 2");
     end
 
     @Fact()
     public function accessToNonExistingKey() : void
         var m : testStringMap;
+        var hasException : boolean;
+        var item : listItem;
+        var ex : exception;
         m = new testStringMap();
-        m.set("key", mapItem.create("value1"));
-        m.set("key2", mapItem.create("value2"));
-        assert.isTrue(m.length() == 2, "size");
-        assert.isTrue(m["key3"] == nil, "non existing item 3");
-        assert.isTrue(m.get("key3") == nil, "non existing item 3");
+        assert.equals(m.length(), 0, "size");
+
+        hasException = false;
+        try
+            item = m["key3"];
+        catch ex
+            hasException = true;
+        end
+        assert.isTrue(hasException, "request not existing key should thrown exception");
+
+        hasException = false;
+        try
+            item = m.get("key3");
+        catch ex
+            hasException = true;
+        end
+        assert.isTrue(hasException, "request not existing key should thrown exception");
     end
 
     @Fact()
     public function contains() : void
         var m : string_map;
         m = new string_map();
-        m.set("key", mapItem.create("value1"));
-        m.set("key2", mapItem.create("value2"));
+        m.set("key", listItem.create("value1"));
+        m.set("key2", listItem.create("value2"));
         assert.isTrue(m.contains("key"), "item 1");
         assert.isTrue(m.contains("key2"), "item 2");
         assert.isFalse(m.contains("key3"), "item 3");
@@ -85,8 +89,8 @@ class stringMapTest
     public function remove() : void
         var m : string_map;
         m = new string_map();
-        m.set("key", mapItem.create("value1"));
-        m.set("key2", mapItem.create("value2"));
+        m.set("key", listItem.create("value1"));
+        m.set("key2", listItem.create("value2"));
         m.remove("key");
         assert.isFalse(m.contains("key"), "item 1");
         assert.isTrue(m.contains("key2"), "item 2");
@@ -97,23 +101,23 @@ class stringMapTest
         var m : string_map;
         var keys: string[];
         m = new string_map();
-        m.set("key", mapItem.create("value1"));
-        m.set("key2", mapItem.create("value2"));
+        m.set("key", listItem.create("value1"));
+        m.set("key2", listItem.create("value2"));
         keys = m.keys();
-        assert.isTrue(keys.length == 2, "size");
-        assert.isTrue(keys[0] == "key", "item 1");
-        assert.isTrue(keys[1] == "key2", "item 2");
+        assert.equals(keys.length, 2, "size");
+        assert.equals(keys[0], "key", "item 1");
+        assert.equals(keys[1], "key2", "item 2");
     end
 
     @Fact()
     public function clear() : void
         var m : string_map;
         m = new string_map();
-        m.set("key", mapItem.create("value1"));
-        m.set("key2", mapItem.create("value2"));
-        assert.isTrue(m.length() == 2, "size");
+        m.set("key", listItem.create("value1"));
+        m.set("key2", listItem.create("value2"));
+        assert.equals(m.length(), 2, "size");
         m.clear();
-        assert.isTrue(m.length() == 0, "size");
+        assert.equals(m.length(), 0, "size");
     end
 
 end

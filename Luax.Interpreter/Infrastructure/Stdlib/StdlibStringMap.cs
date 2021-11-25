@@ -48,9 +48,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 throw new ArgumentNullException(nameof(@this));
             if (@this.Properties[PropertyName].Value is not Dictionary<string, LuaXObjectInstance> d)
                 throw new ArgumentException("The map isn't properly initialized", nameof(@this));
-            if (d.TryGetValue(key, out var obj))
-                return obj;
-            return null;
+            return d[key];
         }
         
         //public extern set(key : string, value : object) : void;
@@ -85,10 +83,10 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 throw new ArgumentNullException(nameof(@this));
             if (@this.Properties[PropertyName].Value is not Dictionary<string, LuaXObjectInstance> d)
                 throw new ArgumentException("The map isn't properly initialized", nameof(@this));
-            var keys = d.Keys.ToArray();
-            var result = new LuaXVariableInstanceArray(LuaXTypeDefinition.String, keys.Length);
-            for (var i = 0; i < keys.Length; i++)
-                result[i].Value = keys[i];
+            var keys = d.Keys;
+            var result = new LuaXVariableInstanceArray(LuaXTypeDefinition.String, keys.Count);
+            for (var i = 0; i < keys.Count; i++)
+                result[i].Value = keys.ElementAt(i);
             return result;
         }
 
