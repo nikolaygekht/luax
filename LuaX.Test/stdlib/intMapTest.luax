@@ -1,27 +1,15 @@
-class mapItem
-    public var name : string;
-
-    public static function create(name : string) : mapItem
-        var m : mapItem;
-        m = new mapItem();
-        m.name = name;
-        return m;
-    end
-end
-
 @TestSuite()
 class intMapTest
-
     class testMap : int_map
         public function testMap() : void
             super.int_map();
         end
-
-        public function get(index : int) : mapItem
-            return cast<mapItem>(super.get(index));
+    
+        public function get(index : int) : listItem
+            return cast<listItem>(super.get(index));
         end
-
-        public function set(index : int, value : mapItem) : void
+    
+        public function set(index : int, value : listItem) : void
             super.set(index, value);
         end
     end
@@ -39,46 +27,32 @@ class intMapTest
     public function set_get() : void
         var m : int_map;
         m = new int_map();
-        m.set(1, mapItem.create("value1"));
-        m.set(2, mapItem.create("value2"));
-        m.set(2, mapItem.create("changed value2"));
+        m.set(1, listItem.create("value1"));
+        m.set(2, listItem.create("value2"));
+        m.set(2, listItem.create("changed value2"));
         assert.equals(m.length(), 2, "size");
-        assert.equals((cast<mapItem>(m.get(1))).name, "value1", "item 1");
-        assert.equals((cast<mapItem>(m.get(2))).name, "changed value2", "item 2");
-    end
-
-    @Fact()
-    public function access() : void
-        var m : int_map;
-        m = new int_map();
-        m.set(1, mapItem.create("value1"));
-        m.set(2, mapItem.create("value2"));
-        m.set(2, mapItem.create("changed value2"));
-        assert.equals(m.length(), 2, "size");
-        assert.equals((cast<mapItem>(m[1])).name, "value1", "item 1");
-        assert.equals((cast<mapItem>(m[2])).name, "changed value2", "item 2");
+        assert.equals((cast<listItem>(m.get(1))).name, "value1", "item 1");
+        assert.equals((cast<listItem>(m.get(2))).name, "changed value2", "item 2");
     end
 
     @Fact()
     public function accessViaIndexer() : void
         var m : testMap;
         m = new testMap();
-        m.set(1, mapItem.create("value1"));
-        m.set(2, mapItem.create("value2"));
+        m.set(1, listItem.create("value1"));
+        m.set(2, listItem.create("value2"));
 
         assert.equals(m.length(), 2, "size");
         assert.equals(m[1].name, "value1", "item 1");
         assert.equals(m[2].name, "value2", "item 2");
-        assert.equals(m.get(1).name, "value1", "item 1");
-        assert.equals(m.get(2).name, "value2", "item 2");
     end
 
     @Fact()
     public function contains() : void
         var m : int_map;
         m = new int_map();
-        m.set(1, mapItem.create("value1"));
-        m.set(2, mapItem.create("value2"));
+        m.set(1, listItem.create("value1"));
+        m.set(2, listItem.create("value2"));
         assert.isTrue(m.contains(1), "item 1");
         assert.isTrue(m.contains(2), "item 2");
         assert.isFalse(m.contains(3), "item 3");
@@ -88,17 +62,30 @@ class intMapTest
     public function accessToNonExistentKey() : void
         var m : int_map, thrown : boolean, ex : exception, item : object;        
         m = new int_map();
-        m.set(1, mapItem.create("value1"));
-        m.set(2, mapItem.create("value2"));
-        assert.equals(m.get(3), nil, "nil value for non-existent key");     
+
+        thrown = false;
+        try
+            item = m[1];
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "request not existing key should thrown exception");
+
+        thrown = false;
+        try
+            item = m.get(1);
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "request not existing key should thrown exception");
     end
 
     @Fact()
     public function remove() : void
         var m : int_map;
         m = new int_map();
-        m.set(1, mapItem.create("value1"));
-        m.set(2, mapItem.create("value2"));
+        m.set(1, listItem.create("value1"));
+        m.set(2, listItem.create("value2"));
         m.remove(1);
         assert.isFalse(m.contains(1), "item 1");
         assert.isTrue(m.contains(2), "item 2");
@@ -109,8 +96,8 @@ class intMapTest
         var m : int_map;
         var keys: int[];
         m = new int_map();
-        m.set(1, mapItem.create("value1"));
-        m.set(2, mapItem.create("value2"));
+        m.set(1, listItem.create("value1"));
+        m.set(2, listItem.create("value2"));
         keys = m.keys();
         assert.equals(keys.length, 2, "size");
         assert.equals(keys[0], 1, "item 1");
@@ -121,8 +108,8 @@ class intMapTest
     public function clear() : void
         var m : int_map;
         m = new int_map();
-        m.set(1, mapItem.create("value1"));
-        m.set(2, mapItem.create("value2"));
+        m.set(1, listItem.create("value1"));
+        m.set(2, listItem.create("value2"));
         assert.equals(m.length(), 2, "size");
         m.clear();
         assert.equals(m.length(), 0, "size");
