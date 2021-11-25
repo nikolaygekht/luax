@@ -378,47 +378,56 @@ namespace Luax.Interpreter.Expression
 
         private static ResultType ExecuteFor(LuaXMethod callingMethod, LuaXForStatement forStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
         {
-            var initialExp = LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Start, types, currentClass, variables);
-            var variableName = forStatement.ForLoopStatement.Variable.Name;
+            var typeId = forStatement.ForLoopDescription.Start.ReturnType.TypeId;
 
-            if (initialExp is int initial)
+            var loopVariableName = forStatement.ForLoopDescription.Variable.Name;
+
+            var stepValue = LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopDescription.Step, types, currentClass, variables);
+            var stepExpression = new LuaXBinaryOperatorExpression(LuaXBinaryOperator.Add,
+                new LuaXVariableExpression(forStatement.ForLoopDescription.Variable.Name,
+                forStatement.ForLoopDescription.Variable.LuaType, forStatement.ForLoopDescription.Variable.Location),
+                new LuaXConstantExpression(new LuaXConstant(typeId, stepValue, forStatement.ForLoopDescription.Step.Location)),
+                LuaXTypeDefinition.Boolean, forStatement.ForLoopDescription.Step.Location);
+            var stepStatement = new LuaXAssignVariableStatement(loopVariableName, stepExpression,
+                forStatement.ForLoopDescription.Step.Location);
+
+            LuaXBinaryOperator limitCompareOp;
+            if (typeId == LuaXType.Integer)
+                limitCompareOp = (int)stepValue >= 0 ? LuaXBinaryOperator.LessOrEqual : LuaXBinaryOperator.GreaterOrEqual;
+            else if (typeId == LuaXType.Real)
+                limitCompareOp = (double)stepValue >= 0.0 ? LuaXBinaryOperator.LessOrEqual : LuaXBinaryOperator.GreaterOrEqual;
+            else
+                throw new LuaXExecutionException(forStatement.Location, "Condition part type is not supported");
+
+            var limitValue = LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopDescription.Limit, types, currentClass, variables);
+            LuaXConstantExpression limitConstExpression = new LuaXConstantExpression(new LuaXConstant(typeId, limitValue, forStatement.ForLoopDescription.Limit.Location));
+
+            var limitExpression = new LuaXBinaryOperatorExpression(limitCompareOp,
+                                new LuaXVariableExpression(forStatement.ForLoopDescription.Variable.Name,
+                                forStatement.ForLoopDescription.Variable.LuaType, forStatement.ForLoopDescription.Variable.Location),
+                                limitConstExpression, LuaXTypeDefinition.Boolean,
+                                limitConstExpression.Location);
+
+            if (limitExpression.ReturnType.IsBoolean())
             {
-                variables[variableName].Value = initial;
+                var assignStatement = new LuaXAssignVariableStatement(loopVariableName, forStatement.ForLoopDescription.Start,
+                    forStatement.ForLoopDescription.Start.Location);
+                ExecuteAssignVariable(assignStatement, types, currentClass, variables);
 
-                var iterator = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
-                var operation = iterator >= 0 ? LuaXBinaryOperator.LessOrEqual : LuaXBinaryOperator.GreaterOrEqual;
-                int limit = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Limit, types, currentClass, variables);
-                LuaXConstantExpression limitExpression = new LuaXConstantExpression(new LuaXConstant(limit, forStatement.ForLoopStatement.Limit.Location));
-
-                var condition = new LuaXBinaryOperatorExpression(operation,
-                                new LuaXVariableExpression(forStatement.ForLoopStatement.Variable.Name,
-                                forStatement.ForLoopStatement.Variable.LuaType, forStatement.ForLoopStatement.Variable.Location),
-                                limitExpression, LuaXTypeDefinition.Boolean,
-                                limitExpression.Location);
-
-                var conditionValue = LuaXExpressionEvaluator.Evaluate(condition, types, currentClass, variables);
-                var increment = (int)LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopStatement.Iterator, types, currentClass, variables);
-                if (conditionValue is bool boolCondition)
+                while ((bool)LuaXExpressionEvaluator.Evaluate(limitExpression, types, currentClass, variables))
                 {
-                    for (int i = initial; boolCondition; i += increment)
-                    {
-                        ResultType statementsResult = ExecuteStatements(callingMethod, forStatement.Statements, types, currentClass, variables, out result);
-                        if (statementsResult == ResultType.Break)
-                            break;
-                        if (statementsResult != ResultType.Continue && statementsResult != ResultType.ReachForEnd)
-                            return statementsResult;
-                        
-                        variables[variableName].Value = i + increment;
-                        boolCondition = (bool)LuaXExpressionEvaluator.Evaluate(condition, types, currentClass, variables);
-                    }
+                    ResultType statementsResult = ExecuteStatements(callingMethod, forStatement.Statements, types, currentClass, variables, out result);
+                    if (statementsResult == ResultType.Break)
+                        break;
+                    if (statementsResult != ResultType.Continue && statementsResult != ResultType.ReachForEnd)
+                        return statementsResult;
+
+                    ExecuteAssignVariable(stepStatement, types, currentClass, variables);
                 }
-                else
-                    throw new LuaXExecutionException(forStatement.Location, "Condition part of for statement is not a boolean value");
             }
             else
-            {
-                throw new LuaXExecutionException(forStatement.Location, "Initialization part of for statement should be int type");
-            }
+                throw new LuaXExecutionException(forStatement.Location, "Condition part of for statement is not a boolean value");
+
 
             result = null;
             return ResultType.ReachForEnd;

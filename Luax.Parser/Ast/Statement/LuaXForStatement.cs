@@ -8,18 +8,18 @@ namespace Luax.Parser.Ast.Statement
     public class LuaXForStatement : LuaXStatement
     {
         /// <summary>
-        /// The statement when the loop body is execute
+        /// The loop description
         /// </summary>
-        public LuaXForLoopStatement ForLoopStatement { get; }
+        public LuaXForLoopDescription ForLoopDescription { get; }
 
         /// <summary>
         /// The loop body content
         /// </summary>
         public LuaXStatementCollection Statements { get; } = new LuaXStatementCollection();
 
-        internal LuaXForStatement(LuaXElementLocation location, LuaXForLoopStatement forloopStatement) : base(location)
+        internal LuaXForStatement(LuaXElementLocation location, LuaXForLoopDescription description) : base(location)
         {
-            ForLoopStatement = forloopStatement;
+            ForLoopDescription = description;
         }
     }
 }

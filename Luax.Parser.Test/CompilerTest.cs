@@ -643,10 +643,10 @@ namespace Luax.Parser.Test
             method.Statements[1].Should().BeOfType<LuaXForStatement>();
 
             var @for = method.Statements[1].As<LuaXForStatement>();
-            @for.ForLoopStatement.Start.ToString().Should().Be("const:int:0");
-            @for.ForLoopStatement.Limit.ToString().Should().Be("const:int:10");
-            @for.ForLoopStatement.Iterator.ToString().Should().Be("const:int:1");
-            @for.ForLoopStatement.Variable.Name.Should().Be("i");
+            @for.ForLoopDescription.Start.ToString().Should().Be("const:int:0");
+            @for.ForLoopDescription.Limit.ToString().Should().Be("const:int:10");
+            @for.ForLoopDescription.Step.ToString().Should().Be("const:int:1");
+            @for.ForLoopDescription.Variable.Name.Should().Be("i");
 
             @for.Statements.Should().HaveCount(3);
 
@@ -682,10 +682,10 @@ namespace Luax.Parser.Test
             method.Statements[1].Should().BeOfType<LuaXForStatement>();
 
             var @for = method.Statements[1].As<LuaXForStatement>();
-            @for.ForLoopStatement.Start.ToString().Should().Be("const:int:10");
-            @for.ForLoopStatement.Limit.ToString().Should().Be("const:int:0");
-            @for.ForLoopStatement.Iterator.ToString().Should().Be("const:int:-1");
-            @for.ForLoopStatement.Variable.Name.Should().Be("i");
+            @for.ForLoopDescription.Start.ToString().Should().Be("const:int:10");
+            @for.ForLoopDescription.Limit.ToString().Should().Be("const:int:0");
+            @for.ForLoopDescription.Step.ToString().Should().Be("const:int:-1");
+            @for.ForLoopDescription.Variable.Name.Should().Be("i");
 
             @for.Statements.Should().HaveCount(3);
 
@@ -721,10 +721,10 @@ namespace Luax.Parser.Test
             method.Statements[1].Should().BeOfType<LuaXForStatement>();
 
             var @for = method.Statements[1].As<LuaXForStatement>();
-            @for.ForLoopStatement.Start.ToString().Should().Be("const:int:0");
-            @for.ForLoopStatement.Limit.ToString().Should().Be("const:int:10");
-            @for.ForLoopStatement.Iterator.ToString().Should().Be("const:int:1");
-            @for.ForLoopStatement.Variable.Name.Should().Be("i");
+            @for.ForLoopDescription.Start.ToString().Should().Be("const:int:0");
+            @for.ForLoopDescription.Limit.ToString().Should().Be("const:int:10");
+            @for.ForLoopDescription.Step.ToString().Should().Be("const:int:1");
+            @for.ForLoopDescription.Variable.Name.Should().Be("i");
 
             @for.Statements.Should().HaveCount(1);
 
@@ -734,10 +734,10 @@ namespace Luax.Parser.Test
         }
 
         [Fact]
-        public void ForInitExprNonIntType()
+        public void ForInitExprNonNumberType()
         {
             var app = new LuaXApplication();
-            app.CompileResource("ForInitExprNonIntType");
+            app.CompileResource("ForInitExprNonNumberType");
 
             var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
             Assert.Contains("Initialization part of for statement should be declaration and be int type", ex.Message);
