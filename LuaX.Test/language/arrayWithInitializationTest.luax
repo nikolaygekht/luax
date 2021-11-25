@@ -19,6 +19,6 @@ class arrayWithInitTest
     public function testGetFirstLetters() : void
         var intArr : int[];
         intArr = new int[] { 100, double(1), double(2), double(3), double(4), double(5) + 1 };
-        assert.isTrue(summ(intArr) == 131, "");
+        assert.equals(summ(intArr), 131, "");
     end
 end
