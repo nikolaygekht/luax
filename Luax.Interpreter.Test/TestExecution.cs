@@ -551,6 +551,41 @@ namespace Luax.Interpreter.Test
             r.Should().BeOfType<string>();
             r.Should().Be(expectedValue);
         }
+
+
+        [Fact]
+        public void TestArrayWithInit()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ArrayWithInitTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+
+            program.SearchMethod("method1", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsString().Should().BeTrue();
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { }, out var r);
+            r.Should().BeOfType<string>();
+            r.Should().Be("3 is a summ of 1 and 2");
+
+            program.SearchMethod("method2", null, out method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsString().Should().BeTrue();
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { }, out r);
+            r.Should().BeOfType<string>();
+            r.Should().Be("3 is a summ of 1 and 2");
+
+            program.SearchMethod("method3", null, out method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsString().Should().BeTrue();
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { }, out r);
+            r.Should().BeOfType<string>();
+            r.Should().Be("3 is a summ of 1 and 2!");
+        }
     }
 }
 

@@ -911,7 +911,7 @@ namespace Luax.Parser.Test
         {
             string initExpression = exact ? expr : $"REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT[{expr}]]]]]]]]]]]]";
             StageVariableAndProperty(out var metadata, out var @class, out var method);
-            var node = AstNodeExtensions.Parse($"[REXPR[NEW_ARRAY_EXPR_WITH_INIT[NEW[new(new)]][TYPE_NAME[{strType}]][L_SQUARE_BRACKET][R_SQUARE_BRACKET][ARRAY_INIT[L_BRACE[{{({{)]][ARRAY_INIT_ARGS[{initExpression}]][R_BRACE[}}(}})]]]]]");
+            var node = AstNodeExtensions.Parse($"[REXPR[NEW_ARRAY_EXPR_WITH_INIT[NEW[new(new)]][TYPE_NAME[{strType}]][L_SQUARE_BRACKET][R_SQUARE_BRACKET][ARRAY_INIT[L_BRACE[{{({{)]][ARRAY_INIT_ARGS[{initExpression}][{initExpression}]][R_BRACE[}}(}})]]]]]");
             var processor = new LuaXAstTreeCreator("", metadata);
             var expression = processor.ProcessExpression(node, @class, method);
             expression.Should().BeOfType<LuaXNewArrayWithInitExpression>();
@@ -925,10 +925,13 @@ namespace Luax.Parser.Test
             array.ReturnType.Array.Should().BeTrue();
             array.ReturnType.Class.Should().Be(elementType.Class);
 
-            array.InitExpressions.Should().HaveCount(1);
+            array.InitExpressions.Should().HaveCount(2);
             array.InitExpressions[0].ReturnType.TypeId.Should().Be(luaType);
             array.InitExpressions[0].ReturnType.Array.Should().BeFalse();
             array.InitExpressions[0].ReturnType.Class.Should().Be(elementType.Class);
+            array.InitExpressions[1].ReturnType.TypeId.Should().Be(luaType);
+            array.InitExpressions[1].ReturnType.Array.Should().BeFalse();
+            array.InitExpressions[1].ReturnType.Class.Should().Be(elementType.Class);
         }
 
         [Theory]

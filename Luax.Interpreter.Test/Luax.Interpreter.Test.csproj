@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="TestSources\ArrayWithInitTest.luax" />
     <None Remove="TestSources\AssignTest.luax" />
     <None Remove="TestSources\CastTest.luax" />
     <None Remove="TestSources\ClassesTest1.luax" />
@@ -41,6 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\ArrayWithInitTest.luax" />
     <EmbeddedResource Include="TestSources\InnerClass1.luax" />
     <EmbeddedResource Include="TestSources\InnerClass2.luax" />
     <EmbeddedResource Include="TestSources\InnerClass3.luax" />

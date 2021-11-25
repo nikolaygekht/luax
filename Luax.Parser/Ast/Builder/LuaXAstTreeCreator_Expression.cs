@@ -671,6 +671,21 @@ namespace Luax.Parser.Ast.Builder
             if (astNode.Children.Count < 5 || astNode.Children[4].Symbol != "ARRAY_INIT")
                 throw new LuaXAstGeneratorException(Name, astNode, "The array initialization is expected");
 
+            LuaXExpressionCollection initExpressions =
+                GetArrayInitializationExpressions(astNode, type, currentClass, currentMethod);
+            return new LuaXNewArrayWithInitExpression(type, initExpressions, new LuaXElementLocation(Name, astNode));
+        }
+
+        /// <summary>
+        /// Process array initialization expressions
+        /// </summary>
+        /// <param name="astNode">ARRAY_INIT AST node</param>
+        /// <param name="targetType"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpressionCollection GetArrayInitializationExpressions(IAstNode astNode, LuaXTypeDefinition targetType, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
             LuaXExpressionCollection initExpressions = new LuaXExpressionCollection();
             IAstNode arrayInitAstNode = astNode.Children[4];
             if (arrayInitAstNode.Children[1].Symbol == "ARRAY_INIT_ARGS")
@@ -679,13 +694,13 @@ namespace Luax.Parser.Ast.Builder
                 for (var i = 0; i < arrayInitAstNode.Children.Count; i++)
                 {
                     IAstNode expressionAstNode = arrayInitAstNode.Children[i];
-                    LuaXExpression initExpression = CastToCompatible(ProcessExpression(expressionAstNode, currentClass, currentMethod), type);
+                    LuaXExpression initExpression = CastToCompatible(ProcessExpression(expressionAstNode, currentClass, currentMethod), targetType);
                     if (initExpression == null)
                         throw new LuaXAstGeneratorException(Name, expressionAstNode, "The initialization expression should have a compatible type");
                     initExpressions.Add(initExpression);
                 }
             }
-            return new LuaXNewArrayWithInitExpression(type, initExpressions, new LuaXElementLocation(Name, astNode));
+            return initExpressions;
         }
 
         /// <summary>

@@ -1,0 +1,24 @@
+@TestSuite()
+class arrayWithInitTest
+    private function double(param : int) : int
+        return param * 2;
+    end
+    private function summ(arr : int[]) : int
+        var summ : int, i : int;
+        summ = 0;
+        i = 0;
+        while i < arr.length do
+            summ = summ + arr[i];
+            i = i + 1;
+        end
+
+        return summ;
+    end
+
+    @Fact()
+    public function testGetFirstLetters() : void
+        var intArr : int[];
+        intArr = new int[] { 100, double(1), double(2), double(3), double(4), double(5) + 1 };
+        assert.isTrue(summ(intArr) == 131, "");
+    end
+end
