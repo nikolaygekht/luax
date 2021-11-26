@@ -1,0 +1,91 @@
+@TestSuite()
+class stringFunctionTests
+    @Fact()
+    public function check_length() : void
+        var v: int;
+        v = stdlib.len("string");
+        assert.equals(v, 6, "length result expected '6' but found '" .. v .. "'");
+    end
+
+    @Fact()
+    public function check_indexOf_case_sensitive() : void
+        var v: int;
+        v = stdlib.indexOf("string", "i", true);
+        assert.equals(v, 3, "indexOf result expected '3' but found '" .. v .. "'");
+
+        v = stdlib.indexOf("STRING", "I", true);
+        assert.equals(v, 3, "indexOf result expected '3' but found '" .. v .. "'");
+
+        v = stdlib.indexOf("string", "I", true);
+        assert.equals(v, -1, "indexOf result expected '-1' but found '" .. v .. "'");
+    end
+
+    @Fact()
+    public function check_indexOf_case_insensitive() : void
+        var v: int;
+        v = stdlib.indexOf("string", "i", false);
+        assert.equals(v, 3, "indexOf result expected '3' but found '" .. v .. "'");
+
+        v = stdlib.indexOf("STRING", "I", false);
+        assert.equals(v, 3, "indexOf result expected '3' but found '" .. v .. "'");
+
+        v = stdlib.indexOf("string", "I", false);
+        assert.equals(v, 3, "indexOf result expected '3' but found '" .. v .. "'");
+    end
+
+    @Fact()
+    public function check_left() : void
+        var v: string;
+        v = stdlib.left("string", 3);
+        assert.equals(v, "str", "left result expected 'str' but found '" .. v .. "'");
+    end
+
+    @Fact()
+    public function check_trim() : void
+        var v: string;
+        v = stdlib.trim(" string    ");
+        assert.equals(v, "string", "trim result expected 'string' but found '" .. v .. "'");
+    end
+
+    @Fact()
+    public function check_right() : void
+        var v: string;
+        v = stdlib.right("string", 3);
+        assert.equals(v, "ing", "right result expected 'ing' but found '" .. v .. "'");
+    end
+
+    @Fact()
+    public function check_substring() : void
+        var v: string;
+        v = stdlib.substring("string", 2, 2);
+        assert.equals(v, "ri", "substring result expected 'ri' but found '" .. v .. "'");
+    end
+
+    @Fact()
+    public function check_match_true() : void
+        var v: boolean;
+        v = stdlib.match("string", "^[\\w]*$");
+        assert.isTrue(v, "match");
+    end
+
+    @Fact()
+    public function check_match_false() : void
+        var v: boolean;
+        v = stdlib.match("string", "^[\\d]*$");
+        assert.isFalse(v, "match");
+    end
+    
+    @Fact()
+    public function check_unicode() : void
+        var v: int;
+        v = stdlib.unicode("case", 2);
+        assert.equals(v, 115, "unicode result expected '115' but found '" .. v .. "'");
+    end
+    
+    @Fact()
+    public function check_char() : void
+        var v: string;
+        v = stdlib.char(115);
+        assert.equals(v, "s", "char result expected 's' but found '" .. v .. "'");
+    end
+end
