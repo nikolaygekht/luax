@@ -1,4 +1,5 @@
 ﻿using Luax.Parser.Ast;
+using Luax.Parser.Ast.LuaExpression;
 
 namespace Luax.Interpreter.Infrastructure
 {
@@ -20,6 +21,19 @@ namespace Luax.Interpreter.Infrastructure
             for (int i = 0; i < size; i++)
                 mVariables[i] = new LuaXVariableInstance("", ElementType);
             Length = size;
+        }
+
+        public LuaXVariableInstanceArray(LuaXTypeDefinition arrayType, object[] objects)
+        {
+            Length = objects.Length;
+            ArrayType = arrayType;
+            ElementType = ArrayType.ArrayElementType();
+            mVariables = new LuaXVariableInstance[Length];
+            for (int i = 0; i < Length; i++)
+            {
+                mVariables[i] = new LuaXVariableInstance("", ElementType);
+                mVariables[i].Value = objects[i];
+            }
         }
 
         /// <summary>

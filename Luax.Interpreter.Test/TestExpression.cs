@@ -200,6 +200,13 @@ namespace Luax.Interpreter.Test
                 arr[i].Value = (i + 1) * 10;
             variables.Add(LuaXTypeDefinition.Integer.ArrayOf(), "arr", arr);
 
+            var objects = new object[10];
+            for (int i = 0; i < 10; i++)
+                objects[i] = (i + 1) * 10;
+            var arr1 = new LuaXVariableInstanceArray(LuaXTypeDefinition.Integer.ArrayOf(), objects);
+            variables.Add(LuaXTypeDefinition.Integer.ArrayOf(), "arr1", arr1);
+            ((LuaXVariableInstanceArray)variables["arr1"].Value).Length.Should().Be(10);
+
             @class.LuaType.SearchMethod("f", out var luaMethod);
             luaMethod.Should().NotBeNull();
             var luaExpression = luaMethod.Statements[0].As<LuaXReturnStatement>().Expression;
