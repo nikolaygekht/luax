@@ -74,10 +74,90 @@ namespace Luax.Parser.Ast.Builder
                     case "CONTINUE_STMT":
                         ProcessesContinueStatement(child, statements);
                         break;
+                    case "FOR_STMT":
+                        ProcessesForStatement(child, @class, method, statements);
+                        break;
                     default:
                         throw new LuaXAstGeneratorException(Name, child, $"Unexpected symbol {child.Symbol}");
                 }
             }
+        }
+
+        /// <summary>
+        /// Processes FOR statement
+        /// </summary>
+        /// <param name="child"></param>
+        /// <param name="class"></param>
+        /// <param name="method"></param>
+        /// <param name="statements"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void ProcessesForStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
+        {
+            LuaXElementLocation location = new LuaXElementLocation(Name, node);
+            LuaXForLoopDescription forLoopDescription = null;
+            IAstNode body = null;
+
+            for (int i = 0; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "END")
+                    break;
+                if (child.Symbol == "FOR" || child.Symbol == "DO")
+                    continue;
+                if (child.Symbol == "STATEMENTS")
+                    body = child;
+                if (child.Symbol == "FOR_STMT_LOOP")
+                    forLoopDescription = ProcessesForLoopDescription(child, @class, method);
+            }
+            LuaXForStatement stmt = new LuaXForStatement(location, forLoopDescription);
+
+            if (body != null)
+            {
+                mLoopDepth++;
+                ProcessStatements(body.Children, @class, method, stmt.Statements);
+                mLoopDepth--;
+            }
+
+            statements.Add(stmt);
+        }
+
+        /// <summary>
+        /// Processes FOR_STMT_LOOP description of loop
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="class"></param>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        /// <exception cref="LuaXAstGeneratorException"></exception>
+        private LuaXForLoopDescription ProcessesForLoopDescription(IAstNode node, LuaXClass @class, LuaXMethod method)
+        {
+            if (node.Children[0].Symbol != "IDENTIFIER" ||
+                !method.Variables.Search(node.Children[0].Value, out LuaXVariable identierVar) || identierVar == null ||
+                identierVar.LuaType.TypeId != LuaXType.Integer && identierVar.LuaType.TypeId != LuaXType.Real)
+                throw new LuaXAstGeneratorException(Name, node, "Initialization part of for statement should be declaration and be int type");
+
+            LuaXExpressionCollection forLoopExpressions = new LuaXExpressionCollection();
+            for (var i = 1; i < node.Children.Count; i++)
+            {
+                var child = node.Children[i];
+                if (child.Symbol == "ASSIGN" || child.Symbol == "COMMA")
+                    continue;
+                if (child.Symbol == "EXPR")
+                    forLoopExpressions.Add(ProcessExpression(child, @class, method));
+            }
+
+            foreach (var exp in forLoopExpressions)
+            {
+                if (exp.ReturnType.TypeId != identierVar.LuaType.TypeId)
+                    throw new LuaXAstGeneratorException(Name, node, "Initialization, condition and iteration parts of for statement should all be of the same type");
+            }
+
+            if (forLoopExpressions.Count != 2 && forLoopExpressions.Count != 3)
+                throw new LuaXAstGeneratorException(Name, node, "For statement should has initialization, condition parts and optional iterator part");
+
+            return new LuaXForLoopDescription(identierVar, forLoopExpressions[0], forLoopExpressions[1],
+                forLoopExpressions.Count == 3 ? forLoopExpressions[2] :
+                new LuaXConstantExpression( new LuaXConstant(1, new LuaXElementLocation(Name, node))));
         }
 
         private void ProcessThrowStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)

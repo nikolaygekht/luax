@@ -1,0 +1,58 @@
+﻿class test
+   class myAction
+      private var property : string;
+      public function invoke() : string
+         return property;
+      end
+      public static function create(param : string) : myAction
+         var instance : myAction;
+         instance = new myAction();
+         instance.property = param;
+         return instance;
+      end
+   end
+   class myActionAnother : myAction
+      public static function create(param : string) : myActionAnother
+         var instance : myActionAnother;
+         instance = new myActionAnother();
+         instance.property = param.."!";
+         return instance;
+      end
+   end
+   public static function method1() : string
+      var i : int, result : string, arr : string[];
+      i = 0;
+      result = "";
+      arr = new string[] { "3", " is", " a", " summ", " of ", "1", " and ", "2"};
+      while i < arr.length do
+        result = result .. arr[i];
+        i = i + 1;
+      end
+      return result;
+   end
+   public static function method2() : string
+      var i : int, result : string, arr : string[];
+      i = 0;
+      result = "";
+      arr = new string[] { 2 + 1, " is", " a", " summ", " of ", 1, " and ", 2};
+      while i < arr.length do
+        result = result .. arr[i];
+        i = i + 1;
+      end
+      return result;
+   end
+   public static function method3() : string
+      var i : int, result : string, arr : myAction[];
+      i = 0;
+      result = "";
+      arr = new myAction[]{myAction.create(2 + 1), myAction.create(" is"),
+                           myAction.create(" a"), myAction.create(" summ"),
+                           myAction.create(" of "), myAction.create(1),
+                           myAction.create(" and "), myActionAnother.create(2)};
+      while i < arr.length do
+        result = result .. arr[i].invoke();
+        i = i + 1;
+      end
+      return result;
+   end
+end
