@@ -378,33 +378,32 @@ namespace Luax.Interpreter.Expression
 
         private static ResultType ExecuteFor(LuaXMethod callingMethod, LuaXForStatement forStatement, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
         {
-            var typeId = forStatement.ForLoopDescription.Start.ReturnType.TypeId;
-
+            var variableType = forStatement.ForLoopDescription.Variable.LuaType;
             var loopVariableName = forStatement.ForLoopDescription.Variable.Name;
 
             var stepValue = LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopDescription.Step, types, currentClass, variables);
             var stepExpression = new LuaXBinaryOperatorExpression(LuaXBinaryOperator.Add,
-                new LuaXVariableExpression(forStatement.ForLoopDescription.Variable.Name,
-                forStatement.ForLoopDescription.Variable.LuaType, forStatement.ForLoopDescription.Variable.Location),
-                new LuaXConstantExpression(new LuaXConstant(typeId, stepValue, forStatement.ForLoopDescription.Step.Location)),
+                new LuaXVariableExpression(forStatement.ForLoopDescription.Variable.Name, variableType,
+                forStatement.ForLoopDescription.Variable.Location), 
+                new LuaXConstantExpression(new LuaXConstant(variableType.TypeId, stepValue, forStatement.ForLoopDescription.Step.Location)),
                 LuaXTypeDefinition.Boolean, forStatement.ForLoopDescription.Step.Location);
             var stepStatement = new LuaXAssignVariableStatement(loopVariableName, stepExpression,
                 forStatement.ForLoopDescription.Step.Location);
 
-            LuaXBinaryOperator limitCompareOp;
-            if (typeId == LuaXType.Integer)
-                limitCompareOp = (int)stepValue >= 0 ? LuaXBinaryOperator.LessOrEqual : LuaXBinaryOperator.GreaterOrEqual;
-            else if (typeId == LuaXType.Real)
-                limitCompareOp = (double)stepValue >= 0.0 ? LuaXBinaryOperator.LessOrEqual : LuaXBinaryOperator.GreaterOrEqual;
-            else
-                throw new LuaXExecutionException(forStatement.Location, "Condition part type is not supported");
+            var selectOperationExpression = new LuaXBinaryOperatorExpression(LuaXBinaryOperator.GreaterOrEqual,
+               forStatement.ForLoopDescription.Step,
+               new LuaXConstantExpression(new LuaXConstant(variableType.TypeId, 0, forStatement.ForLoopDescription.Step.Location)),
+               LuaXTypeDefinition.Boolean, forStatement.ForLoopDescription.Step.Location);
+
+            bool selectLimitOpValue = (bool)LuaXExpressionEvaluator.Evaluate(selectOperationExpression, types, currentClass, variables);
+            var limitCompareOp = selectLimitOpValue ? LuaXBinaryOperator.LessOrEqual : LuaXBinaryOperator.GreaterOrEqual;
 
             var limitValue = LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopDescription.Limit, types, currentClass, variables);
-            LuaXConstantExpression limitConstExpression = new LuaXConstantExpression(new LuaXConstant(typeId, limitValue, forStatement.ForLoopDescription.Limit.Location));
+            LuaXConstantExpression limitConstExpression = new LuaXConstantExpression(new LuaXConstant(variableType.TypeId, limitValue, forStatement.ForLoopDescription.Limit.Location));
 
             var limitExpression = new LuaXBinaryOperatorExpression(limitCompareOp,
                                 new LuaXVariableExpression(forStatement.ForLoopDescription.Variable.Name,
-                                forStatement.ForLoopDescription.Variable.LuaType, forStatement.ForLoopDescription.Variable.Location),
+                                variableType, forStatement.ForLoopDescription.Variable.Location),
                                 limitConstExpression, LuaXTypeDefinition.Boolean,
                                 limitConstExpression.Location);
 
@@ -427,7 +426,6 @@ namespace Luax.Interpreter.Expression
             }
             else
                 throw new LuaXExecutionException(forStatement.Location, "Condition part of for statement is not a boolean value");
-
 
             result = null;
             return ResultType.ReachForEnd;

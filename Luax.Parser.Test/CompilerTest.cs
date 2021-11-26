@@ -629,7 +629,7 @@ namespace Luax.Parser.Test
         }
 
         [Fact]
-        public void ForBreakContinue()
+        public void ForBreakContinueInt()
         {
             var app = new LuaXApplication();
             app.CompileResource("ForBreakContinue");
@@ -668,7 +668,46 @@ namespace Luax.Parser.Test
         }
 
         [Fact]
-        public void ForReverseBreakContinue()
+        public void ForBreakContinueReal()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForBreakContinue");
+            app.Pass2();
+            app.Classes.Search("test", out var @class).Should().BeTrue();
+
+            @class.SearchMethod("test2", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(3);
+
+            method.Statements[0].Should().BeOfType<LuaXAssignVariableStatement>();
+            method.Statements[1].Should().BeOfType<LuaXForStatement>();
+
+            var @for = method.Statements[1].As<LuaXForStatement>();
+            @for.ForLoopDescription.Start.ToString().Should().Be("const:real:0");
+            @for.ForLoopDescription.Limit.ToString().Should().Be("const:real:10");
+            @for.ForLoopDescription.Step.ToString().Should().Be("const:real:1");
+            @for.ForLoopDescription.Variable.Name.Should().Be("i");
+
+            @for.Statements.Should().HaveCount(3);
+
+            var ifContinue = @for.Statements[0].As<LuaXIfStatement>();
+            ifContinue.Clauses.Should().HaveCount(1);
+            ifContinue.Clauses[0].Condition.ToString().Should().Be("(var:i Equal const:real:0)");
+            ifContinue.Clauses[0].Statements.Should().HaveCount(1);
+            ifContinue.Clauses[0].Statements[0].Should().BeOfType<LuaXContinueStatement>();
+
+            @for.Statements[1].Should().BeOfType<LuaXAssignVariableStatement>();
+            var assign = @for.Statements[1].As<LuaXAssignVariableStatement>();
+            assign.Expression.ToString().Should().Be("(var:i Add const:real:1)");
+
+            var ifBreak = @for.Statements[2].As<LuaXIfStatement>();
+            ifBreak.Clauses.Should().HaveCount(1);
+            ifBreak.Clauses[0].Condition.ToString().Should().Be("(var:j Equal var:i)");
+            ifBreak.Clauses[0].Statements.Should().HaveCount(1);
+            ifBreak.Clauses[0].Statements[0].Should().BeOfType<LuaXBreakStatement>();
+        }
+
+        [Fact]
+        public void ForReverseBreakContinueInt()
         {
             var app = new LuaXApplication();
             app.CompileResource("ForReverseBreakContinue");
@@ -698,6 +737,45 @@ namespace Luax.Parser.Test
             @for.Statements[1].Should().BeOfType<LuaXAssignVariableStatement>();
             var assign = @for.Statements[1].As<LuaXAssignVariableStatement>();
             assign.Expression.ToString().Should().Be("(var:i Add const:int:1)");
+
+            var ifBreak = @for.Statements[2].As<LuaXIfStatement>();
+            ifBreak.Clauses.Should().HaveCount(1);
+            ifBreak.Clauses[0].Condition.ToString().Should().Be("(var:j Equal var:i)");
+            ifBreak.Clauses[0].Statements.Should().HaveCount(1);
+            ifBreak.Clauses[0].Statements[0].Should().BeOfType<LuaXBreakStatement>();
+        }
+
+        [Fact]
+        public void ForReverseBreakContinueReal()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForReverseBreakContinue");
+            app.Pass2();
+            app.Classes.Search("test", out var @class).Should().BeTrue();
+
+            @class.SearchMethod("test2", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(3);
+
+            method.Statements[0].Should().BeOfType<LuaXAssignVariableStatement>();
+            method.Statements[1].Should().BeOfType<LuaXForStatement>();
+
+            var @for = method.Statements[1].As<LuaXForStatement>();
+            @for.ForLoopDescription.Start.ToString().Should().Be("const:real:10");
+            @for.ForLoopDescription.Limit.ToString().Should().Be("const:real:0");
+            @for.ForLoopDescription.Step.ToString().Should().Be("const:real:-1");
+            @for.ForLoopDescription.Variable.Name.Should().Be("i");
+
+            @for.Statements.Should().HaveCount(3);
+
+            var ifContinue = @for.Statements[0].As<LuaXIfStatement>();
+            ifContinue.Clauses.Should().HaveCount(1);
+            ifContinue.Clauses[0].Condition.ToString().Should().Be("(var:i Equal const:real:0)");
+            ifContinue.Clauses[0].Statements.Should().HaveCount(1);
+            ifContinue.Clauses[0].Statements[0].Should().BeOfType<LuaXContinueStatement>();
+
+            @for.Statements[1].Should().BeOfType<LuaXAssignVariableStatement>();
+            var assign = @for.Statements[1].As<LuaXAssignVariableStatement>();
+            assign.Expression.ToString().Should().Be("(var:i Add const:real:1)");
 
             var ifBreak = @for.Statements[2].As<LuaXIfStatement>();
             ifBreak.Clauses.Should().HaveCount(1);

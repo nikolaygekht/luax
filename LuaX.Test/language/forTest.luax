@@ -18,7 +18,7 @@ class forTest
     public function testFactorial(arg : int, expected : int) : void
       var r: int;
       r = factorial(arg);
-      assert.isTrue(r == expected, "expected: " .. expected .. ", but found: " .. r);
+      assert.equals(r, expected, "result");
     end
     ------------------------------------------------------------
 
@@ -49,7 +49,7 @@ class forTest
     public function testFibonacci(arg : int, expected : int) : void
       var r: int;
       r = fibonacci(arg);
-      assert.isTrue(r == expected, "expected: " .. expected .. ", but found: " .. r);
+      assert.equals(r, expected, "result");
     end
     ------------------------------------------------------------
 
@@ -78,7 +78,7 @@ class forTest
     public function testDividesByThree(arg : int, expected : string) : void
       var r: string;
       r = dividesByThree(arg);
-      assert.isTrue(r == expected, "expected: " .. expected .. ", but found: " .. r);
+      assert.equals(r, expected, "result");
     end
     ------------------------------------------------------------
 
@@ -105,6 +105,21 @@ class forTest
     public function testNestedFor(sourceVal : int, multRep : int, rep : int, expected : int) : void
       var r: int;
       r = nestedForAction(sourceVal, multRep, rep);
-      assert.isTrue(r == expected, "expected: " .. expected .. ", but found: " .. r);
+      assert.equals(r, expected, "result");
+    end
+
+    @Theory()
+    @TheoryData(0.0, 0.99, 0.25, 4)
+    @TheoryData(1.0, 3.00, 0.33, 7)
+    @TheoryData(3.0, 1.00, -0.33, 7)
+    public function testRealFor(init : real, limit : real , step : real, expected : int) : void
+      var i : real, summ: int;
+      
+      summ = 0;
+      for i = init, limit, step  do
+        summ = summ + 1;
+      end
+
+      assert.equals(summ, expected, "result");
     end
 end

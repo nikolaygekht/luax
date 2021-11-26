@@ -14,6 +14,21 @@
       return summ;
    end
 
+   public static function basicTestIncReal(_start : real, _limit : real, _iterator: real) : real
+      var i : real, summ : real, start : real, limit : real, iterator: real;
+
+      start = _start;
+      limit = _limit;
+      iterator = _iterator;
+      summ = 0;
+
+      for i = start, limit, iterator  do
+          summ = summ + 1;
+      end
+
+      return summ;
+   end
+
    public static function basicTestDec(_start : int, _limit : int, _iterator: int) : int
       var i : int, summ : int, start : int, limit : int, iterator: int;
 
@@ -29,9 +44,37 @@
       return summ;
    end
 
+   public static function basicTestDecReal(_start : real, _limit : real, _iterator: real) : real
+      var i : real, summ : real, start : real, limit : real, iterator: real;
+
+      start = _start;
+      limit = _limit;
+      iterator = _iterator;
+      summ = 0;
+
+      for i = start, limit, iterator  do
+          summ = summ + 1;
+      end
+
+      return summ;
+   end
 
    public static function withoutIteratorExprTest(_start : int, _limit : int) : int
       var i : int, summ : int, start : int, limit : int;
+
+      start = _start;
+      limit = _limit;
+      summ = 0;
+
+      for i = start, limit  do
+          summ = summ + 1;
+      end
+
+      return summ;
+   end
+
+   public static function withoutIteratorExprTestReal(_start : real, _limit : real) : real
+      var i : real, summ : real, start : real, limit : real;
 
       start = _start;
       limit = _limit;

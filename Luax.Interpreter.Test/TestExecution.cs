@@ -457,7 +457,7 @@ namespace Luax.Interpreter.Test
         [InlineData(0, 2, 1, 3)]
         [InlineData(1, 2, 1, 2)]
         [InlineData(2, 0, 1, 0)]
-        public void TestForInc(int start, int condition, int iterator, int expectedValue)
+        public void TestForInc(int start, int condition, int step, int expectedValue)
         {
             var app = new LuaXApplication();
             app.CompileResource("ForTest");
@@ -473,8 +473,33 @@ namespace Luax.Interpreter.Test
             method.Arguments[2].LuaType.IsInteger().Should().BeTrue();
             method.ReturnType.IsInteger().Should().BeTrue();
 
-            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { start, condition, iterator }, out var r);
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { start, condition, step }, out var r);
             r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData(0, 2, 1, 3)]
+        [InlineData(1, 2, 1, 2)]
+        [InlineData(2, 0, 1, 0)]
+        public void TestForIncReal(double start, double condition, double step, int expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("basicTestIncReal", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(3);
+            method.Arguments[0].LuaType.IsReal().Should().BeTrue();
+            method.Arguments[1].LuaType.IsReal().Should().BeTrue();
+            method.Arguments[2].LuaType.IsReal().Should().BeTrue();
+            method.ReturnType.IsReal().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { start, condition, step }, out var r);
+            r.Should().BeOfType<double>();
             r.Should().Be(expectedValue);
         }
 
@@ -482,7 +507,7 @@ namespace Luax.Interpreter.Test
         [InlineData(0, 2, -1, 0)]
         [InlineData(2, 0, -1, 3)]
         [InlineData(5, 2, -1, 4)]
-        public void TestForDec(int start, int condition, int iterator, int expectedValue)
+        public void TestForDec(int start, int condition, int step, int expectedValue)
         {
             var app = new LuaXApplication();
             app.CompileResource("ForTest");
@@ -498,10 +523,36 @@ namespace Luax.Interpreter.Test
             method.Arguments[2].LuaType.IsInteger().Should().BeTrue();
             method.ReturnType.IsInteger().Should().BeTrue();
 
-            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { start, condition, iterator }, out var r);
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { start, condition, step }, out var r);
             r.Should().BeOfType<int>();
             r.Should().Be(expectedValue);
         }
+
+        [Theory]
+        [InlineData(0, 2, -1, 0)]
+        [InlineData(2, 0, -1, 3)]
+        [InlineData(5, 2, -1, 4)]
+        public void TestForDecReal(double start, double condition, double step, double expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("basicTestDecReal", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(3);
+            method.Arguments[0].LuaType.IsReal().Should().BeTrue();
+            method.Arguments[1].LuaType.IsReal().Should().BeTrue();
+            method.Arguments[2].LuaType.IsReal().Should().BeTrue();
+            method.ReturnType.IsReal().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { start, condition, step }, out var r);
+            r.Should().BeOfType<double>();
+            r.Should().Be(expectedValue);
+        }
+
 
         [Theory]
         [InlineData(0, 2, 3)]
@@ -523,6 +574,29 @@ namespace Luax.Interpreter.Test
 
             LuaXMethodExecutor.Execute(method, typelib, null, new object[] { start, limit }, out var r);
             r.Should().BeOfType<int>();
+            r.Should().Be(expectedValue);
+        }
+
+        [Theory]
+        [InlineData(0, 2, 3)]
+        [InlineData(1, 2, 2)]
+        public void TestForWithoutIteratorExprReal(double start, double limit, double expectedValue)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("withoutIteratorExprTestReal", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(2);
+            method.Arguments[0].LuaType.IsReal().Should().BeTrue();
+            method.Arguments[1].LuaType.IsReal().Should().BeTrue();
+            method.ReturnType.IsReal().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { start, limit }, out var r);
+            r.Should().BeOfType<double>();
             r.Should().Be(expectedValue);
         }
 
