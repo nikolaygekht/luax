@@ -1,0 +1,30 @@
+﻿class test
+   static function test1(arg1 : int) : int
+      var i : int;
+      var j : int;
+      var max : double;
+
+      j = 0;
+      max = 1;
+      for i = 0, i < max do
+          j = j + 1;
+      end
+      
+      return j;
+   end
+
+   static function test2(arg1 : int) : int
+      var i : int;
+      var j : int;
+      var max : int;
+      var iterator : double;
+
+      j = 0;
+      max = 1;
+      for i = 0, i < max, iterator do
+          j = j + 1;
+      end
+      
+      return j;
+   end
+end

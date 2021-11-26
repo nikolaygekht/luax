@@ -20,6 +20,8 @@
     <None Remove="TestSources\ConstTest.luax" />
     <None Remove="TestSources\ExceptionStackTraceTest.luax" />
     <None Remove="TestSources\ExpressionTest.luax" />
+    <None Remove="TestSources\ForChangingInitialVarTest.luax" />
+    <None Remove="TestSources\ForTest.luax" />
     <None Remove="TestSources\IfTest.luax" />
     <None Remove="TestSources\InnerClass1.luax" />
     <None Remove="TestSources\InnerClass2.luax" />
@@ -52,6 +54,7 @@
     <EmbeddedResource Include="TestSources\RepeatContinueTest.luax" />
     <EmbeddedResource Include="TestSources\RepeatNestedTest.luax" />
     <EmbeddedResource Include="TestSources\RepeatTest.luax" />
+    <EmbeddedResource Include="TestSources\ForTest.luax" />
     <EmbeddedResource Include="TestSources\TryCatchTest.luax" />
     <EmbeddedResource Include="TestSources\ThrowTest.luax" />
     <EmbeddedResource Include="TestSources\IfTest.luax" />
