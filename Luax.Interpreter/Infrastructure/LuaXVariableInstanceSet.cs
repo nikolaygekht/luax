@@ -9,7 +9,7 @@ namespace Luax.Interpreter.Infrastructure
     /// </summary>
     public class LuaXVariableInstanceSet : IEnumerable<LuaXVariableInstance>
     {
-        private readonly Dictionary<string, LuaXVariableInstance> mVariables = new Dictionary<string, LuaXVariableInstance>();
+        public readonly Dictionary<string, LuaXVariableInstance> mVariables = new Dictionary<string, LuaXVariableInstance>();
 
         /// <summary>
         /// Gets the variable by its name

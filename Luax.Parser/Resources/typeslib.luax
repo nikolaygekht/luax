@@ -126,7 +126,12 @@ class logger : baseLogger
     @DocParameter("message", "Message to be logged")
     @DocParameter("ex", "exception instance")
     public function errorWithException(message : string, ex : exception) : void
-        logWithException(loggerLevel.error, message, ex);
+        var text : string;
+        text = message;
+        if(ex != nil) then
+            text = "Exception (code:"..ex.getCode().." message:\""..ex.getMessage().."\"): "..text;
+        end
+        log(loggerLevel.error, text);
     end
     @DocBrief("Log critical message")
     @DocParameter("message", "Message to be logged")
@@ -137,7 +142,12 @@ class logger : baseLogger
     @DocParameter("message", "Message to be logged")
     @DocParameter("ex", "exception instance")
     public function criticalWithException(message : string, ex : exception) : void
-        logWithException(loggerLevel.critical, message, ex);
+        var text : string;
+        text = message;
+        if(ex != nil) then
+            text = "Exception (code:"..ex.getCode().." message:\""..ex.getMessage().."\"): "..text;
+        end
+        log(loggerLevel.critical, text);
     end
 end
 
@@ -150,5 +160,49 @@ class loggerConfigurator : baseLoggerConfigurator
         logger = new logger();
         logger.bindConfigurator(this);
         return logger;
+    end
+    public function loggerConfigurator() : void
+        super.baseLoggerConfigurator();
+    end
+    @DocBrief("Set minimum level of messages to be logged")
+    @DocParameter("level", "Level of the message")
+    @DocReturn("The method returns it's own baseLoggerConfigurator instance")
+    public function setMinimumLevel(level : int) : loggerConfigurator
+        super.setMinimumLevel(level);
+        return this;
+    end
+    @DocBrief("Set path of the log file")
+    @DocParameter("path", "Path to the file")
+    @DocReturn("The method returns it's own baseLoggerConfigurator instance")
+    public function setWriteToPath(path : string) : loggerConfigurator
+        super.setWriteToPath(path);
+        return this;
+    end
+    @DocBrief("Set log writing to console")
+    @DocReturn("The method returns it's own baseLoggerConfigurator instance")
+    public function setWriteToConsole() : loggerConfigurator
+        super.setWriteToConsole();
+        return this;
+    end
+    @DocBrief("Set restricted log writing to console")
+    @DocParameter("level", "Restricted level of messages to be written to console")
+    @DocReturn("The method returns it's own baseLoggerConfigurator instance")
+    public function setRestrictedWriteToConsole(level : int) : loggerConfigurator
+        super.setRestrictedWriteToConsole(level);
+        return this;
+    end
+    @DocBrief("Set rolling interval")
+    @DocParameter("rollingInterval", "Rolling interval")
+    @DocReturn("The method returns it's own baseLoggerConfigurator instance")
+    public function setRollingInterval(rollingInterval : int) : loggerConfigurator
+        super.setRollingInterval(rollingInterval);
+        return this;
+    end
+    @DocBrief("Set retained file count limit")
+    @DocParameter("limit", "Retained file count limit")
+    @DocReturn("The method returns it's own baseLoggerConfigurator instance")
+    public function setRetainedFileCountLimit(limit : int) : loggerConfigurator
+        super.setRetainedFileCountLimit(limit);
+        return this;
     end
 end

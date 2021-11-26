@@ -44,6 +44,8 @@ namespace Luax.Interpreter.Infrastructure
             ExternMethods.Add(this, typeof(StdlibCsvParser));
             ExternMethods.Add(this, typeof(StdlibXml));
             ExternMethods.Add(this, typeof(StdlibSortedList));
+            ExternMethods.Add(this, typeof(StdlibBaseLoggerConfigurator));
+            ExternMethods.Add(this, typeof(StdlibBaseLogger));
         }
 
         public string[] GetClassNames() => mTypes.Keys.ToArray();
