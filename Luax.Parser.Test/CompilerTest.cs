@@ -830,5 +830,27 @@ namespace Luax.Parser.Test
             var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
             Assert.Contains("The types are incompatible. The target is double and source is int", ex.Message);
         }
+
+        [Fact]
+        public void Override_Correct()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("OverridingOK");
+
+            ((Action)(() => app.Pass2())).Should().NotThrow<LuaXAstGeneratorException>();
+        }
+
+        [Theory]
+        [InlineData("OverridingFail1")]
+        [InlineData("OverridingFail2")]
+        [InlineData("OverridingFail3")]
+        [InlineData("OverridingFail4")]
+        public void Override_Incorrect(string variant)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource(variant);
+
+            ((Action)(() => app.Pass2())).Should().Throw<LuaXAstGeneratorException>();
+        }
     }
 }

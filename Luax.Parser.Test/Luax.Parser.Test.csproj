@@ -27,6 +27,11 @@
     <None Remove="TestSources\OtherClassMethodCall3.luax" />
     <None Remove="TestSources\OtherClassMethodCall4.luax" />
     <None Remove="TestSources\OtherClassMethodCall5.luax" />
+    <None Remove="TestSources\OverridingFail1.luax" />
+    <None Remove="TestSources\OverridingFail2.luax" />
+    <None Remove="TestSources\OverridingFail3.luax" />
+    <None Remove="TestSources\OverridingFail4.luax" />
+    <None Remove="TestSources\OverridingOK.luax" />
     <None Remove="TestSources\ParseClass.luax" />
     <None Remove="TestSources\ParseClassConstants.luax" />
     <None Remove="TestSources\ParseClassMethods.luax" />
@@ -52,6 +57,11 @@
     <EmbeddedResource Include="TestSources\OtherClassMethodCall3.luax" />
     <EmbeddedResource Include="TestSources\OtherClassMethodCall4.luax" />
     <EmbeddedResource Include="TestSources\OtherClassMethodCall5.luax" />
+    <EmbeddedResource Include="TestSources\OverridingFail4.luax" />
+    <EmbeddedResource Include="TestSources\OverridingFail3.luax" />
+    <EmbeddedResource Include="TestSources\OverridingFail2.luax" />
+    <EmbeddedResource Include="TestSources\OverridingFail1.luax" />
+    <EmbeddedResource Include="TestSources\OverridingOK.luax" />
     <EmbeddedResource Include="TestSources\Repeat.luax" />
     <EmbeddedResource Include="TestSources\ForBreakContinue.luax" />
     <EmbeddedResource Include="TestSources\ForLoopPartsWithDifferentType.luax" />

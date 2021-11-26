@@ -319,8 +319,8 @@ namespace Luax.Interpreter.Test
         [InlineData("int", "stdlib.unicode(\"s\", 0)", 115, typeof(int))]
         [InlineData("string", "stdlib.char(115)", "s", typeof(string))]
         [InlineData("int", "stdlib.lastIndexOf(\"aba\", \"a\", false)", 2, typeof(int))]
-        [InlineData("int", "stdlib.lastIndexOf(\"aba\", \"A\", false)", -1, typeof(int))]
-        [InlineData("int", "stdlib.lastIndexOf(\"abaa\", \"A\", true)", 3, typeof(int))]
+        [InlineData("int", "stdlib.lastIndexOf(\"aba\", \"A\", true)", -1, typeof(int))]
+        [InlineData("int", "stdlib.lastIndexOf(\"abaa\", \"A\", false)", 3, typeof(int))]
         [InlineData("string", "stdlib.upper(\"aBаБ\")", "ABАБ", typeof(string))]
         [InlineData("string", "stdlib.lower(\"aBаБ\")", "abаб", typeof(string))]
         //Regular expressions match
