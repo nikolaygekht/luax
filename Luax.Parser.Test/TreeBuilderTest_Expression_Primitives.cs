@@ -124,7 +124,9 @@ namespace Luax.Parser.Test
                 Value = new LuaXConstant(3.14, new LuaXElementLocation("", 0, 0))
             });
 
+            var parent = new LuaXClass("parent");
             @class = new LuaXClass("class1");
+            @class.Parent = "parent";
 
             @class.Properties.Add(new LuaXProperty
             {
@@ -184,6 +186,7 @@ namespace Luax.Parser.Test
             });
 
             metadata.Add(lib);
+            metadata.Add(parent);
             metadata.Add(@class);
 
             method = new LuaXMethod(@class)
@@ -858,6 +861,91 @@ namespace Luax.Parser.Test
         {
             StageVariableAndProperty(out var metadata, out var @class, out var method);
             var node = AstNodeExtensions.Parse("[REXPR[NEW_ARRAY_EXPR[NEW[new(new)]][TYPE_NAME[IDENTIFIER(tuple)]][L_SQUARE_BRACKET][REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT[INTEGER(10)]]]]]]]]]]]]][R_SQUARE_BRACKET]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            ((Action)(() => processor.ProcessExpression(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Theory]
+        [InlineData("TYPE_INT[int(int)]", LuaXType.Integer)]
+        [InlineData("TYPE_STRING[string(string)]", LuaXType.String)]
+        [InlineData("TYPE_BOOLEAN[boolean(boolean)]", LuaXType.Boolean)]
+        [InlineData("TYPE_REAL[real(real)]", LuaXType.Real)]
+        [InlineData("IDENTIFIER(class1)", LuaXType.Object)]
+        public void NewArrayWithInit_Empty_Success(string strType, LuaXType luaType)
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse($"[REXPR[NEW_ARRAY_EXPR_WITH_INIT[NEW[new(new)]][TYPE_NAME[{strType}]][L_SQUARE_BRACKET][R_SQUARE_BRACKET][ARRAY_INIT[L_BRACE[{{({{)]][R_BRACE[}}(}})]]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXNewArrayWithInitExpression>();
+            var array = expression.As<LuaXNewArrayWithInitExpression>();
+            array.ElementType.TypeId.Should().Be(luaType);
+            array.ElementType.Array.Should().BeFalse();
+
+            array.ReturnType.TypeId.Should().Be(luaType);
+            array.ReturnType.Array.Should().BeTrue();
+
+            array.InitExpressions.Should().HaveCount(0);
+        }
+
+        [Theory]
+        [InlineData("IDENTIFIER(class2)")]
+        [InlineData("IDENTIFIER(noclass)")]
+        public void NewArrayWithInit_Empty_Fail(string strType)
+        {
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse($"[REXPR[NEW_ARRAY_EXPR_WITH_INIT[NEW[new(new)]][TYPE_NAME[{strType}]][L_SQUARE_BRACKET][R_SQUARE_BRACKET][ARRAY_INIT[L_BRACE[{{({{)]][R_BRACE[}}(}})]]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            ((Action)(() => processor.ProcessExpression(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Theory]
+        [InlineData("INTEGER(5)", "TYPE_INT[int(int)]", LuaXType.Integer, false)]
+        [InlineData("INTEGER(5)", "TYPE_STRING[string(string)]", LuaXType.String, false)]
+        [InlineData("STRING[STRINGDQ(\"a\")]", "TYPE_STRING[string(string)]", LuaXType.String, false)]
+        [InlineData("BOOLEAN[BOOLEAN_TRUE]", "TYPE_BOOLEAN[boolean(boolean)]", LuaXType.Boolean, false)]
+        [InlineData("REAL(10.0)", "TYPE_REAL[real(real)]", LuaXType.Real, false)]
+        [InlineData("REXPR[NEW_TABLE_EXPR[NEW[new(new)]][IDENTIFIER(lib)][L_ROUND_BRACKET][R_ROUND_BRACKET]]", "IDENTIFIER(lib)", LuaXType.Object, true)]
+        [InlineData("REXPR[NEW_TABLE_EXPR[NEW[new(new)]][IDENTIFIER(class1)][L_ROUND_BRACKET][R_ROUND_BRACKET]]", "IDENTIFIER(parent)", LuaXType.Object, true)]
+        public void NewArrayWithInit_NonEmpty_Success(string expr, string strType, LuaXType luaType, bool exact)
+        {
+            string initExpression = exact ? expr : $"REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT[{expr}]]]]]]]]]]]]";
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse($"[REXPR[NEW_ARRAY_EXPR_WITH_INIT[NEW[new(new)]][TYPE_NAME[{strType}]][L_SQUARE_BRACKET][R_SQUARE_BRACKET][ARRAY_INIT[L_BRACE[{{({{)]][ARRAY_INIT_ARGS[{initExpression}][{initExpression}]][R_BRACE[}}(}})]]]]]");
+            var processor = new LuaXAstTreeCreator("", metadata);
+            var expression = processor.ProcessExpression(node, @class, method);
+            expression.Should().BeOfType<LuaXNewArrayWithInitExpression>();
+            var array = expression.As<LuaXNewArrayWithInitExpression>();
+
+            var elementType = array.ElementType;
+            elementType.TypeId.Should().Be(luaType);
+            elementType.Array.Should().BeFalse();
+
+            array.ReturnType.TypeId.Should().Be(luaType);
+            array.ReturnType.Array.Should().BeTrue();
+            array.ReturnType.Class.Should().Be(elementType.Class);
+
+            array.InitExpressions.Should().HaveCount(2);
+            array.InitExpressions[0].ReturnType.TypeId.Should().Be(luaType);
+            array.InitExpressions[0].ReturnType.Array.Should().BeFalse();
+            array.InitExpressions[0].ReturnType.Class.Should().Be(elementType.Class);
+            array.InitExpressions[1].ReturnType.TypeId.Should().Be(luaType);
+            array.InitExpressions[1].ReturnType.Array.Should().BeFalse();
+            array.InitExpressions[1].ReturnType.Class.Should().Be(elementType.Class);
+        }
+
+        [Theory]
+        [InlineData("STRING[STRINGDQ(\"a\")]", "TYPE_INT[int(int)]", false)]
+        [InlineData("REAL(10.0)", "TYPE_BOOLEAN[boolean(boolean)]", false)]
+        [InlineData("BOOLEAN[BOOLEAN_TRUE]", "TYPE_REAL[real(real)]", false)]
+        [InlineData("REXPR[NEW_TABLE_EXPR[NEW[new(new)]][IDENTIFIER(class1)][L_ROUND_BRACKET][R_ROUND_BRACKET]]", "IDENTIFIER(lib)", true)]
+        [InlineData("REXPR[NEW_TABLE_EXPR[NEW[new(new)]][IDENTIFIER(class1)][L_ROUND_BRACKET][R_ROUND_BRACKET]]", "IDENTIFIER(class2)", true)]
+        [InlineData("REXPR[NEW_TABLE_EXPR[NEW[new(new)]][IDENTIFIER(parent)][L_ROUND_BRACKET][R_ROUND_BRACKET]]", "IDENTIFIER(class1)", true)]
+        public void NewArrayWithInit_NonEmpty_Fail(string expr, string strType, bool exact)
+        {
+            string initExpression = exact ? expr : $"REXPR[EXPR[OR_BOOL_EXPR[AND_BOOL_EXPR[UX_BOOL_EXPR[REL_EXPR[ADD_EXPR[MUL_EXPR[POWER_EXPR[UNARY_EXPR[SIMPLE_EXPR[CONSTANT[{expr}]]]]]]]]]]]]";
+            StageVariableAndProperty(out var metadata, out var @class, out var method);
+            var node = AstNodeExtensions.Parse($"[REXPR[NEW_ARRAY_EXPR_WITH_INIT[NEW[new(new)]][TYPE_NAME[{strType}]][L_SQUARE_BRACKET][R_SQUARE_BRACKET][ARRAY_INIT[L_BRACE[{{({{)]][ARRAY_INIT_ARGS[{initExpression}]][R_BRACE[}}(}})]]]]]");
             var processor = new LuaXAstTreeCreator("", metadata);
             ((Action)(() => processor.ProcessExpression(node, @class, method))).Should().Throw<LuaXAstGeneratorException>();
         }

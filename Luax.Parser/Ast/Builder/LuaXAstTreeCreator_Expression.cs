@@ -77,6 +77,8 @@ namespace Luax.Parser.Ast.Builder
                     return ProcessBracket(astNode, currentClass, currentMethod);
                 case "NEW_ARRAY_EXPR":
                     return ProcessNewArray(astNode, currentClass, currentMethod);
+                case "NEW_ARRAY_EXPR_WITH_INIT":
+                    return ProcessNewArrayWithInit(astNode, currentClass, currentMethod);
                 case "NEW_TABLE_EXPR":
                     return ProcessNewTable(astNode, currentClass);
                 case "LOCAL_CALL":
@@ -637,6 +639,68 @@ namespace Luax.Parser.Ast.Builder
                     };
 
             return new LuaXNewArrayExpression(type, size, new LuaXElementLocation(Name, astNode));
+        }
+
+        /// <summary>
+        /// Process new array operator with initialization
+        /// </summary>
+        /// <param name="astNode"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpression ProcessNewArrayWithInit(IAstNode astNode, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            if (astNode.Children.Count < 2 || astNode.Children[1].Symbol != "TYPE_NAME")
+                throw new LuaXAstGeneratorException(Name, astNode, "The type is expected");
+
+            AstNodeWrapper decl = new AstNodeWrapper();
+            decl.Add(astNode.Children[1]);
+            LuaXTypeDefinition type = ProcessTypeDecl(decl, false);
+
+            if (type.TypeId == LuaXType.Object)
+                if (!SearchClassByName(type.Class, currentClass, out var arrayItemClass))
+                    throw new LuaXAstGeneratorException(Name, astNode.Children[3], $"The class {type.Class} is not defined");
+                else
+                    type = new LuaXTypeDefinition()
+                    {
+                        TypeId = type.TypeId,
+                        Array = type.Array,
+                        Class = arrayItemClass.Name
+                    };
+
+            if (astNode.Children.Count < 5 || astNode.Children[4].Symbol != "ARRAY_INIT")
+                throw new LuaXAstGeneratorException(Name, astNode, "The array initialization is expected");
+
+            LuaXExpressionCollection initExpressions =
+                GetArrayInitializationExpressions(astNode, type, currentClass, currentMethod);
+            return new LuaXNewArrayWithInitExpression(type, initExpressions, new LuaXElementLocation(Name, astNode));
+        }
+
+        /// <summary>
+        /// Process array initialization expressions
+        /// </summary>
+        /// <param name="astNode">ARRAY_INIT AST node</param>
+        /// <param name="targetType"></param>
+        /// <param name="currentClass"></param>
+        /// <param name="currentMethod"></param>
+        /// <returns></returns>
+        private LuaXExpressionCollection GetArrayInitializationExpressions(IAstNode astNode, LuaXTypeDefinition targetType, LuaXClass currentClass, LuaXMethod currentMethod)
+        {
+            LuaXExpressionCollection initExpressions = new LuaXExpressionCollection();
+            IAstNode arrayInitAstNode = astNode.Children[4];
+            if (arrayInitAstNode.Children[1].Symbol == "ARRAY_INIT_ARGS")
+            {
+                arrayInitAstNode = arrayInitAstNode.Children[1];
+                for (var i = 0; i < arrayInitAstNode.Children.Count; i++)
+                {
+                    IAstNode expressionAstNode = arrayInitAstNode.Children[i];
+                    LuaXExpression initExpression = CastToCompatible(ProcessExpression(expressionAstNode, currentClass, currentMethod), targetType);
+                    if (initExpression == null)
+                        throw new LuaXAstGeneratorException(Name, expressionAstNode, "The initialization expression should have a compatible type");
+                    initExpressions.Add(initExpression);
+                }
+            }
+            return initExpressions;
         }
 
         /// <summary>
