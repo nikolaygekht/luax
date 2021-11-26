@@ -161,6 +161,7 @@ class loggerConfigurator : baseLoggerConfigurator
         logger.bindConfigurator(this);
         return logger;
     end
+    @DocBrief("Constructor")
     public function loggerConfigurator() : void
         super.baseLoggerConfigurator();
     end

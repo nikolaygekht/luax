@@ -24,19 +24,19 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("baseLoggerConfigurator", "baseLoggerConfigurator")]
         public static object Constructor(LuaXObjectInstance @this)
         {
-            if (@this != null)
+            LuaXObjectInstance instance = @this;
+            object retval = null;
+
+            if (instance == null)
             {
-                @this.Properties["__configurator"].Value = new LoggerConfiguration();
-                @this.Properties["__rollingInterval"].Value = RollingInterval.Infinite;
-                @this.Properties["__retainedFileCountLimit"].Value = 31;
-                return null;
+                instance = new LuaXObjectInstance(mConfiguratorClass);
+                retval = instance;
             }
 
-            var configuratorInstance = new LuaXObjectInstance(mConfiguratorClass);
-            configuratorInstance.Properties["__configurator"].Value = new LoggerConfiguration();
-            configuratorInstance.Properties["__rollingInterval"].Value = RollingInterval.Infinite;
-            configuratorInstance.Properties["__retainedFileCountLimit"].Value = 31;
-            return configuratorInstance;
+            instance.Properties["__configurator"].Value = new LoggerConfiguration();
+            instance.Properties["__rollingInterval"].Value = RollingInterval.Infinite;
+            instance.Properties["__retainedFileCountLimit"].Value = 31;
+            return retval;
         }
 
         //public extern setMinimumLevel(level : int) : baseLoggerConfigurator;
