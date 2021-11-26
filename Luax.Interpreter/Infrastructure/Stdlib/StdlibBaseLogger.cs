@@ -31,8 +31,6 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("baseLogger", "bindConfigurator")]
         public static object BindConfigurator(LuaXObjectInstance @this, LuaXObjectInstance configuratorInstance)
         {
-            //if (@this.Properties["__logger"].Value is not Serilog.Core.Logger logger)
-            //    throw new ArgumentException("The configurator isn't properly initialized", nameof(@this));
             if (configuratorInstance.Properties["__configurator"].Value is not LoggerConfiguration configurator)
                 throw new ArgumentException("The configurator isn't properly initialized", nameof(configuratorInstance));
 
