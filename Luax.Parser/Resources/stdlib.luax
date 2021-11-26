@@ -856,3 +856,70 @@ class bitwise
     @DocBrief("Bitwise zero-fill right shift")
     public static extern _shr(a : int, n : int) : int;
 end
+
+@DocBrief("The logger's message levels")
+class loggerLevel
+    const trace = 0;
+    const debug = 1;
+    const information = 2;
+    const warning = 3;
+    const error = 4;
+    const critical = 5;
+end
+
+@DocBrief("The base class for loggers")
+class baseLogger
+    @DocBrief("Log message")
+    @DocParameter("level", "Level of the message")
+    @DocParameter("message", "Message to be logged")
+    public extern log(level : int, message : string) : void;
+    @DocBrief("Log message with exception")
+    @DocParameter("level", "Level of the message")
+    @DocParameter("message", "Message to be logged")
+    @DocParameter("ex", "exception instance")
+    public extern logWithException(level : int, message : string, ex : exception) : void;
+    @DocBrief("Bind the logger configurator")
+    @DocParameter("configurator", "Logger configurator")
+    public extern bindConfigurator(configurator : baseLoggerConfigurator) : void;
+end
+
+@DocBrief("The logger's rolling intervals")
+class loggerRollingInterval
+    const minute = 0;
+    const hour = 1;
+    const day = 2;
+    const month = 3;
+    const year = 4;
+end
+
+@DocBrief("The base logger configurator")
+class baseLoggerConfigurator
+    @DocBrief("Set minimum level of messages to be logged")
+    @DocParameter("level", "Level of the message")
+    @DocReturn("The method returns it's own loggerConfigurator instance")
+    public extern setMinimumLevel(level : int) : baseLoggerConfigurator;
+    @DocBrief("Set path of the log file")
+    @DocParameter("path", "Path to the file")
+    @DocReturn("The method returns it's own loggerConfigurator instance")
+    public extern setWriteToPath(path : string) : baseLoggerConfigurator;
+    @DocBrief("Set log writing to console")
+    @DocReturn("The method returns it's own loggerConfigurator instance")
+    public extern setWriteToConsole() : baseLoggerConfigurator;
+    @DocBrief("Set restricted log writing to console")
+    @DocParameter("level", "Restricted level of messages to be written to console")
+    @DocReturn("The method returns it's own loggerConfigurator instance")
+    public extern setRestrictedWriteToConsole(level : int) : baseLoggerConfigurator;
+    @DocBrief("Set additional parameter")
+    @DocParameter("name", "Name of the parameter")
+    @DocParameter("value", "Object value of the parameter")
+    @DocReturn("The method returns it's own loggerConfigurator instance")
+    public extern setParameter(name : string, value : object) : baseLoggerConfigurator;
+    @DocBrief("Set rolling interval")
+    @DocParameter("rollingInterval", "Rolling interval")
+    @DocReturn("The method returns it's own loggerConfigurator instance")
+    public extern setRollingInterval(rollingInterval : int) : baseLoggerConfigurator;
+    @DocBrief("Set retained file count limit")
+    @DocParameter("limit", "Retained file count limit")
+    @DocReturn("The method returns it's own loggerConfigurator instance")
+    public extern setRetainedFileCountLimit(limit : int) : baseLoggerConfigurator;
+end

@@ -93,3 +93,62 @@ class variant
     @DocBrief("Checks whether the contained value is an object")
     public extern isObject() : boolean;
 end
+
+
+@DocBrief("The logger class")
+class logger : baseLogger
+    @DocBrief("Log trace message")
+    @DocParameter("message", "Message to be logged")
+    public function trace(message : string) : void
+        log(loggerLevel.trace, message);
+    end
+    @DocBrief("Log debug message")
+    @DocParameter("message", "Message to be logged")
+    public function debug(message : string) : void
+        log(loggerLevel.debug, message);
+    end
+    @DocBrief("Log information message")
+    @DocParameter("message", "Message to be logged")
+    public function information(message : string) : void
+        log(loggerLevel.information, message);
+    end
+    @DocBrief("Log warning message")
+    @DocParameter("message", "Message to be logged")
+    public function warning(message : string) : void
+        log(loggerLevel.warning, message);
+    end
+    @DocBrief("Log error message")
+    @DocParameter("message", "Message to be logged")
+    public function error(message : string) : void
+        log(loggerLevel.error, message);
+    end
+    @DocBrief("Log error message with exception")
+    @DocParameter("message", "Message to be logged")
+    @DocParameter("ex", "exception instance")
+    public function errorWithException(message : string, ex : exception) : void
+        logWithException(loggerLevel.error, message, ex);
+    end
+    @DocBrief("Log critical message")
+    @DocParameter("message", "Message to be logged")
+    public function critical(message : string) : void
+        log(loggerLevel.critical, message);
+    end
+    @DocBrief("Log critical message with exception")
+    @DocParameter("message", "Message to be logged")
+    @DocParameter("ex", "exception instance")
+    public function criticalWithException(message : string, ex : exception) : void
+        logWithException(loggerLevel.critical, message, ex);
+    end
+end
+
+@DocBrief("The logger configurator")
+class loggerConfigurator : baseLoggerConfigurator
+    @DocBrief("Create instance of logger class")
+    @DocReturn("The method returns a new logger instance")
+    public function createLogger() : logger
+        var logger : logger;
+        logger = new logger();
+        logger.bindConfigurator(this);
+        return logger;
+    end
+end
