@@ -72,6 +72,20 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return s.Trim();
         }
 
+        //public static extern rtrim(s : string) : string;
+        [LuaXExternMethod("stdlib", "rtrim")]
+        public static object Extern_rtrim(string s)
+        {
+            return s.TrimEnd();
+        }
+
+        //public static extern ltrim(s : string) : string;
+        [LuaXExternMethod("stdlib", "ltrim")]
+        public static object Extern_ltrim(string s)
+        {
+            return s.TrimStart();
+        }
+
         //public static extern right(s : string, length : int) : string;
         [LuaXExternMethod("stdlib", "right")]
         public static object Extern_right(string s, int length)
