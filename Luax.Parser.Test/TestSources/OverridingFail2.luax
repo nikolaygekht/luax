@@ -1,0 +1,10 @@
+﻿class a
+	public function a1(a : int, b : object) : int[]
+	end
+end
+
+ class b : a
+	-- primitive types do not match
+	public function a1(a : real, b : object) : int[]
+	end
+ end

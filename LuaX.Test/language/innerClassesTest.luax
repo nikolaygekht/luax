@@ -93,4 +93,19 @@ class innerClassesTest
     public function testGetFirstLetters(arg : string, expected : string) : void
        assert.isTrue((new getFirstLetters()).process(arg) == expected, "");
     end
+    @Fact()
+    public function testick() : void
+        var logger : logger;
+        
+        logger = (new loggerConfigurator())
+                .setMinimumLevel(loggerLevel.trace)
+                .setRollingInterval(loggerRollingInterval.day)
+                .setWriteToPath("logs/ttt-.txt")
+                .createLogger();
+        logger.trace("text0");
+        logger.debug("text1");
+        logger.information("text2");
+        logger.error("text3");
+    end
+
 end

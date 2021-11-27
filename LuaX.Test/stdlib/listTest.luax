@@ -1,14 +1,3 @@
-class listItem
-    public var name : string;
-
-    public static function create(name : string) : listItem
-        var l : listItem;
-        l = new listItem();
-        l.name = name;
-        return l;
-    end
-end
-
 @TestSuite()
 class listTest
 

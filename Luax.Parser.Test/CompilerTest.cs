@@ -627,5 +627,230 @@ namespace Luax.Parser.Test
             method.Static.Should().BeTrue();
             @classB.SearchMethod("dummy", out _).Should().BeTrue();
         }
+
+        [Fact]
+        public void ForBreakContinueInt()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForBreakContinue");
+            app.Pass2();
+            app.Classes.Search("test", out var @class).Should().BeTrue();
+
+            @class.SearchMethod("test1", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(3);
+
+            method.Statements[0].Should().BeOfType<LuaXAssignVariableStatement>();
+            method.Statements[1].Should().BeOfType<LuaXForStatement>();
+
+            var @for = method.Statements[1].As<LuaXForStatement>();
+            @for.ForLoopDescription.Start.ToString().Should().Be("const:int:0");
+            @for.ForLoopDescription.Limit.ToString().Should().Be("const:int:10");
+            @for.ForLoopDescription.Step.ToString().Should().Be("const:int:1");
+            @for.ForLoopDescription.Variable.Name.Should().Be("i");
+
+            @for.Statements.Should().HaveCount(3);
+
+            var ifContinue = @for.Statements[0].As<LuaXIfStatement>();
+            ifContinue.Clauses.Should().HaveCount(1);
+            ifContinue.Clauses[0].Condition.ToString().Should().Be("(var:i Equal const:int:0)");
+            ifContinue.Clauses[0].Statements.Should().HaveCount(1);
+            ifContinue.Clauses[0].Statements[0].Should().BeOfType<LuaXContinueStatement>();
+
+            @for.Statements[1].Should().BeOfType<LuaXAssignVariableStatement>();
+            var assign = @for.Statements[1].As<LuaXAssignVariableStatement>();
+            assign.Expression.ToString().Should().Be("(var:i Add const:int:1)");
+
+            var ifBreak = @for.Statements[2].As<LuaXIfStatement>();
+            ifBreak.Clauses.Should().HaveCount(1);
+            ifBreak.Clauses[0].Condition.ToString().Should().Be("(var:j Equal var:i)");
+            ifBreak.Clauses[0].Statements.Should().HaveCount(1);
+            ifBreak.Clauses[0].Statements[0].Should().BeOfType<LuaXBreakStatement>();
+        }
+
+        [Fact]
+        public void ForBreakContinueReal()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForBreakContinue");
+            app.Pass2();
+            app.Classes.Search("test", out var @class).Should().BeTrue();
+
+            @class.SearchMethod("test2", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(3);
+
+            method.Statements[0].Should().BeOfType<LuaXAssignVariableStatement>();
+            method.Statements[1].Should().BeOfType<LuaXForStatement>();
+
+            var @for = method.Statements[1].As<LuaXForStatement>();
+            @for.ForLoopDescription.Start.ToString().Should().Be("const:real:0");
+            @for.ForLoopDescription.Limit.ToString().Should().Be("const:real:10");
+            @for.ForLoopDescription.Step.ToString().Should().Be("const:real:1");
+            @for.ForLoopDescription.Variable.Name.Should().Be("i");
+
+            @for.Statements.Should().HaveCount(3);
+
+            var ifContinue = @for.Statements[0].As<LuaXIfStatement>();
+            ifContinue.Clauses.Should().HaveCount(1);
+            ifContinue.Clauses[0].Condition.ToString().Should().Be("(var:i Equal const:real:0)");
+            ifContinue.Clauses[0].Statements.Should().HaveCount(1);
+            ifContinue.Clauses[0].Statements[0].Should().BeOfType<LuaXContinueStatement>();
+
+            @for.Statements[1].Should().BeOfType<LuaXAssignVariableStatement>();
+            var assign = @for.Statements[1].As<LuaXAssignVariableStatement>();
+            assign.Expression.ToString().Should().Be("(var:i Add const:real:1)");
+
+            var ifBreak = @for.Statements[2].As<LuaXIfStatement>();
+            ifBreak.Clauses.Should().HaveCount(1);
+            ifBreak.Clauses[0].Condition.ToString().Should().Be("(var:j Equal var:i)");
+            ifBreak.Clauses[0].Statements.Should().HaveCount(1);
+            ifBreak.Clauses[0].Statements[0].Should().BeOfType<LuaXBreakStatement>();
+        }
+
+        [Fact]
+        public void ForReverseBreakContinueInt()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForReverseBreakContinue");
+            app.Pass2();
+            app.Classes.Search("test", out var @class).Should().BeTrue();
+
+            @class.SearchMethod("test1", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(3);
+
+            method.Statements[0].Should().BeOfType<LuaXAssignVariableStatement>();
+            method.Statements[1].Should().BeOfType<LuaXForStatement>();
+
+            var @for = method.Statements[1].As<LuaXForStatement>();
+            @for.ForLoopDescription.Start.ToString().Should().Be("const:int:10");
+            @for.ForLoopDescription.Limit.ToString().Should().Be("const:int:0");
+            @for.ForLoopDescription.Step.ToString().Should().Be("const:int:-1");
+            @for.ForLoopDescription.Variable.Name.Should().Be("i");
+
+            @for.Statements.Should().HaveCount(3);
+
+            var ifContinue = @for.Statements[0].As<LuaXIfStatement>();
+            ifContinue.Clauses.Should().HaveCount(1);
+            ifContinue.Clauses[0].Condition.ToString().Should().Be("(var:i Equal const:int:0)");
+            ifContinue.Clauses[0].Statements.Should().HaveCount(1);
+            ifContinue.Clauses[0].Statements[0].Should().BeOfType<LuaXContinueStatement>();
+
+            @for.Statements[1].Should().BeOfType<LuaXAssignVariableStatement>();
+            var assign = @for.Statements[1].As<LuaXAssignVariableStatement>();
+            assign.Expression.ToString().Should().Be("(var:i Add const:int:1)");
+
+            var ifBreak = @for.Statements[2].As<LuaXIfStatement>();
+            ifBreak.Clauses.Should().HaveCount(1);
+            ifBreak.Clauses[0].Condition.ToString().Should().Be("(var:j Equal var:i)");
+            ifBreak.Clauses[0].Statements.Should().HaveCount(1);
+            ifBreak.Clauses[0].Statements[0].Should().BeOfType<LuaXBreakStatement>();
+        }
+
+        [Fact]
+        public void ForReverseBreakContinueReal()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForReverseBreakContinue");
+            app.Pass2();
+            app.Classes.Search("test", out var @class).Should().BeTrue();
+
+            @class.SearchMethod("test2", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(3);
+
+            method.Statements[0].Should().BeOfType<LuaXAssignVariableStatement>();
+            method.Statements[1].Should().BeOfType<LuaXForStatement>();
+
+            var @for = method.Statements[1].As<LuaXForStatement>();
+            @for.ForLoopDescription.Start.ToString().Should().Be("const:real:10");
+            @for.ForLoopDescription.Limit.ToString().Should().Be("const:real:0");
+            @for.ForLoopDescription.Step.ToString().Should().Be("const:real:-1");
+            @for.ForLoopDescription.Variable.Name.Should().Be("i");
+
+            @for.Statements.Should().HaveCount(3);
+
+            var ifContinue = @for.Statements[0].As<LuaXIfStatement>();
+            ifContinue.Clauses.Should().HaveCount(1);
+            ifContinue.Clauses[0].Condition.ToString().Should().Be("(var:i Equal const:real:0)");
+            ifContinue.Clauses[0].Statements.Should().HaveCount(1);
+            ifContinue.Clauses[0].Statements[0].Should().BeOfType<LuaXContinueStatement>();
+
+            @for.Statements[1].Should().BeOfType<LuaXAssignVariableStatement>();
+            var assign = @for.Statements[1].As<LuaXAssignVariableStatement>();
+            assign.Expression.ToString().Should().Be("(var:i Add const:real:1)");
+
+            var ifBreak = @for.Statements[2].As<LuaXIfStatement>();
+            ifBreak.Clauses.Should().HaveCount(1);
+            ifBreak.Clauses[0].Condition.ToString().Should().Be("(var:j Equal var:i)");
+            ifBreak.Clauses[0].Statements.Should().HaveCount(1);
+            ifBreak.Clauses[0].Statements[0].Should().BeOfType<LuaXBreakStatement>();
+        }
+
+        [Fact]
+        public void ForWithoutIteratorVar()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForWithoutIteratorExp");
+            app.Pass2();
+            app.Classes.Search("test", out var @class).Should().BeTrue();
+
+            @class.SearchMethod("test1", out var method).Should().BeTrue();
+            method.Statements.Should().HaveCount(3);
+
+            method.Statements[0].Should().BeOfType<LuaXAssignVariableStatement>();
+            method.Statements[1].Should().BeOfType<LuaXForStatement>();
+
+            var @for = method.Statements[1].As<LuaXForStatement>();
+            @for.ForLoopDescription.Start.ToString().Should().Be("const:int:0");
+            @for.ForLoopDescription.Limit.ToString().Should().Be("const:int:10");
+            @for.ForLoopDescription.Step.ToString().Should().Be("const:int:1");
+            @for.ForLoopDescription.Variable.Name.Should().Be("i");
+
+            @for.Statements.Should().HaveCount(1);
+
+            @for.Statements[0].Should().BeOfType<LuaXAssignVariableStatement>();
+            var assign = @for.Statements[0].As<LuaXAssignVariableStatement>();
+            assign.Expression.ToString().Should().Be("(var:j Add const:int:1)");
+        }
+
+        [Fact]
+        public void ForInitExprNonNumberType()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForInitExprNonNumberType");
+
+            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
+            Assert.Contains("Initialization part of for statement should be declaration and be int type", ex.Message);
+        }
+
+        [Fact]
+        public void ForLoopPartsWithDifferentType()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ForLoopPartsWithDifferentType");
+
+            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
+            Assert.Contains("The types are incompatible. The target is double and source is int", ex.Message);
+        }
+
+        [Fact]
+        public void Override_Correct()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("OverridingOK");
+
+            ((Action)(() => app.Pass2())).Should().NotThrow<LuaXAstGeneratorException>();
+        }
+
+        [Theory]
+        [InlineData("OverridingFail1")]
+        [InlineData("OverridingFail2")]
+        [InlineData("OverridingFail3")]
+        [InlineData("OverridingFail4")]
+        public void Override_Incorrect(string variant)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource(variant);
+
+            ((Action)(() => app.Pass2())).Should().Throw<LuaXAstGeneratorException>();
+        }
     }
 }

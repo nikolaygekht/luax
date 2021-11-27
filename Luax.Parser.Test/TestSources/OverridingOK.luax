@@ -1,0 +1,18 @@
+﻿class a
+	public function a1(a : int, b : object) : int[]
+	end
+
+	public function a2(a : int, b : a) : a
+	end
+end
+
+ class b : a
+	-- signature fully matches
+	public function a1(a : int, b : object) : int[]
+	end
+
+	-- signature is compatible - type in overridden method
+	-- is derived from the type of the base method
+	public function a2(a : int, b : b) : b
+	end
+ end

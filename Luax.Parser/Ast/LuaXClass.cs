@@ -129,9 +129,39 @@ namespace Luax.Parser.Ast
                         throw new LuaXAstGeneratorException(arg.Location.Source, new LuaXParserError(arg.Location, $"Argument type {arg.LuaType.Class} is not defined"));
                 }
 
+                ValidateOverrideSignatgure(method);
+
                 if (method.Body != null)
                     creator.ProcessBody(method.Body, this, Methods[i]);
             }
+        }
+
+        private void ValidateOverrideSignatgure(LuaXMethod method)
+        {
+            if (ParentClass == null || Parent == "object")
+                return;
+
+            if (!ParentClass.SearchMethod(method.Name, out var baseMethod))
+                return;
+
+            if (method.Arguments.Count != baseMethod.Arguments.Count)
+                throw new LuaXAstGeneratorException(method.Location, $"Method {Name}.{method.Name} is overridden, but has different number of parameters");
+
+            for (int i = 0; i < method.Arguments.Count; i++)
+                if (!AreOverrideArgumentsCompatible(method.Arguments[i].LuaType, baseMethod.Arguments[i].LuaType))
+                    throw new LuaXAstGeneratorException(method.Location, $"Method {Name}.{method.Name} is overridden, but argument {i + 1} has incompatible type");
+        }
+
+        private bool AreOverrideArgumentsCompatible(LuaXTypeDefinition @override, LuaXTypeDefinition @base)
+        {
+            if (@override.IsTheSame(@base))
+                return true;
+
+            //non-object types should match exactly
+            if (!@override.IsObject() || !@base.IsObject())
+                return false;
+
+            return mMetadata.IsKindOf(@override.Class, @base.Class);
         }
        
         public bool SearchProperty(string propertyName, out LuaXProperty property, out string ownerClassName)

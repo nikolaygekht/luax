@@ -1,0 +1,10 @@
+﻿class a
+	public function a1(a : int, b : b) : b
+	end
+end
+
+ class b : a
+	-- return type cannot be derived
+	public function a1(a : real, b : a) : a
+	end
+ end

@@ -46,27 +46,28 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             if (@this.Properties["__configurator"].Value is not LoggerConfiguration configurator)
                 throw new ArgumentException("The configurator isn't properly initialized", nameof(@this));
 
-            switch(level)
-            {
-                case 0:
-                    configurator = configurator.MinimumLevel.Verbose();
-                    break;
-                case 1:
-                    configurator = configurator.MinimumLevel.Debug();
-                    break;
-                case 2:
-                    configurator = configurator.MinimumLevel.Information();
-                    break;
-                case 3:
-                    configurator = configurator.MinimumLevel.Warning();
-                    break;
-                case 4:
-                    configurator = configurator.MinimumLevel.Error();
-                    break;
-                case 5:
-                    configurator = configurator.MinimumLevel.Fatal();
-                    break;
-            }
+            configurator = configurator.MinimumLevel.ControlledBy(new Serilog.Core.LoggingLevelSwitch(GetLogEventLevel(level)));
+            //switch (level)
+            //{
+            //    case 0:
+            //        configurator = configurator.MinimumLevel.Verbose();
+            //        break;
+            //    case 1:
+            //        configurator = configurator.MinimumLevel.Debug();
+            //        break;
+            //    case 2:
+            //        configurator = configurator.MinimumLevel.Information();
+            //        break;
+            //    case 3:
+            //        configurator = configurator.MinimumLevel.Warning();
+            //        break;
+            //    case 4:
+            //        configurator = configurator.MinimumLevel.Error();
+            //        break;
+            //    case 5:
+            //        configurator = configurator.MinimumLevel.Fatal();
+            //        break;
+            //}
             @this.Properties["__configurator"].Value = configurator;
             return @this;
         }
@@ -107,25 +108,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             if (@this.Properties["__configurator"].Value is not LoggerConfiguration configurator)
                 throw new ArgumentException("The configurator isn't properly initialized", nameof(@this));
 
-            Serilog.Events.LogEventLevel eventLevel = Serilog.Events.LogEventLevel.Verbose;
-            switch (level)
-            {
-                case 1:
-                    eventLevel = Serilog.Events.LogEventLevel.Debug;
-                    break;
-                case 2:
-                    eventLevel = Serilog.Events.LogEventLevel.Information;
-                    break;
-                case 3:
-                    eventLevel = Serilog.Events.LogEventLevel.Warning;
-                    break;
-                case 4:
-                    eventLevel = Serilog.Events.LogEventLevel.Error;
-                    break;
-                case 5:
-                    eventLevel = Serilog.Events.LogEventLevel.Fatal;
-                    break;
-            }
+            Serilog.Events.LogEventLevel eventLevel = GetLogEventLevel(level);
             configurator = configurator.WriteTo.Console(eventLevel);
             @this.Properties["__configurator"].Value = configurator;
             return @this;
@@ -136,24 +119,9 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         public static object SetRollingInterval(LuaXObjectInstance @this, int rollingInterval)
         {
             RollingInterval ri = RollingInterval.Infinite;
-            switch (rollingInterval)
-            {
-                case 0:
-                    ri = RollingInterval.Minute;
-                    break;
-                case 1:
-                    ri = RollingInterval.Hour;
-                    break;
-                case 2:
-                    ri = RollingInterval.Day;
-                    break;
-                case 3:
-                    ri = RollingInterval.Month;
-                    break;
-                case 4:
-                    ri = RollingInterval.Day;
-                    break;
-            }
+            if (rollingInterval >= 0 && rollingInterval <= 5)
+                ri = (RollingInterval)rollingInterval;
+
             @this.Properties["__rollingInterval"].Value = ri;
             return @this;
         }
@@ -164,6 +132,14 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             @this.Properties["__retainedFileCountLimit"].Value = limit;
             return @this;
+        }
+
+        public static Serilog.Events.LogEventLevel GetLogEventLevel(int level)
+        {
+            Serilog.Events.LogEventLevel eventLevel = Serilog.Events.LogEventLevel.Verbose;
+            if (level >= 0 && level <= 5)
+                eventLevel = (Serilog.Events.LogEventLevel)level;
+            return eventLevel;
         }
     }
 }

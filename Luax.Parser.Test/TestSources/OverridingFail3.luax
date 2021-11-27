@@ -1,0 +1,10 @@
+﻿class a
+	public function a1(a : int, b : b) : int[]
+	end
+end
+
+ class b : a
+	-- incompatible types -> cannot derive a -> b (from overridden to base)
+	public function a1(a : real, b : a) : int[]
+	end
+ end

@@ -32,16 +32,16 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
 
         //public static extern indexOf(s : string, sub:string) : int;
         [LuaXExternMethod("stdlib", "indexOf")]
-        public static object Extern_indexOf(string s, string sub, bool caseInsensitive)
+        public static object Extern_indexOf(string s, string sub, bool caseSensitive)
         {
-            return s.IndexOf(sub, caseInsensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+            return s.IndexOf(sub, caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
         }
 
         //public static extern lastIndexOf(s : string, sub:string) : int;
         [LuaXExternMethod("stdlib", "lastIndexOf")]
-        public static object Extern_lastIndexOf(string s, string sub, bool caseInsensitive)
+        public static object Extern_lastIndexOf(string s, string sub, bool caseSensitive)
         {
-            return s.LastIndexOf(sub, caseInsensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal);
+            return s.LastIndexOf(sub, caseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
         }
 
         //public static extern left(s : string, length : int) : string;
@@ -70,6 +70,20 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         public static object Extern_trim(string s)
         {
             return s.Trim();
+        }
+
+        //public static extern rtrim(s : string) : string;
+        [LuaXExternMethod("stdlib", "rtrim")]
+        public static object Extern_rtrim(string s)
+        {
+            return s.TrimEnd();
+        }
+
+        //public static extern ltrim(s : string) : string;
+        [LuaXExternMethod("stdlib", "ltrim")]
+        public static object Extern_ltrim(string s)
+        {
+            return s.TrimStart();
         }
 
         //public static extern right(s : string, length : int) : string;

@@ -45,27 +45,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             if (@this.Properties["__logger"].Value is not Serilog.Core.Logger logger)
                 throw new ArgumentException("The logger isn't properly initialized", nameof(@this));
 
-            switch (level)
-            {
-                case 0:
-                    logger.Verbose(message);
-                    break;
-                case 1:
-                    logger.Debug(message);
-                    break;
-                case 2:
-                    logger.Information(message);
-                    break;
-                case 3:
-                    logger.Warning(message);
-                    break;
-                case 4:
-                    logger.Error(message);
-                    break;
-                case 5:
-                    logger.Fatal(message);
-                    break;
-            }
+            logger.Write(StdlibBaseLoggerConfigurator.GetLogEventLevel(level), message);
             return null;
         }
     }

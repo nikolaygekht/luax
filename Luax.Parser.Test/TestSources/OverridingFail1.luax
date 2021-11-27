@@ -1,0 +1,10 @@
+﻿class a
+	public function a1(a : int, b : object) : int[]
+	end
+end
+
+ class b : a
+	-- different number of arguments
+	public function a1(a : int) : int[]
+	end
+ end

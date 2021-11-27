@@ -58,6 +58,8 @@ namespace Luax.Interpreter.Expression
                 return EvaluateNewObject(newObjectExpression, types, variables);
             if (expression is LuaXNewArrayExpression newArrayExpression)
                 return EvaluateNewArray(newArrayExpression, types, runningClass, variables);
+            if (expression is LuaXNewArrayWithInitExpression newArrayWithInitExpression)
+                return EvaluateNewArrayWithInit(newArrayWithInitExpression, types, runningClass, variables);
             if (expression is LuaXTypeNameOperatorExpression typenameExpression)
                 return EvaluateTypename(typenameExpression, types, runningClass, variables);
 
@@ -396,6 +398,23 @@ namespace Luax.Interpreter.Expression
                 throw new LuaXExecutionException(expression.Location, "The size expression is not an numeric value");
 
             return new LuaXVariableInstanceArray(expression.ReturnType, size);
+        }
+
+        /// <summary>
+        /// Evaluates a new array with initialization expression
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <param name="types"></param>
+        /// <param name="runningClass"></param>
+        /// <param name="variables"></param>
+        /// <returns></returns>
+        private static object EvaluateNewArrayWithInit(LuaXNewArrayWithInitExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
+        {
+            int size = expression.InitExpressions.Count;
+            object[] objects = new object[size];
+            for (int i = 0; i < size; i++)
+                objects[i] = Evaluate(expression.InitExpressions[i], types, runningClass, variables);
+            return new LuaXVariableInstanceArray(expression.ReturnType, objects);
         }
 
         /// <summary>
