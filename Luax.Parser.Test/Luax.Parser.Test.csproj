@@ -20,6 +20,7 @@
     <None Remove="TestSources\ForReverseBreakContinue.luax" />
     <None Remove="TestSources\ForWithoutIteratorExp.luax" />
     <None Remove="TestSources\If1.luax" />
+    <None Remove="TestSources\IncorrectFunctionDefinition.luax" />
     <None Remove="TestSources\InnerClass1.luax" />
     <None Remove="TestSources\InnerClass2.luax" />
     <None Remove="TestSources\OtherClassMethodCall1.luax" />
@@ -50,6 +51,7 @@
     <EmbeddedResource Include="TestSources\Continue2.luax" />
     <EmbeddedResource Include="TestSources\Debug.luax" />
     <EmbeddedResource Include="TestSources\ForInitExprNonNumberType.luax" />
+    <EmbeddedResource Include="TestSources\IncorrectFunctionDefinition.luax" />
     <EmbeddedResource Include="TestSources\InnerClass1.luax" />
     <EmbeddedResource Include="TestSources\InnerClass2.luax" />
     <EmbeddedResource Include="TestSources\OtherClassMethodCall1.luax" />

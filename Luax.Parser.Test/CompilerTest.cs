@@ -421,8 +421,9 @@ namespace Luax.Parser.Test
         {
             var app = new LuaXApplication();
             app.CompileResource("Break1");
-            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
-            Assert.Contains("The break statement is not in a loop", ex.Message);
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("The break statement is not in a loop"));
         }
 
         [Fact]
@@ -430,8 +431,9 @@ namespace Luax.Parser.Test
         {
             var app = new LuaXApplication();
             app.CompileResource("Break2");
-            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
-            Assert.Contains("The break statement is not in a loop", ex.Message);
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("The break statement is not in a loop"));
         }
 
         [Fact]
@@ -439,8 +441,9 @@ namespace Luax.Parser.Test
         {
             var app = new LuaXApplication();
             app.CompileResource("Continue1");
-            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
-            Assert.Contains("The continue statement is not in a loop", ex.Message);
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("The continue statement is not in a loop"));
         }
 
         [Fact]
@@ -448,8 +451,9 @@ namespace Luax.Parser.Test
         {
             var app = new LuaXApplication();
             app.CompileResource("Continue2");
-            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
-            Assert.Contains("The continue statement is not in a loop", ex.Message);
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("The continue statement is not in a loop"));
         }
 
         [Fact]
@@ -568,8 +572,9 @@ namespace Luax.Parser.Test
         {
             var app = new LuaXApplication();
             app.CompileResource("InnerClass2");
-            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
-            Assert.Contains("is a private method", ex.Message);
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("is a private method"));
         }
 
         [Fact]
@@ -590,8 +595,9 @@ namespace Luax.Parser.Test
         {
             var app = new LuaXApplication();
             app.CompileResource("OtherClassMethodCall2");
-            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
-            Assert.Contains("is a private method", ex.Message);
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("is a private method"));
         }
 
         [Fact]
@@ -599,8 +605,9 @@ namespace Luax.Parser.Test
         {
             var app = new LuaXApplication();
             app.CompileResource("OtherClassMethodCall4");
-            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
-            Assert.Contains("is a private method", ex.Message);
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("is a private method"));
         }
 
         [Fact]
@@ -817,8 +824,9 @@ namespace Luax.Parser.Test
             var app = new LuaXApplication();
             app.CompileResource("ForInitExprNonNumberType");
 
-            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
-            Assert.Contains("Initialization part of for statement should be declaration and be int type", ex.Message);
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("Initialization part of for statement should be declaration and be int type"));
         }
 
         [Fact]
@@ -827,8 +835,9 @@ namespace Luax.Parser.Test
             var app = new LuaXApplication();
             app.CompileResource("ForLoopPartsWithDifferentType");
 
-            var ex = Assert.Throws<LuaXAstGeneratorException>(() => app.Pass2());
-            Assert.Contains("The types are incompatible. The target is double and source is int", ex.Message);
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("The types are incompatible. The target is double and source is int"));
         }
 
         [Fact]
@@ -851,6 +860,16 @@ namespace Luax.Parser.Test
             app.CompileResource(variant);
 
             ((Action)(() => app.Pass2())).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void IncorrectFunctionDefinition()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("IncorrectFunctionDefinition");
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Errors[0].Line == 8 && e.Errors[0].Column == 4);
         }
     }
 }
