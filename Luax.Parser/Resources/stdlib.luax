@@ -873,11 +873,14 @@ class baseLogger
     @DocParameter("level", "Level of the message")
     @DocParameter("message", "Message to be logged")
     public extern log(level : int, message : string) : void;
+
     @DocBrief("Bind the logger configurator")
     @DocParameter("configurator", "Logger configurator")
     internal extern bindConfigurator(configurator : baseLoggerConfigurator) : void;
+
     @DocBrief("Constructor")
     internal extern baseLogger() : void;
+
     @DocBrief("Finalize logger")
     public extern close() : void;
 end
@@ -898,25 +901,31 @@ class baseLoggerConfigurator
     @DocParameter("level", "Level of the message")
     @DocReturn("The method returns it's own baseLoggerConfigurator instance")
     public extern setMinimumLevel(level : int) : baseLoggerConfigurator;
+
     @DocBrief("Set path of the log file")
     @DocParameter("path", "Path to the file")
     @DocReturn("The method returns it's own baseLoggerConfigurator instance")
     public extern setWriteToPath(path : string) : baseLoggerConfigurator;
+
     @DocBrief("Set log writing to console")
     @DocReturn("The method returns it's own baseLoggerConfigurator instance")
     public extern setWriteToConsole() : baseLoggerConfigurator;
+
     @DocBrief("Set restricted log writing to console")
     @DocParameter("level", "Restricted level of messages to be written to console")
     @DocReturn("The method returns it's own baseLoggerConfigurator instance")
     public extern setRestrictedWriteToConsole(level : int) : baseLoggerConfigurator;
+
     @DocBrief("Set rolling interval")
     @DocParameter("rollingInterval", "Rolling interval")
     @DocReturn("The method returns it's own baseLoggerConfigurator instance")
     public extern setRollingInterval(rollingInterval : int) : baseLoggerConfigurator;
+
     @DocBrief("Set retained file count limit")
     @DocParameter("limit", "Retained file count limit")
     @DocReturn("The method returns it's own baseLoggerConfigurator instance")
     public extern setRetainedFileCountLimit(limit : int) : baseLoggerConfigurator;
+
     @DocBrief("Constructor")
     public extern baseLoggerConfigurator() : void;
 end

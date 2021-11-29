@@ -9,6 +9,7 @@ class loggerTest
         logger = (new loggerConfigurator())
                 .setMinimumLevel(loggerLevel.trace)
                 .setRollingInterval(loggerRollingInterval.day)
+                .setRetainedFileCountLimit(7)
                 .setWriteToPath("logs/test-.txt")
                 .createLogger();
         logger.trace("text0");
