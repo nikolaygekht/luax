@@ -716,6 +716,7 @@ namespace Luax.Parser.Ast.Builder
             IAstNode attributes = null;
             IAstNode arguments = null;
             IAstNode body = null;
+            IAstNode location = null;
 
             for (int i = 0; i < node.Children.Count; i++)
             {
@@ -727,9 +728,16 @@ namespace Luax.Parser.Ast.Builder
                         break;
                     case "VISIBILITY":
                         visibility = ProcessVisibility(child);
+                        location = child;
                         break;
                     case "STATIC":
                         @static = true;
+                        if (location == null)
+                            location = child;
+                        break;
+                    case "FUNCTION":
+                        if (location == null)
+                            location = child;
                         break;
                     case "IDENTIFIER":
                         name = child.Value;
@@ -747,10 +755,10 @@ namespace Luax.Parser.Ast.Builder
             }
 
             if (name == null)
-                throw new LuaXAstGeneratorException(Name, node, "IDENTIFIER is expected here");
+                throw new LuaXAstGeneratorException(Name, location, "IDENTIFIER is expected here");
 
             if (returnType == null)             //NOSONAR -- false positive
-                throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected here");
+                throw new LuaXAstGeneratorException(Name, location, "TYPE_DECL is expected here");
 
             LuaXMethod method = new LuaXMethod(@class)
             {
@@ -759,14 +767,14 @@ namespace Luax.Parser.Ast.Builder
                 Visibility = visibility,
                 ReturnType = returnType,
                 Extern = false,
-                Location = new LuaXElementLocation(Name, node),
+                Location = new LuaXElementLocation(Name, location),
                 Body = body
             };
 
             if (attributes != null)
                 ProcessAttributes(attributes.Children, method.Attributes);
 
-            ProcessMethodDefinition(node, @class, method, arguments);
+            ProcessMethodDefinition(location, @class, method, arguments);
         }
 
         /// <summary>
@@ -781,6 +789,7 @@ namespace Luax.Parser.Ast.Builder
             string name = null;
             LuaXTypeDefinition returnType = null;
             IAstNode attributes = null;
+            IAstNode location = null;
 
             IAstNode arguments = null;
 
@@ -795,9 +804,16 @@ namespace Luax.Parser.Ast.Builder
                         break;
                     case "VISIBILITY":
                         visibility = ProcessVisibility(child);
+                        location = child;
                         break;
                     case "STATIC":
                         @static = true;
+                        if (location == null)
+                            location = child;
+                        break;
+                    case "EXTERN":
+                        if (location == null)
+                            location = child;
                         break;
                     case "IDENTIFIER":
                         name = child.Value;
@@ -814,10 +830,10 @@ namespace Luax.Parser.Ast.Builder
             }
 
             if (name == null)
-                throw new LuaXAstGeneratorException(Name, node, "IDENTIFIER is expected here");
+                throw new LuaXAstGeneratorException(Name, location, "IDENTIFIER is expected here");
 
             if (returnType == null)             //NOSONAR -- false positive
-                throw new LuaXAstGeneratorException(Name, node, "TYPE_DECL is expected here");
+                throw new LuaXAstGeneratorException(Name, location, "TYPE_DECL is expected here");
 
             LuaXMethod method = new LuaXMethod(@class)
             {
@@ -826,13 +842,13 @@ namespace Luax.Parser.Ast.Builder
                 Visibility = visibility,
                 ReturnType = returnType,
                 Extern = true,
-                Location = new LuaXElementLocation(Name, node)
+                Location = new LuaXElementLocation(Name, location)
             };
 
             if (attributes != null)
                 ProcessAttributes(attributes.Children, method.Attributes);
 
-            ProcessMethodDefinition(node, @class, method, arguments);
+            ProcessMethodDefinition(location, @class, method, arguments);
         }
 
         private void ProcessMethodDefinition(IAstNode node, LuaXClass @class, LuaXMethod method, IAstNode arguments)
