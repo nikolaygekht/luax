@@ -487,5 +487,22 @@ namespace Luax.Parser.Test
             app.Classes.Add(new LuaXClass("d", "a", new LuaXElementLocation("", 0, 0)));
             ((Action)(() => app.Pass2())).Should().Throw<LuaXAstGeneratorException>();
         }
+
+        [Fact]
+        public void ParentClass_Fail()
+        {
+            var app = new LuaXApplication();
+            app.Classes.Add(new LuaXClass("a", "d", new LuaXElementLocation("", 0, 0)));
+            ((Action)(() => app.Pass2())).Should().Throw<LuaXAstGeneratorException>();
+        }
+
+        [Fact]
+        public void ParentClass_Success()
+        {
+            var app = new LuaXApplication();
+            app.Classes.Add(new LuaXClass("a", "d", new LuaXElementLocation("", 0, 0)));
+            app.Classes.Add(new LuaXClass("d"));
+            ((Action)(() => app.Pass2())).Should().NotThrow<LuaXAstGeneratorException>();
+        }
     }
 }
