@@ -1,0 +1,120 @@
+@TestSuite()
+class loggerTest
+    @Fact()
+    public function allLevelsTest() : void
+        var logger : logger;
+        var pathToLog : string, logText : string;
+
+        pathToLog = getLogFullPath(true, true, true);
+        logger = (new loggerConfigurator())
+                .setMinimumLevel(loggerLevel.trace)
+                .setRollingInterval(loggerRollingInterval.day)
+                .setWriteToPath("logs/test-.txt")
+                .createLogger();
+        logger.trace("text0");
+        logger.debug("text1");
+        logger.information("text2");
+        logger.error("text3");
+        logger.critical("text4");
+        logger.close();
+
+        assert.isTrue(io.exists(pathToLog), "created");
+        logText = io.readTextFromFile(pathToLog, io.CP_ANSI);
+        assert.isTrue(stdlib.indexOf(logText, "text0", false) >= 0, "trace");
+        assert.isTrue(stdlib.indexOf(logText, "text1", false) >= 0, "debug");
+        assert.isTrue(stdlib.indexOf(logText, "text2", false) >= 0, "information");
+        assert.isTrue(stdlib.indexOf(logText, "text3", false) >= 0, "error");
+        assert.isTrue(stdlib.indexOf(logText, "text4", false) >= 0, "critical");
+
+        io.delete(pathToLog);
+        io.delete("logs");
+    end
+
+    @Fact()
+    public function informationMinimumLevelTest() : void
+        var logger : logger;
+        var pathToLog : string, logText : string;
+
+        pathToLog = getLogFullPath(true, true, false);
+        logger = (new loggerConfigurator())
+                .setMinimumLevel(loggerLevel.information)
+                .setRollingInterval(loggerRollingInterval.month)
+                .setWriteToPath("logs/test-.txt")
+                .createLogger();
+        logger.trace("text0");
+        logger.debug("text1");
+        logger.information("text2");
+        logger.error("text3");
+        logger.critical("text4");
+        logger.close();
+
+        assert.isTrue(io.exists(pathToLog), "created");
+        logText = io.readTextFromFile(pathToLog, io.CP_ANSI);
+        assert.isTrue(stdlib.indexOf(logText, "text0", false) < 0, "trace");
+        assert.isTrue(stdlib.indexOf(logText, "text1", false) < 0, "debug");
+        assert.isTrue(stdlib.indexOf(logText, "text2", false) >= 0, "information");
+        assert.isTrue(stdlib.indexOf(logText, "text3", false) >= 0, "error");
+        assert.isTrue(stdlib.indexOf(logText, "text4", false) >= 0, "critical");
+
+        io.delete(pathToLog);
+        io.delete("logs");
+    end
+
+    @Fact()
+    public function criticalMinimumLevelTest() : void
+        var logger : logger;
+        var pathToLog : string, logText : string;
+
+        pathToLog = getLogFullPath(false, false, false);
+        logger = (new loggerConfigurator())
+                .setMinimumLevel(loggerLevel.critical)
+                .setRollingInterval(loggerRollingInterval.infinite)
+                .setWriteToPath("logs/test-.txt")
+                .createLogger();
+        logger.trace("text0");
+        logger.debug("text1");
+        logger.information("text2");
+        logger.error("text3");
+        logger.critical("text4");
+        logger.close();
+
+        assert.isTrue(io.exists(pathToLog), "created");
+        logText = io.readTextFromFile(pathToLog, io.CP_ANSI);
+        assert.isTrue(stdlib.indexOf(logText, "text0", false) < 0, "trace");
+        assert.isTrue(stdlib.indexOf(logText, "text1", false) < 0, "debug");
+        assert.isTrue(stdlib.indexOf(logText, "text2", false) < 0, "information");
+        assert.isTrue(stdlib.indexOf(logText, "text3", false) < 0, "error");
+        assert.isTrue(stdlib.indexOf(logText, "text4", false) >= 0, "critical");
+
+        io.delete(pathToLog);
+        io.delete("logs");
+    end
+    
+    private function getLogFullPath(hasYear : boolean, hasMonth : boolean, hasDay : boolean) : string
+        var pathToLog : string;
+        var now : datetime;
+        var month : int, day : int;
+
+        now = stdlib.nowlocal();
+        pathToLog = "test-";
+        if hasYear then
+            pathToLog =pathToLog .. stdlib.year(now);
+        end
+        if hasMonth then
+            month = stdlib.month(now);
+            if month < 10 then
+                pathToLog = pathToLog .. "0";
+            end
+            pathToLog = pathToLog .. month;
+        end
+        if hasDay then
+            day = stdlib.day(now);
+            if day < 10 then
+                pathToLog = pathToLog .. "0";
+            end
+            pathToLog = pathToLog .. day;
+        end
+        pathToLog = io.fullPath(io.combinePath("logs", pathToLog .. ".txt"));
+        return pathToLog;
+    end
+end

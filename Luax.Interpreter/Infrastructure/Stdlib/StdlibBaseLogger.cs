@@ -48,5 +48,16 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             logger.Write(StdlibBaseLoggerConfigurator.GetLogEventLevel(level), message);
             return null;
         }
+
+        //public extern close() : void;
+        [LuaXExternMethod("baseLogger", "close")]
+        public static object Close(LuaXObjectInstance @this)
+        {
+            if (@this.Properties["__logger"].Value is not Serilog.Core.Logger logger)
+                throw new ArgumentException("The logger isn't properly initialized", nameof(@this));
+
+            logger.Dispose();
+            return null;
+        }
     }
 }

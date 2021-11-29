@@ -237,7 +237,7 @@ class io
     @DocDescription("The names of the folders will include the name of the parent folder")
     public static extern folders(path : string) : string[];
 
-    @DocBrief("Returns the file or a the folder specified")
+    @DocBrief("Removes the file or a the folder specified")
     @DocDescription("If a folder name is specified, all contained files and subfolders will be also removed")
     public static extern delete(path : string) : void;
 
@@ -878,6 +878,8 @@ class baseLogger
     internal extern bindConfigurator(configurator : baseLoggerConfigurator) : void;
     @DocBrief("Constructor")
     internal extern baseLogger() : void;
+    @DocBrief("Finalize logger")
+    public extern close() : void;
 end
 
 @DocBrief("The logger's rolling intervals")

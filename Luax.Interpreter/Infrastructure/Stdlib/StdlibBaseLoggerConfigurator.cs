@@ -47,27 +47,6 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 throw new ArgumentException("The configurator isn't properly initialized", nameof(@this));
 
             configurator = configurator.MinimumLevel.ControlledBy(new Serilog.Core.LoggingLevelSwitch(GetLogEventLevel(level)));
-            //switch (level)
-            //{
-            //    case 0:
-            //        configurator = configurator.MinimumLevel.Verbose();
-            //        break;
-            //    case 1:
-            //        configurator = configurator.MinimumLevel.Debug();
-            //        break;
-            //    case 2:
-            //        configurator = configurator.MinimumLevel.Information();
-            //        break;
-            //    case 3:
-            //        configurator = configurator.MinimumLevel.Warning();
-            //        break;
-            //    case 4:
-            //        configurator = configurator.MinimumLevel.Error();
-            //        break;
-            //    case 5:
-            //        configurator = configurator.MinimumLevel.Fatal();
-            //        break;
-            //}
             @this.Properties["__configurator"].Value = configurator;
             return @this;
         }
