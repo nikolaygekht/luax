@@ -106,6 +106,8 @@ namespace Luax.Parser.Ast
                     throw new LuaXAstGeneratorException(Location, "Class contains itself in the class inheritance chain");
                 parents.Add(name);
                 application.Classes.Search(name, out var @class);
+                if (@class == null)
+                    throw new LuaXAstGeneratorException(Location, $"Parent class {name} is not found in metadata");
                 name = @class.Parent;
             }
         }
@@ -163,7 +165,7 @@ namespace Luax.Parser.Ast
 
             return mMetadata.IsKindOf(@override.Class, @base.Class);
         }
-       
+
         public bool SearchProperty(string propertyName, out LuaXProperty property, out string ownerClassName)
         {
             LuaXPropertyCollection properties = this.Properties;
@@ -182,7 +184,7 @@ namespace Luax.Parser.Ast
                             return true;
                         }
                     }
-                    if(!foundInParents)
+                    if (!foundInParents)
                     {
                         int indexOfPoint = className.LastIndexOf('.');
                         if (indexOfPoint > 0)
