@@ -1,0 +1,11 @@
+﻿@attr1()
+@attr2()
+@attr3()
+class test
+   @attr4()
+   @attr5()
+   @attr6()
+   static function test1(arg1 : int) : unknownClass
+        return nil;
+   end
+end
