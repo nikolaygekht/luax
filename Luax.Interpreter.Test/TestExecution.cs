@@ -853,11 +853,12 @@ namespace Luax.Interpreter.Test
             method.ReturnType.IsVoid().Should().BeTrue();
 
             List<Serilog.Events.LogEvent> events = new List<Serilog.Events.LogEvent>();
-
-            StdlibLogger.Logged += new EventHandler<Serilog.Events.LogEvent>(delegate (Object _, Serilog.Events.LogEvent e)
+            EventHandler<Serilog.Events.LogEvent> loggedHandler = new EventHandler<Serilog.Events.LogEvent>(delegate (Object _, Serilog.Events.LogEvent e)
             {
                 events.Add(e);
             });
+
+            StdlibLogger.Logged += loggedHandler;
 
             LuaXMethodExecutor.Execute(method, typelib, null, new object[] {}, out var _);
 
@@ -877,6 +878,8 @@ namespace Luax.Interpreter.Test
 
             events[4].Level.Should().Be(Serilog.Events.LogEventLevel.Fatal);
             events[4].RenderMessage().Should().Be("text5");
+
+            StdlibLogger.Logged -= loggedHandler;
         }
     }
 }

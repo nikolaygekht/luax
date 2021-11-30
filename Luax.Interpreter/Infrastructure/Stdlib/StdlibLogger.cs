@@ -74,19 +74,20 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             mLogger.Fatal(message);
             return null;
         }
-    }
-    internal class DelegatingSink : ILogEventSink
-    {
-        private readonly Action<LogEvent> mWriter;
 
-        public DelegatingSink(Action<LogEvent> write)
+        private class DelegatingSink : ILogEventSink
         {
-            mWriter = write ?? throw new ArgumentNullException(nameof(write));
-        }
+            private readonly Action<LogEvent> mWriter;
 
-        public void Emit(LogEvent logEvent)
-        {
-            mWriter(logEvent);
+            public DelegatingSink(Action<LogEvent> write)
+            {
+                mWriter = write ?? throw new ArgumentNullException(nameof(write));
+            }
+
+            public void Emit(LogEvent logEvent)
+            {
+                mWriter(logEvent);
+            }
         }
     }
 }
