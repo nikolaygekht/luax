@@ -27,6 +27,7 @@
     <None Remove="TestSources\InnerClass2.luax" />
     <None Remove="TestSources\InnerClass3.luax" />
     <None Remove="TestSources\InnerClass4.luax" />
+    <None Remove="TestSources\LoggerTest.luax" />
     <None Remove="TestSources\LuaXStackTraceFramesTest.luax" />
     <None Remove="TestSources\Project1.ini" />
     <None Remove="TestSources\Project2.ini" />
@@ -49,6 +50,7 @@
     <EmbeddedResource Include="TestSources\InnerClass2.luax" />
     <EmbeddedResource Include="TestSources\InnerClass3.luax" />
     <EmbeddedResource Include="TestSources\InnerClass4.luax" />
+    <EmbeddedResource Include="TestSources\LoggerTest.luax" />
     <EmbeddedResource Include="TestSources\LuaXStackTraceFramesTest.luax" />
     <EmbeddedResource Include="TestSources\RepeatBreakTest.luax" />
     <EmbeddedResource Include="TestSources\RepeatContinueTest.luax" />
@@ -105,5 +107,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Luax.Interpreter\Luax.Interpreter.csproj" />
     <ProjectReference Include="..\Luax.Parser.Test\Luax.Parser.Test.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="loggerConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

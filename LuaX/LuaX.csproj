@@ -10,4 +10,10 @@
     <ProjectReference Include="..\Luax.Parser\Luax.Parser.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="loggerConfig.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
