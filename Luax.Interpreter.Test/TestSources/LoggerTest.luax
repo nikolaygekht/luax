@@ -1,0 +1,9 @@
+﻿class test
+   public static function logging() : void
+	  logger.debug("text1");
+	  logger.info("text2");
+	  logger.warning("text3");
+	  logger.error("text4");
+	  logger.fatal("text5");
+   end
+end
