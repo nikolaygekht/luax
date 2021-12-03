@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using Luax.Interpreter.Expression;
 using Luax.Interpreter.Infrastructure;
@@ -835,6 +836,50 @@ namespace Luax.Interpreter.Test
             LuaXMethodExecutor.Execute(method, typelib, null, new object[] { }, out r);
             r.Should().BeOfType<string>();
             r.Should().Be("3 is a summ of 1 and 2!");
+        }
+
+        [Fact]
+        public void TestLogger()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("LoggerTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+            program.SearchMethod("logging", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsVoid().Should().BeTrue();
+
+            List<Serilog.Events.LogEvent> events = new List<Serilog.Events.LogEvent>();
+            EventHandler<Serilog.Events.LogEvent> loggedHandler = new EventHandler<Serilog.Events.LogEvent>(delegate (Object _, Serilog.Events.LogEvent e)
+            {
+                events.Add(e);
+            });
+
+            StdlibLogger.Logged += loggedHandler;
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] {}, out var _);
+
+            events.Should().HaveCount(5);
+
+            events[0].Level.Should().Be(Serilog.Events.LogEventLevel.Debug);
+            events[0].RenderMessage().Should().Be("text1");
+
+            events[1].Level.Should().Be(Serilog.Events.LogEventLevel.Information);
+            events[1].RenderMessage().Should().Be("text2");
+
+            events[2].Level.Should().Be(Serilog.Events.LogEventLevel.Warning);
+            events[2].RenderMessage().Should().Be("text3");
+
+            events[3].Level.Should().Be(Serilog.Events.LogEventLevel.Error);
+            events[3].RenderMessage().Should().Be("text4");
+
+            events[4].Level.Should().Be(Serilog.Events.LogEventLevel.Fatal);
+            events[4].RenderMessage().Should().Be("text5");
+
+            StdlibLogger.Logged -= loggedHandler;
         }
     }
 }
