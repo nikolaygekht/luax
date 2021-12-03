@@ -71,11 +71,15 @@ namespace LuaX
 
         private void OnEnd()
         {
-            Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
-            Console.Write(new string(' ', Console.WindowWidth - 2));
-            Console.WriteLine();
+            if (Console.WindowWidth > 0)
+            {
+                Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
+                Console.Write(new string(' ', Console.WindowWidth - 2));
+                Console.WriteLine();
+            }
             Console.WriteLine("Total Tests: {0}", executor.TotalTests);
-            Console.ForegroundColor = executor.SuccessfullTests == executor.TotalTests ? ConsoleColor.Green : ConsoleColor.Red;
+            if (Console.WindowWidth > 0)
+                Console.ForegroundColor = executor.SuccessfullTests == executor.TotalTests ? ConsoleColor.Green : ConsoleColor.Red;
             Console.WriteLine("Successful Tests: {0}", executor.SuccessfullTests);
 
             if (executor.TotalTests != executor.SuccessfullTests)
@@ -83,7 +87,8 @@ namespace LuaX
             else
                 Console.WriteLine("OK!");
 
-            Console.ForegroundColor = currentColor;
+            if (Console.WindowWidth > 0)
+                Console.ForegroundColor = currentColor;
         }
 
         public void Dispose()
