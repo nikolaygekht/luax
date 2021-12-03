@@ -2,11 +2,11 @@ name: .NET Core Build with Tests
 
 on:
   push:
-    branches: [ main, dev ]
+    branches:
+    - main
+    - dev
   pull_request:
-    branches: [ * ]
   workflow_dispatch:
-    branches: [ * ]
 
 jobs:
   build:
