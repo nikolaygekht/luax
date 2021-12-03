@@ -33,25 +33,40 @@ namespace LuaX
 
         private void OnTest(object _, LuaXTestStatusEventArgs args)
         {
+
+            var message1 = $"{args.Class}::{args.Method}({args.Data.Replace("\n", "\\n")}) - ";
+            var message2 = $"{args.Status} [{args.Message}]";
+            if (Console.WindowWidth > 0)
+                HandleOnConsole(args, message1, message2);
+            else
+                HandleOnStream(message1, message2);
+
+
+            logWriter?.WriteLine("{0}", message1 + message2);
+
+            if (args.Status == LuaXTestStatus.Exception && args.Exception != null && errorWriter != null)
+                ExceptionWriter.WriteException(args.Exception, s => errorWriter.WriteLine("{0}", s));
+
+        }
+
+        private void HandleOnStream(string message1, string message2)
+        {
+            Console.WriteLine("{0} {1}", message1, message2);
+        }
+
+        private void HandleOnConsole(LuaXTestStatusEventArgs args, string message1, string message2)
+        { 
             Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
             Console.Write(new string(' ', Console.WindowWidth - 2));
             Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
-
-            var message1 = $"{args.Class}::{args.Method}({args.Data.Replace("\n", "\\n")}) - ";
+           
             Console.Write("{0}", message1);
-
-            var message2 = $"{args.Status} [{args.Message}]";
             Console.ForegroundColor = args.Status == LuaXTestStatus.OK ? ConsoleColor.Green : ConsoleColor.Red;
             Console.Write("{0}", message2);
             Console.ForegroundColor = currentColor;
 
             if (args.Status != LuaXTestStatus.OK)
                 Console.WriteLine();
-
-            logWriter?.WriteLine("{0}", message1 + message2);
-
-            if (args.Status == LuaXTestStatus.Exception && args.Exception != null && errorWriter != null)
-                ExceptionWriter.WriteException(args.Exception, s => errorWriter.WriteLine("{0}", s));
         }
 
         private void OnEnd()
