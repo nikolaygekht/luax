@@ -1,0 +1,43 @@
+name: .NET Core Build with Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request
+  workflow_dispatch
+
+
+jobs:
+  build:
+    name: test
+    runs-on: ubuntu-latest
+    env:
+      config: 'Release'
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 5.0.403
+
+      # restore dependencies
+    - name: Install dependencies
+      run: dotnet restore
+
+      # build project
+    - name: Build
+      run: dotnet build --configuration $config --no-restore
+
+      # run unit tests with built project
+    - name: Test
+      run: dotnet test --no-restore --no-build --configuration $config
+
+      # run luax test suite
+    - name: Test
+      run: dotnet ../LuaX/bin/Release/net5.0/LuaX.exe project.ini
+      working-directory: LuaX.Test
+
+
+
+
