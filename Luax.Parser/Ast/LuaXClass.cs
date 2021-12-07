@@ -1,10 +1,5 @@
-﻿using System.Collections;
+﻿using Luax.Parser.Ast.Builder;
 using System.Collections.Generic;
-using System.Diagnostics.Contracts;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Luax.Parser.Ast.Builder;
 
 namespace Luax.Parser.Ast
 {
@@ -175,29 +170,16 @@ namespace Luax.Parser.Ast
                 var propertyIndex = properties.Find(propertyName);
                 if (propertyIndex < 0)
                 {
-                    bool foundInParents = false;
-                    if (ParentClass != null)
+                    if (ParentClass != null && ParentClass.SearchProperty(propertyName, out property, out ownerClassName))
                     {
-                        foundInParents = ParentClass.SearchProperty(propertyName, out property, out ownerClassName);
-                        if (foundInParents)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
-                    if (!foundInParents)
+                    if (hasInnerClass(in className, out className, out var @class))
                     {
-                        int indexOfPoint = className.LastIndexOf('.');
-                        if (indexOfPoint > 0)
-                        {
-                            className = className.Substring(0, indexOfPoint);
-                            if (mMetadata.Search(className, out var @class))
-                            {
-                                properties = @class.Properties;
-                                continue;
-                            }
-                        }
-                        break;
+                        properties = @class.Properties;
+                        continue;
                     }
+                    break;
                 }
                 ownerClassName = className;
                 property = properties[propertyIndex];
@@ -217,29 +199,16 @@ namespace Luax.Parser.Ast
                 var constantIndex = constants.Find(propertyName);
                 if (constantIndex < 0)
                 {
-                    bool foundInParents = false;
-                    if (ParentClass != null)
+                    if (ParentClass != null && ParentClass.SearchConstant(propertyName, out constant))
                     {
-                        foundInParents = ParentClass.SearchConstant(propertyName, out constant);
-                        if (foundInParents)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
-                    if (!foundInParents)
+                    if (hasInnerClass(in className, out className, out var @class))
                     {
-                        int indexOfPoint = className.LastIndexOf('.');
-                        if (indexOfPoint > 0)
-                        {
-                            className = className.Substring(0, indexOfPoint);
-                            if (mMetadata.Search(className, out var @class))
-                            {
-                                constants = @class.Constants;
-                                continue;
-                            }
-                        }
-                        break;
+                        constants = @class.Constants;
+                        continue;
                     }
+                    break;
                 }
                 constant = constants[constantIndex];
                 return true;
@@ -257,34 +226,35 @@ namespace Luax.Parser.Ast
                 var methodIndex = methods.Find(propertyName);
                 if (methodIndex < 0)
                 {
-                    bool foundInParents = false;
-                    if (ParentClass != null)
+                    if (ParentClass != null && ParentClass.SearchMethod(propertyName, out method))
                     {
-                        foundInParents = ParentClass.SearchMethod(propertyName, out method);
-                        if (foundInParents)
-                        {
-                            return true;
-                        }
+                        return true;
                     }
-                    if (!foundInParents)
+                    if(hasInnerClass(in className, out className, out var @class))
                     {
-                        int indexOfPoint = className.LastIndexOf('.');
-                        if (indexOfPoint > 0)
-                        {
-                            className = className.Substring(0, indexOfPoint);
-                            if (mMetadata.Search(className, out var @class))
-                            {
-                                methods = @class.Methods;
-                                continue;
-                            }
-                        }
-                        break;
+                        methods = @class.Methods;
+                        continue;
                     }
+                    break;
                 }
                 method = methods[methodIndex];
                 return true;
             }
             method = null;
+            return false;
+        }
+
+        public bool hasInnerClass(in string sourceClassName, out string resultClassName, out LuaXClass @class)
+        {
+            int indexOfPoint = sourceClassName.LastIndexOf('.');
+            if (indexOfPoint > 0)
+            {
+                resultClassName = sourceClassName.Substring(0, indexOfPoint);
+                if (mMetadata.Search(sourceClassName, out @class))
+                    return true;
+            }
+            resultClassName = null;
+            @class = null;
             return false;
         }
     }

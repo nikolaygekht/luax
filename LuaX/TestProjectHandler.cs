@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Luax.Interpreter.Execution;
 
 namespace LuaX
@@ -49,7 +50,8 @@ namespace LuaX
 
         }
 
-        private void HandleOnStream(string message1, string message2)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void HandleOnStream(string message1, string message2)
         {
             Console.WriteLine("{0} {1}", message1, message2);
         }

@@ -817,7 +817,7 @@ namespace Luax.Interpreter.Test
             method.Static.Should().BeTrue();
             method.Arguments.Should().HaveCount(0);
             method.ReturnType.IsString().Should().BeTrue();
-            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { }, out var r);
+            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
             r.Should().BeOfType<string>();
             r.Should().Be("3 is a summ of 1 and 2");
 
@@ -825,7 +825,7 @@ namespace Luax.Interpreter.Test
             method.Static.Should().BeTrue();
             method.Arguments.Should().HaveCount(0);
             method.ReturnType.IsString().Should().BeTrue();
-            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { }, out r);
+            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out r);
             r.Should().BeOfType<string>();
             r.Should().Be("3 is a summ of 1 and 2");
 
@@ -833,7 +833,7 @@ namespace Luax.Interpreter.Test
             method.Static.Should().BeTrue();
             method.Arguments.Should().HaveCount(0);
             method.ReturnType.IsString().Should().BeTrue();
-            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { }, out r);
+            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out r);
             r.Should().BeOfType<string>();
             r.Should().Be("3 is a summ of 1 and 2!");
         }
