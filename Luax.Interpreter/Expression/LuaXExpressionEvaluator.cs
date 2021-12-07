@@ -30,49 +30,43 @@ namespace Luax.Interpreter.Expression
         /// <returns></returns>
         public static object Evaluate(LuaXExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
         {
-            if (expression is LuaXConstantExpression constantExpression)
-                return EvaluateConstant(constantExpression);
-            if (expression is LuaXArgumentExpression argumentExpression)
-                return EvaluateVariable(expression, argumentExpression.ArgumentName, variables);
-            if (expression is LuaXVariableExpression variableExpression)
-                return EvaluateVariable(expression, variableExpression.VariableName, variables);
-            if (expression is LuaXStaticPropertyExpression staticPropertyExpression)
-                return EvaluateStaticProperty(staticPropertyExpression, types);
-            if (expression is LuaXInstancePropertyExpression instancePropertyExpression)
-                return EvaluateInstanceProperty(instancePropertyExpression, types, runningClass, variables);
-            if (expression is LuaXUnaryOperatorExpression unaryExpression)
-                return EvaluateUnary(unaryExpression, types, runningClass, variables);
-            if (expression is LuaXBinaryOperatorExpression binaryExpression)
-                return EvaluateBinary(binaryExpression, types, runningClass, variables);
-            if (expression is LuaXStaticCallExpression staticCallExpression)
-                return ExecuteStaticCall(staticCallExpression, types, runningClass, variables);
-            if (expression is LuaXInstanceCallExpression instanceCallExpression)
-                return ExecuteInstanceCall(instanceCallExpression, types, runningClass, variables);
-            if (expression is LuaXArrayLengthExpression arrayLengthExpression)
-                return EvaluateArrayLength(arrayLengthExpression, types, runningClass, variables);
-            if (expression is LuaXArrayAccessExpression arrayAccessExpression)
-                return EvaluateArrayAccess(arrayAccessExpression, types, runningClass, variables);
-            if (expression is LuaXCastOperatorExpression castOperatorExpression)
-                return EvaluateCast(castOperatorExpression, types, runningClass, variables);
-            if (expression is LuaXTypeNameOperatorExpression typenameExpression)
-                return EvaluateTypename(typenameExpression, types, runningClass, variables);
-
-            object newExpression = TryEvaluateNewExpression(expression, types, runningClass, variables);
-            if (newExpression != null)
-                return newExpression;
+            switch (expression)
+            {
+                case LuaXConstantExpression constantExpression:
+                    return EvaluateConstant(constantExpression);
+                case LuaXArgumentExpression argumentExpression:
+                    return EvaluateVariable(expression, argumentExpression.ArgumentName, variables);
+                case LuaXVariableExpression variableExpression:
+                    return EvaluateVariable(expression, variableExpression.VariableName, variables);
+                case LuaXStaticPropertyExpression staticPropertyExpression:
+                    return EvaluateStaticProperty(staticPropertyExpression, types);
+                case LuaXInstancePropertyExpression instancePropertyExpression:
+                    return EvaluateInstanceProperty(instancePropertyExpression, types, runningClass, variables);
+                case LuaXUnaryOperatorExpression unaryExpression:
+                    return EvaluateUnary(unaryExpression, types, runningClass, variables);
+                case LuaXBinaryOperatorExpression binaryExpression:
+                    return EvaluateBinary(binaryExpression, types, runningClass, variables);
+                case LuaXStaticCallExpression staticCallExpression:
+                    return ExecuteStaticCall(staticCallExpression, types, runningClass, variables);
+                case LuaXInstanceCallExpression instanceCallExpression:
+                    return ExecuteInstanceCall(instanceCallExpression, types, runningClass, variables);
+                case LuaXArrayLengthExpression arrayLengthExpression:
+                    return EvaluateArrayLength(arrayLengthExpression, types, runningClass, variables);
+                case LuaXArrayAccessExpression arrayAccessExpression:
+                    return EvaluateArrayAccess(arrayAccessExpression, types, runningClass, variables);
+                case LuaXCastOperatorExpression castOperatorExpression:
+                    return EvaluateCast(castOperatorExpression, types, runningClass, variables);
+                case LuaXTypeNameOperatorExpression typenameExpression:
+                    return EvaluateTypename(typenameExpression, types, runningClass, variables);
+                case LuaXNewObjectExpression newObjectExpression:
+                    return EvaluateNewObject(newObjectExpression, types, variables);
+                case LuaXNewArrayExpression newArrayExpression:
+                    return EvaluateNewArray(newArrayExpression, types, runningClass, variables);
+                case LuaXNewArrayWithInitExpression newArrayWithInitExpression:
+                    return EvaluateNewArrayWithInit(newArrayWithInitExpression, types, runningClass, variables);
+            }
 
             throw new LuaXExecutionException(expression.Location, $"Unexpected expression type {expression.GetType().Name}");
-        }
-
-        private static object TryEvaluateNewExpression(LuaXExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
-        {
-            if (expression is LuaXNewObjectExpression newObjectExpression)
-                return EvaluateNewObject(newObjectExpression, types, variables);
-            if (expression is LuaXNewArrayExpression newArrayExpression)
-                return EvaluateNewArray(newArrayExpression, types, runningClass, variables);
-            if (expression is LuaXNewArrayWithInitExpression newArrayWithInitExpression)
-                return EvaluateNewArrayWithInit(newArrayWithInitExpression, types, runningClass, variables);
-            return null;
         }
 
         private static object ExecuteInstanceCall(LuaXInstanceCallExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
@@ -442,7 +436,7 @@ namespace Luax.Interpreter.Expression
             LuaXVariableInstance variable = variables["this"];
             if (variable != null && variable.Value is LuaXObjectInstance currentInstance &&
                 expression.ClassName.StartsWith($"{currentInstance.Class.LuaType.Name}."))
-                    return @class.New(types, currentInstance);
+                return @class.New(types, currentInstance);
 
             return @class.New(types);
         }
