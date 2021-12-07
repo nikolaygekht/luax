@@ -6,5 +6,6 @@ TestResults/
 *.csproj.user
 *.nupkg
 *.log
+*.~*
 sonarqube.bat
 **/launchSettings.json
