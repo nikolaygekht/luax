@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Luax.Interpreter.Infrastructure;
 using Luax.Interpreter.Infrastructure.Stdlib;
 using Luax.Parser.Ast;
@@ -58,8 +59,18 @@ namespace Luax.Interpreter.Expression
             if (method.IsConstructor)
                 HandleConstructor(method, types, @this);
 
+            var variables = CreateVariablesForMethod(method, @this, args);
+            var rt = ExecuteStatements(method, method.Statements, types, currentClass, variables, out result);
+            if (rt == ResultType.ReachForEnd || rt == ResultType.ReturnDefault)
+                result = method.ReturnType.DefaultValue();
+            return rt;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static LuaXVariableInstanceSet CreateVariablesForMethod(LuaXMethod method, LuaXObjectInstance @this, object[] args)
+        {
             //create variables
-            var variables = new LuaXVariableInstanceSet(method);
+            LuaXVariableInstanceSet variables = new LuaXVariableInstanceSet(method);
             if (args.Length != method.Arguments.Count)
                 throw new ArgumentException("The number of method arguments to not match passed arguments");
             //initialize arguments
@@ -73,10 +84,7 @@ namespace Luax.Interpreter.Expression
                     variables.Add(@this.Class.LuaType.ParentClass.TypeOf(), "super", @this);
             }
 
-            var rt = ExecuteStatements(method, method.Statements, types, currentClass, variables, out result);
-            if (rt == ResultType.ReachForEnd || rt == ResultType.ReturnDefault)
-                result = method.ReturnType.DefaultValue();
-            return rt;
+            return variables;
         }
 
         private static void HandleConstructor(LuaXMethod method, LuaXTypesLibrary types, LuaXObjectInstance @this)
