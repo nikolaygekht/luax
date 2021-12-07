@@ -45,9 +45,8 @@ jobs:
       run: |
          mkdir -p ./.sonar/scanner
          dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
-	 
 
-      # restore dependencies
+
     - name: Install dependencies
       run: dotnet restore
 
