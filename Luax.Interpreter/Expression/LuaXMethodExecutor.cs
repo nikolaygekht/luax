@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Luax.Interpreter.Infrastructure;
 using Luax.Interpreter.Infrastructure.Stdlib;
 using Luax.Parser.Ast;
@@ -64,6 +65,7 @@ namespace Luax.Interpreter.Expression
             return rt;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static LuaXVariableInstanceSet CreateVariablesForMethod(LuaXMethod method, LuaXObjectInstance @this, object[] args)
         {
             //create variables
@@ -119,6 +121,8 @@ namespace Luax.Interpreter.Expression
             LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables,
             out object result)
         {
+            result = null;
+            ResultType rt = ResultType.ReachForEnd;
             foreach (var statement in collection)
             {
                 try
@@ -141,65 +145,39 @@ namespace Luax.Interpreter.Expression
                             ExecuteCallStatement(callStatement, types, currentClass, variables);
                             break;
                         case LuaXIfStatement @if:
-                            {
-                                var r = ExecuteIf(callingMethod, @if, types, currentClass, variables, out result);
-                                if (r != ResultType.ReachForEnd)
-                                    return r;
-                            }
+                            rt = ExecuteIf(callingMethod, @if, types, currentClass, variables, out result);
                             break;
                         case LuaXThrowStatement @throw:
                             ExecuteThrowStatement(callingMethod, @throw, types, currentClass, variables);
                             break;
                         case LuaXTryStatement @try:
-                            var tryResult = ExecuteTryStatement(callingMethod, @try, types, currentClass, variables,
-                                out result);
-                            if (tryResult != ResultType.ReachForEnd)
-                                return tryResult;
+                            rt = ExecuteTryStatement(callingMethod, @try, types, currentClass, variables, out result);
                             break;
-                        case LuaXReturnStatement @return:
-                            {
-                                if (@return.Expression == null)
-                                {
-                                    result = null;
-                                    return ResultType.ReturnDefault;
-                                }
-
-                                result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass,
-                                    variables);
-                                return ResultType.Return;
-                            }
+                        case LuaXReturnStatement @return when @return.Expression == null:
+                            result = null;
+                            return ResultType.ReturnDefault;
+                        case LuaXReturnStatement @return when @return.Expression != null:
+                            result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass,
+                                variables);
+                            return ResultType.Return;
                         case LuaXWhileStatement @while:
-                            {
-                                var r = ExecuteWhile(callingMethod, @while, types, currentClass, variables, out result);
-                                if (r != ResultType.ReachForEnd)
-                                    return r;
-                            }
+                            rt = ExecuteWhile(callingMethod, @while, types, currentClass, variables, out result);
                             break;
                         case LuaXRepeatStatement @repeat:
-                            {
-                                var r = ExecuteRepeat(callingMethod, @repeat, types, currentClass, variables, out result);
-                                if (r != ResultType.ReachForEnd)
-                                    return r;
-                            }
+                            rt = ExecuteRepeat(callingMethod, @repeat, types, currentClass, variables, out result);
                             break;
                         case LuaXBreakStatement:
-                            {
-                                result = null;
-                                return ResultType.Break;
-                            }
+                            result = null;
+                            return ResultType.Break;
                         case LuaXContinueStatement:
-                            {
-                                result = null;
-                                return ResultType.Continue;
-                            }
+                            result = null;
+                            return ResultType.Continue;
                         case LuaXForStatement @for:
-                            {
-                                var r = ExecuteFor(callingMethod, @for, types, currentClass, variables, out result);
-                                if (r != ResultType.ReachForEnd)
-                                    return r;
-                            }
+                            rt = ExecuteFor(callingMethod, @for, types, currentClass, variables, out result);
                             break;
                     }
+                    if (rt != ResultType.ReachForEnd)
+                        break;
                 }
                 catch (LuaXExecutionException e1)
                 {
@@ -216,8 +194,7 @@ namespace Luax.Interpreter.Expression
                 }
             }
 
-            result = null;
-            return ResultType.ReachForEnd;
+            return rt;
         }
 
         private static ResultType ExecuteTryStatement(LuaXMethod callingMethod, LuaXTryStatement @try, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)
@@ -299,7 +276,7 @@ namespace Luax.Interpreter.Expression
                 p = @object.Properties[assign.PropertyName];
                 @object = @object.OwnerObjectInstance;
             }
-            if(p == null)
+            if (p == null)
                 throw new LuaXExecutionException(assign.Object.Location, $"Property {assign.PropertyName} is not found");
 
             p.Value = expr;
@@ -389,7 +366,7 @@ namespace Luax.Interpreter.Expression
             var stepValue = LuaXExpressionEvaluator.Evaluate(forStatement.ForLoopDescription.Step, types, currentClass, variables);
             var stepExpression = new LuaXBinaryOperatorExpression(LuaXBinaryOperator.Add,
                 new LuaXVariableExpression(forStatement.ForLoopDescription.Variable.Name, variableType,
-                forStatement.ForLoopDescription.Variable.Location), 
+                forStatement.ForLoopDescription.Variable.Location),
                 new LuaXConstantExpression(new LuaXConstant(variableType.TypeId, stepValue, forStatement.ForLoopDescription.Step.Location)),
                 LuaXTypeDefinition.Boolean, forStatement.ForLoopDescription.Step.Location);
             var stepStatement = new LuaXAssignVariableStatement(loopVariableName, stepExpression,
