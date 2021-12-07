@@ -44,8 +44,6 @@ jobs:
       if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
       run: |
          mkdir -p ./.sonar/scanner
-	 ls ./.sonar
-         ls ./.sonar/scanner
          dotnet tool update dotnet-sonarscanner --tool-path ./.sonar/scanner
 	 
 
@@ -58,10 +56,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        ls ./.sonar/scanner
-        ./.sonar/scanner/dotnet-sonarscanner begin /k:"nikolaygekht_luax" /o:"nikolaygekht" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+        dotnet sonarscanner begin /k:"nikolaygekht_luax" /o:"nikolaygekht" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
         dotnet build --configuration $config --no-restore
-        ./.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        dotnet sconarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
 
 
