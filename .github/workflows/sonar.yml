@@ -37,7 +37,7 @@ jobs:
       run: |
         dotnet sonarscanner begin /k:"nikolaygekht_luax" /o:"nikolaygekht" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io"
         dotnet build --configuration $config --no-restore
-        dotnet sconarscanner end /d:sonar.login="$SONAR_TOKEN"
+        dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
 
 
 
