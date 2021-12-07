@@ -174,7 +174,7 @@ namespace Luax.Parser.Ast
                     {
                         return true;
                     }
-                    if (hasInnerClass(in className, out className, out var @class))
+                    if (HasInnerClass(in className, out className, out var @class))
                     {
                         properties = @class.Properties;
                         continue;
@@ -203,7 +203,7 @@ namespace Luax.Parser.Ast
                     {
                         return true;
                     }
-                    if (hasInnerClass(in className, out className, out var @class))
+                    if (HasInnerClass(in className, out className, out var @class))
                     {
                         constants = @class.Constants;
                         continue;
@@ -230,7 +230,7 @@ namespace Luax.Parser.Ast
                     {
                         return true;
                     }
-                    if(hasInnerClass(in className, out className, out var @class))
+                    if(HasInnerClass(in className, out className, out var @class))
                     {
                         methods = @class.Methods;
                         continue;
@@ -244,7 +244,7 @@ namespace Luax.Parser.Ast
             return false;
         }
 
-        public bool hasInnerClass(in string sourceClassName, out string resultClassName, out LuaXClass @class)
+        public bool HasInnerClass(in string sourceClassName, out string resultClassName, out LuaXClass @class)
         {
             int indexOfPoint = sourceClassName.LastIndexOf('.');
             if (indexOfPoint > 0)

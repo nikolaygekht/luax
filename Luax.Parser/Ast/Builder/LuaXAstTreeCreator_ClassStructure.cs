@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Runtime.CompilerServices;
 using System.Text;
 using Hime.Redist;
 using Luax.Parser.Ast.LuaExpression;
@@ -64,20 +65,32 @@ namespace Luax.Parser.Ast.Builder
                 if (@class.HasParent && SearchClassByName(@class.Parent, @class, out var realParent) && realParent.Name != @class.Parent)
                     @class.Parent = realParent.Name;
 
-                foreach (LuaXProperty property in @class.Properties)
+                SetFullClassNamesInProperties(@class);
+                SetFullClassNamesInMethods(@class);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void SetFullClassNamesInProperties(LuaXClass @class)
+        {
+            foreach (LuaXProperty property in @class.Properties)
+            {
+                if (CheckLuaTypeOnInnerClassName(@class, property.LuaType, out var newLuaType))
+                    property.LuaType = newLuaType;
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void SetFullClassNamesInMethods(LuaXClass @class)
+        {
+            foreach (LuaXMethod method in @class.Methods)
+            {
+                if (CheckLuaTypeOnInnerClassName(@class, method.ReturnType, out var newLuaType))
+                    method.ReturnType = newLuaType;
+                foreach (LuaXVariable argument in method.Arguments)
                 {
-                    if (CheckLuaTypeOnInnerClassName(@class, property.LuaType, out var newLuaType))
-                        property.LuaType = newLuaType;
-                }
-                foreach (LuaXMethod method in @class.Methods)
-                {
-                    if (CheckLuaTypeOnInnerClassName(@class, method.ReturnType, out var newLuaType))
-                        method.ReturnType = newLuaType;
-                    foreach (LuaXVariable argument in method.Arguments)
-                    {
-                        if (CheckLuaTypeOnInnerClassName(@class, argument.LuaType, out var newArgumentLuaType))
-                            argument.LuaType = newArgumentLuaType;
-                    }
+                    if (CheckLuaTypeOnInnerClassName(@class, argument.LuaType, out var newArgumentLuaType))
+                        argument.LuaType = newArgumentLuaType;
                 }
             }
         }

@@ -54,16 +54,25 @@ namespace Luax.Interpreter.Expression
                 return EvaluateArrayAccess(arrayAccessExpression, types, runningClass, variables);
             if (expression is LuaXCastOperatorExpression castOperatorExpression)
                 return EvaluateCast(castOperatorExpression, types, runningClass, variables);
+            if (expression is LuaXTypeNameOperatorExpression typenameExpression)
+                return EvaluateTypename(typenameExpression, types, runningClass, variables);
+
+            object newExpression = TryEvaluateNewExpression(expression, types, runningClass, variables);
+            if (newExpression != null)
+                return newExpression;
+
+            throw new LuaXExecutionException(expression.Location, $"Unexpected expression type {expression.GetType().Name}");
+        }
+
+        private static object TryEvaluateNewExpression(LuaXExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)
+        {
             if (expression is LuaXNewObjectExpression newObjectExpression)
                 return EvaluateNewObject(newObjectExpression, types, variables);
             if (expression is LuaXNewArrayExpression newArrayExpression)
                 return EvaluateNewArray(newArrayExpression, types, runningClass, variables);
             if (expression is LuaXNewArrayWithInitExpression newArrayWithInitExpression)
                 return EvaluateNewArrayWithInit(newArrayWithInitExpression, types, runningClass, variables);
-            if (expression is LuaXTypeNameOperatorExpression typenameExpression)
-                return EvaluateTypename(typenameExpression, types, runningClass, variables);
-
-            throw new LuaXExecutionException(expression.Location, $"Unexpected expression type {expression.GetType().Name}");
+            return null;
         }
 
         private static object ExecuteInstanceCall(LuaXInstanceCallExpression expression, LuaXTypesLibrary types, LuaXClassInstance runningClass, LuaXVariableInstanceSet variables)

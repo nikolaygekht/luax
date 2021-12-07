@@ -7,18 +7,15 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
 {
     internal static class StdlibSortedList
     {
-        private static LuaXClassInstance mListClass;
         private static LuaXTypesLibrary mTypeLibrary;
 
         internal class LuaComparer : IComparer<LuaXObjectInstance>
         {
-            private readonly LuaXTypesLibrary mTypeLibrary;
             private readonly LuaXObjectInstance mComparer;
             private readonly LuaXMethod mCompareMethod;
 
-            public LuaComparer(LuaXTypesLibrary typeLibrary, LuaXObjectInstance comparer)
+            public LuaComparer(LuaXObjectInstance comparer)
             {
-                mTypeLibrary = typeLibrary;
                 mComparer = comparer;
                 if (!mComparer.Class.LuaType.Methods.Search("compare", out var method) ||
                     method.Static || !method.ReturnType.IsInteger() ||
@@ -37,9 +34,9 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         public static void Initialize(LuaXTypesLibrary typeLibrary)
         {
             mTypeLibrary = typeLibrary;
-            typeLibrary.SearchClass("sorted_list", out mListClass);
-            mListClass.LuaType.Properties.Add(new LuaXProperty() { Name = "__comparer", Visibility = LuaXVisibility.Private, LuaType = LuaXTypeDefinition.Void });
-            mListClass.LuaType.Properties.Add(new LuaXProperty() { Name = "__list", Visibility = LuaXVisibility.Private, LuaType = LuaXTypeDefinition.Void });
+            typeLibrary.SearchClass("sorted_list", out LuaXClassInstance listClass);
+            listClass.LuaType.Properties.Add(new LuaXProperty() { Name = "__comparer", Visibility = LuaXVisibility.Private, LuaType = LuaXTypeDefinition.Void });
+            listClass.LuaType.Properties.Add(new LuaXProperty() { Name = "__list", Visibility = LuaXVisibility.Private, LuaType = LuaXTypeDefinition.Void });
         }
 
         [LuaXExternMethod("sorted_list", "length")]
@@ -89,7 +86,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("sorted_list", "initialize")]
         public static object Create(LuaXObjectInstance @this, LuaXObjectInstance comparer)
         {
-            var luaComparer = new LuaComparer(mTypeLibrary, comparer);
+            var luaComparer = new LuaComparer(comparer);
             @this.Properties["__list"].Value = new SortedList<LuaXObjectInstance, object>(luaComparer);
             @this.Properties["__comparer"].Value = luaComparer;
             return null;

@@ -860,7 +860,7 @@ namespace Luax.Interpreter.Test
 
             StdlibLogger.Logged += loggedHandler;
 
-            LuaXMethodExecutor.Execute(method, typelib, null, new object[] {}, out var _);
+            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var _);
 
             events.Should().HaveCount(5);
 
