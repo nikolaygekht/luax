@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       config: 'Release'
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     steps:
     - uses: actions/checkout@v2
@@ -33,13 +34,10 @@ jobs:
       run: dotnet restore
 
     - name: Build and analyze
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       run: |
-        dotnet sonarscanner begin /k:"nikolaygekht_luax" /o:"nikolaygekht" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io"
+        dotnet sonarscanner begin /k:"nikolaygekht_luax" /o:"nikolaygekht" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io"
         dotnet build --configuration $config --no-restore
-        dotnet sconarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        dotnet sconarscanner end /d:sonar.login="$SONAR_TOKEN"
 
 
 
