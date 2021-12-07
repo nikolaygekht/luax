@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using Luax.Interpreter.Infrastructure;
 using Luax.Interpreter.Infrastructure.Stdlib;
 using Luax.Parser.Ast;
@@ -39,7 +38,6 @@ namespace Luax.Interpreter.Expression
         {
             types.SearchClass(method.Class.Name, out var currentClass);
 
-            // the method can be a method of one of the instance's owners
             if (!method.Static && @this.Class.LuaType.Name != currentClass.LuaType.Name && @this.Class.LuaType.Name.StartsWith($"{currentClass.LuaType.Name}."))
             {
                 LuaXObjectInstance owner = @this.OwnerObjectInstance;
@@ -66,7 +64,6 @@ namespace Luax.Interpreter.Expression
             return rt;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static LuaXVariableInstanceSet CreateVariablesForMethod(LuaXMethod method, LuaXObjectInstance @this, object[] args)
         {
             //create variables
