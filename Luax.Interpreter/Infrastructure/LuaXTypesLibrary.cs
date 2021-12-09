@@ -20,6 +20,8 @@ namespace Luax.Interpreter.Infrastructure
         private readonly Dictionary<string, LuaXClassInstance> mTypes = new Dictionary<string, LuaXClassInstance>();
         public LuaXExternMethodsLibrary ExternMethods { get; } = new LuaXExternMethodsLibrary();
 
+        public IEnumerable<LuaXClassInstance> Classes => mTypes.Values;
+
         public LuaXTypesLibrary(LuaXApplication application)
         {
             mApplication = application;

@@ -19,7 +19,7 @@ namespace Luax.Interpreter.Execution
             Initialize(project);
         }
 
-        override public int Run(string[] args)
+        override protected int RunBody(string[] args)
         {
             args = RemoveProjectNameFromCommandLine(args);
             var luaArgs = new LuaXVariableInstanceArray(LuaXTypeDefinition.String.ArrayOf(), args.Length);

@@ -15,6 +15,11 @@ namespace Luax.Interpreter.Expression
     public static class LuaXMethodExecutor
     {
         /// <summary>
+        /// The debugging event
+        /// </summary>
+        public static event EventHandler<BeforeStatementExecutionEventArgs> BeforeStatementExecution;
+
+        /// <summary>
         /// The return type
         /// </summary>
         public enum ResultType
@@ -117,67 +122,88 @@ namespace Luax.Interpreter.Expression
             return ResultType.Return;
         }
 
+        private static bool ExecuteStatement(LuaXMethod callingMethod, LuaXTypesLibrary types,
+            LuaXClassInstance currentClass, LuaXVariableInstanceSet variables,
+            LuaXStatement statement,
+            out object result, out ResultType rt)
+        {
+            BeforeStatementExecution?.Invoke(null, new BeforeStatementExecutionEventArgs()
+            {
+                Method = callingMethod,
+                Statement = statement,
+                TypesLibrary = types,
+                LocalVariables = variables,
+            });
+
+            rt = ResultType.ReachForEnd;
+            result = null;
+            switch (statement)
+            {
+                case LuaXAssignVariableStatement assignVariable:
+                    ExecuteAssignVariable(assignVariable, types, currentClass, variables);
+                    break;
+                case LuaXAssignStaticPropertyStatement assignStaticProperty:
+                    ExecuteAssignStaticProperty(assignStaticProperty, types, currentClass, variables);
+                    break;
+                case LuaXAssignInstancePropertyStatement assignInstanceProperty:
+                    ExecuteAssignInstanceProperty(assignInstanceProperty, types, currentClass, variables);
+                    break;
+                case LuaXAssignArrayItemStatement assignArrayItem:
+                    ExecuteAssignArrayItem(assignArrayItem, types, currentClass, variables);
+                    break;
+                case LuaXCallStatement callStatement:
+                    ExecuteCallStatement(callStatement, types, currentClass, variables);
+                    break;
+                case LuaXIfStatement @if:
+                    rt = ExecuteIf(callingMethod, @if, types, currentClass, variables, out result);
+                    break;
+                case LuaXThrowStatement @throw:
+                    ExecuteThrowStatement(callingMethod, @throw, types, currentClass, variables);
+                    break;
+                case LuaXTryStatement @try:
+                    rt = ExecuteTryStatement(callingMethod, @try, types, currentClass, variables, out result);
+                    break;
+                case LuaXReturnStatement @return when @return.Expression == null:
+                    result = null;
+                    rt = ResultType.ReturnDefault;
+                    return true;
+                case LuaXReturnStatement @return when @return.Expression != null:
+                    result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass,
+                        variables);
+                    rt = ResultType.Return;
+                    return true;
+                case LuaXWhileStatement @while:
+                    rt = ExecuteWhile(callingMethod, @while, types, currentClass, variables, out result);
+                    break;
+                case LuaXRepeatStatement @repeat:
+                    rt = ExecuteRepeat(callingMethod, @repeat, types, currentClass, variables, out result);
+                    break;
+                case LuaXBreakStatement:
+                    result = null;
+                    rt = ResultType.Break;
+                    return true;
+                case LuaXContinueStatement:
+                    result = null;
+                    rt = ResultType.Continue;
+                    return true;
+                case LuaXForStatement @for:
+                    rt = ExecuteFor(callingMethod, @for, types, currentClass, variables, out result);
+                    break;
+            }
+            return rt != ResultType.ReachForEnd;
+        }
+
         private static ResultType ExecuteStatements(LuaXMethod callingMethod, LuaXStatementCollection collection,
             LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables,
             out object result)
         {
             result = null;
-            ResultType rt = ResultType.ReachForEnd;
             foreach (var statement in collection)
             {
                 try
                 {
-                    switch (statement)
-                    {
-                        case LuaXAssignVariableStatement assignVariable:
-                            ExecuteAssignVariable(assignVariable, types, currentClass, variables);
-                            break;
-                        case LuaXAssignStaticPropertyStatement assignStaticProperty:
-                            ExecuteAssignStaticProperty(assignStaticProperty, types, currentClass, variables);
-                            break;
-                        case LuaXAssignInstancePropertyStatement assignInstanceProperty:
-                            ExecuteAssignInstanceProperty(assignInstanceProperty, types, currentClass, variables);
-                            break;
-                        case LuaXAssignArrayItemStatement assignArrayItem:
-                            ExecuteAssignArrayItem(assignArrayItem, types, currentClass, variables);
-                            break;
-                        case LuaXCallStatement callStatement:
-                            ExecuteCallStatement(callStatement, types, currentClass, variables);
-                            break;
-                        case LuaXIfStatement @if:
-                            rt = ExecuteIf(callingMethod, @if, types, currentClass, variables, out result);
-                            break;
-                        case LuaXThrowStatement @throw:
-                            ExecuteThrowStatement(callingMethod, @throw, types, currentClass, variables);
-                            break;
-                        case LuaXTryStatement @try:
-                            rt = ExecuteTryStatement(callingMethod, @try, types, currentClass, variables, out result);
-                            break;
-                        case LuaXReturnStatement @return when @return.Expression == null:
-                            result = null;
-                            return ResultType.ReturnDefault;
-                        case LuaXReturnStatement @return when @return.Expression != null:
-                            result = LuaXExpressionEvaluator.Evaluate(@return.Expression, types, currentClass,
-                                variables);
-                            return ResultType.Return;
-                        case LuaXWhileStatement @while:
-                            rt = ExecuteWhile(callingMethod, @while, types, currentClass, variables, out result);
-                            break;
-                        case LuaXRepeatStatement @repeat:
-                            rt = ExecuteRepeat(callingMethod, @repeat, types, currentClass, variables, out result);
-                            break;
-                        case LuaXBreakStatement:
-                            result = null;
-                            return ResultType.Break;
-                        case LuaXContinueStatement:
-                            result = null;
-                            return ResultType.Continue;
-                        case LuaXForStatement @for:
-                            rt = ExecuteFor(callingMethod, @for, types, currentClass, variables, out result);
-                            break;
-                    }
-                    if (rt != ResultType.ReachForEnd)
-                        break;
+                    if (ExecuteStatement(callingMethod, types, currentClass, variables, statement, out result, out var resultType))
+                        return resultType;
                 }
                 catch (LuaXExecutionException e1)
                 {
@@ -194,7 +220,7 @@ namespace Luax.Interpreter.Expression
                 }
             }
 
-            return rt;
+            return ResultType.ReachForEnd;
         }
 
         private static ResultType ExecuteTryStatement(LuaXMethod callingMethod, LuaXTryStatement @try, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables, out object result)

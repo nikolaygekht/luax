@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -9,7 +10,7 @@ using Luax.Parser.Ast.Builder;
 namespace Luax.Parser.Ast
 {
     [Serializable]
-    public class LuaXElementLocation : ISerializable
+    public class LuaXElementLocation : ISerializable, IEqualityComparer<LuaXElementLocation>
     {
         public string Source { get; }
         public int Line { get; }
@@ -62,5 +63,28 @@ namespace Luax.Parser.Ast
         public bool IsTheSame(LuaXElementLocation otherLocation) => Source == otherLocation.Source &&
                                                                     Line == otherLocation.Line &&
                                                                     Column == otherLocation.Column;
+
+        public bool Equals(LuaXElementLocation x, LuaXElementLocation y)
+        {
+            if (x is null && y is null)
+                return true;
+            if (x is null || y is null)
+                return false;
+            return x.IsTheSame(y);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is LuaXElementLocation location)
+                return Equals(this, location);
+            return false;
+        }
+
+        public int GetHashCode([DisallowNull] LuaXElementLocation obj)
+        {
+            return HashCode.Combine(Source, Line, Column);
+        }
+
+        public override int GetHashCode() => GetHashCode(this);
     }
 }
