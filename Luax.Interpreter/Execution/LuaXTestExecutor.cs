@@ -28,7 +28,7 @@ namespace Luax.Interpreter.Execution
 
         public bool Success { get; private set; }
 
-        override public int Run(string[] args)
+        override protected int RunBody(string[] args)
         {
             Success = true;
             foreach (var className in TypesLibrary.GetClassNames())

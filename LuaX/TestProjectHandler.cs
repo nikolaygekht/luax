@@ -2,6 +2,7 @@
 using System.IO;
 using System.Runtime.CompilerServices;
 using Luax.Interpreter.Execution;
+using Luax.Interpreter.Execution.Coverage;
 
 namespace LuaX
 {
@@ -11,6 +12,8 @@ namespace LuaX
         private readonly StreamWriter errorWriter = null;
         private readonly ConsoleColor currentColor;
         private readonly LuaXTestExecutor executor;
+        public bool EnableCoverage { get; set; }
+        public CoverageReport CoverageReport => executor.CoverageReport;
 
         public TestProjectHandler(LuaXProject project)
         {
@@ -27,6 +30,7 @@ namespace LuaX
 
         public int Run(string[] args)
         {
+            executor.EnableCoverage = EnableCoverage;
             executor.Run(args);
             OnEnd();
             return executor.TotalTests != executor.SuccessfullTests ? -10 : 0;
@@ -34,7 +38,6 @@ namespace LuaX
 
         private void OnTest(object _, LuaXTestStatusEventArgs args)
         {
-
             var message1 = $"{args.Class}::{args.Method}({args.Data.Replace("\n", "\\n")}) - ";
             var message2 = $"{args.Status} [{args.Message}]";
             if (Console.WindowWidth > 0)
@@ -42,12 +45,10 @@ namespace LuaX
             else
                 HandleOnStream(message1, message2);
 
-
             logWriter?.WriteLine("{0}", message1 + message2);
 
             if (args.Status == LuaXTestStatus.Exception && args.Exception != null && errorWriter != null)
                 ExceptionWriter.WriteException(args.Exception, s => errorWriter.WriteLine("{0}", s));
-
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -57,11 +58,11 @@ namespace LuaX
         }
 
         private void HandleOnConsole(LuaXTestStatusEventArgs args, string message1, string message2)
-        { 
+        {
             Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
             Console.Write(new string(' ', Console.WindowWidth - 2));
             Console.SetCursorPosition(0, Console.GetCursorPosition().Top);
-           
+
             Console.Write("{0}", message1);
             Console.ForegroundColor = args.Status == LuaXTestStatus.OK ? ConsoleColor.Green : ConsoleColor.Red;
             Console.Write("{0}", message2);

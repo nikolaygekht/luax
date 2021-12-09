@@ -554,7 +554,6 @@ namespace Luax.Interpreter.Test
             r.Should().Be(expectedValue);
         }
 
-
         [Theory]
         [InlineData(0, 2, 3)]
         [InlineData(1, 2, 2)]
@@ -803,7 +802,6 @@ namespace Luax.Interpreter.Test
             r.Should().Be(expectedValue);
         }
 
-
         [Fact]
         public void TestArrayWithInit()
         {
@@ -853,10 +851,7 @@ namespace Luax.Interpreter.Test
             method.ReturnType.IsVoid().Should().BeTrue();
 
             List<Serilog.Events.LogEvent> events = new List<Serilog.Events.LogEvent>();
-            EventHandler<Serilog.Events.LogEvent> loggedHandler = new EventHandler<Serilog.Events.LogEvent>(delegate (Object _, Serilog.Events.LogEvent e)
-            {
-                events.Add(e);
-            });
+            EventHandler<Serilog.Events.LogEvent> loggedHandler = new EventHandler<Serilog.Events.LogEvent>((object _, Serilog.Events.LogEvent e) => events.Add(e));
 
             StdlibLogger.Logged += loggedHandler;
 

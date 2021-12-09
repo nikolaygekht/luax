@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Luax.Interpreter.Execution.Coverage;
 using Luax.Interpreter.Infrastructure;
 using Luax.Parser;
 
@@ -16,6 +17,11 @@ namespace Luax.Interpreter.Execution
         protected LuaXApplication Application => mApplication;
         public LuaXTypesLibrary TypesLibrary => mTypeLibrary;
         protected LuaXProject Project { get; }
+        public bool EnableCoverage { get; set; }
+
+        private CoverageAnalyzer mAnalyzer;
+
+        public CoverageReport CoverageReport => mAnalyzer?.Report;
 
         public static Func<string, string> ReadFileCallback { get; set;  } = File.ReadAllText;
 
@@ -46,6 +52,24 @@ namespace Luax.Interpreter.Execution
             mTypeLibrary = new LuaXTypesLibrary(mApplication);
         }
 
-        public abstract int Run(string[] args);
+        public virtual void PreRun()
+        {
+            if (EnableCoverage)
+                mAnalyzer = new CoverageAnalyzer(mTypeLibrary);
+        }
+
+        public virtual void PostRun()
+        {
+        }
+
+        public int Run(string[] args)
+        {
+            PreRun();
+            int rc = RunBody(args);
+            PostRun();
+            return rc;
+        }
+
+        protected abstract int RunBody(string[] args);
     }
 }
