@@ -131,6 +131,7 @@ class expressionTest
 
     end
 
+    @Fact()
     public function negate() : void
         assert.isTrue(-3 == 0 - 3, "int");
         assert.approximatelyEquals(-3.1, 0.0 - 3.1, EPS, "real");
