@@ -35,12 +35,57 @@ namespace Luax.Interpreter.Execution.Coverage
             Method = method;
             foreach (var statement in method.Statements)
             {
-                var reportStatement = new CoverageReportStatement(statement);
-                mStatements.Add(reportStatement);
-                if (mIndex.ContainsKey(statement.Location))
-                    throw new InvalidOperationException($"Two statements has the same location: {statement.Location.Source}({statement.Location.Line}:{statement.Location.Column})");
-                mIndex[statement.Location] = reportStatement;
+                AddStatement(statement);
             }
+        }
+
+        private void AddStatement(LuaXStatement statement)
+        {
+            var reportStatement = new CoverageReportStatement(statement);
+            mStatements.Add(reportStatement);
+            if (mIndex.ContainsKey(statement.Location))
+                throw new InvalidOperationException($"Two statements has the same location: {statement.Location.Source}({statement.Location.Line}:{statement.Location.Column})");
+            mIndex[statement.Location] = reportStatement;
+
+            if (statement is LuaXIfStatement @if)
+                AddCompound(@if);
+            else if (statement is LuaXWhileStatement @while)
+                AddCompound(@while);
+            else if (statement is LuaXRepeatStatement @repeat)
+                AddCompound(@repeat);
+            else if (statement is LuaXForStatement @for)
+                AddCompound(@for);
+            else if (statement is LuaXTryStatement @try)
+                AddCompound(@try);
+        }
+
+        private void AddCompound(IEnumerable<LuaXStatement> statements)
+        {
+            foreach (var statement in statements)
+                AddStatement(statement);
+        }
+
+        private void AddCompound(LuaXIfStatement statement)
+        {
+            foreach (var clause in statement.Clauses)
+                AddCompound(clause.Statements);
+            if (statement.ElseClause != null)
+                AddCompound(statement.ElseClause);
+        }
+
+        private void AddCompound(LuaXWhileStatement statement)
+            => AddCompound(statement.Statements);
+
+        private void AddCompound(LuaXRepeatStatement statement)
+            => AddCompound(statement.Statements);
+
+        private void AddCompound(LuaXForStatement statement)
+            => AddCompound(statement.Statements);
+
+        private void AddCompound(LuaXTryStatement statement)
+        {
+            AddCompound(statement.TryStatements);
+            AddCompound(statement.CatchClause.CatchStatements);
         }
 
         internal void GetCoverage(out int totalStatements, out int coveredStatements)
