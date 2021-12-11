@@ -1,2 +1,2 @@
 dotnet build ../Luax.Parser.sln /p:Configuration=Release
-../LuaX/bin/Release/net5.0/LuaX.exe project.ini
+dotnet ../LuaX/bin/Release/net5.0/LuaX.dll project.ini
