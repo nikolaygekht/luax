@@ -37,7 +37,7 @@ jobs:
       run: |
         dotnet sonarscanner begin /k:"nikolaygekht_luax" /o:"nikolaygekht" /d:sonar.login="$SONAR_TOKEN" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.cs.opencover.reportsPaths="./TestResults/**/coverage.opencover.xml" /d:sonar.cs.vstest.reportsPaths="./TestResults/**/*.trx"
         dotnet build --configuration $config --no-restore
-        dotnet test Luax.Parser.sln --collect "XPlat Code Coverage" --logger trx --results-directory "./TestResults" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
+        dotnet test Luax.Parser.sln --no-build --collect "XPlat Code Coverage" --logger trx --results-directory "./TestResults" -- DataCollectionRunSettings.DataCollectors.DataCollector.Configuration.Format=opencover
         dotnet sonarscanner end /d:sonar.login="$SONAR_TOKEN"
 
 
