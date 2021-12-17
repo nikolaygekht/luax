@@ -8,4 +8,5 @@ TestResults/
 *.log
 *.~*
 sonarqube.bat
+sonarqube.sh
 **/launchSettings.json
