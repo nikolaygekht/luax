@@ -13,7 +13,7 @@ namespace Luax.Interpreter.Execution
     /// </summary>
     public static class LuaXProjectReader
     {
-        public static ILuaXProjectReaderContentProvider ProjectContentProvider { get; internal set; } = new DefaultLuaXProjectReaderContentProvider();
+        public static ILuaXProjectReaderContentProvider ProjectContentProvider { get; set; } = new DefaultLuaXProjectReaderContentProvider();
 
         public static LuaXProject Read(string projectFile)
         {

@@ -28,6 +28,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LuaX.Doc", "LuaX.Doc\LuaX.D
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Luax.Apps.Test", "LuaX.Apps.Test\Luax.Apps.Test.csproj", "{F9E09FE6-0D68-49D4-8C66-1FC9B8D981F0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Luax.Test", "LuaX.Test\Luax.Test.csproj", "{FBD1CDC6-C8A0-477F-B032-11627D2597FC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -62,6 +64,10 @@ Global
 		{F9E09FE6-0D68-49D4-8C66-1FC9B8D981F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9E09FE6-0D68-49D4-8C66-1FC9B8D981F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9E09FE6-0D68-49D4-8C66-1FC9B8D981F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBD1CDC6-C8A0-477F-B032-11627D2597FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBD1CDC6-C8A0-477F-B032-11627D2597FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBD1CDC6-C8A0-477F-B032-11627D2597FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBD1CDC6-C8A0-477F-B032-11627D2597FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -70,7 +76,7 @@ Global
 		{17DF906B-A0A0-45F8-969F-602EE28F2CF3} = {5AD74AC6-65F0-4C99-AADB-F25D5D507CAE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {6A6CDF6B-8A78-41BB-BE4A-663FCC587F3E}
 		        SolutionGuid = {3943967B-7C5E-4DEC-ACC6-01AEEFB66889}
+		SolutionGuid = {6A6CDF6B-8A78-41BB-BE4A-663FCC587F3E}
 	EndGlobalSection
 EndGlobal

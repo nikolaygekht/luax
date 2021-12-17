@@ -1,0 +1,157 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net50</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="language\arrayWithInitializationTest.luax" />
+    <None Remove="language\customCast.luax" />
+    <None Remove="language\expressionTest.luax" />
+    <None Remove="language\forTest.luax" />
+    <None Remove="language\ifTest.luax" />
+    <None Remove="language\inheritanceTest.luax" />
+    <None Remove="language\innerClassesTest.luax" />
+    <None Remove="language\objectTest.luax" />
+    <None Remove="language\repeatTest.luax" />
+    <None Remove="language\throwTest.luax" />
+    <None Remove="language\tryCatchTest.luax" />
+    <None Remove="language\whileTest.luax" />
+    <None Remove="project.ini" />
+    <None Remove="stdlib\assertionTest.luax" />
+    <None Remove="stdlib\bufferTest.luax" />
+    <None Remove="stdlib\commonClasses.luax" />
+    <None Remove="stdlib\csvTest.luax" />
+    <None Remove="stdlib\datetimeTest.luax" />
+    <None Remove="stdlib\intMapTest.luax" />
+    <None Remove="stdlib\iotest.luax" />
+    <None Remove="stdlib\listTest.luax" />
+    <None Remove="stdlib\mathTest.luax" />
+    <None Remove="stdlib\queueTest.luax" />
+    <None Remove="stdlib\regexpTest.luax" />
+    <None Remove="stdlib\sortedListTest.luax" />
+    <None Remove="stdlib\stackTest.luax" />
+    <None Remove="stdlib\stringMapTest.luax" />
+    <None Remove="stdlib\stringTest.luax" />
+    <None Remove="stdlib\xmlTest.luax" />
+    <None Remove="typeslib\customExceptionTest.luax" />
+    <None Remove="typeslib\variantTest.luax" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="language\arrayWithInitializationTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="language\customCast.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="language\expressionTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="language\forTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="language\ifTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="language\inheritanceTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="language\innerClassesTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="language\objectTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="language\repeatTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="language\throwTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="language\tryCatchTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="language\whileTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="project.ini">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\assertionTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\bufferTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\commonClasses.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\csvTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\datetimeTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\intMapTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\iotest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\listTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\mathTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\queueTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\regexpTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\sortedListTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\stackTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\stringMapTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\stringTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\xmlTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="typeslib\customExceptionTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="typeslib\variantTest.luax">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="FluentAssertions" Version="6.2.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="coverlet.collector" Version="3.1.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="LiquidTestReports.Markdown" Version="1.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Luax.Parser\Luax.Parser.csproj" />
+    <ProjectReference Include="..\Luax.Interpreter\Luax.Interpreter.csproj" />
+  </ItemGroup>
+</Project>
