@@ -31,8 +31,10 @@ namespace Luax.Interpreter.Infrastructure
             mVariables = new LuaXVariableInstance[Length];
             for (int i = 0; i < Length; i++)
             {
-                mVariables[i] = new LuaXVariableInstance("", ElementType);
-                mVariables[i].Value = objects[i];
+                mVariables[i] = new LuaXVariableInstance("", ElementType)
+                {
+                    Value = objects[i]
+                };
             }
         }
 

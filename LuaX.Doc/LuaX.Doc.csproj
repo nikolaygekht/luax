@@ -10,5 +10,4 @@
     <ProjectReference Include="..\Luax.Parser\Luax.Parser.csproj" />
     <ProjectReference Include="..\LuaX\LuaX.csproj" />
   </ItemGroup>
-
 </Project>

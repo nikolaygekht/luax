@@ -34,7 +34,7 @@ namespace Luax.Test.DotNetSrc
             return reader.ReadToEnd();
         }
 
-        class TestContentProvider : ILuaXProjectReaderContentProvider
+        private sealed class TestContentProvider : ILuaXProjectReaderContentProvider
         {
             public TextReader GetContentReader(string filePath)
                 => GetReader(filePath);
@@ -58,10 +58,10 @@ namespace Luax.Test.DotNetSrc
             LuaXProjectReader.ProjectContentProvider = new TestContentProvider();
             var project = LuaXProjectReader.Read("project.ini");
             project.Should().NotBeNull();
-            
+
             LuaXProjectExecutorBase.ReadFileCallback = (name) => GetContent(name);
             var executor = new LuaXTestExecutor(project);
-            List<string> failed = new List<string>();
+            var failed = new List<string>();
             executor.OnTest += (_, args) =>
             {
                 if (args.Status != LuaXTestStatus.OK)

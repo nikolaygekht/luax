@@ -23,21 +23,26 @@ namespace Luax.Interpreter.Execution.Coverage
             return null;
         }
 
-        public CoverageReport(LuaXTypesLibrary typesLibrary)
+        private static bool ShouldBeCovered(LuaXClassInstance classInstance)
         {
-            foreach (var @classInstance in typesLibrary.Classes)
-            {
-                if (classInstance.LuaType.Attributes.Any(attr => attr.Name == "ExcludeFromCoverage"))
-                    continue;
+            if (classInstance.LuaType.Attributes.Any(attr => attr.Name == "ExcludeFromCoverage"))
+                return false;
 
-                if (classInstance.LuaType.Location.Source == "stdlib.luax" ||
+            if (classInstance.LuaType.Location.Source == "stdlib.luax" ||
                     classInstance.LuaType.Location.Source == "typeslib.luax" ||
                     classInstance.LuaType.Location.Source == "internal")
-                    continue;
+                return false;
 
-                var classCoverage = new CoverageReportClass(classInstance.LuaType);
+            return true;
+        }
+
+        public CoverageReport(LuaXTypesLibrary typesLibrary)
+        {
+            foreach (var luaType in typesLibrary.Classes.Where(ci => ShouldBeCovered(ci)).Select(ci => ci.LuaType))
+            {
+                var classCoverage = new CoverageReportClass(luaType);
                 mClasses.Add(classCoverage);
-                mIndex[classInstance.LuaType.Name] = classCoverage;
+                mIndex[luaType.Name] = classCoverage;
             }
         }
 

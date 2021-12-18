@@ -22,11 +22,14 @@ namespace Luax.Interpreter.Infrastructure
 
         private static bool IsInitialize(MethodInfo method)
             => method.Name == "Initialize" && method.ReturnType == typeof(void);
+        
         private static void Initialize(MethodInfo method, LuaXTypesLibrary library)
         {
             var args = method.GetParameters();
             if (args.Length == 1 && args[0].ParameterType == typeof(LuaXTypesLibrary))
                 method.Invoke(null, new object[] { library });
+            else if (args.Length == 0)
+                method.Invoke(null, Array.Empty<object>());
         }
 
         private static void ValidateMethod(MethodInfo method, LuaXTypesLibrary library, Type type, LuaXExternMethodAttribute attr, out LuaXMethod luaMethod)

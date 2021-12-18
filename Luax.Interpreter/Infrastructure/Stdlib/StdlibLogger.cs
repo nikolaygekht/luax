@@ -17,13 +17,10 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
 
         private static void OnLogged(LogEvent e)
         {
-            EventHandler<LogEvent> handler = Logged;
-            if (handler != null)
-            {
-                handler(null, e);
-            }
+            Logged?.Invoke(null, e);
         }
-        public static void Initialize(LuaXTypesLibrary typeLibrary)
+
+        public static void Initialize()
         {
             var builder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
@@ -75,7 +72,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return null;
         }
 
-        private class DelegatingSink : ILogEventSink
+        private sealed class DelegatingSink : ILogEventSink
         {
             private readonly Action<LogEvent> mWriter;
 

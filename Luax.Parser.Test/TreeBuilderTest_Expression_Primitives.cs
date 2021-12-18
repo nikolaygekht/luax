@@ -125,8 +125,10 @@ namespace Luax.Parser.Test
             });
 
             var parent = new LuaXClass("parent");
-            @class = new LuaXClass("class1");
-            @class.Parent = "parent";
+            @class = new LuaXClass("class1")
+            {
+                Parent = "parent"
+            };
 
             @class.Properties.Add(new LuaXProperty
             {

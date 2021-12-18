@@ -4,7 +4,6 @@ using System.Linq;
 using Luax.Parser.Ast;
 
 #pragma warning disable S125                // Sections of code should not be commented out
-#pragma warning disable IDE1006             // Naming rule violation.
 
 namespace Luax.Interpreter.Infrastructure.Stdlib
 {

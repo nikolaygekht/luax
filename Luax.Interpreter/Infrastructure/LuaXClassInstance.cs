@@ -42,8 +42,10 @@ namespace Luax.Interpreter.Infrastructure
 
         public LuaXObjectInstance New(LuaXTypesLibrary types, LuaXObjectInstance ownerInstance)
         {
-            var v = new LuaXObjectInstance(this);
-            v.OwnerObjectInstance = ownerInstance;
+            var v = new LuaXObjectInstance(this)
+            {
+                OwnerObjectInstance = ownerInstance
+            };
             if (Constructor != null)
                 LuaXMethodExecutor.Execute(Constructor, types, v, Array.Empty<object>(), out var _);
             return v;

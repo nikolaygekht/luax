@@ -100,4 +100,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Luax.Parser\Luax.Parser.csproj" />
   </ItemGroup>
+
 </Project>

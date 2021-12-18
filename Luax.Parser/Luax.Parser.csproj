@@ -34,4 +34,5 @@
   <Target Name="CompileGrammar" Inputs="../grammar/luax.gram" Outputs="$(IntermediateOutputPath)LuaXLexer.cs;$(IntermediateOutputPath)LuaXParser.cs;$(IntermediateOutputPath)LuaXLexer.bin;$(IntermediateOutputPath)LuaXParser.bin;">
      <CompileGrammar GrammarName="LuaX" GrammarFile="../grammar/luax.gram" Namespace="Luax.Parser.Hime" OutputMode="Source" CodeAccess="Internal" OutputPath="$(IntermediateOutputPath)" />
   </Target>
+
 </Project>
