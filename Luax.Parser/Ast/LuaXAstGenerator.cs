@@ -1,13 +1,12 @@
-﻿//Attention:
-//if you open this file in Visual Studio, the following errors will be displayed:
-//1) No Luax.Parser.Hime namespace
-//2) Classes LuaXLexer & LuaXParser could not be found
-//Relax. These files are auto-generated and will be created during the build.
-//Just close this file in visual studio and build the project.
+﻿//NOTE: the classes LuaXLexer and LuaXParser are generated at run-time
+//we load them dynamically to avoid error caused by static analyzers that
+//cannot recognize auto-generated code.
+
+using System;
 using System.IO;
+using Hime.Redist.Lexer;
 using Hime.Redist.Parsers;
 using Luax.Parser.Ast.Builder;
-using Luax.Parser.Hime;
 
 #pragma warning disable CA1822 
 
@@ -18,9 +17,53 @@ namespace Luax.Parser.Ast
     /// </summary>
     public class LuaXAstGenerator
     {
-        private LuaXBody Compile(string name, LuaXLexer lexer)
+        private static Type mLexerType, mParserType;
+
+        private static ContextFreeLexer CreateLexer(object source)
         {
-            RNGLRParser parser = new LuaXParser(lexer);
+            if (mLexerType == null)
+            {
+                var assembly = typeof(LuaXAstGenerator).Assembly;
+                foreach (var type in assembly.GetTypes())
+                {
+                    if (type.Name == "LuaXLexer" && type.Namespace == "Luax.Parser.Hime")
+                    {
+                        mLexerType = type;
+                        break;
+                    }
+                }
+            }
+
+            if (mLexerType == null)
+                throw new InvalidOperationException("Type Luax.Parser.Hime.LuaXLexer is not found");
+
+            return (ContextFreeLexer)Activator.CreateInstance(mLexerType, new object[] { source });
+        }
+
+        private static RNGLRParser CreateParser(ContextFreeLexer lexer)
+        {
+            if (mParserType == null)
+            {
+                var assembly = typeof(LuaXAstGenerator).Assembly;
+                foreach (var type in assembly.GetTypes())
+                {
+                    if (type.Name == "LuaXParser" && type.Namespace == "Luax.Parser.Hime")
+                    {
+                        mParserType = type;
+                        break;
+                    }
+                }
+            }
+
+            if (mParserType == null)
+                throw new InvalidOperationException("Type Luax.Parser.Hime.LuaXParser is not found");
+
+            return (RNGLRParser)Activator.CreateInstance(mParserType, new object[] { lexer });
+        }
+
+        private LuaXBody Compile(string name, ContextFreeLexer lexer)
+        {
+            var parser = CreateParser(lexer);
             var r = parser.Parse();
             if (!r.IsSuccess)
                 throw new LuaXAstGeneratorException(name, r.Errors);
@@ -34,7 +77,7 @@ namespace Luax.Parser.Ast
         /// <param name="name">The name of the source</param>
         /// <param name="source">The source code</param>
         /// <returns></returns>
-        public LuaXBody Compile(string name, string source) => Compile(name, new LuaXLexer(source));
+        public LuaXBody Compile(string name, string source) => Compile(name, CreateLexer(source));
 
         /// <summary>
         /// Gets the source as a text reader and parses it
@@ -42,6 +85,6 @@ namespace Luax.Parser.Ast
         /// <param name="name">The name of the source</param>
         /// <param name="source">The source code</param>
         /// <returns></returns>
-        public LuaXBody Compile(string name, TextReader source) => Compile(name, new LuaXLexer(source));
+        public LuaXBody Compile(string name, TextReader source) => Compile(name, CreateLexer(source));
     }
 }

@@ -27,7 +27,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 throw new ArgumentException("The map isn't properly initialized", nameof(@this));
             return d.Count;
         }
-        
+
         //public extern contains(key : string) : boolean;
         [LuaXExternMethod("string_map", "contains")]
         public static object MapContains(LuaXObjectInstance @this, string key)
@@ -38,7 +38,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 throw new ArgumentException("The map isn't properly initialized", nameof(@this));
             return d.ContainsKey(key);
         }
-        
+
         //public extern get(key : string) : object;
         [LuaXExternMethod("string_map", "get")]
         public static object MapGet(LuaXObjectInstance @this, string key)
@@ -49,7 +49,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 throw new ArgumentException("The map isn't properly initialized", nameof(@this));
             return d[key];
         }
-        
+
         //public extern set(key : string, value : object) : void;
         [LuaXExternMethod("string_map", "set")]
         public static object MapSet(LuaXObjectInstance @this, string key, LuaXObjectInstance v)
@@ -73,7 +73,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             d.Remove(key);
             return null;
         }
-        
+
         //public extern keys() : string[];
         [LuaXExternMethod("string_map", "keys")]
         public static object MapKeys(LuaXObjectInstance @this)
@@ -88,7 +88,6 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 result[i].Value = keys.ElementAt(i);
             return result;
         }
-
 
         //public extern clear() : void;
         [LuaXExternMethod("string_map", "clear")]
@@ -109,6 +108,5 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             @this.Properties[PropertyName].Value = new Dictionary<string, LuaXObjectInstance>();
             return null;
         }
-
     }
 }

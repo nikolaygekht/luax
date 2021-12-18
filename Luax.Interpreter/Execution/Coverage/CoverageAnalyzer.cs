@@ -26,5 +26,4 @@ namespace Luax.Interpreter.Execution.Coverage
                 stmt.Count++;
         }
     }
-
 }

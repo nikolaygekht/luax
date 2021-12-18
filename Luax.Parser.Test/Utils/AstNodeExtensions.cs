@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Hime.Redist;
 using Luax.Parser.Ast;
 
+#pragma warning disable RCS1224 // Make method an extension method.
+
 namespace Luax.Parser.Test.Tools
 {
     public static class AstNodeExtensions
