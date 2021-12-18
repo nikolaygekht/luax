@@ -69,6 +69,7 @@ namespace Luax.Test.DotNetSrc
             };
             var rc = executor.Run(Array.Empty<string>());
             failed.Should().BeEmpty();
+            executor.TotalTests.Should().Be(executor.SuccessfullTests);
             rc.Should().Be(0);
         }
     }

@@ -21,7 +21,7 @@ namespace Luax.Interpreter.Test
         {
             var project = LuaXProjectReader.Read("ConsoleAppOK1.luax");
             var executor = new LuaXConsoleExecutor(project);
-            var i = executor.Run(new string[] { "ConsoleAppOK1.luax", "a", "b", "c" });
+            var i = executor.Run(new string[] { "a", "b", "c" });
             i.Should().Be(3);
         }
 
@@ -30,7 +30,7 @@ namespace Luax.Interpreter.Test
         {
             var project = LuaXProjectReader.Read("ConsoleAppOK2.luax");
             var executor = new LuaXConsoleExecutor(project);
-            var i = executor.Run(new string[] { "ConsoleAppOK1.luax", "a", "b", "c" });
+            var i = executor.Run(new string[] { "a", "b", "c" });
             i.Should().Be(0);
         }
 
