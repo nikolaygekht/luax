@@ -4,7 +4,7 @@
 
    class parent
       private function parentMethod() : int
-         return property + const1 * privateFunc();
+         return property + privateFunc();
       end
    end
 

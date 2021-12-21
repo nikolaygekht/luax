@@ -73,6 +73,11 @@ namespace Luax.Parser.Ast
             Location = location;
         }
 
+        internal bool HasInOwners(LuaXClass @class)
+        {
+            return Name.StartsWith($"{@class.Name}.");
+        }
+
         internal bool HasInParents(LuaXClass parent)
         {
             string currentClassName = Name;

@@ -562,9 +562,43 @@ namespace Luax.Parser.Test
             method.Statements.Should().HaveCount(6);
             app.Classes.Search("complexClass.innerClass", out var innerClass).Should().BeTrue();
             innerClass.Constructor.Should().NotBeNull();
+            innerClass.Parent.Should().Be("complexClass.parent");
             innerClass.SearchMethod("method", out var anotherMethod).Should().BeTrue();
             anotherMethod.ReturnType.TypeId.Should().Be(LuaXType.Integer);
             anotherMethod.Statements.Should().HaveCount(1);
+        }
+
+        [Fact]
+        public void InnerClassValidOwnerClass()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("InnerClass1");
+            app.Pass2();
+            app.Classes.Search("complexClass", out var @class).Should().BeTrue();
+            @class.Constructor.Should().BeNull();
+            app.Classes.Search("complexClass.parent", out var innerClass).Should().BeTrue();
+            innerClass.SearchMethod("parentMethod", out var parentMethod).Should().BeTrue();
+            parentMethod.Statements.Should().HaveCount(1);
+            parentMethod.Statements[0].Should().BeOfType<LuaXReturnStatement>();
+            var returnStatement = (LuaXReturnStatement)parentMethod.Statements[0];
+            returnStatement.Expression.Should().BeOfType<LuaXBinaryOperatorExpression>();
+            var expression = (LuaXBinaryOperatorExpression)returnStatement.Expression;
+
+            expression.LeftArgument.Should().BeOfType<LuaXInstancePropertyExpression>();
+            var inst1 = (LuaXInstancePropertyExpression)expression.LeftArgument;
+            inst1.PropertyName.Should().Be("property");
+            inst1.Object.Should().BeOfType<LuaXVariableExpression>();
+            var var1 = (LuaXVariableExpression)inst1.Object;
+            var1.VariableName.Should().Be("this");
+            var1.ReturnType.Class.Should().Be("complexClass");
+
+            expression.RightArgument.Should().BeOfType<LuaXInstanceCallExpression>();
+            var inst2 = (LuaXInstanceCallExpression)expression.RightArgument;
+            inst2.MethodName.Should().Be("privateFunc");
+            inst2.Object.Should().BeOfType<LuaXVariableExpression>();
+            var var2 = (LuaXVariableExpression)inst1.Object;
+            var2.VariableName.Should().Be("this");
+            var2.ReturnType.Class.Should().Be("complexClass");
         }
 
         [Fact]
