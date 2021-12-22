@@ -728,9 +728,9 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, callNode, $"There is no method {identifier} in the class {currentClass.Name}");
 
             if (method.Static)
-                return ProcessCall(new LuaXClassNameExpression(currentClass.Name, new LuaXElementLocation(Name, callNode)), callNode, currentClass, currentMethod);
+                return ProcessCall(new LuaXClassNameExpression(method.Class.Name, new LuaXElementLocation(Name, callNode)), callNode, currentClass, currentMethod);
             else
-                return ProcessCall(new LuaXVariableExpression("this", new LuaXTypeDefinition { TypeId = LuaXType.Object, Class = currentClass.Name }, new LuaXElementLocation(Name, callNode)), callNode, currentClass, currentMethod);
+                return ProcessCall(new LuaXVariableExpression("this", new LuaXTypeDefinition { TypeId = LuaXType.Object, Class = method.Class.Name }, new LuaXElementLocation(Name, callNode)), callNode, currentClass, currentMethod);
         }
 
         private LuaXExpression ProcessMethodCall(IAstNode callNode, LuaXClass currentClass, LuaXMethod currentMethod)
@@ -786,7 +786,7 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not found");
             if (!method.Static)
                 throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not a static method");
-            if (method.Visibility == LuaXVisibility.Private && !currentClass.HasInParents(@class))
+            if (method.Visibility == LuaXVisibility.Private && !currentClass.HasInParents(@class) && !currentClass.HasInOwners(@class))
                 throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is a private method");
 
             methodArguments = method.Arguments;
@@ -804,7 +804,7 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not found");
             if (method.Static)
                 throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is a static method");
-            if (method.Visibility == LuaXVisibility.Private && !currentClass.HasInParents(@class))
+            if (method.Visibility == LuaXVisibility.Private && !currentClass.HasInParents(@class) && !currentClass.HasInOwners(@class))
                 throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is a private method");
 
             methodArguments = method.Arguments;
