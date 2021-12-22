@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <nuget xmlns="http://www.gehtsoft.com/build/nuget">
  <versions>
-  <version id="0.0.2">- Debug version of 11/9/21</version>
+  <version id="0.0.6">- Version of 12/22/21</version>
  </versions>
  <properties>
   <owner>Gehtsoft</owner>
