@@ -1,0 +1,18 @@
+class test
+   class responseCallback : httpResponseCallback
+       public var result : string;
+       public function onComplete(status : int, responseText : string) : void
+           result = responseText .. " " .. status;
+       end
+       public function responseCallback() : void
+           result = "";
+       end
+   end
+
+   public static function testSendFxmsg() : string
+       var callback : responseCallback;
+       callback = new responseCallback();
+       httpPdasCommunicator.sendFxmsg("local", "test content",  callback);
+       return callback.result;
+   end
+end

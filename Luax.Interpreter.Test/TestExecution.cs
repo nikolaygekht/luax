@@ -876,5 +876,49 @@ namespace Luax.Interpreter.Test
 
             StdlibLogger.Logged -= loggedHandler;
         }
+
+        [Fact]
+        public void TestHttpCommunicator()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("HttpCommunicatorTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+
+            program.SearchMethod("testGet", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsString().Should().BeTrue();
+            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
+            r.Should().BeOfType<string>();
+            r.Should().Be("test content;local 200");
+
+            program.SearchMethod("testPost", null, out method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsString().Should().BeTrue();
+            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out r);
+            r.Should().BeOfType<string>();
+            r.Should().Be("test content;m1 = m2;local;<some text>");
+        }
+
+        [Fact]
+        public void TestHttpPdasCommunicator()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("HttpPdasCommunicatorTest");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+
+            program.SearchMethod("testSendFxmsg", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsString().Should().BeTrue();
+            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
+            r.Should().BeOfType<string>();
+            r.Should().Be("test content;local 200");
+        }
     }
 }

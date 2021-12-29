@@ -879,3 +879,47 @@ class logger
     @DocParameter("message", "Message to be logged")
     public static extern fatal(message : string) : void;
 end
+
+@DocBrief("HTTP communication class")
+class httpCommunicator
+    @DocBrief("GET method")
+    @DocParameter("url", "URL of the server")
+    @DocParameter("callback", "Callback class instance")
+    public extern get(url: string, callback: httpResponseCallback) : void;
+
+    @DocBrief("POST method")
+    @DocParameter("url", "URL of the server")
+    @DocParameter("body", "Request body")
+    @DocParameter("callback", "Callback class instance")
+    public extern post(url: string, body: string, callback: httpResponseCallback) : void;
+
+    @DocBrief("Sets request header")
+    @DocParameter("name", "Name of the header")
+    @DocParameter("value", "Value of the header")
+    public extern setRequestHeader(name: string, value: string) : void;
+
+    @DocBrief("Constructor")
+    public extern httpCommunicator() : void;
+end
+
+@DocBrief("HTTP Pdas communication class")
+class httpPdasCommunicator
+    @DocBrief("Send fxmsg messaget")
+    @DocParameter("url", "URL of the server")
+    @DocParameter("fxmsg", "Message to be sent")
+    @DocParameter("callback", "Callback class instance")
+    public static extern sendFxmsg(url: string, fxmsg: string, callback: httpResponseCallback) : void;
+end
+
+@DocBrief("Callback class for processing HTTP response")
+class httpResponseCallback
+    @DocBrief("The action method to be invoked on request finished")
+    @DocParameter("status", "The status code")
+    @DocParameter("responseText", "The response text")
+    public function onComplete(status : int, responseText : string) : void
+    end
+    @DocBrief("The action method to be invoked on error")
+    @DocParameter("error", "Error text")
+    public function onError(error : string) : void
+    end
+end
