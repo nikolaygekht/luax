@@ -908,7 +908,10 @@ class httpPdasCommunicator
     @DocParameter("url", "URL of the server")
     @DocParameter("fxmsg", "Message to be sent")
     @DocParameter("callback", "Callback class instance")
-    public static extern sendFxmsg(url: string, fxmsg: string, callback: httpResponseCallback) : void;
+    public extern sendFxmsg(url: string, fxmsg: string, callback: httpResponseCallback) : void;
+
+    @DocBrief("Creates a new httpPdasCommunicator")
+    public static extern create(httpCommunicator : httpCommunicator) : httpPdasCommunicator;
 end
 
 @DocBrief("Callback class for processing HTTP response")

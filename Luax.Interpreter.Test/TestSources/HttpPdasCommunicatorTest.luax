@@ -10,9 +10,13 @@ class test
    end
 
    public static function testSendFxmsg() : string
+       var communicator : httpCommunicator;
+       var pdasCommunicator : httpPdasCommunicator;
        var callback : responseCallback;
+       communicator = new httpCommunicator();
+       pdasCommunicator = httpPdasCommunicator.create(communicator); 
        callback = new responseCallback();
-       httpPdasCommunicator.sendFxmsg("local", "test content",  callback);
+       pdasCommunicator.sendFxmsg("local", "test content",  callback);
        return callback.result;
    end
 end

@@ -918,7 +918,7 @@ namespace Luax.Interpreter.Test
             method.ReturnType.IsString().Should().BeTrue();
             LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
             r.Should().BeOfType<string>();
-            r.Should().Be("test content;local 200");
+            r.Should().Be("test content;sdas_response-format = 1;sdas_serialization = x;PDAS_HEADER_DEFLATE = deflated('test content');local 200");
         }
     }
 }
