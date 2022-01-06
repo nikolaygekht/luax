@@ -33,9 +33,9 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return @this;
         }
 
-        //public static extern sendFxmsg(url: string, fxmsg: string, callback: httpResponseCallback)
-        [LuaXExternMethod("httpPdasCommunicator", "sendFxmsg")]
-        public static object SendFxmsg(LuaXObjectInstance @this, string url, string fxmsg, LuaXObjectInstance callback)
+        //public static extern sendMessage(url: string, fxmsg: string, callback: httpResponseCallback)
+        [LuaXExternMethod("httpPdasCommunicator", "sendMessage")]
+        public static object SendMessage(LuaXObjectInstance @this, string url, string fxmsg, LuaXObjectInstance callback)
         {
             if (@this == null)
                 throw new ArgumentNullException(nameof(@this));

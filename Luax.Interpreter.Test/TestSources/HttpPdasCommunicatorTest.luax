@@ -16,7 +16,7 @@ class test
        communicator = new httpCommunicator();
        pdasCommunicator = httpPdasCommunicator.create(communicator); 
        callback = new responseCallback();
-       pdasCommunicator.sendFxmsg("local", "test content",  callback);
+       pdasCommunicator.sendMessage("local", "test content",  callback);
        return callback.result;
    end
 end

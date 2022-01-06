@@ -904,11 +904,11 @@ end
 
 @DocBrief("HTTP Pdas communication class")
 class httpPdasCommunicator
-    @DocBrief("Send fxmsg messaget")
+    @DocBrief("Send message")
     @DocParameter("url", "URL of the server")
     @DocParameter("fxmsg", "Message to be sent")
     @DocParameter("callback", "Callback class instance")
-    public extern sendFxmsg(url: string, fxmsg: string, callback: httpResponseCallback) : void;
+    public extern sendMessage(url: string, fxmsg: string, callback: httpResponseCallback) : void;
 
     @DocBrief("Creates a new httpPdasCommunicator")
     public static extern create(httpCommunicator : httpCommunicator) : httpPdasCommunicator;
