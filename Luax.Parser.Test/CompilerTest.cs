@@ -905,5 +905,103 @@ namespace Luax.Parser.Test
             act.Should().Throw<LuaXAstGeneratorException>()
                 .Where(e => e.Errors[0].Line == 8 && e.Errors[0].Column == 4);
         }
+
+        [Fact]
+        public void HttpCommunicator()
+        {
+            var app = new LuaXApplication();
+            app.Pass2();
+            app.Classes.Search("httpCommunicator", out var httpCommunicator).Should().BeTrue();
+            httpCommunicator.Constructor.Should().NotBeNull();
+            httpCommunicator.Methods.Should().HaveCount(4);
+
+            httpCommunicator.SearchMethod("get", out var method).Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
+            method.Static.Should().BeFalse();
+            method.Extern.Should().BeTrue();
+            method.Arguments.Should().HaveCount(2);
+            method.Arguments[0].LuaType.IsString().Should().BeTrue();
+            method.Arguments[1].LuaType.IsObject().Should().BeTrue();
+            method.Arguments[1].LuaType.Class.Should().Be("httpResponseCallback");
+            method.ReturnType.IsVoid().Should().BeTrue();
+
+            httpCommunicator.SearchMethod("post", out method).Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
+            method.Static.Should().BeFalse();
+            method.Extern.Should().BeTrue();
+            method.Arguments.Should().HaveCount(3);
+            method.Arguments[0].LuaType.IsString().Should().BeTrue();
+            method.Arguments[1].LuaType.IsString().Should().BeTrue();
+            method.Arguments[2].LuaType.IsObject().Should().BeTrue();
+            method.Arguments[2].LuaType.Class.Should().Be("httpResponseCallback");
+            method.ReturnType.IsVoid().Should().BeTrue();
+
+            httpCommunicator.SearchMethod("setRequestHeader", out method).Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
+            method.Static.Should().BeFalse();
+            method.Extern.Should().BeTrue();
+            method.Arguments.Should().HaveCount(2);
+            method.Arguments[0].LuaType.IsString().Should().BeTrue();
+            method.Arguments[1].LuaType.IsString().Should().BeTrue();
+            method.ReturnType.IsVoid().Should().BeTrue();
+        }
+
+        [Fact]
+        public void PdasHttpCommunicator()
+        {
+            var app = new LuaXApplication();
+            app.Pass2();
+            app.Classes.Search("httpPdasCommunicator", out var httpPdasCommunicator).Should().BeTrue();
+            httpPdasCommunicator.Constructor.Should().BeNull();
+            httpPdasCommunicator.Methods.Should().HaveCount(2);
+
+            httpPdasCommunicator.SearchMethod("sendMessage", out var method).Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
+            method.Static.Should().BeFalse();
+            method.Extern.Should().BeTrue();
+            method.Arguments.Should().HaveCount(3);
+            method.Arguments[0].LuaType.IsString().Should().BeTrue();
+            method.Arguments[1].LuaType.IsString().Should().BeTrue();
+            method.Arguments[2].LuaType.IsObject().Should().BeTrue();
+            method.Arguments[2].LuaType.Class.Should().Be("httpResponseCallback");
+            method.ReturnType.IsVoid().Should().BeTrue();
+
+            httpPdasCommunicator.SearchMethod("create", out method).Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
+            method.Static.Should().BeTrue();
+            method.Extern.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsObject().Should().BeTrue();
+            method.Arguments[0].LuaType.Class.Should().Be("httpCommunicator");
+            method.ReturnType.IsObject().Should().BeTrue();
+            method.ReturnType.Class.Should().Be("httpPdasCommunicator");
+        }
+
+        [Fact]
+        public void HttpResponseCallback()
+        {
+            var app = new LuaXApplication();
+            app.Pass2();
+            app.Classes.Search("httpResponseCallback", out var httpResponseCallback).Should().BeTrue();
+            httpResponseCallback.Constructor.Should().BeNull();
+            httpResponseCallback.Methods.Should().HaveCount(2);
+
+            httpResponseCallback.SearchMethod("onComplete", out var method).Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
+            method.Static.Should().BeFalse();
+            method.Extern.Should().BeFalse();
+            method.Arguments.Should().HaveCount(2);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.Arguments[1].LuaType.IsString().Should().BeTrue();
+            method.ReturnType.IsVoid().Should().BeTrue();
+
+            httpResponseCallback.SearchMethod("onError", out method).Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
+            method.Static.Should().BeFalse();
+            method.Extern.Should().BeFalse();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsString().Should().BeTrue();
+            method.ReturnType.IsVoid().Should().BeTrue();
+        }
     }
 }

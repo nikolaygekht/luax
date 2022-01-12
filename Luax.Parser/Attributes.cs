@@ -4,3 +4,4 @@
 [assembly: InternalsVisibleTo("Luax.Interpreter.Test")]
 [assembly: InternalsVisibleTo("DynamicProxyGenAssembly2")]
 [assembly: InternalsVisibleTo("Translator.Java.Test")]
+[assembly: InternalsVisibleTo("Translator.JS.Test")]
