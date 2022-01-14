@@ -944,7 +944,7 @@ namespace Luax.Interpreter.Test
             LuaXObjectInstance sched = (LuaXObjectInstance)callback.Properties["sc"].Value;
             sched.Class.SearchMethod("stop", null, out Parser.Ast.LuaXMethod stop);
             LuaXMethodExecutor.Execute(stop, typelib, sched, Array.Empty<object>(), out var _);
-            i.Should().Be(5);
+            i.Should().BeLessThanOrEqualTo(5);
 
             program.SearchMethod("startWithDelay", null, out method).Should().BeTrue();
             method.Static.Should().BeTrue();
@@ -959,7 +959,8 @@ namespace Luax.Interpreter.Test
             sched = (LuaXObjectInstance)callback.Properties["sc"].Value;
             sched.Class.SearchMethod("stop", null, out stop);
             LuaXMethodExecutor.Execute(stop, typelib, sched, Array.Empty<object>(), out var _);
-            i.Should().Be(9);
+            i.Should().BeGreaterThanOrEqualTo(5);
+            i.Should().BeLessThanOrEqualTo(9);
         }
 
         [Fact]
