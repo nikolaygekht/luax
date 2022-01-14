@@ -36,6 +36,8 @@
     <None Remove="TestSources\Project3.ini" />
     <None Remove="TestSources\Project4.ini" />
     <None Remove="TestSources\Project5.ini" />
+    <None Remove="TestSources\SchedulerTest1.luax" />
+    <None Remove="TestSources\SchedulerTest2.luax" />
     <None Remove="TestSources\Stdlibtest.luax" />
     <None Remove="TestSources\TestSuite.luax" />
     <None Remove="TestSources\WhileBreakTest.luax" />
@@ -61,6 +63,8 @@
     <EmbeddedResource Include="TestSources\RepeatNestedTest.luax" />
     <EmbeddedResource Include="TestSources\RepeatTest.luax" />
     <EmbeddedResource Include="TestSources\ForTest.luax" />
+    <EmbeddedResource Include="TestSources\SchedulerTest1.luax" />
+    <EmbeddedResource Include="TestSources\SchedulerTest2.luax" />
     <EmbeddedResource Include="TestSources\TryCatchTest.luax" />
     <EmbeddedResource Include="TestSources\ThrowTest.luax" />
     <EmbeddedResource Include="TestSources\IfTest.luax" />

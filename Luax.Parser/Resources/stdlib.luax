@@ -929,8 +929,11 @@ end
 
 @DocBrief("Scheduler class")
 class scheduler
-    @DocBrief("Start periodical execution of the action")
-    public extern start() : void;
+    @DocBrief("Start immediately periodical execution of the action")
+    public extern startImmediately() : void;
+
+    @DocBrief("Start periodical execution of the action with a delay of the period")
+    public extern startWithDelay() : void;
 
     @DocBrief("Stop periodical execution of the action")
     public extern stop() : void;

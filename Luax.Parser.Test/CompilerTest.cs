@@ -1011,9 +1011,16 @@ namespace Luax.Parser.Test
             app.Pass2();
             app.Classes.Search("scheduler", out var scheduler).Should().BeTrue();
             scheduler.Constructor.Should().BeNull();
-            scheduler.Methods.Should().HaveCount(3);
+            scheduler.Methods.Should().HaveCount(4);
 
-            scheduler.SearchMethod("start", out var method).Should().BeTrue();
+            scheduler.SearchMethod("startImmediately", out var method).Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
+            method.Static.Should().BeFalse();
+            method.Extern.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsVoid().Should().BeTrue();
+
+            scheduler.SearchMethod("startWithDelay", out method).Should().BeTrue();
             method.Visibility.Should().Be(LuaXVisibility.Public);
             method.Static.Should().BeFalse();
             method.Extern.Should().BeTrue();
