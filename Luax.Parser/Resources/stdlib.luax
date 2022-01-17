@@ -926,3 +926,20 @@ class httpResponseCallback
     public function onError(error : string) : void
     end
 end
+
+@DocBrief("Scheduler class")
+class scheduler
+    @DocBrief("Start immediately periodical execution of the action")
+    public extern startImmediately() : void;
+
+    @DocBrief("Start periodical execution of the action with a delay of the period")
+    public extern startWithDelay() : void;
+
+    @DocBrief("Stop periodical execution of the action")
+    public extern stop() : void;
+
+    @DocBrief("Creates a new scheduler")
+    @DocParameter("periodInMilliseconds", "Period in milliseconds of the desired action")
+    @DocParameter("action", "The action to be executed peridiodically")
+    public static extern create(periodInMilliseconds : int, action: action) : scheduler;
+end

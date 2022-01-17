@@ -7,6 +7,7 @@ using Luax.Interpreter.Infrastructure.Stdlib;
 using Luax.Parser;
 using Luax.Parser.Test.Utils;
 using Xunit;
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
 
 namespace Luax.Interpreter.Test
 {
@@ -919,6 +920,128 @@ namespace Luax.Interpreter.Test
             LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
             r.Should().BeOfType<string>();
             r.Should().Be("test content;sdas_response-format = 1;sdas_serialization = x;PDAS_HEADER_DEFLATE = deflated('test content');local 200");
+        }
+
+        [Fact]
+        public void TestSchedulerWithDelayMode()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("SchedulerTest1");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+
+            program.SearchMethod("startImmediately", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsObject().Should().BeTrue();
+            method.ReturnType.Class.Should().Be("testCallback");
+            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
+            r.Should().BeOfType<LuaXObjectInstance>();
+            System.Threading.Thread.Sleep(900);
+            LuaXObjectInstance callback = (LuaXObjectInstance)r;
+            int i = (int)callback.Properties["i"].Value;
+            LuaXObjectInstance sched = (LuaXObjectInstance)callback.Properties["sc"].Value;
+            sched.Class.SearchMethod("stop", null, out Parser.Ast.LuaXMethod stop);
+            LuaXMethodExecutor.Execute(stop, typelib, sched, Array.Empty<object>(), out var _);
+            i.Should().BeLessThanOrEqualTo(5);
+
+            program.SearchMethod("startWithDelay", null, out method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.ReturnType.IsObject().Should().BeTrue();
+            method.ReturnType.Class.Should().Be("testCallback");
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { r }, out r);
+            r.Should().BeOfType<LuaXObjectInstance>();
+            System.Threading.Thread.Sleep(900);
+            callback = (LuaXObjectInstance)r;
+            i = (int)callback.Properties["i"].Value;
+            sched = (LuaXObjectInstance)callback.Properties["sc"].Value;
+            sched.Class.SearchMethod("stop", null, out stop);
+            LuaXMethodExecutor.Execute(stop, typelib, sched, Array.Empty<object>(), out var _);
+            i.Should().BeGreaterThanOrEqualTo(5);
+            i.Should().BeLessThanOrEqualTo(9);
+        }
+
+        [Fact]
+        public void TestSchedulerWithoutDelayMode()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("SchedulerTest2");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+
+            program.SearchMethod("startImmediately", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsObject().Should().BeTrue();
+            method.ReturnType.Class.Should().Be("testCallback");
+            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
+            r.Should().BeOfType<LuaXObjectInstance>();
+            LuaXObjectInstance callback = (LuaXObjectInstance)r;
+            int i = (int)callback.Properties["i"].Value;
+            i.Should().Be(1);
+
+            program.SearchMethod("startWithDelay", null, out method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.ReturnType.IsObject().Should().BeTrue();
+            method.ReturnType.Class.Should().Be("testCallback");
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { r }, out r);
+            r.Should().BeOfType<LuaXObjectInstance>();
+            System.Threading.Thread.Sleep(900);
+            callback = (LuaXObjectInstance)r;
+            i = (int)callback.Properties["i"].Value;
+            i.Should().Be(10);
+        }
+
+        [Fact]
+        public void TestSchedulerFailed()
+        {
+            ((Action)(() => StdlibScheduler.StartImmediately(null)))
+                .Should().Throw<ArgumentNullException>();
+            ((Action)(() => StdlibScheduler.StartWithDelay(null)))
+                .Should().Throw<ArgumentNullException>();
+            ((Action)(() => StdlibScheduler.Stop(null)))
+                .Should().Throw<ArgumentNullException>();
+
+            var app = new LuaXApplication();
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            LuaXObjectInstance instance = (LuaXObjectInstance)StdlibScheduler.Create(0, null);
+            instance.Class.SearchMethod("startImmediately", null, out var startImmediately).Should().BeTrue();
+            instance.Class.SearchMethod("startWithDelay", null, out var startWithDelay).Should().BeTrue();
+            instance.Class.SearchMethod("stop", null, out var stop).Should().BeTrue();
+
+            ((Action)(() => LuaXMethodExecutor.Execute(startImmediately, typelib, instance, Array.Empty<object>(), out var r)))
+                .Should().Throw<LuaXExecutionException>().Where(e => e.Message.Contains("The scheduler isn't properly initialized"));
+            ((Action)(() => LuaXMethodExecutor.Execute(startWithDelay, typelib, instance, Array.Empty<object>(), out var r)))
+                .Should().Throw<LuaXExecutionException>().Where(e => e.Message.Contains("The scheduler isn't properly initialized"));
+
+            instance.Properties["__needStop"].Value = null;
+
+            ((Action)(() => LuaXMethodExecutor.Execute(startImmediately, typelib, instance, Array.Empty<object>(), out var r)))
+                .Should().Throw<LuaXExecutionException>().Where(e => e.Message.Contains("The scheduler isn't properly initialized"));
+            ((Action)(() => LuaXMethodExecutor.Execute(startWithDelay, typelib, instance, Array.Empty<object>(), out var r)))
+                .Should().Throw<LuaXExecutionException>().Where(e => e.Message.Contains("The scheduler isn't properly initialized"));
+            ((Action)(() => LuaXMethodExecutor.Execute(stop, typelib, instance, Array.Empty<object>(), out var r)))
+                .Should().Throw<LuaXExecutionException>().Where(e => e.Message.Contains("The scheduler isn't properly initialized"));
+
+            instance.Properties["__periodInMilliseconds"].Value = null;
+
+            ((Action)(() => LuaXMethodExecutor.Execute(startImmediately, typelib, instance, Array.Empty<object>(), out var r)))
+                .Should().Throw<LuaXExecutionException>().Where(e => e.Message.Contains("The scheduler isn't properly initialized"));
+            ((Action)(() => LuaXMethodExecutor.Execute(startWithDelay, typelib, instance, Array.Empty<object>(), out var r)))
+                .Should().Throw<LuaXExecutionException>().Where(e => e.Message.Contains("The scheduler isn't properly initialized"));
+
+            instance.Properties["__handler"].Value = new System.Threading.CancellationTokenSource();
+
+            ((Action)(() => LuaXMethodExecutor.Execute(startImmediately, typelib, instance, Array.Empty<object>(), out var r)))
+                .Should().Throw<LuaXExecutionException>().Where(e => e.Message.Contains("The scheduler is on run already"));
+            ((Action)(() => LuaXMethodExecutor.Execute(startWithDelay, typelib, instance, Array.Empty<object>(), out var r)))
+                .Should().Throw<LuaXExecutionException>().Where(e => e.Message.Contains("The scheduler is on run already"));
         }
     }
 }

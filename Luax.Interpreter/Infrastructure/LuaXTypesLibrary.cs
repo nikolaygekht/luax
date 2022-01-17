@@ -51,6 +51,7 @@ namespace Luax.Interpreter.Infrastructure
             ExternMethods.Add(this, typeof(StdlibLogger));
             ExternMethods.Add(this, typeof(StdlibHttpCommunicator));
             ExternMethods.Add(this, typeof(StdlibHttpPdasCommunicator));
+            ExternMethods.Add(this, typeof(StdlibScheduler));
         }
 
         public string[] GetClassNames() => mTypes.Keys.ToArray();

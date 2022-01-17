@@ -1003,5 +1003,47 @@ namespace Luax.Parser.Test
             method.Arguments[0].LuaType.IsString().Should().BeTrue();
             method.ReturnType.IsVoid().Should().BeTrue();
         }
+
+        [Fact]
+        public void Scheduler()
+        {
+            var app = new LuaXApplication();
+            app.Pass2();
+            app.Classes.Search("scheduler", out var scheduler).Should().BeTrue();
+            scheduler.Constructor.Should().BeNull();
+            scheduler.Methods.Should().HaveCount(4);
+
+            scheduler.SearchMethod("startImmediately", out var method).Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
+            method.Static.Should().BeFalse();
+            method.Extern.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsVoid().Should().BeTrue();
+
+            scheduler.SearchMethod("startWithDelay", out method).Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
+            method.Static.Should().BeFalse();
+            method.Extern.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsVoid().Should().BeTrue();
+
+            scheduler.SearchMethod("stop", out method).Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
+            method.Static.Should().BeFalse();
+            method.Extern.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsVoid().Should().BeTrue();
+
+            scheduler.SearchMethod("create", out method).Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
+            method.Static.Should().BeTrue();
+            method.Extern.Should().BeTrue();
+            method.Arguments.Should().HaveCount(2);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
+            method.Arguments[1].LuaType.IsObject().Should().BeTrue();
+            method.Arguments[1].LuaType.Class.Should().Be("action");
+            method.ReturnType.IsObject().Should().BeTrue();
+            method.ReturnType.Class.Should().Be("scheduler");
+        }
     }
 }
