@@ -14,4 +14,12 @@
             return "value is " .. captured.getMessage() .. ", code is " .. captured.getCode();
        end
    end
+   public static function testTryAnother() : string
+       try
+            throw exception.create(0, "just an exception");
+            return "";
+       catch
+            return "captured";
+       end
+   end
 end

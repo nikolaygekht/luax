@@ -232,31 +232,43 @@ namespace Luax.Interpreter.Expression
             }
             catch (Exception ex)
             {
-                var exceptionVariable = variables[@try.CatchClause.CatchIdentifier];
-                if (types.SearchClass(exceptionVariable.LuaType.Class, out var exceptionClass))
+                if (@try.CatchClause.CatchIdentifier == null)
                 {
-                    var exceptionObject = new LuaXObjectInstance(exceptionClass);
-                    exceptionObject.Properties["message"].Value = ex.Message;
-
-                    if (ex is LuaXExecutionException executionException)
-                    {
-                        foreach (var property in executionException.Properties)
-                        {
-                            if (property.Name == "message")
-                                continue;
-
-                            exceptionObject.Properties[property.Name].Value = property.Value;
-                        }
-                    }
-
-                    variables[@try.CatchClause.CatchIdentifier].Value = exceptionObject;
-
                     var catchResult = ExecuteStatements(callingMethod, @try.CatchClause.CatchStatements, types, currentClass, variables, out result);
                     return catchResult;
                 }
+                else
+                {
+                    var exceptionVariable = variables[@try.CatchClause.CatchIdentifier];
+                    if (types.SearchClass(exceptionVariable.LuaType.Class, out var exceptionClass))
+                    {
+                        var exceptionObject = CreateExceptionInstance(exceptionClass, ex);
+                        variables[@try.CatchClause.CatchIdentifier].Value = exceptionObject;
+                        var catchResult = ExecuteStatements(callingMethod, @try.CatchClause.CatchStatements, types, currentClass, variables, out result);
+                        return catchResult;
+                    }
 
-                throw new LuaXExecutionException(@try.CatchClause.Location, $"Type '{exceptionVariable.LuaType.Class}' is not defined");
+                    throw new LuaXExecutionException(@try.CatchClause.Location, $"Type '{exceptionVariable.LuaType.Class}' is not defined");
+                }
             }
+        }
+
+        private static LuaXObjectInstance CreateExceptionInstance(LuaXClassInstance exceptionClass, Exception ex)
+        {
+            var exceptionObject = new LuaXObjectInstance(exceptionClass);
+            exceptionObject.Properties["message"].Value = ex.Message;
+
+            if (ex is LuaXExecutionException executionException)
+            {
+                foreach (var property in executionException.Properties)
+                {
+                    if (property.Name == "message")
+                        continue;
+
+                    exceptionObject.Properties[property.Name].Value = property.Value;
+                }
+            }
+            return exceptionObject;
         }
 
         private static void ExecuteThrowStatement(LuaXMethod callingMethod, LuaXThrowStatement @throw, LuaXTypesLibrary types, LuaXClassInstance currentClass, LuaXVariableInstanceSet variables)

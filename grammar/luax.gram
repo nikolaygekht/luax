@@ -248,7 +248,7 @@ grammar LuaX
 
         END -> 'end';
 
-        CATCH_CLAUSE -> CATCH IDENTIFIER STATEMENTS;
+        CATCH_CLAUSE -> CATCH IDENTIFIER? STATEMENTS;
 
         TRY -> 'try';
 

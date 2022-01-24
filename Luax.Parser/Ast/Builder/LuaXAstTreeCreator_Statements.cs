@@ -177,13 +177,25 @@ namespace Luax.Parser.Ast.Builder
 
         private LuaXCatchClause ProcessCatchClause(IAstNode node, LuaXClass @class, LuaXMethod method)
         {
-            if (node.Children.Count < 3 || node.Children[1].Symbol != "IDENTIFIER" ||
+            AstNodeCollection children;
+            string catchIdentifier;
+            if (node.Children.Count < 3)
+            {
+                children = node.Children[1].Children;
+                catchIdentifier = null;
+            }
+            else if (node.Children[1].Symbol != "IDENTIFIER" ||
                 !method.Variables.Search(node.Children[1].Value, out var v1) || v1 == null ||
                 !Metadata.IsKindOf(v1.LuaType.Class, "exception"))
                 throw new LuaXAstGeneratorException(Name, node, "Identifier of declared variable of type exception is expected here");
+            else
+            {
+                children = node.Children[2].Children;
+                catchIdentifier = node.Children[1].Value;
+            }
 
-            var catchClause = new LuaXCatchClause(node.Children[1].Value, new LuaXElementLocation(Name, node));
-            ProcessStatements(node.Children[2].Children, @class, method, catchClause.CatchStatements);
+            var catchClause = new LuaXCatchClause(catchIdentifier, new LuaXElementLocation(Name, node));
+            ProcessStatements(children, @class, method, catchClause.CatchStatements);
             return catchClause;
         }
 

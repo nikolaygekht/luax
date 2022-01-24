@@ -1,0 +1,12 @@
+﻿class test
+   static function test1(arg : int) : boolean
+      try
+        if(arg < 0) then
+            throw exception.create(-1, "Argument value is lower than 0");
+        end
+        return arg > 0;
+      catch ex
+        return false;
+      end
+   end
+end
