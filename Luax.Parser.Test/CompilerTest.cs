@@ -489,13 +489,14 @@ namespace Luax.Parser.Test
         }
 
         [Fact]
-        public void Try()
+        public void Try1()
         {
             var app = new LuaXApplication();
             app.CompileResource("TryCatch1");
             app.Pass2();
             app.Classes.Search("test", out var @class).Should().BeTrue();
             @class.SearchMethod("test1", out var method).Should().BeTrue();
+            method.Variables.Should().HaveCount(1);
             method.Statements.Should().HaveCount(1);
             method.Statements[0].Should().BeOfType<LuaXTryStatement>();
             var @try = method.Statements[0].As<LuaXTryStatement>();
@@ -516,6 +517,16 @@ namespace Luax.Parser.Test
             @catch.CatchStatements.Should().HaveCount(1);
             @catch.CatchStatements[0].Should().BeOfType<LuaXReturnStatement>();
             @catch.CatchStatements[0].As<LuaXReturnStatement>().Expression.ToString().Should().Be("const:boolean:False");
+        }
+
+        [Fact]
+        public void Try2()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("TryCatch2");
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("Identifier of declared variable of type exception is expected here"));
         }
 
         [Fact]

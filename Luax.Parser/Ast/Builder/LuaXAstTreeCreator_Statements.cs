@@ -157,7 +157,7 @@ namespace Luax.Parser.Ast.Builder
 
             return new LuaXForLoopDescription(identierVar, forLoopExpressions[0], forLoopExpressions[1],
                 forLoopExpressions.Count == 3 ? forLoopExpressions[2] :
-                new LuaXConstantExpression( new LuaXConstant(1, new LuaXElementLocation(Name, node))));
+                new LuaXConstantExpression(new LuaXConstant(1, new LuaXElementLocation(Name, node))));
         }
 
         private void ProcessThrowStatement(IAstNode node, LuaXClass @class, LuaXMethod method, LuaXStatementCollection statements)
@@ -178,8 +178,8 @@ namespace Luax.Parser.Ast.Builder
         private LuaXCatchClause ProcessCatchClause(IAstNode node, LuaXClass @class, LuaXMethod method)
         {
             if (node.Children.Count < 3 || node.Children[1].Symbol != "IDENTIFIER" ||
-                !method.Variables.Search(node.Children[1].Value, out var v1) || v1 == null ||
-                !Metadata.IsKindOf(v1.LuaType.Class, "exception"))
+                            !method.Variables.Search(node.Children[1].Value, out var v1) || v1 == null ||
+                            !Metadata.IsKindOf(v1.LuaType.Class, "exception"))
                 throw new LuaXAstGeneratorException(Name, node, "Identifier of declared variable of type exception is expected here");
 
             var catchClause = new LuaXCatchClause(node.Children[1].Value, new LuaXElementLocation(Name, node));
@@ -227,7 +227,7 @@ namespace Luax.Parser.Ast.Builder
                     throw new LuaXAstGeneratorException(Name, node, $"Variable {v.Name} already exists");
                 if (method.Constants.Contains(v.Name))
                     throw new LuaXAstGeneratorException(Name, node, $"Constant {v.Name} already exists");
-                if(v.LuaType.TypeId == LuaXType.Object && SearchClassByName(v.LuaType.Class, @class, out var realClass))
+                if (v.LuaType.TypeId == LuaXType.Object && SearchClassByName(v.LuaType.Class, @class, out var realClass))
                     v.LuaType = new LuaXTypeDefinition()
                     {
                         TypeId = v.LuaType.TypeId,
