@@ -5,7 +5,7 @@
             throw exception.create(-1, "Argument value is lower than 0");
         end
         return arg > 0;
-      catch
+      catch ex
         return false;
       end
    end

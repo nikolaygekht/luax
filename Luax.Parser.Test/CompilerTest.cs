@@ -524,37 +524,6 @@ namespace Luax.Parser.Test
         {
             var app = new LuaXApplication();
             app.CompileResource("TryCatch2");
-            app.Pass2();
-            app.Classes.Search("test", out var @class).Should().BeTrue();
-            @class.SearchMethod("test1", out var method).Should().BeTrue();
-            method.Variables.Should().HaveCount(0);
-            method.Statements.Should().HaveCount(1);
-            method.Statements[0].Should().BeOfType<LuaXTryStatement>();
-            var @try = method.Statements[0].As<LuaXTryStatement>();
-
-            @try.TryStatements.Should().HaveCount(2);
-
-            @try.TryStatements[0].Should().BeOfType<LuaXIfStatement>();
-            @try.TryStatements[0].As<LuaXIfStatement>().Clauses.Count.Should().Be(1);
-            @try.TryStatements[0].As<LuaXIfStatement>().ElseClause.Count.Should().Be(0);
-
-            @try.TryStatements[1].Should().BeOfType<LuaXReturnStatement>();
-            @try.TryStatements[1].As<LuaXReturnStatement>().Expression.ToString().Should().Be("(arg:arg Greater const:int:0)");
-
-            @try.CatchClause.Should().BeOfType<LuaXCatchClause>();
-            var @catch = @try.CatchClause;
-            @catch.CatchIdentifier.Should().BeNull();
-
-            @catch.CatchStatements.Should().HaveCount(1);
-            @catch.CatchStatements[0].Should().BeOfType<LuaXReturnStatement>();
-            @catch.CatchStatements[0].As<LuaXReturnStatement>().Expression.ToString().Should().Be("const:boolean:False");
-        }
-
-        [Fact]
-        public void Try3()
-        {
-            var app = new LuaXApplication();
-            app.CompileResource("TryCatch3");
             Action act = () => app.Pass2();
             act.Should().Throw<LuaXAstGeneratorException>()
                 .Where(e => e.Message.Contains("Identifier of declared variable of type exception is expected here"));

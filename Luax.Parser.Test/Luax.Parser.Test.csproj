@@ -81,7 +81,6 @@
     <EmbeddedResource Include="TestSources\ParseConstant.luax" />
     <EmbeddedResource Include="TestSources\ParseClass.luax" />
     <EmbeddedResource Include="TestSources\TryCatch2.luax" />
-    <EmbeddedResource Include="TestSources\TryCatch3.luax" />
     <EmbeddedResource Include="TestSources\While1.luax" />
   </ItemGroup>
 

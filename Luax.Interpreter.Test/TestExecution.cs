@@ -285,7 +285,7 @@ namespace Luax.Interpreter.Test
         [InlineData(-1, 1, "value is lower, code is")]
         [InlineData(0, 2, "value is equal, code is")]
         [InlineData(1, 0, "value is greater")]
-        public void TestTryCatch1(int arg, int expectedCode, string expectedMessage)
+        public void TestTryCatch(int arg, int expectedCode, string expectedMessage)
         {
             var app = new LuaXApplication();
             app.CompileResource("TryCatchTest");
@@ -303,26 +303,6 @@ namespace Luax.Interpreter.Test
 
             r.Should().BeOfType<string>();
             r.Should().Be(expectedCode != 0 ? $"{expectedMessage} {expectedCode}" : expectedMessage);
-        }
-
-        [Fact]
-        public void TestTryCatch2()
-        {
-            var app = new LuaXApplication();
-            app.CompileResource("TryCatchTest");
-            app.Pass2();
-            var typelib = new LuaXTypesLibrary(app);
-
-            typelib.SearchClass("test", out var program).Should().BeTrue();
-            program.SearchMethod("testTryAnother", null, out var method).Should().BeTrue();
-            method.Static.Should().BeTrue();
-            method.Arguments.Should().HaveCount(0);
-            method.ReturnType.IsString().Should().BeTrue();
-
-            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
-
-            r.Should().BeOfType<string>();
-            r.Should().Be("captured");
         }
 
         [Theory]
