@@ -1,0 +1,7 @@
+﻿class test
+   public var prop1 : scheduler;
+   public var prop2 : someUnknownClass;
+   static function test1(arg1 : int) : int
+      return 1;
+   end
+end

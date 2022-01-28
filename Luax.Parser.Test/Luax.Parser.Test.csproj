@@ -40,6 +40,8 @@
     <None Remove="TestSources\ParseConstant.luax" />
     <None Remove="TestSources\TryCatch2.luax" />
     <None Remove="TestSources\TryCatch3.luax" />
+    <None Remove="TestSources\UndefinedPropertyType.luax" />
+    <None Remove="TestSources\UndefinedVarType.luax" />
     <None Remove="TestSources\While1.luax" />
     <None Remove="TestSources\Throw1.luax" />
     <None Remove="TestSources\TryCatch1.luax" />
@@ -81,6 +83,8 @@
     <EmbeddedResource Include="TestSources\ParseConstant.luax" />
     <EmbeddedResource Include="TestSources\ParseClass.luax" />
     <EmbeddedResource Include="TestSources\TryCatch2.luax" />
+    <EmbeddedResource Include="TestSources\UndefinedPropertyType.luax" />
+    <EmbeddedResource Include="TestSources\UndefinedVarType.luax" />
     <EmbeddedResource Include="TestSources\While1.luax" />
   </ItemGroup>
 

@@ -227,13 +227,16 @@ namespace Luax.Parser.Ast.Builder
                     throw new LuaXAstGeneratorException(Name, node, $"Variable {v.Name} already exists");
                 if (method.Constants.Contains(v.Name))
                     throw new LuaXAstGeneratorException(Name, node, $"Constant {v.Name} already exists");
-                if (v.LuaType.TypeId == LuaXType.Object && SearchClassByName(v.LuaType.Class, @class, out var realClass))
-                    v.LuaType = new LuaXTypeDefinition()
-                    {
-                        TypeId = v.LuaType.TypeId,
-                        Array = v.LuaType.Array,
-                        Class = realClass.Name
-                    };
+                if (v.LuaType.TypeId == LuaXType.Object)
+                    if (SearchClassByName(v.LuaType.Class, @class, out var realClass))
+                        v.LuaType = new LuaXTypeDefinition()
+                        {
+                            TypeId = v.LuaType.TypeId,
+                            Array = v.LuaType.Array,
+                            Class = realClass.Name
+                        };
+                    else
+                        throw new LuaXAstGeneratorException(Name, node, $"Variable type {v.LuaType.Class} is not defined");
 
                 method.Variables.Add(v);
             });
