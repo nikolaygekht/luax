@@ -116,8 +116,12 @@ namespace Luax.Parser.Ast
         {
             ValidateParentChain(application);
             mMetadata = application.Classes;
+            MethodsPass2(creator);
+            PropertiesPass2(creator);
+        }
 
-            //process methods
+        private void MethodsPass2(LuaXAstTreeCreator creator)
+        {
             for (int i = 0; i < Methods.Count; i++)
             {
                 var method = Methods[i];
@@ -135,6 +139,16 @@ namespace Luax.Parser.Ast
 
                 if (method.Body != null)
                     creator.ProcessBody(method.Body, this, Methods[i]);
+            }
+        }
+
+        private void PropertiesPass2(LuaXAstTreeCreator creator)
+        {
+            for (int i = 0; i < Properties.Count; i++)
+            {
+                var property = Properties[i];
+                if (property.LuaType.TypeId == LuaXType.Object && !creator.Metadata.Exists(property.LuaType.Class))
+                    throw new LuaXAstGeneratorException(property.Location.Source, new LuaXParserError(property.Location, $"Property type {property.LuaType.Class} is not defined"));
             }
         }
 

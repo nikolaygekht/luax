@@ -882,7 +882,7 @@ namespace Luax.Parser.Test
 
             Action act = () => app.Pass2();
             act.Should().Throw<LuaXAstGeneratorException>()
-                .Where(e => e.Message.Contains("The types are incompatible. The target is double and source is int"));
+                .Where(e => e.Message.Contains("Initialization, condition and iteration parts of for statement should all be of the same type"));
         }
 
         [Fact]
@@ -1055,6 +1055,28 @@ namespace Luax.Parser.Test
             method.Arguments[1].LuaType.Class.Should().Be("action");
             method.ReturnType.IsObject().Should().BeTrue();
             method.ReturnType.Class.Should().Be("scheduler");
+        }
+
+        [Fact]
+        public void UndefinedVarType()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("UndefinedVarType");
+
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("Variable type someUnknownClass is not defined"));
+        }
+
+        [Fact]
+        public void UndefinedPropertyType()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("UndefinedPropertyType");
+
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("Property type someUnknownClass is not defined"));
         }
     }
 }
