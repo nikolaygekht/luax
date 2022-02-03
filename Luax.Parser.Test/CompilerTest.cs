@@ -1078,5 +1078,38 @@ namespace Luax.Parser.Test
             act.Should().Throw<LuaXAstGeneratorException>()
                 .Where(e => e.Message.Contains("Property type someUnknownClass is not defined"));
         }
+
+        [Fact]
+        public void OwnerMethod()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("OwnerMethod");
+
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("Method test.testInner.test2 is not found"));
+        }
+
+        [Fact]
+        public void OwnerProperty1()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("OwnerProperty1");
+
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("Class test.testInner does not contain property prop1"));
+        }
+
+        [Fact]
+        public void OwnerProperty2()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("OwnerProperty2");
+
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("Class test.testInner does not contain property prop1"));
+        }
     }
 }

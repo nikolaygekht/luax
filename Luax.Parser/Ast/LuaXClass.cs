@@ -180,7 +180,7 @@ namespace Luax.Parser.Ast
             return mMetadata.IsKindOf(@override.Class, @base.Class);
         }
 
-        public bool SearchProperty(string propertyName, out LuaXProperty property, out string ownerClassName)
+        public bool SearchProperty(string propertyName, out LuaXProperty property, out string ownerClassName, bool doNotLookInOwnerClasses = false)
         {
             LuaXPropertyCollection properties = this.Properties;
             string className = this.Name;
@@ -193,7 +193,7 @@ namespace Luax.Parser.Ast
                     {
                         return true;
                     }
-                    if (HasInnerClass(in className, out className, out var @class))
+                    if (!doNotLookInOwnerClasses && HasOwnerClass(in className, out className, out var @class))
                     {
                         properties = @class.Properties;
                         continue;
@@ -222,7 +222,7 @@ namespace Luax.Parser.Ast
                     {
                         return true;
                     }
-                    if (HasInnerClass(in className, out className, out var @class))
+                    if (HasOwnerClass(in className, out className, out var @class))
                     {
                         constants = @class.Constants;
                         continue;
@@ -236,7 +236,7 @@ namespace Luax.Parser.Ast
             return false;
         }
 
-        public bool SearchMethod(string propertyName, out LuaXMethod method)
+        public bool SearchMethod(string propertyName, out LuaXMethod method, bool doNotLookInOwnerClasses = false)
         {
             LuaXMethodCollection methods = this.Methods;
             string className = this.Name;
@@ -245,11 +245,11 @@ namespace Luax.Parser.Ast
                 var methodIndex = methods.Find(propertyName);
                 if (methodIndex < 0)
                 {
-                    if (ParentClass != null && ParentClass.SearchMethod(propertyName, out method))
+                    if (ParentClass != null && ParentClass.SearchMethod(propertyName, out method, doNotLookInOwnerClasses))
                     {
                         return true;
                     }
-                    if(HasInnerClass(in className, out className, out var @class))
+                    if(!doNotLookInOwnerClasses && HasOwnerClass(in className, out className, out var @class))
                     {
                         methods = @class.Methods;
                         continue;
@@ -263,7 +263,7 @@ namespace Luax.Parser.Ast
             return false;
         }
 
-        public bool HasInnerClass(in string sourceClassName, out string resultClassName, out LuaXClass @class)
+        public bool HasOwnerClass(in string sourceClassName, out string resultClassName, out LuaXClass @class)
         {
             int indexOfPoint = sourceClassName.LastIndexOf('.');
             if (indexOfPoint > 0)
