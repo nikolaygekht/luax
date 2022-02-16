@@ -781,16 +781,19 @@ namespace Luax.Parser.Ast.Builder
 
         private LuaXCallExpression ProcessStaticCall(LuaXExpression subject, LuaXClass currentClass, string identifier, IAstNode callNode, out LuaXVariableCollection methodArguments)
         {
-            SearchClassByName(subject.ReturnType.Class, currentClass, out var @class);
-            if (!@class.SearchMethod(identifier, out var @method))
-                throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not found");
-            if (!method.Static)
-                throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not a static method");
-            if (method.Visibility == LuaXVisibility.Private && !currentClass.HasInParents(@class) && !currentClass.HasInOwners(@class))
-                throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is a private method");
+            if (SearchClassByName(subject.ReturnType.Class, currentClass, out var @class))
+            {
+                if (!@class.SearchMethod(identifier, out var @method))
+                    throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not found");
+                if (!method.Static)
+                    throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not a static method");
+                if (method.Visibility == LuaXVisibility.Private && !currentClass.HasInParents(@class) && !currentClass.HasInOwners(@class))
+                    throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is a private method");
 
-            methodArguments = method.Arguments;
-            return new LuaXStaticCallExpression(method.ReturnType, subject.ReturnType.Class, identifier, new LuaXElementLocation(Name, callNode));
+                methodArguments = method.Arguments;
+                return new LuaXStaticCallExpression(method.ReturnType, subject.ReturnType.Class, identifier, new LuaXElementLocation(Name, callNode));
+            }
+            throw new LuaXAstGeneratorException(Name, callNode, $"Type {subject.ReturnType.Class} is not defined");
         }
 
         private LuaXCallExpression ProcessInstanceCall(LuaXExpression subject, LuaXClass currentClass, string identifier, IAstNode callNode, out LuaXVariableCollection methodArguments)
@@ -799,16 +802,19 @@ namespace Luax.Parser.Ast.Builder
             if (subject is LuaXVariableExpression ve && ve.VariableName == "super")
                 exactClass = subject.ReturnType.Class;
 
-            SearchClassByName(subject.ReturnType.Class, currentClass, out var @class);
-            if (!@class.SearchMethod(identifier, out var @method, true))
-                throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not found");
-            if (method.Static)
-                throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is a static method");
-            if (method.Visibility == LuaXVisibility.Private && !currentClass.HasInParents(@class) && !currentClass.HasInOwners(@class))
-                throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is a private method");
+            if (SearchClassByName(subject.ReturnType.Class, currentClass, out var @class))
+            {
+                if (!@class.SearchMethod(identifier, out var @method, true))
+                    throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is not found");
+                if (method.Static)
+                    throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is a static method");
+                if (method.Visibility == LuaXVisibility.Private && !currentClass.HasInParents(@class) && !currentClass.HasInOwners(@class))
+                    throw new LuaXAstGeneratorException(Name, callNode, $"Method {@class.Name}.{identifier} is a private method");
 
-            methodArguments = method.Arguments;
-            return new LuaXInstanceCallExpression(method.ReturnType, subject, identifier, exactClass, new LuaXElementLocation(Name, callNode));
+                methodArguments = method.Arguments;
+                return new LuaXInstanceCallExpression(method.ReturnType, subject, identifier, exactClass, new LuaXElementLocation(Name, callNode));
+            }
+            throw new LuaXAstGeneratorException(Name, callNode, $"Type {subject.ReturnType.Class} is not defined");
         }
 
         private void ProcessCallArgs(LuaXCallExpression callExpression, IReadOnlyList<IAstNode> args, LuaXVariableCollection methodArguments, IAstNode callNode, LuaXClass currentClass, LuaXMethod currentMethod)

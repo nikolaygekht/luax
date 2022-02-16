@@ -116,8 +116,8 @@ namespace Luax.Parser.Ast
         {
             ValidateParentChain(application);
             mMetadata = application.Classes;
-            MethodsPass2(creator);
             PropertiesPass2(creator);
+            MethodsPass2(creator);
         }
 
         private void MethodsPass2(LuaXAstTreeCreator creator)
