@@ -417,9 +417,22 @@ namespace Luax.Interpreter.Expression
                 throw new LuaXExecutionException(expression.Location, $"Class {expression.ClassName} is not found");
 
             LuaXVariableInstance variable = variables["this"];
-            if (variable?.Value is LuaXObjectInstance currentInstance &&
-                expression.ClassName.StartsWith($"{currentInstance.Class.LuaType.Name}."))
-                return @class.New(types, currentInstance);
+            if (variable?.Value is LuaXObjectInstance currentInstance)
+            {
+                bool isInnerClass = false;
+                LuaXClass currentClass = currentInstance.Class.LuaType;
+                while (currentClass.Name != null && currentClass.Name != "object")
+                {
+                    if (expression.ClassName.StartsWith($"{currentClass.Name}."))
+                    {
+                        isInnerClass = true;
+                        break;
+                    }
+                    currentClass = currentClass.ParentClass;
+                }
+                if (isInnerClass)
+                    return @class.New(types, currentInstance);
+            }
 
             return @class.New(types);
         }
