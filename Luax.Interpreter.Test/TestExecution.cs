@@ -455,6 +455,24 @@ namespace Luax.Interpreter.Test
             r.Should().Be(expectedValue);
         }
 
+        [Fact]
+        public void TestInnerClasses5()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("InnerClass5");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("program", out var program).Should().BeTrue();
+            program.SearchMethod("main", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.ReturnType.IsString().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { }, out var r);
+            r.Should().BeOfType<string>();
+            r.Should().Be("result");
+        }
+
         [Theory]
         [InlineData(0, 2, 1, 3)]
         [InlineData(1, 2, 1, 2)]
