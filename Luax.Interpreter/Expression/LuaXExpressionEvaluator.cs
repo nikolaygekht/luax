@@ -417,11 +417,63 @@ namespace Luax.Interpreter.Expression
                 throw new LuaXExecutionException(expression.Location, $"Class {expression.ClassName} is not found");
 
             LuaXVariableInstance variable = variables["this"];
-            if (variable?.Value is LuaXObjectInstance currentInstance &&
-                expression.ClassName.StartsWith($"{currentInstance.Class.LuaType.Name}."))
-                return @class.New(types, currentInstance);
+            if (variable?.Value is LuaXObjectInstance currentInstance)
+            {
+                int depth;
+                bool isInnerClass = CheckOnInnerClass(expression.ClassName, currentInstance, out depth);
+                if (isInnerClass)
+                {
+                    while (depth > 0 && currentInstance.OwnerObjectInstance != null)
+                        currentInstance = currentInstance.OwnerObjectInstance;
+
+                    return @class.New(types, currentInstance);
+                }
+            }
 
             return @class.New(types);
+        }
+
+        private static bool CheckOnInnerClass(string expressionClassName, LuaXObjectInstance currentInstance, out int depth)
+        {
+            bool isInnerClass = false;
+            depth = 0;
+            LuaXClass currentClass = currentInstance.Class.LuaType;
+            while (currentClass.Name != null && currentClass.Name != "object")
+            {
+                isInnerClass = CheckOnInnerClassInCurrentClass(expressionClassName, currentClass.Name, out depth);
+                if (isInnerClass)
+                    break;
+
+                currentClass = currentClass.ParentClass;
+            }
+            return isInnerClass;
+        }
+
+        private static bool CheckOnInnerClassInCurrentClass(string expressionClassName, string currentClassName, out int depth )
+        {
+            bool isInnerClass = false;
+            depth = 0;
+            string searchName = currentClassName;
+            while (searchName.Length > 0)
+            {
+                if (expressionClassName.StartsWith($"{searchName}."))
+                {
+                    isInnerClass = true;
+                    break;
+                }
+                if (searchName.Length > 0)
+                {
+                    int index = searchName.LastIndexOf(".");
+                    if (index > 0)
+                    {
+                        searchName = searchName.Substring(0, index);
+                        depth++;
+                    }
+                    else
+                        searchName = "";
+                }
+            }
+            return isInnerClass;
         }
 
         /// <summary>

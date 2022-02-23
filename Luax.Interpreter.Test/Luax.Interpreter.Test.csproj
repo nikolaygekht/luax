@@ -29,6 +29,7 @@
     <None Remove="TestSources\InnerClass2.luax" />
     <None Remove="TestSources\InnerClass3.luax" />
     <None Remove="TestSources\InnerClass4.luax" />
+    <None Remove="TestSources\InnerClass5.luax" />
     <None Remove="TestSources\LoggerTest.luax" />
     <None Remove="TestSources\LuaXStackTraceFramesTest.luax" />
     <None Remove="TestSources\Project1.ini" />
@@ -56,6 +57,7 @@
     <EmbeddedResource Include="TestSources\InnerClass2.luax" />
     <EmbeddedResource Include="TestSources\InnerClass3.luax" />
     <EmbeddedResource Include="TestSources\InnerClass4.luax" />
+    <EmbeddedResource Include="TestSources\InnerClass5.luax" />
     <EmbeddedResource Include="TestSources\LoggerTest.luax" />
     <EmbeddedResource Include="TestSources\LuaXStackTraceFramesTest.luax" />
     <EmbeddedResource Include="TestSources\RepeatBreakTest.luax" />

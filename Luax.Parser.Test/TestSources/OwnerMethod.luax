@@ -1,0 +1,15 @@
+﻿class test
+    public var prop1 : int;
+    public function test1(arg1 : int) : int
+        prop1 = 1;
+        return (new testInner()).test3();
+    end
+    public function test2() : int
+        return prop1;
+    end
+    class testInner
+       public function test3() : int
+          return this.test2();
+       end
+    end
+end
