@@ -898,6 +898,9 @@ class httpCommunicator
     @DocParameter("value", "Value of the header")
     public extern setRequestHeader(name: string, value: string) : void;
 
+    @DocBrief("Cancel request")
+    public extern cancel() : void;
+
     @DocBrief("Constructor")
     public extern httpCommunicator() : void;
 end
@@ -909,6 +912,9 @@ class httpPdasCommunicator
     @DocParameter("message", "Message to be sent")
     @DocParameter("callback", "Callback class instance")
     public extern sendMessage(url: string, message: string, callback: httpResponseCallback) : void;
+
+    @DocBrief("Cancel message")
+    public extern cancel() : void;
 
     @DocBrief("Creates a new httpPdasCommunicator")
     public static extern create(httpCommunicator : httpCommunicator) : httpPdasCommunicator;
