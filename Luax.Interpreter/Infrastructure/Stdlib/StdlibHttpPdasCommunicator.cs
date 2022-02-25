@@ -49,5 +49,19 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             LuaXMethodExecutor.Execute(@get, mTypeLibrary, httpCommunicator, new object[] { url, callback }, out var _);
             return null;
         }
+
+        //public static extern sendMessage(url: string, fxmsg: string, callback: httpResponseCallback)
+        [LuaXExternMethod("httpPdasCommunicator", "cancel")]
+        public static object CancelMessage(LuaXObjectInstance @this)
+        {
+            if (@this == null)
+                throw new ArgumentNullException(nameof(@this));
+            if (@this.Properties["__httpCommunicator"].Value is not LuaXObjectInstance httpCommunicator)
+                throw new ArgumentException("The httpPdasCommunicator isn't properly initialized", nameof(@this));
+
+            httpCommunicator.Class.SearchMethod("cancel", null, out LuaXMethod @get);
+            LuaXMethodExecutor.Execute(@get, mTypeLibrary, httpCommunicator, Array.Empty<object>(), out var _);
+            return null;
+        }
     }
 }

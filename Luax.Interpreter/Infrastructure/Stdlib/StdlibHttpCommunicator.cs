@@ -58,6 +58,18 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return null;
         }
 
+        //public extern get(url: string, callback: httpResponseCallback) : void;
+        [LuaXExternMethod("httpCommunicator", "cancel")]
+        public static object Cancel(LuaXObjectInstance @this)
+        {
+            if (@this == null)
+                throw new ArgumentNullException(nameof(@this));
+            if (@this.Properties["__httpClient"].Value is not List<string> l)
+                throw new ArgumentException("The httpCommunicator isn't properly initialized", nameof(@this));
+
+            return null;
+        }
+
         //public extern post(url: string, body: string, callback: httpResponseCallback) : void;
         [LuaXExternMethod("httpCommunicator", "post")]
         public static object Post(LuaXObjectInstance @this, string url, string body, LuaXObjectInstance callback)
