@@ -107,5 +107,11 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             return Math.Log(x);
         }
+        //public static extern log10(x : real) : real;
+        [LuaXExternMethod("stdlib", "log10")]
+        public static object Extern_log10(double x)
+        {
+            return Math.Log10(x);
+        }
     }
 }
