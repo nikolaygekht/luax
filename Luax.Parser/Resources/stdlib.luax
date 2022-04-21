@@ -126,8 +126,11 @@ class stdlib
     @DocBrief("Rounds the number to the specified number of digits")
     public static extern round(x : real, digits : int) : real;
 
-    @DocBrief("Returns the natural logarithm of ")
+    @DocBrief("Returns the natural logarithm of a specified number")
     public static extern log(x : real) : real;
+
+    @DocBrief("Returns the base 10 logarithm of a specified number")
+    public static extern log10(x : real) : real;
 
     -- ---------------------------------------------------------
     -- date/time function

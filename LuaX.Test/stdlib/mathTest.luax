@@ -33,6 +33,11 @@ class mathTest
     end
 
     @Fact()
+    public function log10() : void
+        assert.approximatelyEquals(stdlib.log10(0.0001), -4.0, EPS, "log10");
+    end
+
+    @Fact()
     public function ceil() : void
         assert.approximatelyEquals(stdlib.ceil(12.2), 13, EPS, "ceil1");
         assert.approximatelyEquals(stdlib.ceil(12.7), 13, EPS, "ceil2");
