@@ -99,7 +99,15 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("stdlib", "round")]
         public static object Extern_round(double x, int digits)
         {
-            return Math.Round(x, digits);
+            var dMult = 1.0;
+
+            for (var i = 0; i < digits; i++)
+            {
+                dMult *= 10.0;
+            }
+
+            var val = x * dMult;
+            return val < 0 ? Extern_ceil(val - 0.5) : Extern_floor(val + 0.5);
         }
         //public static extern log(x : real) : real;
         [LuaXExternMethod("stdlib", "log")]
