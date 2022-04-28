@@ -58,9 +58,9 @@ class mathTest
         assert.approximatelyEquals(stdlib.round(-12.7, 0), -13, EPS, "round3");
         assert.approximatelyEquals(stdlib.round(-12.2, 0), -12, EPS, "round4");
 
-        assert.approximatelyEquals(stdlib.round(1.22, 1), 1.2, EPS, "round5");
-        assert.approximatelyEquals(stdlib.round(1.27, 1), 1.3, EPS, "round6");
-        assert.approximatelyEquals(stdlib.round(-1.27, 1), -1.3, EPS, "round7");
-        assert.approximatelyEquals(stdlib.round(-1.22, 1), -1.2, EPS, "round8");
+        assert.approximatelyEquals(stdlib.round(1.22, 1), 12, EPS, "round5");
+        assert.approximatelyEquals(stdlib.round(1.27, 1), 13, EPS, "round6");
+        assert.approximatelyEquals(stdlib.round(-1.27, 1), -13, EPS, "round7");
+        assert.approximatelyEquals(stdlib.round(-1.22, 1), -12, EPS, "round8");
     end
 end
