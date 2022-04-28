@@ -58,9 +58,22 @@ class mathTest
         assert.approximatelyEquals(stdlib.round(-12.7, 0), -13, EPS, "round3");
         assert.approximatelyEquals(stdlib.round(-12.2, 0), -12, EPS, "round4");
 
-        assert.approximatelyEquals(stdlib.round(1.22, 1), 12, EPS, "round5");
-        assert.approximatelyEquals(stdlib.round(1.27, 1), 13, EPS, "round6");
-        assert.approximatelyEquals(stdlib.round(-1.27, 1), -13, EPS, "round7");
-        assert.approximatelyEquals(stdlib.round(-1.22, 1), -12, EPS, "round8");
+        assert.approximatelyEquals(stdlib.round(1.22, 1), 1.2, EPS, "round5");
+        assert.approximatelyEquals(stdlib.round(1.27, 1), 1.3, EPS, "round6");
+        assert.approximatelyEquals(stdlib.round(-1.27, 1), -1.3, EPS, "round7");
+        assert.approximatelyEquals(stdlib.round(-1.22, 1), -1.2, EPS, "round8");
+    end
+    
+    @Fact()
+    public function roundInl() : void
+        assert.approximatelyEquals(stdlib.roundInl(12.2, 0), 12, EPS, "roundInl1");
+        assert.approximatelyEquals(stdlib.roundInl(12.7, 0), 13, EPS, "roundInl2");
+        assert.approximatelyEquals(stdlib.roundInl(-12.7, 0), -13, EPS, "roundInl3");
+        assert.approximatelyEquals(stdlib.roundInl(-12.2, 0), -12, EPS, "roundInl4");
+
+        assert.approximatelyEquals(stdlib.roundInl(1.22, 1), 1.2, EPS, "roundInl5");
+        assert.approximatelyEquals(stdlib.roundInl(1.27, 1), 1.3, EPS, "roundInl6");
+        assert.approximatelyEquals(stdlib.roundInl(-1.27, 1), -1.3, EPS, "roundInl7");
+        assert.approximatelyEquals(stdlib.roundInl(-1.22, 1), -1.2, EPS, "roundInl8");
     end
 end

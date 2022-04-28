@@ -125,6 +125,9 @@ class stdlib
 
     @DocBrief("Rounds the number to the specified number of digits")
     public static extern round(x : real, digits : int) : real;
+    
+    @DocBrief("Rounds the number to the specified number of digits")
+    public static extern roundInl(x : real, digits : int) : real;
 
     @DocBrief("Returns the natural logarithm of a specified number")
     public static extern log(x : real) : real;

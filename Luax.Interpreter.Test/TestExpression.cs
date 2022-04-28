@@ -351,10 +351,6 @@ namespace Luax.Interpreter.Test
         [InlineData("int", "bitwise._not(1)", -2, typeof(int))]
         [InlineData("int", "bitwise._shl(0x07ff_ffff, 4)", 0x7fff_fff0, typeof(int))]
         [InlineData("int", "bitwise._shr(0xffff_ffff, 4)", 0x0fff_ffff, typeof(int))]
-        //Math functions
-        [InlineData("real", "stdlib.round(1.1, 1)", 11.0, typeof(double))]
-        [InlineData("real", "stdlib.round(0.12, 1)", 1.0, typeof(double))]
-        [InlineData("real", "stdlib.round(0.752, 3)", 752.0, typeof(double))]
         public void TestStdlib(string @return, string expr, object expectedValue, Type expectedType)
         {
             expectedValue = TestValue.Translate(expectedType, expectedValue);
