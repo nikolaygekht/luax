@@ -798,6 +798,12 @@ class assert
    @DocParameter("message", "The message to add to a standard message of the assertion")
    public static extern doesNotThrow(action : action, message : string) : void;
 
+   @DocBrief("Asserts that XML values are equal")
+   @DocParameter("v1", "The first value")
+   @DocParameter("v2", "The second value")
+   @DocParameter("message", "The message to add to a standard message of the assertion")
+   public static extern equalsXML(v1 : variant, v2 : variant, message : string) : void;
+
    @DocBrief("Asserts that values are equal")
    @DocParameter("v1", "The first value")
    @DocParameter("v2", "The second value")
