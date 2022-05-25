@@ -7,6 +7,7 @@ using System.Text;
 using Luax.Interpreter.Expression;
 using Luax.Parser.Ast;
 using Luax.Parser.Ast.LuaExpression;
+using Org.XmlUnit.Builder;
 
 #pragma warning disable S125                // Sections of code should not be commented out
 #pragma warning disable IDE1006             // Naming rule violation.
@@ -208,6 +209,36 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 if (!string.IsNullOrEmpty(message))
                     message = " because " + message;
                 throw new LuaXAssertionException("Expected values to be equal but they aren't" + (message ?? ""));
+            }
+            return null;
+        }
+
+        //public static extern equalsXML(v1 : variant, v2 : variant, message : string) : void;
+        [LuaXExternMethod("assert", "equalsXML")]
+        public static object equalsXML(LuaXObjectInstance v1, LuaXObjectInstance v2, string message)
+        {
+            object p1, p2;
+            p1 = (v1?.Properties["__data"].Value);
+            p2 = (v2?.Properties["__data"].Value);
+
+            if (!(p1 is string))
+            {
+                throw new LuaXAssertionException("Arg 1 is not a string" + (message ?? ""));
+            }
+            if (!(p2 is string))
+            {
+                throw new LuaXAssertionException("Arg 2 is not a string" + (message ?? ""));
+            }
+
+            var diff = DiffBuilder.Compare(Input.FromString(p1 as string))
+             .WithTest(p2 as string).Build();
+
+            if (diff.HasDifferences())
+            {
+                var result = "\n" + string.Join('\n', diff.Differences.Select(d=>d.ToString()));
+                if (!string.IsNullOrEmpty(message))
+                    message = " because " + message;
+                throw new LuaXAssertionException("Expected values to be equal but they aren't" + (message ?? "") + result);
             }
             return null;
         }

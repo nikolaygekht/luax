@@ -382,6 +382,69 @@ class assertionTest
         assert.isTrue(thrown, "");
     end
 
+    @Fact()
+    public function equalsXML_Success() : void
+        var thrown : boolean, ex : exception;
+        var first: string;
+        first =  "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fxmsg v=\"pdas\"><m t=\"U54\" s=\"6\" q=\"0\"><f n=\"112\">trading-session-1</f><f n=\"336\">FXCM</f><f n=\"35\">U54</f><f n=\"625\">U1R2</f><f n=\"9028\">37</f><f n=\"SID\">trading-session</f></m></fxmsg>";
+        try
+            assert.equalsXML(first, first, "");
+        catch ex
+            thrown = true;
+        end
+        assert.isFalse(thrown, "");
+    end
+
+    @Fact()
+    public function equalsXML_Fail() : void
+        var thrown : boolean, ex : exception;
+        var first: string;
+        var second: string;
+        var third: string;
+
+        first =  "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fxmsg v=\"pdas\"><m t=\"U54\" s=\"6\" q=\"0\"><f n=\"112\">trading-session-1</f><f n=\"336\">FXCM</f><f n=\"35\">U54</f><f n=\"625\">U1R2</f><f n=\"9028\">37</f><f n=\"SID\">trading-session</f></m></fxmsg>";
+        second = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fxmsg v=\"pdas\"><m t=\"U54\" s=\"6\" q=\"0\"><f n=\"336\">FXCM</f><f n=\"112\">trading-session-1</f><f n=\"SID\">trading-session</f><f n=\"35\">U54</f><f n=\"625\">U1R2</f><f n=\"9028\">37</f></m></fxmsg>";
+        third = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><fxmsg v=\"pdas\"><m t=\"U54\" s=\"6\" q=\"0\"><f n=\"336\">FXCM</f><f n=\"112\">trading-session-1</f><f n=\"SID\">trading-session</f><f n=\"40\">U54</f><f n=\"625\">U1R2</f><f n=\"9028\">37</f></m></fxmsg>";
+        
+        try
+            assert.equalsXML(first, nil, "1");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+        thrown = false;
+        
+        try
+            assert.equalsXML(nil, second, "2");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+        thrown = false;
+        
+        try
+            assert.equalsXML(thrown, second, "3");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+        thrown = false;
+
+        try
+            assert.equalsXML(first, second, "4");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+        thrown = false;
+
+        try
+            assert.equalsXML(first, third, "5");
+        catch ex
+            thrown = true;
+        end
+        assert.isTrue(thrown, "");
+    end
 
     @Fact()
     public function doesNotEqualInt_Success() : void
