@@ -15,7 +15,7 @@
         /// </summary>
         public LuaXExpression SizeExpression { get; }
 
-        internal LuaXNewArrayExpression(LuaXTypeDefinition elementType, LuaXExpression size, LuaXElementLocation location)
+        public LuaXNewArrayExpression(LuaXTypeDefinition elementType, LuaXExpression size, LuaXElementLocation location)
             : base(elementType.ArrayOf(), location)
         {
             ElementType = elementType;

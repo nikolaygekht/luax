@@ -7,7 +7,7 @@
     {
         public LuaXExpression Argument { get; }
 
-        internal LuaXCastOperatorExpression(LuaXExpression argument, LuaXTypeDefinition type, LuaXElementLocation location)
+        public LuaXCastOperatorExpression(LuaXExpression argument, LuaXTypeDefinition type, LuaXElementLocation location)
             : base(type, location)
         {
             Argument = argument;

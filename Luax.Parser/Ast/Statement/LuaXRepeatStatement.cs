@@ -17,7 +17,7 @@ namespace Luax.Parser.Ast.Statement
         /// </summary>
         public LuaXStatementCollection Statements { get; } = new LuaXStatementCollection();
 
-        internal LuaXRepeatStatement(LuaXElementLocation location, LuaXExpression untilCondition) : base(location)
+        public LuaXRepeatStatement(LuaXElementLocation location, LuaXExpression untilCondition) : base(location)
         {
             UntilCondition = untilCondition;
         }

@@ -7,13 +7,13 @@
     {
         public LuaXConstant Value { get; }
 
-        internal LuaXConstantExpression(LuaXConstant value, LuaXElementLocation location)
+        public LuaXConstantExpression(LuaXConstant value, LuaXElementLocation location)
             : base(new LuaXTypeDefinition() { TypeId = value.ConstantType }, location)
         {
             Value = value;
         }
 
-        internal LuaXConstantExpression(LuaXConstant value)
+        public LuaXConstantExpression(LuaXConstant value)
             : this(value, value.Location)
         {
         }

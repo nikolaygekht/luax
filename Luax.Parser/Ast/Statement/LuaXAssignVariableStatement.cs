@@ -12,7 +12,7 @@ namespace Luax.Parser.Ast.Statement
         /// </summary>
         public string VariableName { get; }
 
-        internal LuaXAssignVariableStatement(string variableName, LuaXExpression expression, LuaXElementLocation location)
+        public LuaXAssignVariableStatement(string variableName, LuaXExpression expression, LuaXElementLocation location)
             : base(expression, location)
         {
             VariableName = variableName;

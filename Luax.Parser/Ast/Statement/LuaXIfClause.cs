@@ -21,7 +21,7 @@ namespace Luax.Parser.Ast.Statement
         /// </summary>
         public LuaXStatementCollection Statements { get; } = new LuaXStatementCollection();
 
-        internal LuaXIfClause(LuaXExpression condition, LuaXElementLocation location)
+        public LuaXIfClause(LuaXExpression condition, LuaXElementLocation location)
         {
             Condition = condition;
             Location = location;

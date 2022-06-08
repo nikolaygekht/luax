@@ -8,7 +8,7 @@
         public LuaXExpression Object { get; }
         public string PropertyName { get; }
 
-        internal LuaXInstancePropertyExpression(LuaXExpression @object, string propertyName, LuaXTypeDefinition type, LuaXElementLocation location)
+        public LuaXInstancePropertyExpression(LuaXExpression @object, string propertyName, LuaXTypeDefinition type, LuaXElementLocation location)
             : base(type, location)
         {
             Object = @object;

@@ -15,7 +15,7 @@ namespace Luax.Parser.Ast
         /// <summary>
         /// The property visibility
         /// </summary>
-        public LuaXVisibility Visibility { get; internal init; }
+        public LuaXVisibility Visibility { get; init; }
 
         /// <summary>
         /// Attributes

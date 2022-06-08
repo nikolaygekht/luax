@@ -19,7 +19,7 @@
 
         public bool IsLogical => Operator == LuaXBinaryOperator.And || Operator == LuaXBinaryOperator.Or;
 
-        internal LuaXBinaryOperatorExpression(LuaXBinaryOperator @operator, LuaXExpression left, LuaXExpression right, LuaXTypeDefinition type, LuaXElementLocation location)
+        public LuaXBinaryOperatorExpression(LuaXBinaryOperator @operator, LuaXExpression left, LuaXExpression right, LuaXTypeDefinition type, LuaXElementLocation location)
             : base(type, location)
         {
             Operator = @operator;

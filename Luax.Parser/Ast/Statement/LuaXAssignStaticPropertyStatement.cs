@@ -17,7 +17,7 @@ namespace Luax.Parser.Ast.Statement
         /// </summary>
         public string PropertyName { get; }
 
-        internal LuaXAssignStaticPropertyStatement(string className, string propertyName, LuaXExpression expression, LuaXElementLocation location)
+        public LuaXAssignStaticPropertyStatement(string className, string propertyName, LuaXExpression expression, LuaXElementLocation location)
             : base(expression, location)
         {
             ClassName = className;

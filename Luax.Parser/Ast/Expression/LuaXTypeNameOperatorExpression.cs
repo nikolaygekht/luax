@@ -4,7 +4,7 @@
     {
         public LuaXExpression Argument { get; }
 
-        internal LuaXTypeNameOperatorExpression(LuaXExpression argument, LuaXElementLocation location)
+        public LuaXTypeNameOperatorExpression(LuaXExpression argument, LuaXElementLocation location)
             : base(LuaXTypeDefinition.String, location)
         {
             Argument = argument;

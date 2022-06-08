@@ -4,7 +4,7 @@
     /// The factory for LuaXVariable
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    internal class LuaXVariableFactory<T>
+    public class LuaXVariableFactory<T>
         where T : LuaXVariable, new()
     {
         public virtual T Create(string name, LuaXTypeDefinition type, LuaXElementLocation location)

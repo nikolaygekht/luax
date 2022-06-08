@@ -5,7 +5,7 @@
     /// </summary>
     public class LuaXContinueStatement : LuaXStatement
     {
-        internal LuaXContinueStatement(LuaXElementLocation location) : base(location)
+        public LuaXContinueStatement(LuaXElementLocation location) : base(location)
         {
         }
     }

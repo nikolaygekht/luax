@@ -19,7 +19,7 @@ namespace Luax.Parser.Ast
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        internal void Add(T item) => mList.Add(item);
+        public void Add(T item) => mList.Add(item);
 
         internal void AddRange(IEnumerable<T> items) => mList.AddRange(items);
     }

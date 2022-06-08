@@ -17,7 +17,7 @@
         /// </summary>
         public string ExactClass { get; }
 
-        internal LuaXInstanceCallExpression(LuaXTypeDefinition returnType, LuaXExpression @object, string methodName, string exactClass, LuaXElementLocation location)
+        public LuaXInstanceCallExpression(LuaXTypeDefinition returnType, LuaXExpression @object, string methodName, string exactClass, LuaXElementLocation location)
             : base(methodName, returnType, location)
         {
             Object = @object;

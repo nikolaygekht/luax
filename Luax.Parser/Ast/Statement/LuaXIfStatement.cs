@@ -15,7 +15,7 @@
         /// </summary>
         public LuaXStatementCollection ElseClause { get; } = new LuaXStatementCollection();
 
-        internal LuaXIfStatement(LuaXElementLocation location) : base(location)
+        public LuaXIfStatement(LuaXElementLocation location) : base(location)
         {
         }
     }

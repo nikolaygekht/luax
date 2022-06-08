@@ -3,7 +3,7 @@
     /// <summary>
     /// The factory for LuaXProperty
     /// </summary>
-    internal class LuaXPropertyFactory : LuaXVariableFactory<LuaXProperty>
+    public class LuaXPropertyFactory : LuaXVariableFactory<LuaXProperty>
     {
         private readonly bool mStatic;
         private readonly LuaXVisibility mVisibility;

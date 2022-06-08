@@ -8,7 +8,7 @@
         public LuaXExpression ArrayExpression { get; }
         public LuaXExpression IndexExpression { get; }
 
-        internal LuaXArrayAccessExpression(LuaXExpression arrayExpression, LuaXExpression indexExpression, LuaXTypeDefinition type, LuaXElementLocation location)
+        public LuaXArrayAccessExpression(LuaXExpression arrayExpression, LuaXExpression indexExpression, LuaXTypeDefinition type, LuaXElementLocation location)
             : base(type, location)
         {
             ArrayExpression = arrayExpression;
