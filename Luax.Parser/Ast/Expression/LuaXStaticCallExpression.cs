@@ -10,7 +10,7 @@
         /// </summary>
         public string ClassName { get; }
 
-        internal LuaXStaticCallExpression(LuaXTypeDefinition returnType, string className, string methodName, LuaXElementLocation location)
+        public LuaXStaticCallExpression(LuaXTypeDefinition returnType, string className, string methodName, LuaXElementLocation location)
             : base(methodName, returnType, location)
         {
             ClassName = className;

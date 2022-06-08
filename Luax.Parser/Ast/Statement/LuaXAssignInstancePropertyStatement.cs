@@ -17,7 +17,7 @@ namespace Luax.Parser.Ast.Statement
         /// </summary>
         public string PropertyName { get; }
 
-        internal LuaXAssignInstancePropertyStatement(LuaXExpression @object, string propertyName, LuaXExpression expression, LuaXElementLocation location)
+        public LuaXAssignInstancePropertyStatement(LuaXExpression @object, string propertyName, LuaXExpression expression, LuaXElementLocation location)
             : base(expression, location)
         {
             Object = @object;

@@ -26,12 +26,12 @@ namespace Luax.Parser.Ast
         /// <summary>
         /// The reference to the parent class
         /// </summary>
-        public LuaXClass ParentClass { get; internal set; }
+        public LuaXClass ParentClass { get; set; }
 
         /// <summary>
         /// The reference to a constructor
         /// </summary>
-        public LuaXMethod Constructor { get; internal set; }
+        public LuaXMethod Constructor { get; set; }
 
         public LuaXTypeDefinition TypeOf() => new LuaXTypeDefinition() { TypeId = LuaXType.Object, Class = Name };
 
@@ -62,11 +62,11 @@ namespace Luax.Parser.Ast
 
         private LuaXClassCollection mMetadata;
 
-        internal LuaXClass(string name) : this(name, "object", new LuaXElementLocation("code", new AstNodeWrapper()))
+        public LuaXClass(string name) : this(name, "object", new LuaXElementLocation("code", new AstNodeWrapper()))
         {
         }
 
-        internal LuaXClass(string name, string parent, LuaXElementLocation location)
+        public LuaXClass(string name, string parent, LuaXElementLocation location)
         {
             Name = name;
             Parent = parent;

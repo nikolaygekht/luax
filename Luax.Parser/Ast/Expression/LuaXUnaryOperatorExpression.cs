@@ -8,7 +8,7 @@
         public LuaXUnaryOperator Operator { get; }
         public LuaXExpression Argument { get; }
 
-        internal LuaXUnaryOperatorExpression(LuaXUnaryOperator @operator, LuaXExpression argument, LuaXTypeDefinition type, LuaXElementLocation location)
+        public LuaXUnaryOperatorExpression(LuaXUnaryOperator @operator, LuaXExpression argument, LuaXTypeDefinition type, LuaXElementLocation location)
             : base(type, location)
         {
             Operator = @operator;

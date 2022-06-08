@@ -20,7 +20,7 @@
         /// </summary>
         public LuaXConstantCollection Parameters { get; } = new LuaXConstantCollection();
 
-        internal LuaXAttribute(string name, LuaXElementLocation location)
+        public LuaXAttribute(string name, LuaXElementLocation location)
         {
             Name = name;
             Location = location;

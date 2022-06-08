@@ -10,11 +10,11 @@
         /// <summary>
         /// Constant name
         /// </summary>
-        public string Name { get; internal set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Initial value of the variable
         /// </summary>
-        public LuaXConstant Value { get; internal set; }
+        public LuaXConstant Value { get; set; }
     }
 }

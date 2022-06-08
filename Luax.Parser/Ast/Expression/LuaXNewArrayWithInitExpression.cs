@@ -17,7 +17,7 @@ namespace Luax.Parser.Ast.LuaExpression
         /// </summary>
         public LuaXExpressionCollection InitExpressions { get; }
 
-        internal LuaXNewArrayWithInitExpression(LuaXTypeDefinition elementType, LuaXExpressionCollection initExpressions, LuaXElementLocation location)
+        public LuaXNewArrayWithInitExpression(LuaXTypeDefinition elementType, LuaXExpressionCollection initExpressions, LuaXElementLocation location)
             : base(elementType.ArrayOf(), location)
         {
             ElementType = elementType;

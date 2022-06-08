@@ -17,7 +17,7 @@ namespace Luax.Parser.Ast.Statement
         /// </summary>
         public LuaXStatementCollection Statements { get; } = new LuaXStatementCollection();
 
-        internal LuaXForStatement(LuaXElementLocation location, LuaXForLoopDescription description) : base(location)
+        public LuaXForStatement(LuaXElementLocation location, LuaXForLoopDescription description) : base(location)
         {
             ForLoopDescription = description;
         }

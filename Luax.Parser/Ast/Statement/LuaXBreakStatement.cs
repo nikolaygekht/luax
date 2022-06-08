@@ -5,7 +5,7 @@
     /// </summary>
     public class LuaXBreakStatement : LuaXStatement
     {
-        internal LuaXBreakStatement(LuaXElementLocation location) : base(location)
+        public LuaXBreakStatement(LuaXElementLocation location) : base(location)
         {
         }
     }

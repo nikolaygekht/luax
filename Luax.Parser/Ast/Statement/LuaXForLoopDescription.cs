@@ -16,7 +16,7 @@ namespace Luax.Parser.Ast.Statement
 
         public LuaXVariable Variable { get; }
 
-        internal LuaXForLoopDescription(LuaXVariable identierVar, LuaXExpression start,
+        public LuaXForLoopDescription(LuaXVariable identierVar, LuaXExpression start,
             LuaXExpression limit, LuaXExpression step)
         {
             Variable = identierVar;

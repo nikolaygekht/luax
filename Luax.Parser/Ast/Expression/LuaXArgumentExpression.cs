@@ -7,7 +7,7 @@
     {
         public string ArgumentName { get; }
 
-        internal LuaXArgumentExpression(string name, LuaXTypeDefinition type, LuaXElementLocation location)
+        public LuaXArgumentExpression(string name, LuaXTypeDefinition type, LuaXElementLocation location)
             : base(type, location)
         {
             ArgumentName = name;

@@ -7,7 +7,7 @@
     {
         public LuaXExpression ArrayExpression { get; }
 
-        internal LuaXArrayLengthExpression(LuaXExpression arrayExpression, LuaXTypeDefinition type, LuaXElementLocation location)
+        public LuaXArrayLengthExpression(LuaXExpression arrayExpression, LuaXTypeDefinition type, LuaXElementLocation location)
             : base(type, location)
         {
             ArrayExpression = arrayExpression;

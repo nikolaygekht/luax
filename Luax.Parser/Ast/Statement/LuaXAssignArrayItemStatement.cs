@@ -17,7 +17,7 @@ namespace Luax.Parser.Ast.Statement
         /// </summary>
         public LuaXExpression Index { get; }
 
-        internal LuaXAssignArrayItemStatement(LuaXExpression array, LuaXExpression index, LuaXExpression expression, LuaXElementLocation location)
+        public LuaXAssignArrayItemStatement(LuaXExpression array, LuaXExpression index, LuaXExpression expression, LuaXElementLocation location)
             : base(expression, location)
         {
             Array = array;

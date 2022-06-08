@@ -11,7 +11,7 @@ namespace Luax.Parser.Ast.Statement
 
         public LuaXExpression Expression { get; }
 
-        internal LuaXReturnStatement(LuaXExpression expression, LuaXElementLocation location)
+        public LuaXReturnStatement(LuaXExpression expression, LuaXElementLocation location)
             : base(location)
         {
             Expression = expression;

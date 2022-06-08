@@ -24,12 +24,12 @@ namespace Luax.Parser.Ast
         /// <summary>
         /// The name of the method
         /// </summary>
-        public string Name { get; internal init; }
+        public string Name { get; init; }
 
         /// <summary>
         /// The return type of the method
         /// </summary>
-        public LuaXTypeDefinition ReturnType { get; internal set; }
+        public LuaXTypeDefinition ReturnType { get; set; }
 
         /// <summary>
         /// The attributes associated with the method
@@ -54,12 +54,12 @@ namespace Luax.Parser.Ast
         /// <summary>
         /// The flag indicating whether the method is a static method
         /// </summary>
-        public bool Static { get; internal init; }
+        public bool Static { get; init; }
 
         /// <summary>
         /// The method visibility
         /// </summary>
-        public LuaXVisibility Visibility { get; internal init; }
+        public LuaXVisibility Visibility { get; init; }
 
         /// <summary>
         /// The method is constructor
@@ -76,7 +76,7 @@ namespace Luax.Parser.Ast
         ///
         /// Extern methods are implemented in target platform natively.
         /// </summary>
-        public bool Extern { get; internal init; }
+        public bool Extern { get; init; }
 
         internal IAstNode Body { get; init; }
 

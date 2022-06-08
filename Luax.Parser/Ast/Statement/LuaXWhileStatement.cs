@@ -17,7 +17,7 @@ namespace Luax.Parser.Ast.Statement
         /// </summary>
         public LuaXStatementCollection Statements { get; } = new LuaXStatementCollection();
 
-        internal LuaXWhileStatement(LuaXElementLocation location, LuaXExpression whileCondition) : base(location)
+        public LuaXWhileStatement(LuaXElementLocation location, LuaXExpression whileCondition) : base(location)
         {
             WhileCondition = whileCondition;
         }

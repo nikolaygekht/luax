@@ -10,7 +10,7 @@
         /// </summary>
         public string ClassName { get; }
 
-        internal LuaXNewObjectExpression(string @class, LuaXElementLocation location)
+        public LuaXNewObjectExpression(string @class, LuaXElementLocation location)
             : base(new LuaXTypeDefinition() { TypeId = LuaXType.Object, Class = @class }, location)
         {
             ClassName = @class;

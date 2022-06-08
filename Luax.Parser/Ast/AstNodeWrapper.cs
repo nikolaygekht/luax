@@ -5,7 +5,7 @@ namespace Luax.Parser.Ast
     /// <summary>
     /// Wrapper for Hime AST Node
     /// </summary>
-    internal class AstNodeWrapper : IAstNode
+    public class AstNodeWrapper : IAstNode
     {
         public string Symbol { get; internal set; }
 
@@ -17,7 +17,7 @@ namespace Luax.Parser.Ast
 
         public AstNodeCollection Children { get; } = new AstNodeCollection();
 
-        internal AstNodeWrapper()
+        public AstNodeWrapper()
         {
         }
 

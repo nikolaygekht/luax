@@ -13,14 +13,14 @@ namespace Luax.Parser.Ast
         /// <summary>
         /// The data type of the constant
         /// </summary>
-        public LuaXType ConstantType { get; internal init; }
+        public LuaXType ConstantType { get; init; }
 
         public LuaXTypeDefinition ConstantTypeFull => new LuaXTypeDefinition() { TypeId = ConstantType };
 
         /// <summary>
         /// The constant value.
         /// </summary>
-        public object Value { get; internal init; }
+        public object Value { get; init; }
 
         /// <summary>
         /// Checks whether the constant is a `nil` value.
@@ -32,30 +32,30 @@ namespace Luax.Parser.Ast
         /// </summary>
         public LuaXElementLocation Location { get; }
 
-        internal LuaXConstant(LuaXType type, object value, LuaXElementLocation location)
+        public LuaXConstant(LuaXType type, object value, LuaXElementLocation location)
         {
             ConstantType = type;
             Value = value;
             Location = location;
         }
 
-        internal LuaXConstant(int value, LuaXElementLocation location) : this(LuaXType.Integer, value, location)
+        public LuaXConstant(int value, LuaXElementLocation location) : this(LuaXType.Integer, value, location)
         {
         }
 
-        internal LuaXConstant(double value, LuaXElementLocation location) : this(LuaXType.Real, value, location)
+        public LuaXConstant(double value, LuaXElementLocation location) : this(LuaXType.Real, value, location)
         {
         }
 
-        internal LuaXConstant(string value, LuaXElementLocation location) : this(LuaXType.String, value, location)
+        public LuaXConstant(string value, LuaXElementLocation location) : this(LuaXType.String, value, location)
         {
         }
 
-        internal LuaXConstant(bool value, LuaXElementLocation location) : this(LuaXType.Boolean, value, location)
+        public LuaXConstant(bool value, LuaXElementLocation location) : this(LuaXType.Boolean, value, location)
         {
         }
 
-        internal LuaXConstant(DateTime value, LuaXElementLocation location) : this(LuaXType.Datetime, value, location)
+        public LuaXConstant(DateTime value, LuaXElementLocation location) : this(LuaXType.Datetime, value, location)
         {
         }
 
