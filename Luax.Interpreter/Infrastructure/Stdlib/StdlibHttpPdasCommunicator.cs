@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Luax.Interpreter.Expression;
 using Luax.Parser.Ast;
 
+#pragma warning disable S125  // remove commented code: false positive, it is not the code, it is luax prototype
+
 namespace Luax.Interpreter.Infrastructure.Stdlib
 {
     internal static class StdlibHttpPdasCommunicator
@@ -21,7 +23,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("httpPdasCommunicator", "create")]
         public static object Create(LuaXObjectInstance httpCommunicator)
         {
-            if (httpCommunicator.Properties["__httpClient"].Value is not List<string> l)
+            if (httpCommunicator.Properties["__httpClient"].Value is not List<string> _)
                 throw new ArgumentException("The httpCommunicator isn't properly initialized", nameof(httpCommunicator));
             var @this = mHttpPdasCommunicatorClass.New(mTypeLibrary);
             @this.Properties["__httpCommunicator"].Value = httpCommunicator;

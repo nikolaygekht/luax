@@ -304,7 +304,7 @@ namespace Luax.Parser.Ast.Builder
                 }
                 else
                 {
-                    ownerName = ownerName.Substring(0, index);
+                    ownerName = ownerName[..index];
                     name = $"{ownerName}.{className}";
                 }
             }

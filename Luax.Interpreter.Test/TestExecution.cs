@@ -468,7 +468,7 @@ namespace Luax.Interpreter.Test
             method.Static.Should().BeTrue();
             method.ReturnType.IsString().Should().BeTrue();
 
-            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { }, out var r);
+            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
             r.Should().BeOfType<string>();
             r.Should().Be("result");
         }

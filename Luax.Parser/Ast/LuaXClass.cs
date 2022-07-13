@@ -268,7 +268,7 @@ namespace Luax.Parser.Ast
             int indexOfPoint = sourceClassName.LastIndexOf('.');
             if (indexOfPoint > 0)
             {
-                resultClassName = sourceClassName.Substring(0, indexOfPoint);
+                resultClassName = sourceClassName[..indexOfPoint];
                 if (mMetadata.Search(sourceClassName, out @class))
                     return true;
             }

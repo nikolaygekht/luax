@@ -12,8 +12,6 @@ using Luax.Parser.Ast;
 using Luax.Parser.Test.Utils;
 using Xunit;
 
-#pragma warning disable IDE0038 // Use pattern matching
-
 namespace Luax.Interpreter.Test
 {
     public class TestClassList

@@ -221,11 +221,11 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             p1 = (v1?.Properties["__data"].Value);
             p2 = (v2?.Properties["__data"].Value);
 
-            if (!(p1 is string))
+            if (p1 is not string)
             {
                 throw new LuaXAssertionException("Arg 1 is not a string" + (message ?? ""));
             }
-            if (!(p2 is string))
+            if (p2 is not string)
             {
                 throw new LuaXAssertionException("Arg 2 is not a string" + (message ?? ""));
             }

@@ -419,8 +419,7 @@ namespace Luax.Interpreter.Expression
             LuaXVariableInstance variable = variables["this"];
             if (variable?.Value is LuaXObjectInstance currentInstance)
             {
-                int depth;
-                bool isInnerClass = CheckOnInnerClass(expression.ClassName, currentInstance, out depth);
+                bool isInnerClass = CheckOnInnerClass(expression.ClassName, currentInstance, out int depth);
                 if (isInnerClass)
                 {
                     while (depth > 0 && currentInstance.OwnerObjectInstance != null)
@@ -466,7 +465,7 @@ namespace Luax.Interpreter.Expression
                     int index = searchName.LastIndexOf(".");
                     if (index > 0)
                     {
-                        searchName = searchName.Substring(0, index);
+                        searchName = searchName[..index];
                         depth++;
                     }
                     else
