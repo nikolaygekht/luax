@@ -36,7 +36,7 @@ jobs:
 
       # run luax test suite
     - name: Test
-      run: dotnet ../LuaX/bin/Release/net5.0/LuaX.dll project.ini
+      run: dotnet ../LuaX/bin/Release/net6.0/LuaX.dll project.ini
       working-directory: LuaX.Test
 
 
