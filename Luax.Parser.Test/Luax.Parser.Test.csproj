@@ -41,6 +41,7 @@
     <None Remove="TestSources\ParseClassMethods.luax" />
     <None Remove="TestSources\ParseClassProperties.luax" />
     <None Remove="TestSources\ParseConstant.luax" />
+    <None Remove="TestSources\SameNameMethodAndProperty.luax" />
     <None Remove="TestSources\TryCatch2.luax" />
     <None Remove="TestSources\TryCatch3.luax" />
     <None Remove="TestSources\UndefinedPropertyType.luax" />
@@ -79,6 +80,7 @@
     <EmbeddedResource Include="TestSources\ForLoopPartsWithDifferentType.luax" />
     <EmbeddedResource Include="TestSources\ForReverseBreakContinue.luax" />
     <EmbeddedResource Include="TestSources\ForWithoutIteratorExp.luax" />
+    <EmbeddedResource Include="TestSources\SameNameMethodAndProperty.luax" />
     <EmbeddedResource Include="TestSources\Throw1.luax" />
     <EmbeddedResource Include="TestSources\TryCatch1.luax" />
     <EmbeddedResource Include="TestSources\If1.luax" />

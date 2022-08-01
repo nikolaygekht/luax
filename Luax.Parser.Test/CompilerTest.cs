@@ -1125,5 +1125,16 @@ namespace Luax.Parser.Test
             act.Should().Throw<LuaXAstGeneratorException>()
                 .Where(e => e.Message.Contains("Class test.testInner does not contain property prop1"));
         }
+
+        [Fact]
+        public void SameNameMethodAndProperty()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("SameNameMethodAndProperty");
+
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("The class already have property/method with same name"));
+        }
     }
 }

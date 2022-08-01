@@ -59,21 +59,21 @@ namespace Luax.Interpreter.Test
             b.Should().NotBeNull();
 
             var pa = a.New(typelib);
-            pa.Properties["a"].Value.Should().Be(0);
-            pa.Properties["b"].Value.Should().Be(0.0);
-            pa.Properties["c"].Value.Should().Be(null);
-            pa.Properties["d"].Value.Should().Be(false);
-            pa.Properties["e"].Value.Should().Be(new DateTime(1900, 1, 1));
-            pa.Properties["f"].Value.Should().Be(null);
+            pa.Properties["_a"].Value.Should().Be(0);
+            pa.Properties["_b"].Value.Should().Be(0.0);
+            pa.Properties["_c"].Value.Should().Be(null);
+            pa.Properties["_d"].Value.Should().Be(false);
+            pa.Properties["_e"].Value.Should().Be(new DateTime(1900, 1, 1));
+            pa.Properties["_f"].Value.Should().Be(null);
 
             var pb = b.New(typelib);
-            pb.Properties["a"].Value.Should().Be(1);
-            pb.Properties["b"].Value.Should().Be(2.0);
-            pb.Properties["c"].Value.Should().Be("hello");
-            pb.Properties["d"].Value.Should().Be(true);
-            pb.Properties["e"].Value.As<DateTime>().Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(0.1));
-            pb.Properties["f"].Value.Should().BeOfType<LuaXVariableInstanceArray>();
-            var arr = pb.Properties["f"].Value.As<LuaXVariableInstanceArray>();
+            pb.Properties["_a"].Value.Should().Be(1);
+            pb.Properties["_b"].Value.Should().Be(2.0);
+            pb.Properties["_c"].Value.Should().Be("hello");
+            pb.Properties["_d"].Value.Should().Be(true);
+            pb.Properties["_e"].Value.As<DateTime>().Should().BeCloseTo(DateTime.Now, TimeSpan.FromSeconds(0.1));
+            pb.Properties["_f"].Value.Should().BeOfType<LuaXVariableInstanceArray>();
+            var arr = pb.Properties["_f"].Value.As<LuaXVariableInstanceArray>();
             arr.Length.Should().Be(2);
             arr[0].Value.Should().Be(10);
             arr[1].Value.Should().Be(20);
