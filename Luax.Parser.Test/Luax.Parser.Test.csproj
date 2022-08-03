@@ -7,7 +7,9 @@
   <ItemGroup>
     <None Remove="TestSources\Break1.luax" />
     <None Remove="TestSources\Break2.luax" />
+    <None Remove="TestSources\CallInstanceAsStatic.luax" />
     <None Remove="TestSources\ClassAsArray.luax" />
+    <None Remove="TestSources\ConstInExpr.luax" />
     <None Remove="TestSources\Continue1.luax" />
     <None Remove="TestSources\Continue2.luax" />
     <None Remove="TestSources\Debug.luax" />
@@ -52,9 +54,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="TestSources\CallInstanceAsStatic.luax" />
     <EmbeddedResource Include="TestSources\ClassAsArray.luax" />
     <EmbeddedResource Include="TestSources\Break1.luax" />
     <EmbeddedResource Include="TestSources\Break2.luax" />
+    <EmbeddedResource Include="TestSources\ConstInExpr.luax" />
     <EmbeddedResource Include="TestSources\Continue1.luax" />
     <EmbeddedResource Include="TestSources\Continue2.luax" />
     <EmbeddedResource Include="TestSources\Debug.luax" />

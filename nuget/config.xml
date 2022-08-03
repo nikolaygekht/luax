@@ -1,6 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <nuget xmlns="http://www.gehtsoft.com/build/nuget">
  <versions>
+  <version id="0.0.8">- add constant location to AST, fix local calls from the static methods</version>
   <version id="0.0.7">- Move to net 6.0, update dependencies</version>
   <version id="0.0.6">- Version of 12/22/21</version>
  </versions>

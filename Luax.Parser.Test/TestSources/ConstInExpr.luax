@@ -1,0 +1,28 @@
+﻿class a 
+    const a1 = 1;
+
+    public function x1() : int
+        return a1;      -- current class referred implicitly
+    end
+
+    public function x2() : int
+        return a.a1;    -- current class referred explicitly
+    end
+
+    public function x3() : int
+        return b.b1;    -- other class
+    end
+
+    public function x4() : int
+        const l1 = 1;   -- local constant
+        return l1;
+    end
+
+    public function x5() : int
+        return 0;       -- raw constant
+    end
+end
+
+class b
+    const b1 = 1;
+end
