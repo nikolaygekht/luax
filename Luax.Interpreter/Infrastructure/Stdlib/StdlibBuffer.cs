@@ -414,6 +414,32 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 return @new;
             }
         }
+
+        //public extern AES128() : buffer;
+        [LuaXExternMethod("cryptography", "AES128")]
+        public static object AES128(LuaXObjectInstance data, LuaXObjectInstance key, bool doEncryption)
+        {
+            if (data.Properties["__array"]?.Value is not byte[] dataBuffer)
+                throw new ArgumentException("The object isn't properly initialized", nameof(data));
+            if (key.Properties["__array"]?.Value is not byte[] keyBuffer)
+                throw new ArgumentException("The object isn't properly initialized", nameof(data));
+
+            System.Security.Cryptography.Aes aes = new System.Security.Cryptography.AesManaged();
+            aes.IV = new byte[16];
+            aes.Key = keyBuffer;
+            aes.Mode = System.Security.Cryptography.CipherMode.CBC;
+            aes.Padding = System.Security.Cryptography.PaddingMode.PKCS7;
+
+            System.Security.Cryptography.ICryptoTransform cipher;
+            if(doEncryption)
+                cipher = aes.CreateEncryptor();
+            else
+                cipher = aes.CreateDecryptor();
+            var @new = mBufferClass.New(mTypeLibrary);
+            @new.Properties["__array"].Value = cipher.TransformFinalBlock(dataBuffer, 0, dataBuffer.Length);
+            return @new;
+        }
+
         //public static extern fromHexString(v : string) : buffer;
         [LuaXExternMethod("buffer", "fromHexString")]
         public static object FromHexString(string v)
