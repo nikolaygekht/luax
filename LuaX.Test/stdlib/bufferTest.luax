@@ -330,9 +330,9 @@ class bufferTest
         v = buffer.create(l);
         v.setEncodedString(0, "test", 437);
         r = cryptography.DEFLATE(v, true);
-        assert.equals(r.toBase64(), "K0ktLgEA", "");
+        assert.equals(r.toHexString(), "789C2B492D2E0100045D01C1", r.toHexString());
 
-        v = buffer.fromHexString("2B492D2E0100");
+        v = buffer.fromHexString("789C2B492D2E0100045D01C1");
         r = cryptography.DEFLATE(v, false);
         assert.equals(r.getEncodedString(0, r.length(), 437), "test", "");
     end

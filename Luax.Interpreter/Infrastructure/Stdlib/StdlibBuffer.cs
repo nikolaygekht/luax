@@ -454,6 +454,8 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             {
                 using (MemoryStream output = new MemoryStream())
                 {
+                    output.WriteByte(0x78);
+                    output.WriteByte(0x9C);
                     using (DeflateStream gzip =
                       new DeflateStream(output, CompressionMode.Compress))
                     {
@@ -465,12 +467,28 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                     }
 
                     result = output.ToArray();
+                    // compute Adler-32:
+                    uint a1 = 1, a2 = 0;
+                    foreach (byte b in dataBuffer)
+                    {
+                        a1 = (a1 + b) % 65521;
+                        a2 = (a2 + a1) % 65521;
+                    }
+                    // append the checksum-trailer:
+                    var adlerPos = result.Length;
+                    Array.Resize(ref result, adlerPos + 4);
+                    result[adlerPos] = (byte)(a2 >> 8);
+                    result[adlerPos + 1] = (byte)a2;
+                    result[adlerPos + 2] = (byte)(a1 >> 8);
+                    result[adlerPos + 3] = (byte)a1;
                 }
             }
             else
             {
                 using (MemoryStream inputStream = new MemoryStream(dataBuffer))
                 {
+                    inputStream.ReadByte();
+                    inputStream.ReadByte();
                     using (DeflateStream gzip =
                       new DeflateStream(inputStream, CompressionMode.Decompress))
                     {
