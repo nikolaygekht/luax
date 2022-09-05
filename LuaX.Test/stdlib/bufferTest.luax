@@ -321,4 +321,19 @@ class bufferTest
         assert.equals(stdlib.upper(r.getEncodedString(0, r.length(), 437)),
                         "B34FD0A69C11E64ADBD153E2B9D982E2B981981E", "");
     end
+
+    @Fact()
+    public function DEFLATE() : void
+        var v : buffer, l : int, r : buffer;
+
+        l = buffer.getEncodedStringLength("test", 437);
+        v = buffer.create(l);
+        v.setEncodedString(0, "test", 437);
+        r = cryptography.DEFLATE(v, true);
+        assert.equals(r.toBase64(), "K0ktLgEA", "");
+
+        v = buffer.fromHexString("2B492D2E0100");
+        r = cryptography.DEFLATE(v, false);
+        assert.equals(r.getEncodedString(0, r.length(), 437), "test", "");
+    end
 end

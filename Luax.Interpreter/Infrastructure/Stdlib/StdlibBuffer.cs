@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -437,6 +439,56 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 cipher = aes.CreateDecryptor();
             var @new = mBufferClass.New(mTypeLibrary);
             @new.Properties["__array"].Value = cipher.TransformFinalBlock(dataBuffer, 0, dataBuffer.Length);
+            return @new;
+        }
+
+        //public extern DEFLATE() : buffer;
+        [LuaXExternMethod("cryptography", "DEFLATE")]
+        public static object DEFLATE(LuaXObjectInstance data, bool doEncryption)
+        {
+            byte[] result;
+            if (data.Properties["__array"]?.Value is not byte[] dataBuffer)
+                throw new ArgumentException("The object isn't properly initialized", nameof(data));
+
+            if (doEncryption)
+            {
+                using (MemoryStream output = new MemoryStream())
+                {
+                    using (DeflateStream gzip =
+                      new DeflateStream(output, CompressionMode.Compress))
+                    {
+                        using (BinaryWriter writer =
+                          new BinaryWriter(gzip, System.Text.Encoding.ASCII))
+                        {
+                            writer.Write(dataBuffer);
+                        }
+                    }
+
+                    result = output.ToArray();
+                }
+            }
+            else
+            {
+                using (MemoryStream inputStream = new MemoryStream(dataBuffer))
+                {
+                    using (DeflateStream gzip =
+                      new DeflateStream(inputStream, CompressionMode.Decompress))
+                    {
+                        using (StreamReader reader =
+                          new StreamReader(gzip, System.Text.Encoding.ASCII))
+                        {
+                            using (var streamReader = new MemoryStream())
+                            {
+                                reader.BaseStream.CopyTo(streamReader);
+                                result = streamReader.ToArray();
+                            }
+                        }
+                    }
+                }
+            }
+
+            var @new = mBufferClass.New(mTypeLibrary);
+            @new.Properties["__array"].Value = result;
             return @new;
         }
 
