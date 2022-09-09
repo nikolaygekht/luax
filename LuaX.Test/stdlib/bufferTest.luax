@@ -322,6 +322,7 @@ class bufferTest
                         "B34FD0A69C11E64ADBD153E2B9D982E2B981981E", "");
     end
 
+
     @Fact()
     public function DEFLATE() : void
         var v : buffer, l : int, r : buffer;
