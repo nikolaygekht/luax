@@ -438,6 +438,12 @@ class cryptography
 
     @DocBrief("Calculates SHA512 hash")
     public static extern SHA512(v : buffer) : buffer;
+
+    @DocBrief("Decrypt/Encrypt AES 128")
+    public static extern AES128(v : buffer, key : buffer, doEncryption: boolean) : buffer;
+
+    @DocBrief("Decrypt/Encrypt DEFLATE")
+    public static extern DEFLATE(v : buffer, doEncryption: boolean) : buffer;
 end
 
 -- -------------------------------------------------------

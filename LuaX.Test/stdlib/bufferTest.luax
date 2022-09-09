@@ -301,4 +301,39 @@ class bufferTest
         assert.equals(stdlib.upper(cryptography.SHA512(v).toHexString()),
                       "89D5DD6C2BDF346A1215C47433605FF877D440580BA1756E16D2B3208DBDD0A8E214001902C89D3AC4DE4835ABF3E88B86CF9330D5283D42C8C79334B5E1C229", "");
     end
+
+    @Fact()
+    public function AES128() : void
+        var v : buffer, k : buffer, l : int, r : buffer;
+
+        l = buffer.getEncodedStringLength("DfS2tXbmQaRY15TH", 437);
+        k = buffer.create(l);
+        k.setEncodedString(0, "DfS2tXbmQaRY15TH", 437);
+
+        l = buffer.getEncodedStringLength("B34FD0A69C11E64ADBD153E2B9D982E2B981981E", 437);
+        v = buffer.create(l);
+        v.setEncodedString(0, "B34FD0A69C11E64ADBD153E2B9D982E2B981981E", 437);
+        r = cryptography.AES128(v, k, true);
+        assert.equals(r.toBase64(), "R04tLRRGREXPDxRKXTrU6FSG0FUKNB1UoeGs7dA2HkQZh4ovCoWqiOEEFXhQCExW", "");
+
+        v = buffer.fromBase64("R04tLRRGREXPDxRKXTrU6FSG0FUKNB1UoeGs7dA2HkQZh4ovCoWqiOEEFXhQCExW");
+        r = cryptography.AES128(v, k, false);
+        assert.equals(stdlib.upper(r.getEncodedString(0, r.length(), 437)),
+                        "B34FD0A69C11E64ADBD153E2B9D982E2B981981E", "");
+    end
+
+    @Fact()
+    public function DEFLATE() : void
+        var v : buffer, l : int, r : buffer;
+
+        l = buffer.getEncodedStringLength("test", 437);
+        v = buffer.create(l);
+        v.setEncodedString(0, "test", 437);
+        r = cryptography.DEFLATE(v, true);
+        assert.equals(r.toHexString(), "789C2B492D2E0100045D01C1", r.toHexString());
+
+        v = buffer.fromHexString("789C2B492D2E0100045D01C1");
+        r = cryptography.DEFLATE(v, false);
+        assert.equals(r.getEncodedString(0, r.length(), 437), "test", "");
+    end
 end
