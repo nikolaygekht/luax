@@ -1,0 +1,6 @@
+﻿class test
+    static var x : int;
+
+    static function x() : void
+    end
+end

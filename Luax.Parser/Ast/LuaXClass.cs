@@ -125,6 +125,10 @@ namespace Luax.Parser.Ast
             for (int i = 0; i < Methods.Count; i++)
             {
                 var method = Methods[i];
+
+                if (Properties.Find(method.Name) >= 0)
+                    throw new LuaXAstGeneratorException(method.Location.Source, new LuaXParserError(method.Location, $"The class already have property/method with same name"));
+
                 if (method.ReturnType.TypeId == LuaXType.Object && !creator.Metadata.Exists(method.ReturnType.Class))
                     throw new LuaXAstGeneratorException(method.Location.Source, new LuaXParserError(method.Location, $"Return type {method.ReturnType.Class} is not defined"));
 
@@ -147,6 +151,10 @@ namespace Luax.Parser.Ast
             for (int i = 0; i < Properties.Count; i++)
             {
                 var property = Properties[i];
+
+                if (Methods.Find(property.Name) >= 0)
+                    throw new LuaXAstGeneratorException(property.Location.Source, new LuaXParserError(property.Location, $"The class already have property/method with same name"));
+
                 if (property.LuaType.TypeId == LuaXType.Object && !creator.Metadata.Exists(property.LuaType.Class))
                     throw new LuaXAstGeneratorException(property.Location.Source, new LuaXParserError(property.Location, $"Property type {property.LuaType.Class} is not defined"));
             }
@@ -268,7 +276,7 @@ namespace Luax.Parser.Ast
             int indexOfPoint = sourceClassName.LastIndexOf('.');
             if (indexOfPoint > 0)
             {
-                resultClassName = sourceClassName.Substring(0, indexOfPoint);
+                resultClassName = sourceClassName[..indexOfPoint];
                 if (mMetadata.Search(sourceClassName, out @class))
                     return true;
             }

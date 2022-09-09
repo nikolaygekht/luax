@@ -1,5 +1,7 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using System.Text;
 using Luax.Parser.Ast;
 
@@ -280,19 +282,27 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
 
         //public extern lock(offset : int, length : int) : void;
         [LuaXExternMethod("file", "lock")]
+        [UnsupportedOSPlatform("ios")]
+        [UnsupportedOSPlatform("macos")]
         public static object Lock(LuaXObjectInstance @this, int offset, int length)
         {
             if (@this.Properties["__file"]?.Value is not FileStream fs)
                 throw new ArgumentException("The file object isn't properly initialized", nameof(@this));
+            if (OperatingSystem.IsMacOS())
+                throw new NotSupportedException("Locking is not supported on macOS");
             fs.Lock(offset, length);
             return null;
         }
         //public extern unlock(offset : int, length : int) : void;
         [LuaXExternMethod("file", "unlock")]
+        [UnsupportedOSPlatform("ios")]
+        [UnsupportedOSPlatform("macos")]
         public static object Unlock(LuaXObjectInstance @this, int offset, int length)
         {
             if (@this.Properties["__file"]?.Value is not FileStream fs)
                 throw new ArgumentException("The file object isn't properly initialized", nameof(@this));
+            if (OperatingSystem.IsMacOS())
+                throw new NotSupportedException("Locking is not supported on macOS");
             fs.Unlock(offset, length);
             return null;
         }

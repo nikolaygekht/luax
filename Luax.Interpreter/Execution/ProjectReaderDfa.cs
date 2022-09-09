@@ -45,12 +45,12 @@ namespace Luax.Interpreter.Execution
             }
             else if (eqIndex == line.Length - 1)
             {
-                key = line.Substring(0, eqIndex).Trim();
+                key = line[..eqIndex].Trim();
                 value = "";
             }
             else
             {
-                key = line.Substring(0, eqIndex).Trim();
+                key = line[..eqIndex].Trim();
                 value = line[(eqIndex + 1)..].Trim();
             }
         }

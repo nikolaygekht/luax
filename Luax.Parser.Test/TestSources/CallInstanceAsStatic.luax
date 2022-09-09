@@ -1,0 +1,8 @@
+﻿class a
+	public static function x() : void
+		y();		-- should cause error!!!
+	end
+
+	public function y() : void
+	end
+end

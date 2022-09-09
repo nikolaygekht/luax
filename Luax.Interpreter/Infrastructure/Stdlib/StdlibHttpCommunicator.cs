@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using Luax.Interpreter.Expression;
 using Luax.Parser.Ast;
 
+#pragma warning disable S125  // remove commented code: false positive, it is not the code, it is luax prototype
+
 namespace Luax.Interpreter.Infrastructure.Stdlib
 {
     internal static class StdlibHttpCommunicator
     {
         private static LuaXTypesLibrary mTypeLibrary;
-        private static LuaXClassInstance mHttpCommunicatorClass;
 
         public static void Initialize(LuaXTypesLibrary typeLibrary)
         {
             mTypeLibrary = typeLibrary;
-            typeLibrary.SearchClass("httpCommunicator", out mHttpCommunicatorClass);
+            typeLibrary.SearchClass("httpCommunicator", out var mHttpCommunicatorClass);
             mHttpCommunicatorClass.LuaType.Properties.Add(new LuaXProperty() { Name = "__httpClient", Visibility = LuaXVisibility.Private, LuaType = LuaXTypeDefinition.Void });
         }
 

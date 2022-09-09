@@ -1,17 +1,18 @@
 ﻿class a
-    public var a : int, b : real, c : string, d : boolean, e : datetime, f : int[];
+    public var _a : int, _b : real, _c : string, _d : boolean, _e : datetime, _f : int[];
 end
 
 class b
-    public var a : int, b : real, c : string, d : boolean, e : datetime, f : int[];
+    public var _a : int, _b : real, _c : string, _d : boolean, _e : datetime, _f : int[];
+    
     public function b() : void
-        a = 1;
-        b = 2.0;
-        c = "hello";
-        d = true;
-        e = stdlib.nowlocal();
-        f = new int[2];
-        f[0] = 10;
-        f[1] = 20;
+        _a = 1;
+        _b = 2.0;
+        _c = "hello";
+        _d = true;
+        _e = stdlib.nowlocal();
+        _f = new int[2];
+        _f[0] = 10;
+        _f[1] = 20;
     end
 end
