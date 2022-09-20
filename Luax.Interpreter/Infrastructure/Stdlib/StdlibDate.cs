@@ -17,14 +17,14 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("stdlib", "mkdate")]
         public static object Extern_mkdate(int year, int month, int day)
         {
-            return new DateTime(year, month, day);
+            return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
         }
 
         //public static extern mkdatetime(year : int, month : int, day : int, int hour, int minute, int second, int milliseconds) : datetime
         [LuaXExternMethod("stdlib", "mkdatetime")]
         public static object Extern_mkdatetime(int year, int month, int day, int hour, int minute, int section, int milliseconds)
         {
-            return new DateTime(year, month, day, hour, minute, section, milliseconds);
+            return new DateTime(year, month, day, hour, minute, section, milliseconds, DateTimeKind.Utc);
         }
         //public static extern toJdn(x : datetime) : real;
         [LuaXExternMethod("stdlib", "toJdn")]
@@ -127,6 +127,13 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         public static object Extern_utc()
         {
             return DateTime.UtcNow;
+        }
+
+        //public static extern toutc(x : datetime) : datetime;
+        [LuaXExternMethod("stdlib", "toutc")]
+        public static object Extern_toutc(DateTime x)
+        {
+            return x.ToUniversalTime();
         }
 
         internal static int ToJDN(DateTime dateTime)
