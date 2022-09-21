@@ -168,6 +168,8 @@ class stdlib
     public static extern nowlocal() : datetime;
     @DocBrief("Returns the current UTC time")
     public static extern nowutc() : datetime;
+    @DocBrief("Converts a input dateTime to UTC time zone")
+    public static extern toutc(x : datetime) : datetime;
 
     -- JDN
     -- Julian Day number
