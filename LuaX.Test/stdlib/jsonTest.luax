@@ -5,7 +5,7 @@ class jsonTest
 \"minimumVersion\": \"1.0\",
 \"clientId\": \"37i1qd0ifrwjqje71u46z3k4gdy5b\",
 \"supportedConnectionTypes\": [
-\"websocket\"
+\"websocket\", null
 ],
 \"advice\": {
 \"interval\": 1.2,
@@ -82,8 +82,9 @@ class jsonTest
 
         child = node.getPropertyByName("supportedConnectionTypes");
         assert.equals(child.getType(), jsonNode.ARRAY, "array");
-        assert.equals(child.getChildrenCount(), 1, "getChildrenCount 3");
+        assert.equals(child.getChildrenCount(), 2, "getChildrenCount 3");
         assert.equals(child.getChildByIndex(0).getType(), jsonNode.STRING, "string");
+        assert.equals(child.getChildByIndex(1).getType(), jsonNode.NIL, "nil");
 
         child = node.getPropertyByName("advice");
         assert.equals(child.getType(), jsonNode.OBJECT, "object");

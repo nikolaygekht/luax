@@ -83,7 +83,10 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 throw new ArgumentException("The node isn't a property", nameof(@this));
 
             var rv = mNodeClass.New(mTypeLibrary);
-            rv.Properties["__node"].Value = property.Value;
+            JToken token = property.Value;
+            if (token == null)
+                token = JValue.CreateNull();
+            rv.Properties["__node"].Value = token;
             return rv;
         }
 
@@ -156,19 +159,22 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 throw new IndexOutOfRangeException($"Index {index} exceeds array size {node.Count}: {nameof(@this)}");
 
             var rv = mNodeClass.New(mTypeLibrary);
+            JToken token;
             if (node is JArray)
-                rv.Properties["__node"].Value = node[index];
+                token = node[index];
             else
             {
                 int i = 0;
-                JToken token = node.First;
+                token = node.First;
                 while(i < index)
                 {
                     i++;
                     token = token.Next;
                 }
-                rv.Properties["__node"].Value = token;
             }
+            if (token == null)
+                token = JValue.CreateNull();
+            rv.Properties["__node"].Value = token;
             return rv;
         }
 
