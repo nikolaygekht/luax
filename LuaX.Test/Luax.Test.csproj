@@ -25,6 +25,7 @@
     <None Remove="stdlib\datetimeTest.luax" />
     <None Remove="stdlib\intMapTest.luax" />
     <None Remove="stdlib\iotest.luax" />
+    <None Remove="stdlib\jsonTest.luax" />
     <None Remove="stdlib\listTest.luax" />
     <None Remove="stdlib\mathTest.luax" />
     <None Remove="stdlib\queueTest.luax" />
@@ -99,6 +100,7 @@
     <EmbeddedResource Include="stdlib\iotest.luax">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="stdlib\jsonTest.luax" />
     <EmbeddedResource Include="stdlib\listTest.luax">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </EmbeddedResource>
