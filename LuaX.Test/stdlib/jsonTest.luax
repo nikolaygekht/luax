@@ -26,6 +26,7 @@ class jsonTest
 \"advice\": {
 \"interval\": 1.2,
 \"timeout\": 30000,
+\"nil\": null,
 \"reconnect\": \"retry\"
 },
 \"channel\": \"/meta/handshake\",
@@ -90,6 +91,7 @@ class jsonTest
         assert.equals(child.getPropertyByName("timeout").getType(), jsonNode.INT, "int");
         assert.equals(child.getPropertyByName("reconnect").getType(), jsonNode.STRING, "string");
         assert.equals(child.getPropertyByName("interval").getType(), jsonNode.REAL, "real");
+        assert.equals(child.getPropertyByName("nil").getType(), jsonNode.NIL, "nil");
     end
     
     @Fact()

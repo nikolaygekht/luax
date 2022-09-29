@@ -180,9 +180,11 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 throw new ArgumentException("The node isn't properly initialized", nameof(@this));
 
             var rv = mNodeClass.New(mTypeLibrary);
-            rv.Properties["__node"].Value = node[propertyName];
+            var val = node[propertyName];
+            if (val == null)
+                val = JValue.CreateNull();
+            rv.Properties["__node"].Value = val;
             return rv;
         }
-
     }
 }
