@@ -33,6 +33,9 @@ class jsonTest
 \"version\": \"1.0\",
 \"successful\": true
 }";
+    const jsonSource3 = "{
+\"datetime\": 1665119461000
+}";
 
     class parseAction : action
         public function Invoke() : void
@@ -48,8 +51,33 @@ class jsonTest
     end
     
     @Fact()
+    public function timeIntervalSince1970() : void
+        var parser : jsonParser, node : jsonNode, root : jsonNode;
+        var d : datetime;
+        var utcDate : datetime;
+
+        parser = new jsonParser();
+        root = parser.parse(jsonSource3);
+
+        assert.equals(root.getType(), jsonNode.OBJECT, "object");
+        node = root.getPropertyByName("datetime");
+        assert.equals(node.getType(), jsonNode.INT, "int");
+
+        d = node.getValueAsDatetime();
+        utcDate = stdlib.toutc(d);
+
+        assert.isTrue(stdlib.millisecond(utcDate) == 0, "ms");
+        assert.isTrue(stdlib.second(utcDate) == 01, "s");
+        assert.isTrue(stdlib.minute(utcDate) == 11, "m");
+        assert.isTrue(stdlib.hour(utcDate) == 5, "h");
+        assert.isTrue(stdlib.day(utcDate) == 7, "d");
+        assert.isTrue(stdlib.month(utcDate) == 10, "mo");
+        assert.isTrue(stdlib.year(utcDate) == 2022, "yr");
+    end
+    
+    @Fact()
     public function typesOnObject() : void
-        var parser : jsonParser, node : jsonNode, root : jsonNode, child : jsonNode;
+        var parser : jsonParser, root : jsonNode;
         parser = new jsonParser();
         root = parser.parse(jsonSource2);
 
