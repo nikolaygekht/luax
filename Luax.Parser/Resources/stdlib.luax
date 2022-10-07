@@ -644,6 +644,10 @@ class jsonNode
     @DocDescription("Use this method for `OBJECT` only")
     @DocDescription("The return is NIL if the required property is not found")
     public extern getPropertyByName(propertyName : string) : jsonNode;
+
+    @DocBrief("Returns the value of the node as an datetime")
+    @DocDescription("Use this method for `INT` only")
+    public extern getValueAsDatetime() : datetime;
 end
 
 -- -------------------------------------------------------
