@@ -82,6 +82,9 @@ namespace Luax.Interpreter.Infrastructure
                 case string s1 when int.TryParse(s1, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i1):
                     argument = i1;
                     return true;
+                case string s1 when s1 != null && s1.Length == 0:
+                    argument = 0;
+                    return true;
                 case string :
                     return false;
                 default:
@@ -107,6 +110,9 @@ namespace Luax.Interpreter.Infrastructure
                     return true;
                 case string s2 when double.TryParse(s2, NumberStyles.Float, CultureInfo.InvariantCulture, out double i1):
                     argument = i1;
+                    return true;
+                case string s1 when s1 != null && s1.Length == 0:
+                    argument = 0.0;
                     return true;
                 case string :
                     return false;
