@@ -439,8 +439,8 @@ namespace Luax.Parser.Ast.Builder
 
                 return new LuaXStaticPropertyExpression(ownerClassName, name, property.LuaType, location);
             }
-            else if (leftSideClass.SearchConstant(name, out var constant))
-                return new LuaXConstantExpression(constant.Value, location, new LuaXConstantExpression.LuaXConstantSource(leftSideClass, null, constant));
+            else if (leftSideClass.SearchConstant(name, out var constant, out var owner))
+                return new LuaXConstantExpression(constant.Value, location, new LuaXConstantExpression.LuaXConstantSource(owner, null, constant));
 
             throw new LuaXAstGeneratorException(Name, astNode, $"Class {classNameExpression.Name} does not contain property {name}");
         }
@@ -514,8 +514,8 @@ namespace Luax.Parser.Ast.Builder
             if (currentClass.SearchProperty(name, out var p1, out string ownerClassName))
                 return ProcessVariableAsProperty(astNode, ownerClassName, currentMethod, name, p1, location);
 
-            if (currentClass.SearchConstant(name, out var c2))
-                return new LuaXConstantExpression(c2.Value, location, new LuaXConstantExpression.LuaXConstantSource(currentClass, null, c2));
+            if (currentClass.SearchConstant(name, out var c2, out var owner))
+                return new LuaXConstantExpression(c2.Value, location, new LuaXConstantExpression.LuaXConstantSource(owner, null, c2));
 
             if (SearchClassByName(name, currentClass, out var realClass))
                 return new LuaXClassNameExpression(realClass.Name, location);

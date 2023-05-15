@@ -217,20 +217,21 @@ namespace Luax.Parser.Ast
             return false;
         }
 
-        public bool SearchConstant(string propertyName, out LuaXConstantVariable constant)
+        public bool SearchConstant(string propertyName, out LuaXConstantVariable constant, out LuaXClass owner)
         {
             LuaXConstantVariableCollection constants = this.Constants;
             string className = this.Name;
+            LuaXClass @class = this;
             while (!string.IsNullOrEmpty(className))
             {
                 var constantIndex = constants.Find(propertyName);
                 if (constantIndex < 0)
                 {
-                    if (ParentClass != null && ParentClass.SearchConstant(propertyName, out constant))
+                    if (ParentClass != null && ParentClass.SearchConstant(propertyName, out constant, out owner))
                     {
                         return true;
                     }
-                    if (HasOwnerClass(in className, out className, out var @class))
+                    if (HasOwnerClass(in className, out className, out @class))
                     {
                         constants = @class.Constants;
                         continue;
@@ -238,11 +239,14 @@ namespace Luax.Parser.Ast
                     break;
                 }
                 constant = constants[constantIndex];
+                owner = @class;
                 return true;
             }
             constant = null;
+            owner = null;
             return false;
         }
+
 
         public bool SearchMethod(string propertyName, out LuaXMethod method, bool doNotLookInOwnerClasses = false)
         {
