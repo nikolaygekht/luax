@@ -15,6 +15,16 @@ namespace Luax.Interpreter.Expression
     public static class LuaXMethodExecutor
     {
         /// <summary>
+        /// Recursive methods calls dictionary
+        /// </summary>
+        private static System.Collections.Generic.Dictionary<string, int> recursiveCalls = new System.Collections.Generic.Dictionary<string, int>();
+
+        /// <summary>
+        /// Maximum recursive methods calls depth
+        /// </summary
+        private static int MaximumRecursiveMethodCallsDepth = 50;
+
+        /// <summary>
         /// The debugging event
         /// </summary>
         public static event EventHandler<BeforeStatementExecutionEventArgs> BeforeStatementExecution;
@@ -30,6 +40,14 @@ namespace Luax.Interpreter.Expression
             Break,
             Continue,
         };
+
+        /// <summary>
+        /// Clear the recursive methods calls dictionary
+        /// </summary>
+        internal static void ClearRecursiveCalls()
+        {
+            recursiveCalls = new System.Collections.Generic.Dictionary<string, int>();
+        }
 
         /// <summary>
         /// Executes the method
@@ -64,9 +82,23 @@ namespace Luax.Interpreter.Expression
                 HandleConstructor(method, types, @this);
 
             var variables = CreateVariablesForMethod(method, @this, args);
+            var name = $"{currentClass.LuaType.Name}.{method.Name}";
+            if (!recursiveCalls.ContainsKey(name))
+            {
+                recursiveCalls.Add(name, 0);
+            }
+            recursiveCalls[name] = recursiveCalls[name] + 1;
+            if (recursiveCalls[name] > MaximumRecursiveMethodCallsDepth)
+            {
+                string message = $"'{name}' function: too deep recursion";
+                Console.WriteLine($"\n{message}");
+                throw new Exception(message);
+            }
+
             var rt = ExecuteStatements(method, method.Statements, types, currentClass, variables, out result);
             if (rt == ResultType.ReachForEnd || rt == ResultType.ReturnDefault)
                 result = method.ReturnType.DefaultValue();
+            recursiveCalls[name] = recursiveCalls[name] - 1;
             return rt;
         }
 

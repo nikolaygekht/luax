@@ -18,7 +18,7 @@ namespace Luax.Interpreter.Execution
     {
         public event EventHandler<LuaXTestStatusEventArgs> OnTest;
 
-        public int TotalTests { get; private set;  } = 0;
+        public int TotalTests { get; private set; } = 0;
         public int SuccessfullTests { get; private set; } = 0;
 
         public LuaXTestExecutor(LuaXProject project) : base(project)
@@ -174,38 +174,47 @@ namespace Luax.Interpreter.Execution
             bool success = true;
             LuaXObjectInstance @this = null;
 
-            success = RunStep(() =>
+            try
             {
-                @this = @class.New(TypesLibrary);
-                return true;
-            }, @class, method, argsText);
-
-            if (success)
-            {
+                LuaXMethodExecutor.ClearRecursiveCalls();
                 success = RunStep(() =>
                 {
-                    LuaXMethodExecutor.Execute(method, TypesLibrary, @this, args, out var _);
+                    @this = @class.New(TypesLibrary);
                     return true;
                 }, @class, method, argsText);
-            }
 
-            if (success)
-            {
-                OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.OK, ""));
-                SuccessfullTests++;
-            }
-
-            var finalizer = @class.LuaType.Methods.FirstOrDefault(m => m.Attributes.Any(a => a.Name == "TearDown"));
-            if (finalizer != null)
-            {
-                success = RunStep(() =>
+                if (success)
                 {
-                    LuaXMethodExecutor.Execute(finalizer, TypesLibrary, @this, Array.Empty<object>(), out var _);
-                    return true;
-                }, @class, finalizer, argsText);
-            }
+                    success = RunStep(() =>
+                    {
+                        LuaXMethodExecutor.Execute(method, TypesLibrary, @this, args, out var _);
+                        return true;
+                    }, @class, method, argsText);
+                }
 
-            return success;
+                if (success)
+                {
+                    OnTest?.Invoke(this, new LuaXTestStatusEventArgs(@class.LuaType.Name, method.Name, argsText, LuaXTestStatus.OK, ""));
+                    SuccessfullTests++;
+                }
+
+                var finalizer = @class.LuaType.Methods.FirstOrDefault(m => m.Attributes.Any(a => a.Name == "TearDown"));
+                if (finalizer != null)
+                {
+                    success = RunStep(() =>
+                    {
+                        LuaXMethodExecutor.Execute(finalizer, TypesLibrary, @this, Array.Empty<object>(), out var _);
+                        return true;
+                    }, @class, finalizer, argsText);
+                }
+
+                return success;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"\n While running {@class.LuaType.Name}.{method.Name} thrown exception '{ex.Message}'\n");
+                return false;
+            }
         }
     }
 }
