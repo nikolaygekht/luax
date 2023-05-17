@@ -406,23 +406,38 @@ namespace Luax.Parser.Test
         [Fact]
         public void SearchConstant()
         {
+            LuaXClass owner;
             var metadata = new LuaXClassCollection();
-            var a = new LuaXClass("a");
+            var a = new LuaXClass("a", null, new LuaXElementLocation("test", 0, 0));
             a.Constants.Add(new LuaXConstantVariable() { Name = "pa" });
             metadata.Add(a);
-            var b = new LuaXClass("b", "a", null);
+            var b = new LuaXClass("b", "a", new LuaXElementLocation("test", 0, 0));
             metadata.Add(b);
             b.Constants.Add(new LuaXConstantVariable() { Name = "pb" });
+            var ac = new LuaXClass("a.c", null, new LuaXElementLocation("test", 0, 0));
+            metadata.Add(ac);
+
+            var app = new LuaXApplication();
+            app.Classes.Add(a);
+            app.Classes.Add(b);
+            app.Classes.Add(ac);
+            app.Pass2();
 
             metadata.Search("a", out _);    //force index to be build
 
-            b.SearchConstant("pb", out var p).Should().Be(true);
+            b.SearchConstant("pb", out var p, out _).Should().Be(true);
             p.Name.Should().Be("pb");
-            b.SearchConstant("pa", out p).Should().Be(true);
-            p.Name.Should().Be("pa");
 
-            a.SearchConstant("pb", out _).Should().Be(false);
-            a.SearchConstant("pa", out p).Should().Be(true);
+            b.SearchConstant("pa", out p, out owner).Should().Be(true);
+            p.Name.Should().Be("pa");
+            owner.Name.Should().Be("a");
+
+            ac.SearchConstant("pa", out p, out owner).Should().Be(true);
+            p.Name.Should().Be("pa");
+            owner.Name.Should().Be("a");
+
+            a.SearchConstant("pb", out _, out _).Should().Be(false);
+            a.SearchConstant("pa", out p, out _).Should().Be(true);
             p.Name.Should().Be("pa");
         }
 

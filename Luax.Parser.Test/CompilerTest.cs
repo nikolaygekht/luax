@@ -1125,5 +1125,51 @@ namespace Luax.Parser.Test
             act.Should().Throw<LuaXAstGeneratorException>()
                 .Where(e => e.Message.Contains("Class test.testInner does not contain property prop1"));
         }
+
+        [Theory]
+        [InlineData("x1", "a", null, "a1")]
+        [InlineData("x2", "a", null, "a1")]
+        [InlineData("x3", "b", null, "b1")]
+        [InlineData("x4", "a", "x4", "l1")]
+        [InlineData("x5", null, null, null)]
+
+        public void ConstInExprReferenceToClass(string targetMethod, string className, string methodName, string constName)
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("ConstInExpr");
+            app.Pass2();
+            app.Classes.Search("a", out var @class).Should().BeTrue();
+            @class.Methods.Search(targetMethod, out var @method).Should().BeTrue();
+
+            method.Statements.Should().HaveCount(1);
+
+            method.Statements[0]
+                .Should()
+                .BeOfType<LuaXReturnStatement>();
+
+            method.Statements[0]
+                .As<LuaXReturnStatement>()
+                .Expression
+                .Should()
+                .BeOfType<LuaXConstantExpression>();
+
+            var expr = method.Statements[0].As<LuaXReturnStatement>().Expression.As<LuaXConstantExpression>();
+
+            expr.Should().BeOfType<LuaXConstantExpression>();
+
+            if (className == null)
+                expr.Source.Should().BeNull();
+            else
+            {
+                expr.Source.Should().NotBeNull();
+                expr.Source.Class.Name.Should().Be(className);
+                expr.Source.Constant.Name.Should().Be(constName);
+
+                if (methodName == null)
+                    expr.Source.Method.Should().BeNull();
+                else
+                    expr.Source.Method.Name.Should().Be(methodName);
+            }
+        }
     }
 }

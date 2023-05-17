@@ -439,8 +439,8 @@ namespace Luax.Parser.Ast.Builder
 
                 return new LuaXStaticPropertyExpression(ownerClassName, name, property.LuaType, location);
             }
-            else if (leftSideClass.SearchConstant(name, out var constant))
-                return new LuaXConstantExpression(constant.Value, location);
+            else if (leftSideClass.SearchConstant(name, out var constant, out var owner))
+                return new LuaXConstantExpression(constant.Value, location, new LuaXConstantExpression.LuaXConstantSource(owner, null, constant));
 
             throw new LuaXAstGeneratorException(Name, astNode, $"Class {classNameExpression.Name} does not contain property {name}");
         }
@@ -509,13 +509,13 @@ namespace Luax.Parser.Ast.Builder
             if (currentMethod.Variables.Search(name, out var v2))
                 return new LuaXVariableExpression(name, v2.LuaType, location);
             if (currentMethod.Constants.Search(name, out var c1))
-                return new LuaXConstantExpression(c1.Value, location);
+                return new LuaXConstantExpression(c1.Value, location, new LuaXConstantExpression.LuaXConstantSource(currentClass, currentMethod, c1));
 
             if (currentClass.SearchProperty(name, out var p1, out string ownerClassName))
                 return ProcessVariableAsProperty(astNode, ownerClassName, currentMethod, name, p1, location);
 
-            if (currentClass.SearchConstant(name, out var c2))
-                return new LuaXConstantExpression(c2.Value, location);
+            if (currentClass.SearchConstant(name, out var c2, out var owner))
+                return new LuaXConstantExpression(c2.Value, location, new LuaXConstantExpression.LuaXConstantSource(owner, null, c2));
 
             if (SearchClassByName(name, currentClass, out var realClass))
                 return new LuaXClassNameExpression(realClass.Name, location);
@@ -766,7 +766,9 @@ namespace Luax.Parser.Ast.Builder
             if (subject.ReturnType.TypeId == LuaXType.ClassName)
                 callExpression = ProcessStaticCall(subject, currentClass, identifier, callNode, out methodArguments);
             else if (subject.ReturnType.TypeId == LuaXType.Object)
+            {
                 callExpression = ProcessInstanceCall(subject, currentClass, identifier, callNode, out methodArguments);
+            }
             else
                 throw new LuaXAstGeneratorException(Name, new LuaXParserError(subject.Location, "The class name or an object expression is expected here"));
 

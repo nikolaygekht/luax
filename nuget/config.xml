@@ -1,12 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <nuget xmlns="http://www.gehtsoft.com/build/nuget">
  <versions>
-  <version id="0.0.6">- Version of 12/22/21</version>
+  <version id="0.0.24">- Version of 05/15/23</version>
  </versions>
  <properties>
   <owner>Gehtsoft</owner>
   <projectUrl>https://github.com/nikolaygekht/luax</projectUrl>
-  <license type="expression">LGPL-2.1-or-later</license>
   <copyright>Gehtsoft USA LLC 2016-2021</copyright>
  </properties>
  <projects>
