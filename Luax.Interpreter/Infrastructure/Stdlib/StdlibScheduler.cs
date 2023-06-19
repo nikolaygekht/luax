@@ -76,7 +76,6 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
                 throw new ArgumentException("The scheduler isn't properly initialized", nameof(@this));
             callback.Class.SearchMethod("invoke", null, out LuaXMethod invoke);
 
-            @this.Properties["__needStop"].Value = false;
             if (periodInMilliseconds >= 0)
             {
                 tokenSource = new CancellationTokenSource();
@@ -94,6 +93,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             }
             else
             {
+                @this.Properties["__needStop"].Value = false;
                 while (!(bool)@this.Properties["__needStop"].Value)
                     LuaXMethodExecutor.Execute(invoke, mTypeLibrary, callback, Array.Empty<object>(), out var _);
             }

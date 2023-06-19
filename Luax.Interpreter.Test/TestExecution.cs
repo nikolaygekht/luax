@@ -473,6 +473,24 @@ namespace Luax.Interpreter.Test
             r.Should().Be("result");
         }
 
+        [Fact]
+        public void TestInnerClasses6()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("InnerClass6");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+
+            typelib.SearchClass("program", out var program).Should().BeTrue();
+            program.SearchMethod("main", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.ReturnType.IsString().Should().BeTrue();
+
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { }, out var r);
+            r.Should().BeOfType<string>();
+            r.Should().Be("result");
+        }
+
         [Theory]
         [InlineData(0, 2, 1, 3)]
         [InlineData(1, 2, 1, 2)]
@@ -1012,6 +1030,47 @@ namespace Luax.Interpreter.Test
             callback = (LuaXObjectInstance)r;
             i = (int)callback.Properties["i"].Value;
             i.Should().Be(10);
+        }
+
+        [Fact]
+        public void TestSchedulerStartStopMode()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("SchedulerTest3");
+            app.Pass2();
+            var typelib = new LuaXTypesLibrary(app);
+            typelib.SearchClass("test", out var program).Should().BeTrue();
+
+            program.SearchMethod("startImmediately", null, out var method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(0);
+            method.ReturnType.IsObject().Should().BeTrue();
+            method.ReturnType.Class.Should().Be("testCallback");
+            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
+            r.Should().BeOfType<LuaXObjectInstance>();
+            System.Threading.Thread.Sleep(900);
+            LuaXObjectInstance callback = (LuaXObjectInstance)r;
+            int i = (int)callback.Properties["i"].Value;
+            LuaXObjectInstance sched = (LuaXObjectInstance)callback.Properties["sc"].Value;
+            sched.Class.SearchMethod("stop", null, out Parser.Ast.LuaXMethod stop);
+            LuaXMethodExecutor.Execute(stop, typelib, sched, Array.Empty<object>(), out var _);
+            i.Should().BeLessThanOrEqualTo(5);
+
+            program.SearchMethod("startWithDelay", null, out method).Should().BeTrue();
+            method.Static.Should().BeTrue();
+            method.Arguments.Should().HaveCount(1);
+            method.ReturnType.IsObject().Should().BeTrue();
+            method.ReturnType.Class.Should().Be("testCallback");
+            LuaXMethodExecutor.Execute(method, typelib, null, new object[] { r }, out r);
+            r.Should().BeOfType<LuaXObjectInstance>();
+            System.Threading.Thread.Sleep(900);
+            callback = (LuaXObjectInstance)r;
+            i = (int)callback.Properties["i"].Value;
+            sched = (LuaXObjectInstance)callback.Properties["sc"].Value;
+            sched.Class.SearchMethod("stop", null, out stop);
+            LuaXMethodExecutor.Execute(stop, typelib, sched, Array.Empty<object>(), out var _);
+            i.Should().BeGreaterThanOrEqualTo(5);
+            i.Should().BeLessThanOrEqualTo(9);
         }
 
         [Fact]
