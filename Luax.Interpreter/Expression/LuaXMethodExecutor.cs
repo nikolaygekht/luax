@@ -67,7 +67,20 @@ namespace Luax.Interpreter.Expression
                 LuaXObjectInstance owner = @this.OwnerObjectInstance;
                 while (owner != null)
                 {
-                    if (owner.Class.LuaType.Name == currentClass.LuaType.Name)
+                    LuaXClass parent = owner.Class.LuaType;
+                    bool toBreak = false;
+                    while(parent != null)
+                    {
+                        if(parent.Name == currentClass.LuaType.Name)
+                        {
+                            toBreak = true;
+                            break;
+                        }
+                        if (!parent.HasParent)
+                            break;
+                        parent = parent.ParentClass;
+                    }
+                    if (toBreak)
                         break;
                     owner = owner.OwnerObjectInstance;
                 }

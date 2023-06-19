@@ -1,0 +1,39 @@
+﻿class runner
+	private var result : string;
+	class A
+		public function run() : void
+			var classB : B;
+			classB = new B();
+			classB.run();
+		end
+	end
+	class B
+        public function run() : void
+			ownerResult();
+        end
+	end
+
+	private function ownerResult() : void
+			result = "result";
+	end
+
+	public function run() : string
+		var classA : A;
+		classA = new A();
+		classA.run();
+		return result;
+	end
+end
+class runnerBuilder : runner
+	public function runnerBuilder(): void
+	end
+	public function build(): runner
+		return this; 
+	end
+end
+
+class program
+	public static function main() : string
+		return (new runnerBuilder()).build().run();
+	end
+end

@@ -1,0 +1,32 @@
+﻿class testCallback : action
+    public var sc : scheduler;
+    public var i : int;
+    public function testCallback() : void
+        i = 0;
+    end
+    public function invoke() : void
+        sc.stop();
+        i = i + 1;
+        sc.startWithDelay();
+    end
+    public function setSched(sc: scheduler) : void
+        this.sc = sc;
+    end
+end
+
+class test
+   public static function startImmediately() : testCallback
+       var callback : testCallback;
+       var sc : scheduler;
+
+       callback = new testCallback();
+       sc = scheduler.create(200, callback);
+       callback.setSched(sc);
+       sc.startImmediately();
+       return callback;
+   end
+   public static function startWithDelay(callback : testCallback) : testCallback
+       callback.sc.startWithDelay();
+       return callback;
+   end
+end
