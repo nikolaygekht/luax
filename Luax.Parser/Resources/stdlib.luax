@@ -168,6 +168,8 @@ class stdlib
     public static extern nowlocal() : datetime;
     @DocBrief("Returns the current UTC time")
     public static extern nowutc() : datetime;
+    @DocBrief("Converts a input dateTime to UTC time zone")
+    public static extern toutc(x : datetime) : datetime;
 
     -- JDN
     -- Julian Day number
@@ -585,6 +587,79 @@ class xmlParser
 
     @DocBrief("Constructor")
     public extern xmlParser() : void;
+end
+
+
+-- -------------------------------------------------------
+-- Json node
+-- -------------------------------------------------------
+@DocBrief("A Json node")
+class jsonNode
+    const OBJECT = "object";
+    const ARRAY = "array";
+    const PROPERTY = "property";
+    const INT = "int";
+    const REAL = "real";
+    const STRING = "string";
+    const BOOLEAN = "boolean";
+    const NIL = "nil";
+
+    @DocBrief("Returns the type of the node")
+    @DocReturn("The return value could be `OBJECT`, `ARRAY`, `PROPERTY`, `INT`, `REAL`, `STRING`, `BOOLEAN` or `NIL`")
+    public extern getType() : string;
+
+    @DocBrief("Returns the name of the node")
+    @DocDescription("The name is returned only for `PROPERTY`")
+    public extern getName() : string;
+
+    @DocBrief("Returns the value of the node as a jsonNode")
+    @DocDescription("Use this method for `PROPERTY` only")
+    public extern getValueAsNode() : jsonNode;
+
+    @DocBrief("Returns the value of the node as a string")
+    @DocDescription("Use this method for `STRING` only")
+    public extern getValueAsString() : string;
+
+    @DocBrief("Returns the value of the node as an int")
+    @DocDescription("Use this method for `INT` only")
+    public extern getValueAsInt() : int;
+
+    @DocBrief("Returns the value of the node as a boolean")
+    @DocDescription("Use this method for `BOOLEAN` only")
+    public extern getValueAsBoolean() : boolean;
+
+    @DocBrief("Returns the value of the node as a real")
+    @DocDescription("Use this method for `REAL` only")
+    public extern getValueAsReal() : real;
+
+    @DocBrief("Returns the number of children nodes")
+    @DocDescription("Use this method for `OBJECT` and `ARRAY` only")
+    public extern getChildrenCount() : int;
+
+    @DocBrief("Returns the child node by its index")
+    @DocDescription("Use this method for `OBJECT` and `ARRAY` only")
+    public extern getChildByIndex(index : int) : jsonNode;
+
+    @DocBrief("Returns the child node by property name")
+    @DocDescription("Use this method for `OBJECT` only")
+    @DocDescription("The return is NIL if the required property is not found")
+    public extern getPropertyByName(propertyName : string) : jsonNode;
+
+    @DocBrief("Returns the value of the node as an datetime")
+    @DocDescription("Use this method for `INT` only")
+    public extern getValueAsDatetime() : datetime;
+end
+
+-- -------------------------------------------------------
+-- Json parser
+-- -------------------------------------------------------
+@DocBrief("The parser for Json")
+class jsonParser
+    @DocBrief("Parses the Json string and returns the root node of the json")
+    public extern parse(json : string) : jsonNode;
+
+    @DocBrief("Constructor")
+    public extern jsonParser() : void;
 end
 
 -- -------------------------------------------------------

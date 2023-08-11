@@ -1137,6 +1137,17 @@ namespace Luax.Parser.Test
                 .Where(e => e.Message.Contains("The class already have property/method with same name"));
         }
 
+        [Fact]
+        public void OverrideStaticMethod()
+        {
+            var app = new LuaXApplication();
+            app.CompileResource("OverrideStaticMethod");
+
+            Action act = () => app.Pass2();
+            act.Should().Throw<LuaXAstGeneratorException>()
+                .Where(e => e.Message.Contains("is static and can not be overriden"));
+        }
+
         [Theory]
         [InlineData("x1", "a", null, "a1")]
         [InlineData("x2", "a", null, "a1")]

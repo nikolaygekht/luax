@@ -45,6 +45,7 @@ namespace Luax.Interpreter.Infrastructure
             ExternMethods.Add(this, typeof(StdlibBitwise));
             ExternMethods.Add(this, typeof(StdlibCsvParser));
             ExternMethods.Add(this, typeof(StdlibXml));
+            ExternMethods.Add(this, typeof(StdlibJson));
             ExternMethods.Add(this, typeof(StdlibSortedList));
             ExternMethods.Add(this, typeof(StdlibIntMap));
             ExternMethods.Add(this, typeof(StdlibStringMap));
@@ -81,7 +82,10 @@ namespace Luax.Interpreter.Infrastructure
                 case string s1 when int.TryParse(s1, NumberStyles.Integer, CultureInfo.InvariantCulture, out int i1):
                     argument = i1;
                     return true;
-                case string :
+                case string s1 when s1 != null && s1.Length == 0:
+                    argument = 0;
+                    return true;
+                case string:
                     return false;
                 default:
                     return false;
@@ -107,7 +111,10 @@ namespace Luax.Interpreter.Infrastructure
                 case string s2 when double.TryParse(s2, NumberStyles.Float, CultureInfo.InvariantCulture, out double i1):
                     argument = i1;
                     return true;
-                case string :
+                case string s1 when s1 != null && s1.Length == 0:
+                    argument = 0.0;
+                    return true;
+                case string:
                     return false;
                 default:
                     return false;
@@ -143,7 +150,7 @@ namespace Luax.Interpreter.Infrastructure
                     DateTimeStyles.None, out var d4):
                     argument = d4;
                     return true;
-                case string :
+                case string:
                     return false;
                 default:
                     return false;
@@ -167,15 +174,15 @@ namespace Luax.Interpreter.Infrastructure
                     argument = b ? "true" : "false";
                     return true;
                 case DateTime d:
-                {
-                    if (d.Hour == 0 && d.Minute == 0 && d.Second == 0 && d.Millisecond == 0)
-                        argument = d.ToString("yyyy-MM-dd");
-                    else if (d.Millisecond == 0)
-                        argument = d.ToString("yyyy-MM-dd HH:mm:ss");
-                    else
-                        argument = d.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                    return true;
-                }
+                    {
+                        if (d.Hour == 0 && d.Minute == 0 && d.Second == 0 && d.Millisecond == 0)
+                            argument = d.ToString("yyyy-MM-dd");
+                        else if (d.Millisecond == 0)
+                            argument = d.ToString("yyyy-MM-dd HH:mm:ss");
+                        else
+                            argument = d.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                        return true;
+                    }
                 default:
                     return argument is string;
             }
@@ -194,7 +201,7 @@ namespace Luax.Interpreter.Infrastructure
                 case string s when s == "false":
                     argument = false;
                     return true;
-                case string :
+                case string:
                     return false;
                 default:
                     return false;

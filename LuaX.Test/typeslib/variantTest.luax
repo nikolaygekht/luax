@@ -18,6 +18,9 @@ class variantTest
         assert.isTrue(x.type() == "real", "type");
         assert.isTrue(x.asReal() == 1.5, "value");
         assert.isTrue(cast<real>(x) == 1.5, "back cast");
+
+        x = "";
+        assert.isTrue(x.asReal() == 0.0, "empty value");
     end
 
     @Fact()

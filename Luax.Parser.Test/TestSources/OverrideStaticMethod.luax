@@ -1,0 +1,8 @@
+﻿class test
+    static function x() : void
+    end
+end
+class test1 : test 
+    static function x() : void
+    end
+end

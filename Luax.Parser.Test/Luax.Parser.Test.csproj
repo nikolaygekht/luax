@@ -30,6 +30,7 @@
     <None Remove="TestSources\OtherClassMethodCall3.luax" />
     <None Remove="TestSources\OtherClassMethodCall4.luax" />
     <None Remove="TestSources\OtherClassMethodCall5.luax" />
+    <None Remove="TestSources\OverrideStaticMethod.luax" />
     <None Remove="TestSources\OverridingFail1.luax" />
     <None Remove="TestSources\OverridingFail2.luax" />
     <None Remove="TestSources\OverridingFail3.luax" />
@@ -71,6 +72,7 @@
     <EmbeddedResource Include="TestSources\OtherClassMethodCall3.luax" />
     <EmbeddedResource Include="TestSources\OtherClassMethodCall4.luax" />
     <EmbeddedResource Include="TestSources\OtherClassMethodCall5.luax" />
+    <EmbeddedResource Include="TestSources\OverrideStaticMethod.luax" />
     <EmbeddedResource Include="TestSources\OverridingFail4.luax" />
     <EmbeddedResource Include="TestSources\OverridingFail3.luax" />
     <EmbeddedResource Include="TestSources\OverridingFail2.luax" />
