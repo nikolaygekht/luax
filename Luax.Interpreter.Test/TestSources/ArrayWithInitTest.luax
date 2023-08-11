@@ -12,7 +12,7 @@
       end
    end
    class myActionAnother : myAction
-      public static function create(param : string) : myActionAnother
+      public static function createAnother(param : string) : myActionAnother
          var instance : myActionAnother;
          instance = new myActionAnother();
          instance.property = param.."!";
@@ -48,7 +48,7 @@
       arr = new myAction[]{myAction.create(2 + 1), myAction.create(" is"),
                            myAction.create(" a"), myAction.create(" summ"),
                            myAction.create(" of "), myAction.create(1),
-                           myAction.create(" and "), myActionAnother.create(2)};
+                           myAction.create(" and "), myActionAnother.createAnother(2)};
       while i < arr.length do
         result = result .. arr[i].invoke();
         i = i + 1;
