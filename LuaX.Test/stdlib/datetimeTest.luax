@@ -23,6 +23,22 @@ class datetimeTest
     end
 
     @Fact()
+    public function toutc() : void
+        var d : datetime;
+        var utcDate : datetime;
+        d = stdlib.mkdatetime(2020, 5, 22, 11, 46, 55, 123);
+        utcDate = stdlib.toutc(d);
+
+        assert.isTrue(stdlib.millisecond(utcDate) == 123, "ms");
+        assert.isTrue(stdlib.second(utcDate) == 55, "s");
+        assert.isTrue(stdlib.minute(utcDate) == 46, "m");
+        assert.isTrue(stdlib.hour(utcDate) == 11, "h");
+        assert.isTrue(stdlib.day(utcDate) == 22, "d");
+        assert.isTrue(stdlib.month(utcDate) == 5, "mo");
+        assert.isTrue(stdlib.year(utcDate) == 2020, "yr");
+    end
+
+    @Fact()
     public function toJdnAndBack() : void
         var d : datetime, r : real;
         d = stdlib.mkdatetime(2021, 10, 29, 11, 46, 55, 500);

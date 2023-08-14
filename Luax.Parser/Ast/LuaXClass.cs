@@ -127,7 +127,7 @@ namespace Luax.Parser.Ast
                 var method = Methods[i];
 
                 if (Properties.Find(method.Name) >= 0)
-                    throw new LuaXAstGeneratorException(method.Location.Source, new LuaXParserError(method.Location, $"The class already have property/method with same name"));
+                    throw new LuaXAstGeneratorException(method.Location.Source, new LuaXParserError(method.Location, $"The class already have property/method with same name: '{method.Name}'"));
 
                 if (method.ReturnType.TypeId == LuaXType.Object && !creator.Metadata.Exists(method.ReturnType.Class))
                     throw new LuaXAstGeneratorException(method.Location.Source, new LuaXParserError(method.Location, $"Return type {method.ReturnType.Class} is not defined"));
@@ -153,7 +153,7 @@ namespace Luax.Parser.Ast
                 var property = Properties[i];
 
                 if (Methods.Find(property.Name) >= 0)
-                    throw new LuaXAstGeneratorException(property.Location.Source, new LuaXParserError(property.Location, $"The class already have property/method with same name"));
+                    throw new LuaXAstGeneratorException(property.Location.Source, new LuaXParserError(property.Location, $"The class already have property/method with same name: '{property.Name}'"));
 
                 if (property.LuaType.TypeId == LuaXType.Object && !creator.Metadata.Exists(property.LuaType.Class))
                     throw new LuaXAstGeneratorException(property.Location.Source, new LuaXParserError(property.Location, $"Property type {property.LuaType.Class} is not defined"));
@@ -174,6 +174,9 @@ namespace Luax.Parser.Ast
             for (int i = 0; i < method.Arguments.Count; i++)
                 if (!AreOverrideArgumentsCompatible(method.Arguments[i].LuaType, baseMethod.Arguments[i].LuaType))
                     throw new LuaXAstGeneratorException(method.Location, $"Method {Name}.{method.Name} is overridden, but argument {i + 1} has incompatible type");
+
+            if (method.Static && baseMethod.Static)
+                throw new LuaXAstGeneratorException(method.Location, $"Method {ParentClass.Name}.{baseMethod.Name} is static and can not be overriden");
         }
 
         private bool AreOverrideArgumentsCompatible(LuaXTypeDefinition @override, LuaXTypeDefinition @base)

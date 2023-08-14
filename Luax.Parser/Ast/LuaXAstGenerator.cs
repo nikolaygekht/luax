@@ -58,7 +58,7 @@ namespace Luax.Parser.Ast
             if (mParserType == null)
                 throw new InvalidOperationException("Type Luax.Parser.Hime.LuaXParser is not found");
 
-            return (RNGLRParser)Activator.CreateInstance(mParserType, new object[] { lexer });
+            return (RNGLRParser)Activator.CreateInstance(mParserType, lexer);
         }
 
         private LuaXBody Compile(string name, ContextFreeLexer lexer)

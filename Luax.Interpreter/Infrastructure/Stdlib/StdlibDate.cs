@@ -17,14 +17,14 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         [LuaXExternMethod("stdlib", "mkdate")]
         public static object Extern_mkdate(int year, int month, int day)
         {
-            return new DateTime(year, month, day);
+            return new DateTime(year, month, day, 0, 0, 0, DateTimeKind.Utc);
         }
 
         //public static extern mkdatetime(year : int, month : int, day : int, int hour, int minute, int second, int milliseconds) : datetime
         [LuaXExternMethod("stdlib", "mkdatetime")]
         public static object Extern_mkdatetime(int year, int month, int day, int hour, int minute, int section, int milliseconds)
         {
-            return new DateTime(year, month, day, hour, minute, section, milliseconds);
+            return new DateTime(year, month, day, hour, minute, section, milliseconds, DateTimeKind.Utc);
         }
         //public static extern toJdn(x : datetime) : real;
         [LuaXExternMethod("stdlib", "toJdn")]
@@ -129,6 +129,13 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return DateTime.UtcNow;
         }
 
+        //public static extern toutc(x : datetime) : datetime;
+        [LuaXExternMethod("stdlib", "toutc")]
+        public static object Extern_toutc(DateTime x)
+        {
+            return x.ToUniversalTime();
+        }
+
         internal static int ToJDN(DateTime dateTime)
             => (1461 * ((dateTime.Year) + 4800 + (dateTime.Month - 14) / 12)) / 4 + (367 * (dateTime.Month - 2 - 12 * ((dateTime.Month - 14) / 12))) / 12 - (3 * (((dateTime.Year) + 4900 + (dateTime.Month - 14) / 12) / 100)) / 4 + dateTime.Day - 32075;
 
@@ -141,7 +148,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             FromJDN((int)jdn, out var year, out var month, out var day);
             FromJT(jdn, out var hour, out var minute, out var second, out var millisecond);
-            return new DateTime(year, month, day, hour, minute, second, millisecond);
+            return new DateTime(year, month, day, hour, minute, second, millisecond, DateTimeKind.Utc);
         }
 
         internal static void FromJDN(int jdn, out int year, out int month, out int day)

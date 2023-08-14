@@ -46,28 +46,7 @@ namespace Luax.Interpreter.Expression
 
             if (!method.Static && @this.Class.LuaType.Name != currentClass.LuaType.Name && @this.Class.LuaType.Name.StartsWith($"{currentClass.LuaType.Name}."))
             {
-                LuaXObjectInstance owner = @this.OwnerObjectInstance;
-                while (owner != null)
-                {
-                    LuaXClass parent = owner.Class.LuaType;
-                    bool toBreak = false;
-                    while (parent != null)
-                    {
-                        if (parent.Name == currentClass.LuaType.Name)
-                        {
-                            toBreak = true;
-                            break;
-                        }
-                        if (!parent.HasParent)
-                            break;
-                        parent = parent.ParentClass;
-                    }
-                    if (toBreak)
-                        break;
-                    owner = owner.OwnerObjectInstance;
-                }
-
-                @this = owner ?? throw new LuaXExecutionException(method.Location, $"Owner instance {currentClass.LuaType.Name} is not found");
+                @this = findMethodOwner(method, @this.OwnerObjectInstance, currentClass.LuaType.Name);
             }
 
             if (method.Extern)
@@ -81,6 +60,31 @@ namespace Luax.Interpreter.Expression
             if (rt == ResultType.ReachForEnd || rt == ResultType.ReturnDefault)
                 result = method.ReturnType.DefaultValue();
             return rt;
+        }
+
+        private static LuaXObjectInstance findMethodOwner(LuaXMethod method, LuaXObjectInstance owner, string className)
+        {
+            while (owner != null)
+            {
+                LuaXClass parent = owner.Class.LuaType;
+                bool toBreak = false;
+                while (parent != null)
+                {
+                    if (parent.Name == className)
+                    {
+                        toBreak = true;
+                        break;
+                    }
+                    if (!parent.HasParent)
+                        break;
+                    parent = parent.ParentClass;
+                }
+                if (toBreak)
+                    break;
+                owner = owner.OwnerObjectInstance;
+            }
+
+            return owner ?? throw new LuaXExecutionException(method.Location, $"Owner instance {className} is not found");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -1,0 +1,148 @@
+﻿@TestSuite()
+class jsonTest
+    const jsonSource1 = "[
+{
+\"minimumVersion\": \"1.0\",
+\"clientId\": \"37i1qd0ifrwjqje71u46z3k4gdy5b\",
+\"supportedConnectionTypes\": [
+\"websocket\", null
+],
+\"advice\": {
+\"interval\": 1.2,
+\"timeout\": 30000,
+\"reconnect\": \"retry\"
+},
+\"channel\": \"/meta/handshake\",
+\"version\": \"1.0\",
+\"successful\": true
+}
+]";
+    const jsonSource2 = "{
+\"minimumVersion\": \"1.0\",
+\"clientId\": \"37i1qd0ifrwjqje71u46z3k4gdy5b\",
+\"supportedConnectionTypes\": [
+\"websocket\"
+],
+\"advice\": {
+\"interval\": 1.2,
+\"timeout\": 30000,
+\"nil\": null,
+\"reconnect\": \"retry\"
+},
+\"channel\": \"/meta/handshake\",
+\"version\": \"1.0\",
+\"successful\": true
+}";
+    const jsonSource3 = "{
+\"datetime\": 1665119461000
+}";
+
+    class parseAction : action
+        public function Invoke() : void
+            var parser : jsonParser;
+            parser = new jsonParser();
+            parser.parse(jsonSource1);
+        end
+    end
+
+    @Fact()
+    public function parse() : void
+        assert.doesNotThrow(new parseAction(), "");
+    end
+    
+    @Fact()
+    public function timeIntervalSince1970() : void
+        var parser : jsonParser, node : jsonNode, root : jsonNode;
+        var d : datetime;
+        var utcDate : datetime;
+
+        parser = new jsonParser();
+        root = parser.parse(jsonSource3);
+
+        assert.equals(root.getType(), jsonNode.OBJECT, "object");
+        node = root.getPropertyByName("datetime");
+        assert.equals(node.getType(), jsonNode.INT, "int");
+
+        d = node.getValueAsDatetime();
+        utcDate = stdlib.toutc(d);
+
+        assert.isTrue(stdlib.millisecond(utcDate) == 0, "ms");
+        assert.isTrue(stdlib.second(utcDate) == 01, "s");
+        assert.isTrue(stdlib.minute(utcDate) == 11, "m");
+        assert.isTrue(stdlib.hour(utcDate) == 5, "h");
+        assert.isTrue(stdlib.day(utcDate) == 7, "d");
+        assert.isTrue(stdlib.month(utcDate) == 10, "mo");
+        assert.isTrue(stdlib.year(utcDate) == 2022, "yr");
+    end
+    
+    @Fact()
+    public function typesOnObject() : void
+        var parser : jsonParser, root : jsonNode;
+        parser = new jsonParser();
+        root = parser.parse(jsonSource2);
+
+        assert.equals(root.getType(), jsonNode.OBJECT, "object");
+        assert.equals(root.getChildrenCount(), 7, "getChildrenCount");
+    end
+    
+    @Fact()
+    public function types() : void
+        var parser : jsonParser, node : jsonNode, root : jsonNode, child : jsonNode;
+        parser = new jsonParser();
+        root = parser.parse(jsonSource1);
+
+        assert.equals(root.getType(), jsonNode.ARRAY, "array");
+        assert.equals(root.getChildrenCount(), 1, "getChildrenCount 1");
+
+        node = root.getChildByIndex(0);
+        assert.doesNotEqual(node, nil, "array element");
+        assert.equals(node.getType(), jsonNode.OBJECT, "object");
+
+        assert.equals(node.getChildrenCount(), 7, "getChildrenCount 2");
+
+        child = node.getPropertyByName("successful");
+        assert.equals(child.getType(), jsonNode.BOOLEAN, "boolean 1");
+        child = node.getChildByIndex(6);
+        assert.equals(child.getType(), jsonNode.PROPERTY, "property");
+        assert.equals(child.getName(), "successful", "property name");
+        child = child.getValueAsNode();
+        assert.equals(child.getType(), jsonNode.BOOLEAN, "boolean 2");
+
+        child = node.getPropertyByName("supportedConnectionTypes");
+        assert.equals(child.getType(), jsonNode.ARRAY, "array");
+        assert.equals(child.getChildrenCount(), 2, "getChildrenCount 3");
+        assert.equals(child.getChildByIndex(0).getType(), jsonNode.STRING, "string");
+        assert.equals(child.getChildByIndex(1).getType(), jsonNode.NIL, "nil");
+
+        child = node.getPropertyByName("advice");
+        assert.equals(child.getType(), jsonNode.OBJECT, "object");
+
+        assert.equals(child.getPropertyByName("timeout").getType(), jsonNode.INT, "int");
+        assert.equals(child.getPropertyByName("reconnect").getType(), jsonNode.STRING, "string");
+        assert.equals(child.getPropertyByName("interval").getType(), jsonNode.REAL, "real");
+        assert.equals(child.getPropertyByName("nil").getType(), jsonNode.NIL, "nil");
+    end
+    
+    @Fact()
+    public function values() : void
+        var parser : jsonParser, node : jsonNode, root : jsonNode, child : jsonNode;
+        parser = new jsonParser();
+        root = parser.parse(jsonSource1);
+        node = root.getChildByIndex(0);
+
+        child = node.getPropertyByName("successful");
+        assert.equals(child.getValueAsBoolean(), true, "true");
+        child = node.getChildByIndex(6);
+        child = child.getValueAsNode();
+        assert.equals(child.getValueAsBoolean(), true, "true");
+
+        child = node.getPropertyByName("supportedConnectionTypes");
+        assert.equals(child.getChildByIndex(0).getValueAsString(), "websocket", "string");
+
+        child = node.getPropertyByName("advice");
+        assert.equals(child.getPropertyByName("timeout").getValueAsInt(), 30000, "int");
+        assert.equals(child.getPropertyByName("reconnect").getValueAsString(), "retry", "string");
+        assert.equals(child.getPropertyByName("interval").getValueAsReal(), 1.2, "real");
+    end
+
+end
