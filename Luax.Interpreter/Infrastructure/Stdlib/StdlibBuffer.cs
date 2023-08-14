@@ -426,7 +426,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             if (key.Properties["__array"]?.Value is not byte[] keyBuffer)
                 throw new ArgumentException("The object isn't properly initialized", nameof(data));
 
-            System.Security.Cryptography.Aes aes = new System.Security.Cryptography.AesManaged();
+            System.Security.Cryptography.Aes aes = System.Security.Cryptography.Aes.Create();
             aes.IV = new byte[16];
             aes.Key = keyBuffer;
             aes.Mode = System.Security.Cryptography.CipherMode.CBC;
