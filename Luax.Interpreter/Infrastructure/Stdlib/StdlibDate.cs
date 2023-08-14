@@ -148,7 +148,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
         {
             FromJDN((int)jdn, out var year, out var month, out var day);
             FromJT(jdn, out var hour, out var minute, out var second, out var millisecond);
-            return new DateTime(year, month, day, hour, minute, second, millisecond);
+            return new DateTime(year, month, day, hour, minute, second, millisecond, DateTimeKind.Utc);
         }
 
         internal static void FromJDN(int jdn, out int year, out int month, out int day)

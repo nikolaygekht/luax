@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -17,7 +16,7 @@ namespace Luax.Parser
                 if (assembly.IsDynamic)
                     continue;
                 var names1 = assembly.GetManifestResourceNames();
-                if (names1.Any(s => s.EndsWith(resourceName)))
+                if (Array.Exists(names1, s => s.EndsWith(resourceName)))
                     return assembly;
             }
             return null;

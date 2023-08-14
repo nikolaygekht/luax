@@ -86,7 +86,7 @@ namespace Luax.Parser.Ast
             if (TypeId == LuaXType.Boolean)
                 return false;
             if (TypeId == LuaXType.Datetime)
-                return new DateTime(1900, 1, 1);
+                return new DateTime(1900, 1, 1, 0, 0, 0, DateTimeKind.Utc);
             return null;
         }
 
