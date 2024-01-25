@@ -76,6 +76,23 @@ class jsonTest
     end
     
     @Fact()
+    public function getValueAsIntegerString() : void
+        var parser : jsonParser, node : jsonNode, root : jsonNode;
+        var d : string;
+
+        parser = new jsonParser();
+        root = parser.parse(jsonSource3);
+
+        assert.equals(root.getType(), jsonNode.OBJECT, "object");
+        node = root.getPropertyByName("datetime");
+        assert.equals(node.getType(), jsonNode.INT, "int");
+
+        d = node.getValueAsIntegerString();
+
+        assert.isTrue(d == "1665119461000", "getValueAsIntegerString()");
+    end
+    
+    @Fact()
     public function typesOnObject() : void
         var parser : jsonParser, root : jsonNode;
         parser = new jsonParser();
