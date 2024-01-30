@@ -114,7 +114,7 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return node.Value<int>();
         }
 
-        //public extern getValueAsDate() : datetime;
+        //public extern getValueAsDatetime() : datetime;
         [LuaXExternMethod("jsonNode", "getValueAsDatetime")]
         public static object NodeValueAsDatetime(LuaXObjectInstance @this)
         {
@@ -127,6 +127,18 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             dateTime = dateTime.AddMilliseconds(unixTimeStamp).ToLocalTime();
             return dateTime;
+        }
+
+        //public extern getValueAsIntegerString() : string;
+        [LuaXExternMethod("jsonNode", "getValueAsIntegerString")]
+        public static object NodeValueAsIntegerString(LuaXObjectInstance @this)
+        {
+            if (@this.Properties["__node"].Value is not JToken node)
+                throw new ArgumentException("The node isn't properly initialized", nameof(@this));
+
+            if (node.Type != JTokenType.Integer)
+                throw new ArgumentException("The node isn't an integer", nameof(@this));
+            return node.Value<string>();
         }
 
         //public extern getValueAsBoolean() : boolean;
