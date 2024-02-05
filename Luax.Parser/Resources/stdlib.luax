@@ -1002,21 +1002,6 @@ class httpCommunicator
     public extern httpCommunicator() : void;
 end
 
-@DocBrief("HTTP Pdas communication class")
-class httpPdasCommunicator
-    @DocBrief("Send message")
-    @DocParameter("url", "URL of the server")
-    @DocParameter("message", "Message to be sent")
-    @DocParameter("callback", "Callback class instance")
-    public extern sendMessage(url: string, message: string, callback: httpResponseCallback) : void;
-
-    @DocBrief("Cancel message")
-    public extern cancel() : void;
-
-    @DocBrief("Creates a new httpPdasCommunicator")
-    public static extern create(httpCommunicator : httpCommunicator) : httpPdasCommunicator;
-end
-
 @DocBrief("Callback class for processing HTTP response")
 class httpResponseCallback
     @DocBrief("The action method to be invoked on request finished")

@@ -965,44 +965,6 @@ namespace Luax.Parser.Test
         }
 
         [Fact]
-        public void PdasHttpCommunicator()
-        {
-            var app = new LuaXApplication();
-            app.Pass2();
-            app.Classes.Search("httpPdasCommunicator", out var httpPdasCommunicator).Should().BeTrue();
-            httpPdasCommunicator.Constructor.Should().BeNull();
-            httpPdasCommunicator.Methods.Should().HaveCount(3);
-
-            httpPdasCommunicator.SearchMethod("sendMessage", out var method).Should().BeTrue();
-            method.Visibility.Should().Be(LuaXVisibility.Public);
-            method.Static.Should().BeFalse();
-            method.Extern.Should().BeTrue();
-            method.Arguments.Should().HaveCount(3);
-            method.Arguments[0].LuaType.IsString().Should().BeTrue();
-            method.Arguments[1].LuaType.IsString().Should().BeTrue();
-            method.Arguments[2].LuaType.IsObject().Should().BeTrue();
-            method.Arguments[2].LuaType.Class.Should().Be("httpResponseCallback");
-            method.ReturnType.IsVoid().Should().BeTrue();
-
-            httpPdasCommunicator.SearchMethod("create", out method).Should().BeTrue();
-            method.Visibility.Should().Be(LuaXVisibility.Public);
-            method.Static.Should().BeTrue();
-            method.Extern.Should().BeTrue();
-            method.Arguments.Should().HaveCount(1);
-            method.Arguments[0].LuaType.IsObject().Should().BeTrue();
-            method.Arguments[0].LuaType.Class.Should().Be("httpCommunicator");
-            method.ReturnType.IsObject().Should().BeTrue();
-            method.ReturnType.Class.Should().Be("httpPdasCommunicator");
-
-            httpPdasCommunicator.SearchMethod("cancel", out method).Should().BeTrue();
-            method.Visibility.Should().Be(LuaXVisibility.Public);
-            method.Static.Should().BeFalse();
-            method.Extern.Should().BeTrue();
-            method.Arguments.Should().HaveCount(0);
-            method.ReturnType.IsVoid().Should().BeTrue();
-        }
-
-        [Fact]
         public void HttpResponseCallback()
         {
             var app = new LuaXApplication();

@@ -941,24 +941,6 @@ namespace Luax.Interpreter.Test
         }
 
         [Fact]
-        public void TestHttpPdasCommunicator()
-        {
-            var app = new LuaXApplication();
-            app.CompileResource("HttpPdasCommunicatorTest");
-            app.Pass2();
-            var typelib = new LuaXTypesLibrary(app);
-            typelib.SearchClass("test", out var program).Should().BeTrue();
-
-            program.SearchMethod("testSendFxmsg", null, out var method).Should().BeTrue();
-            method.Static.Should().BeTrue();
-            method.Arguments.Should().HaveCount(0);
-            method.ReturnType.IsString().Should().BeTrue();
-            LuaXMethodExecutor.Execute(method, typelib, null, Array.Empty<object>(), out var r);
-            r.Should().BeOfType<string>();
-            r.Should().Be("test content;sdas_response-format = 1;sdas_serialization = x;PDAS_HEADER_DEFLATE = deflated('test content');local 200");
-        }
-
-        [Fact]
         public void TestSchedulerWithDelayMode()
         {
             var app = new LuaXApplication();
