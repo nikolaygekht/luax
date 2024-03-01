@@ -23,6 +23,9 @@
                                 },
                                 {
                                          "include": "#class-definition"
+                                },
+                                {
+                                         "include": "#package-definition"
                                 }
 			]
 		},
@@ -571,6 +574,41 @@
 				{
 					"include": "#class-content"
 				}
+			]
+		},
+		"package-definition": {
+			"name": "meta.class.lua",
+			"begin": "\\b(package)\\s+([_[:alpha:]][_[:alnum:]]*)",
+			"end": "\\bend\\b",
+			"beginCaptures": {
+				"1": {
+					"name": "support.class.lua"
+				},
+				"2": {
+					"name": "variable.other.lua"
+				},
+				"4": {
+					"name": "punctuation.accessor.lua"
+				},
+				"5": {
+					"name": "entity.other.inherited-class.lua"
+				}
+			},
+			"endCaptures": {
+				"0": {
+					"name": "support.class.lua"
+				}
+			},
+			"patterns": [
+				{
+					"include": "#line-comment"
+				},
+                                {
+                                         "include": "#attribute"
+                                },
+                                {
+                                         "include": "#class-definition"
+                                }
 			]
 		},
 		"function": {

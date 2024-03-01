@@ -14,14 +14,21 @@ namespace Luax.Parser
         public LuaXClassCollection Classes { get; } = new LuaXClassCollection();
 
         /// <summary>
+        /// All the packages in the code base
+        /// </summary>
+        public LuaXAstNamedCollection<LuaXPackage> Packages { get; } = new LuaXAstNamedCollection<LuaXPackage>();
+
+        /// <summary>
         /// Constructor
         /// </summary>
         public LuaXApplication()
         {
             var body = TypesLibHeader.ReadTypesLib();
             Classes.AddRange(body.Classes);
+            Packages.AddRange(body.Packages);
             body = StdlibHeader.ReadStdlib();
             Classes.AddRange(body.Classes);
+            Packages.AddRange(body.Packages);
         }
 
         /// <summary>
@@ -37,6 +44,7 @@ namespace Luax.Parser
             var parser = new LuaXAstGenerator();
             var body = parser.Compile(name, source);
             Classes.AddRange(body.Classes);
+            Packages.AddRange(body.Packages);
         }
 
         /// <summary>
@@ -46,6 +54,7 @@ namespace Luax.Parser
         {
             //force indexing
             Classes.Search("", out _);
+            Packages.Search("", out _);
 
             for (int i = 0; i < Classes.Count; i++)
             {

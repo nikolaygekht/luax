@@ -15,6 +15,10 @@ namespace Luax.Parser.Ast
         /// </summary>
         public string Name { get; internal init; }
         /// <summary>
+        /// The package name
+        /// </summary>
+        public string PackageName { get; internal init; }
+        /// <summary>
         /// The parent class
         /// </summary>
         public string Parent { get; internal set; }
@@ -66,11 +70,12 @@ namespace Luax.Parser.Ast
         {
         }
 
-        public LuaXClass(string name, string parent, LuaXElementLocation location)
+        public LuaXClass(string name, string parent, LuaXElementLocation location, string packageName = "")
         {
             Name = name;
             Parent = parent;
             Location = location;
+            PackageName = packageName;
         }
 
         internal bool HasInOwners(LuaXClass @class)
