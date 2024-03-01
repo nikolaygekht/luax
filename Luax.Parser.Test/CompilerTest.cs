@@ -105,7 +105,7 @@ namespace Luax.Parser.Test
         {
             var root = Compiler.CompileResource("ParseClassesInPackage");
 
-            root.Classes.Should().HaveCount(5);
+            root.Classes.Should().HaveCount(6);
             root.Packages.Should().HaveCount(2);
 
             var p = root.Packages[0];
@@ -187,6 +187,13 @@ namespace Luax.Parser.Test
             c = root.Classes[4];
             c.Name.Should().Be("h");
             c.PackageName.Should().Be("anotherPackage");
+            c.HasParent.Should().BeTrue();
+            c.Parent.Should().Be("object");
+            c.Attributes.Should().BeEmpty();
+
+            c = root.Classes[5];
+            c.Name.Should().Be("q");
+            c.PackageName.Should().Be("");
             c.HasParent.Should().BeTrue();
             c.Parent.Should().Be("object");
             c.Attributes.Should().BeEmpty();

@@ -23,3 +23,6 @@ package anotherPackage
   class h
   end
 end
+
+class q
+end

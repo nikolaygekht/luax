@@ -45,14 +45,20 @@ namespace Luax.Parser.Ast.Builder
 
             for (int i = 0; i < root.Children.Count; i++)
             {
-                if (root.Children[i].Symbol == "PACKAGE_DECLARATION")
+                if (root.Children[i].Symbol == "ROOT_ITEM")
                 {
-                    ProcessPackageDeclaration(root.Children[i], body);
+                    IAstNode rootItem = root.Children[i].Children[0];
+                    if (rootItem.Symbol == "PACKAGE_DECLARATION")
+                    {
+                        ProcessPackageDeclaration(rootItem, body);
+                    }
+                    else
+                    {
+                        ProcessClassDeclaration(rootItem, body, "");
+                    }
                 }
                 else
-                {
-                    ProcessClassDeclaration(root.Children[i], body, "");
-                }
+                    throw new LuaXAstGeneratorException(Name, root.Children[i], $"Unexpected element {root.Children[i].Symbol}. Class or package declaration is expected");
             }
 
             Metadata = body.Classes;
