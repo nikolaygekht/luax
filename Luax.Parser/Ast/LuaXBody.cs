@@ -15,6 +15,11 @@
         /// </summary>
         public LuaXClassCollection Classes { get; } = new LuaXClassCollection();
 
+        /// <summary>
+        /// The collection of packages defined in the source file.
+        /// </summary>
+        public LuaXAstNamedCollection<LuaXPackage> Packages { get; } = new LuaXAstNamedCollection<LuaXPackage>();
+
         internal LuaXBody(string name)
         {
             Name = name;

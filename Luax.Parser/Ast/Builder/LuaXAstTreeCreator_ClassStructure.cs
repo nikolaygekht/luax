@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using System.Text;
 using Hime.Redist;
 using Luax.Parser.Ast.LuaExpression;
@@ -44,18 +45,36 @@ namespace Luax.Parser.Ast.Builder
 
             for (int i = 0; i < root.Children.Count; i++)
             {
-                if (root.Children[i].Symbol != "CLASS_DECLARATION")
-                    throw new LuaXAstGeneratorException(Name, root, $"Unexpected element {root.Symbol}. Class declaration is expected");
-                var @class = ProcessClass(root.Children[i], "", body);
-                if (body.Classes.Contains(@class.Name))
-                    throw new LuaXAstGeneratorException(Name, root, $"The class with the name {@class.Name} already defined");
-                body.Classes.Add(@class);
+                if (root.Children[i].Symbol == "ROOT_ITEM")
+                {
+                    IAstNode rootItem = root.Children[i].Children[0];
+                    if (rootItem.Symbol == "PACKAGE_DECLARATION")
+                    {
+                        ProcessPackageDeclaration(rootItem, body);
+                    }
+                    else
+                    {
+                        ProcessClassDeclaration(rootItem, body, "");
+                    }
+                }
+                else
+                    throw new LuaXAstGeneratorException(Name, root.Children[i], $"Unexpected element {root.Children[i].Symbol}. Class or package declaration is expected");
             }
 
             Metadata = body.Classes;
             SetFullClassNames();
 
             return body;
+        }
+
+        private void ProcessClassDeclaration(IAstNode classNode, LuaXBody body, string packageName)
+        {
+            if (classNode.Symbol != "CLASS_DECLARATION")
+                throw new LuaXAstGeneratorException(Name, classNode, $"Unexpected element {classNode.Symbol}. Class declaration is expected");
+            var @class = ProcessClass(classNode, "", body, packageName);
+            if (body.Classes.Contains(@class.Name))
+                throw new LuaXAstGeneratorException(Name, classNode, $"The class with the name {@class.Name} already defined");
+            body.Classes.Add(@class);
         }
 
         private void SetFullClassNames()
@@ -113,12 +132,52 @@ namespace Luax.Parser.Ast.Builder
             return false;
         }
 
+        private LuaXPackage ProcessPackageDeclaration(IAstNode astNode, LuaXBody body)
+        {
+            IAstNode attributes = null;
+            string name = null;
+            IAstNode location = astNode;
+            for (int i = 0; i < astNode.Children.Count; i++)
+            {
+                var child = astNode.Children[i];
+                switch (child.Symbol)
+                {
+                    case "PACKAGE":
+                        location = child;
+                        continue;
+                    case "END":
+                        continue;
+                    case "ATTRIBUTES":
+                        attributes = child;
+                        continue;
+                    case "IDENTIFIER":
+                        name = child.Value;
+                        continue;
+                    case "CLASS_DECLARATION":
+                        ProcessClassDeclaration(child, body, name);
+                        continue;
+                }
+                throw new LuaXAstGeneratorException(Name, astNode, $"Unexpected symbol {child.Symbol}");
+            }
+
+            LuaXPackage package;
+            if (!body.Packages.Search(name, out  package))
+            {
+                package = new LuaXPackage(name, new LuaXElementLocation(Name, location));
+                body.Packages.Add(package);
+            }
+            if (attributes != null)
+                ProcessAttributes(attributes.Children, package.Attributes);
+
+            return package;
+        }
+
         /// <summary>
         /// Processes the class declaration
         /// </summary>
         /// <param name="classNode">correspondent AST node</param>
         /// <returns></returns>
-        public LuaXClass ProcessClass(IAstNode astNode, string prefix = "", LuaXBody body = null)
+        public LuaXClass ProcessClass(IAstNode astNode, string prefix = "", LuaXBody body = null, string packageName = "")
         {
             IAstNode attributes = null;
             string name = null;
@@ -153,7 +212,7 @@ namespace Luax.Parser.Ast.Builder
                 throw new LuaXAstGeneratorException(Name, astNode, $"Unexpected symbol {child.Symbol}");
             }
 
-            var @class = new LuaXClass(name, parent ?? "object", new LuaXElementLocation(Name, location));
+            var @class = new LuaXClass(name, parent ?? "object", new LuaXElementLocation(Name, location), packageName);
 
             if (attributes != null)
                 ProcessAttributes(attributes.Children, @class.Attributes);

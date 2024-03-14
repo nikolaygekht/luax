@@ -1,0 +1,28 @@
+﻿@s("my package")
+package myPackage
+  class a
+  end
+
+  class b : a
+  end
+
+  @x()
+  class c : b
+  end
+end
+
+@u("qqq")
+package myPackage
+  @y(1, -5, nil)
+  @z(true, "hello")
+  class d
+  end
+end
+
+package anotherPackage
+  class h
+  end
+end
+
+class q
+end

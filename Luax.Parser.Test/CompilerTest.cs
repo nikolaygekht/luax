@@ -101,6 +101,105 @@ namespace Luax.Parser.Test
         }
 
         [Fact]
+        public void ParseClassesInPackage()
+        {
+            var root = Compiler.CompileResource("ParseClassesInPackage");
+
+            root.Classes.Should().HaveCount(6);
+            root.Packages.Should().HaveCount(2);
+
+            var p = root.Packages[0];
+            p.Name.Should().Be("myPackage");
+            p.Attributes.Should().HaveCount(2);
+            p.Location.Line.Should().Be(2);
+            p.Location.Column.Should().Be(1);
+            var q = p.Attributes[0];
+            q.Name.Should().Be("s");
+            q.Parameters.Should().HaveCount(1);
+            q.Parameters[0].Value.Should().Be("my package");
+            q = p.Attributes[1];
+            q.Name.Should().Be("u");
+            q.Parameters.Should().HaveCount(1);
+            q.Parameters[0].Value.Should().Be("qqq");
+
+            p = root.Packages[1];
+            p.Name.Should().Be("anotherPackage");
+            p.Attributes.Should().BeEmpty();
+
+            var c = root.Classes[0];
+            c.Name.Should().Be("a");
+            c.PackageName.Should().Be("myPackage");
+            c.HasParent.Should().BeTrue();
+            c.Parent.Should().Be("object");
+            c.Attributes.Should().BeEmpty();
+            c.Location.Source.Should().Be("ParseClassesInPackage");
+            c.Location.Line.Should().Be(3);
+            c.Location.Column.Should().Be(3);
+
+            c = root.Classes[1];
+            c.Name.Should().Be("b");
+            c.PackageName.Should().Be("myPackage");
+            c.HasParent.Should().BeTrue();
+            c.Parent.Should().Be("a");
+            c.Attributes.Should().BeEmpty();
+            c.Location.Source.Should().Be("ParseClassesInPackage");
+            c.Location.Line.Should().Be(6);
+            c.Location.Column.Should().Be(3);
+
+            c = root.Classes[2];
+            c.Name.Should().Be("c");
+            c.PackageName.Should().Be("myPackage");
+            c.HasParent.Should().BeTrue();
+            c.Parent.Should().Be("b");
+            c.Location.Source.Should().Be("ParseClassesInPackage");
+            c.Location.Line.Should().Be(10);
+            c.Location.Column.Should().Be(3);
+
+            c.Attributes.Should().HaveCount(1);
+            var a = c.Attributes[0];
+            a.Name.Should().Be("x");
+            c.PackageName.Should().Be("myPackage");
+            a.Parameters.Should().BeEmpty();
+            a.Location.Source.Should().Be("ParseClassesInPackage");
+            a.Location.Line.Should().Be(9);
+            a.Location.Column.Should().Be(3);
+
+            c = root.Classes[3];
+            c.Name.Should().Be("d");
+            c.PackageName.Should().Be("myPackage");
+            c.HasParent.Should().BeTrue();
+            c.Parent.Should().Be("object");
+            c.Attributes.Should().HaveCount(2);
+
+            a = c.Attributes[0];
+            a.Name.Should().Be("y");
+            a.Parameters.Should().HaveCount(3);
+            a.Parameters[0].Value.Should().Be(1);
+            a.Parameters[1].Value.Should().Be(-5);
+            a.Parameters[2].IsNil.Should().BeTrue();
+
+            a = c.Attributes[1];
+            a.Name.Should().Be("z");
+            a.Parameters.Should().HaveCount(2);
+            a.Parameters[0].Value.Should().Be(true);
+            a.Parameters[1].Value.Should().Be("hello");
+
+            c = root.Classes[4];
+            c.Name.Should().Be("h");
+            c.PackageName.Should().Be("anotherPackage");
+            c.HasParent.Should().BeTrue();
+            c.Parent.Should().Be("object");
+            c.Attributes.Should().BeEmpty();
+
+            c = root.Classes[5];
+            c.Name.Should().Be("q");
+            c.PackageName.Should().Be("");
+            c.HasParent.Should().BeTrue();
+            c.Parent.Should().Be("object");
+            c.Attributes.Should().BeEmpty();
+        }
+
+        [Fact]
         public void ParseClassProperties()
         {
             var root = Compiler.CompileResource("ParseClassProperties");
