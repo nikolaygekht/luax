@@ -95,9 +95,10 @@ namespace Luax.Interpreter.Test
         [Fact]
         public void ExecuteTheory_OK()
         {
+            string separator = System.Globalization.CultureInfo.CurrentUICulture.NumberFormat.CurrencyDecimalSeparator;
             mExecutor.Run(System.Array.Empty<string>());
             var args = mExecutionResults.Find(args => args.Class == "suite1" && args.Method == "theory1" &&
-                        args.Data == "1, 1.5, \"abcd\", true");
+                        args.Data == "1, 1" + separator + "5, \"abcd\", true");
             args.Should().NotBeNull();
             args.Status.Should().Be(LuaXTestStatus.OK);
         }
@@ -105,9 +106,10 @@ namespace Luax.Interpreter.Test
         [Fact]
         public void ExecuteTheory_Assert()
         {
+            string separator = System.Globalization.CultureInfo.CurrentUICulture.NumberFormat.CurrencyDecimalSeparator;
             mExecutor.Run(System.Array.Empty<string>());
             var args = mExecutionResults.Find(args => args.Class == "suite1" && args.Method == "theory1" &&
-                        args.Data == "2, 1.5, \"abcd\", true");
+                        args.Data == "2, 1" + separator + "5, \"abcd\", true");
             args.Should().NotBeNull();
             args.Status.Should().Be(LuaXTestStatus.Assert);
         }

@@ -1014,6 +1014,10 @@ package LuaxStdlib
         @DocParameter("error", "Error text")
         public function onError(error : string) : void
         end
+        @DocBrief("The action method to be invoked on communicator state change")
+        @DocParameter("state", "Current state")
+        public function onStateChange(state : int) : void
+        end
     end
 
     @DocBrief("Scheduler class")

@@ -1070,7 +1070,7 @@ namespace Luax.Parser.Test
             app.Pass2();
             app.Classes.Search("httpResponseCallback", out var httpResponseCallback).Should().BeTrue();
             httpResponseCallback.Constructor.Should().BeNull();
-            httpResponseCallback.Methods.Should().HaveCount(2);
+            httpResponseCallback.Methods.Should().HaveCount(3);
 
             httpResponseCallback.SearchMethod("onComplete", out var method).Should().BeTrue();
             method.Visibility.Should().Be(LuaXVisibility.Public);
@@ -1087,6 +1087,14 @@ namespace Luax.Parser.Test
             method.Extern.Should().BeFalse();
             method.Arguments.Should().HaveCount(1);
             method.Arguments[0].LuaType.IsString().Should().BeTrue();
+            method.ReturnType.IsVoid().Should().BeTrue();
+
+            httpResponseCallback.SearchMethod("onStateChange", out method).Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
+            method.Static.Should().BeFalse();
+            method.Extern.Should().BeFalse();
+            method.Arguments.Should().HaveCount(1);
+            method.Arguments[0].LuaType.IsInteger().Should().BeTrue();
             method.ReturnType.IsVoid().Should().BeTrue();
         }
 
