@@ -59,6 +59,26 @@ namespace Luax.Interpreter.Infrastructure.Stdlib
             return null;
         }
 
+        //public extern delete(url: string, callback: httpResponseCallback) : void;
+        [LuaXExternMethod("httpCommunicator", "delete")]
+        public static object Delete(LuaXObjectInstance @this, string url, LuaXObjectInstance callback)
+        {
+            if (@this == null)
+                throw new ArgumentNullException(nameof(@this));
+            if (@this.Properties["__httpClient"].Value is not List<string> l)
+                throw new ArgumentException("The httpCommunicator isn't properly initialized", nameof(@this));
+
+            callback.Class.SearchMethod("onComplete", null, out LuaXMethod method);
+            if (method == null)
+                throw new ArgumentException("'onComplete' method not found in instance of 'httpResponseCallback' class", nameof(callback));
+
+            l.Add(url);
+            string content = string.Join(';', l.ToArray());
+            LuaXMethodExecutor.Execute(method, mTypeLibrary, callback, new object[] { 200, content }, out var _);
+
+            return null;
+        }
+
         //public extern post(url: string, body: string, callback: httpResponseCallback) : void;
         [LuaXExternMethod("httpCommunicator", "post")]
         public static object Post(LuaXObjectInstance @this, string url, string body, LuaXObjectInstance callback)

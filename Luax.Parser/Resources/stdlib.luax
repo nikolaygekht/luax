@@ -991,6 +991,11 @@ package LuaxStdlib
         @DocParameter("callback", "Callback class instance")
         public extern post(url: string, body: string, callback: httpResponseCallback) : void;
 
+        @DocBrief("DELETE method")
+        @DocParameter("url", "URL of the server")
+        @DocParameter("callback", "Callback class instance")
+        public extern delete(url: string, callback: httpResponseCallback) : void;
+
         @DocBrief("Sets request header")
         @DocParameter("name", "Name of the header")
         @DocParameter("value", "Value of the header")

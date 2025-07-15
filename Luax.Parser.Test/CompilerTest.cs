@@ -1023,9 +1023,19 @@ namespace Luax.Parser.Test
             app.Pass2();
             app.Classes.Search("httpCommunicator", out var httpCommunicator).Should().BeTrue();
             httpCommunicator.Constructor.Should().NotBeNull();
-            httpCommunicator.Methods.Should().HaveCount(5);
+            httpCommunicator.Methods.Should().HaveCount(6);
 
             httpCommunicator.SearchMethod("get", out var method).Should().BeTrue();
+            method.Visibility.Should().Be(LuaXVisibility.Public);
+            method.Static.Should().BeFalse();
+            method.Extern.Should().BeTrue();
+            method.Arguments.Should().HaveCount(2);
+            method.Arguments[0].LuaType.IsString().Should().BeTrue();
+            method.Arguments[1].LuaType.IsObject().Should().BeTrue();
+            method.Arguments[1].LuaType.Class.Should().Be("httpResponseCallback");
+            method.ReturnType.IsVoid().Should().BeTrue();
+
+            httpCommunicator.SearchMethod("delete", out method).Should().BeTrue();
             method.Visibility.Should().Be(LuaXVisibility.Public);
             method.Static.Should().BeFalse();
             method.Extern.Should().BeTrue();

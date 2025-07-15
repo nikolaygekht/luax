@@ -23,6 +23,15 @@
        return callback.result1;
    end
 
+   public static function testDelete() : string
+       var communicator : httpCommunicator;
+       var callback : responseCallback;
+       communicator = new httpCommunicator();
+       callback = new responseCallback();
+       communicator.delete("local", callback);
+       return callback.result1;
+   end
+
    public static function testPost() : string
        var communicator : httpCommunicator;
        var callback : responseCallback;
