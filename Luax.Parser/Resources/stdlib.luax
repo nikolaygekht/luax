@@ -2,6 +2,7 @@
 -- standard library expected from the target platform
 -- -------------------------------------------------------
 package LuaxStdlib
+    @DocInclude()
     @DocBrief("The library of standard math, string and date functions")
     class stdlib
         -- -------------------------------------------------------
@@ -844,6 +845,7 @@ package LuaxStdlib
     -- ------------------------------------------------------------
     -- action class
     -- ------------------------------------------------------------
+    @DocInclude()
     @Interface()
     @DocBrief("The interface to an action")
     class action
@@ -978,6 +980,7 @@ package LuaxStdlib
         public static extern fatal(message : string) : void;
     end
 
+    @DocInclude()
     @DocBrief("HTTP communication class")
     class httpCommunicator
         @DocBrief("GET method")
@@ -1008,6 +1011,7 @@ package LuaxStdlib
         public extern httpCommunicator() : void;
     end
 
+    @DocInclude()
     @DocBrief("Callback class for processing HTTP response")
     class httpResponseCallback
         @DocBrief("The action method to be invoked on request finished")
@@ -1025,6 +1029,7 @@ package LuaxStdlib
         end
     end
 
+    @DocInclude()
     @DocBrief("Scheduler class")
     class scheduler
         @DocBrief("Start immediately periodical execution of the action")
