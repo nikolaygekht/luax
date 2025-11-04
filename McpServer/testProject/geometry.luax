@@ -1,0 +1,94 @@
+@DocBrief("Geometry shapes and calculations")
+package Geometry
+
+    @DocBrief("A point in 2D space")
+    @DocInclude()
+    class Point
+        public var x: real;
+        public var y: real;
+
+        @DocBrief("Creates a new point at the origin")
+        public function Point(): void
+            this.x = 0.0;
+            this.y = 0.0;
+        end
+
+        @DocBrief("Calculates the distance to another point")
+        public function distanceTo(other: Point): real
+            var dx: real;
+            var dy: real;
+            dx = other.x - this.x;
+            dy = other.y - this.y;
+            return stdlib.sqrt(dx * dx + dy * dy);
+        end
+
+        @DocBrief("Returns a string representation of the point")
+        public function toString(): string
+            return "Point(" .. this.x .. ", " .. this.y .. ")";
+        end
+    end
+
+    @DocBrief("A circle in 2D space")
+    @DocInclude()
+    class Circle
+        public var center: Point;
+        public var radius: real;
+
+        @DocBrief("Creates a new circle")
+        public function Circle(): void
+            this.center = new Point();
+            this.radius = 1.0;
+        end
+
+        @DocBrief("Calculates the area of the circle")
+        public function getArea(): real
+            return stdlib.PI * this.radius * this.radius;
+        end
+
+        @DocBrief("Calculates the circumference of the circle")
+        public function getCircumference(): real
+            return 2.0 * stdlib.PI * this.radius;
+        end
+
+        @DocBrief("Checks if a point is inside the circle")
+        public function contains(point: Point): boolean
+            var distance: real;
+            distance = this.center.distanceTo(point);
+            return distance <= this.radius;
+        end
+    end
+
+    @DocBrief("A rectangle in 2D space")
+    @DocInclude()
+    class Rectangle
+        public var topLeft: Point;
+        public var width: real;
+        public var height: real;
+
+        @DocBrief("Creates a new rectangle")
+        public function Rectangle(): void
+            this.topLeft = new Point();
+            this.width = 1.0;
+            this.height = 1.0;
+        end
+
+        @DocBrief("Calculates the area of the rectangle")
+        public function getArea(): real
+            return this.width * this.height;
+        end
+
+        @DocBrief("Calculates the perimeter of the rectangle")
+        public function getPerimeter(): real
+            return 2.0 * (this.width + this.height);
+        end
+
+        @DocBrief("Checks if a point is inside the rectangle")
+        public function contains(point: Point): boolean
+            var inX: boolean;
+            var inY: boolean;
+            inX = (point.x >= this.topLeft.x) and (point.x <= this.topLeft.x + this.width);
+            inY = (point.y >= this.topLeft.y) and (point.y <= this.topLeft.y + this.height);
+            return inX and inY;
+        end
+    end
+end

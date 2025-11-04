@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "luax": {
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "../LuaX.Mcp.Server/LuaX.Mcp.Server.csproj"
+      ],
+      "env": {
+        "DOTNET_CLI_TELEMETRY_OPTOUT": "1"
+      }
+    }
+  }
+}

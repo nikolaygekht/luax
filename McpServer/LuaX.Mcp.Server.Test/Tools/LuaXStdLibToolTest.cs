@@ -73,24 +73,65 @@ public class LuaXStdLibToolTest
     }
 
     [Fact]
-    public void GetStandardLibrary_StdlibClass_ShouldHaveMethods()
+    public void GetStandardLibrary_ShouldReturnSummaryWithoutMethods()
     {
         // Act
         var response = LuaXStdLibTool.GetStandardLibrary();
 
-        // Assert
+        // Assert - Summary mode should have empty methods array
         var stdlibClass = response.StandardLibrary!.Classes.First(c => c.Name == "stdlib");
-        stdlibClass.Methods.Should().NotBeEmpty();
+        stdlibClass.Methods.Should().BeEmpty();
+        stdlibClass.MethodCount.Should().BeGreaterThan(0);
     }
 
     [Fact]
-    public void GetStandardLibrary_StdlibClass_ShouldHaveStringMethods()
+    public void GetStandardLibrary_ShouldIncludeHint()
     {
         // Act
         var response = LuaXStdLibTool.GetStandardLibrary();
 
         // Assert
-        var stdlibClass = response.StandardLibrary!.Classes.First(c => c.Name == "stdlib");
+        response.Hint.Should().NotBeNullOrEmpty();
+        response.Hint.Should().Contain("get_stdlib_class");
+    }
+
+    // New tests for get_stdlib_class tool
+    [Fact]
+    public void GetStdLibClass_WithValidClassName_ShouldReturnSuccess()
+    {
+        // Act
+        var response = LuaXStdLibTool.GetStdLibClass("stdlib");
+
+        // Assert
+        response.Should().NotBeNull();
+        response.Success.Should().BeTrue();
+        response.Error.Should().BeNull();
+        response.Class.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void GetStdLibClass_WithInvalidClassName_ShouldReturnError()
+    {
+        // Act
+        var response = LuaXStdLibTool.GetStdLibClass("nonexistent");
+
+        // Assert
+        response.Success.Should().BeFalse();
+        response.Error.Should().NotBeNullOrEmpty();
+        response.Error.Should().Contain("not found");
+        response.Error.Should().Contain("Available classes");
+        response.Class.Should().BeNull();
+    }
+
+    [Fact]
+    public void GetStdLibClass_Stdlib_ShouldHaveStringMethods()
+    {
+        // Act
+        var response = LuaXStdLibTool.GetStdLibClass("stdlib");
+
+        // Assert
+        var stdlibClass = response.Class!;
+        stdlibClass.Methods.Should().NotBeEmpty();
         stdlibClass.Methods.Should().Contain(m => m.Name == "len");
         stdlibClass.Methods.Should().Contain(m => m.Name == "indexOf");
         stdlibClass.Methods.Should().Contain(m => m.Name == "upper");
@@ -98,13 +139,13 @@ public class LuaXStdLibToolTest
     }
 
     [Fact]
-    public void GetStandardLibrary_StdlibClass_ShouldHaveMathMethods()
+    public void GetStdLibClass_Stdlib_ShouldHaveMathMethods()
     {
         // Act
-        var response = LuaXStdLibTool.GetStandardLibrary();
+        var response = LuaXStdLibTool.GetStdLibClass("stdlib");
 
         // Assert
-        var stdlibClass = response.StandardLibrary!.Classes.First(c => c.Name == "stdlib");
+        var stdlibClass = response.Class!;
         stdlibClass.Methods.Should().Contain(m => m.Name == "sin");
         stdlibClass.Methods.Should().Contain(m => m.Name == "cos");
         stdlibClass.Methods.Should().Contain(m => m.Name == "sqrt");
@@ -112,13 +153,13 @@ public class LuaXStdLibToolTest
     }
 
     [Fact]
-    public void GetStandardLibrary_StdlibClass_ShouldHaveDateTimeMethods()
+    public void GetStdLibClass_Stdlib_ShouldHaveDateTimeMethods()
     {
         // Act
-        var response = LuaXStdLibTool.GetStandardLibrary();
+        var response = LuaXStdLibTool.GetStdLibClass("stdlib");
 
         // Assert
-        var stdlibClass = response.StandardLibrary!.Classes.First(c => c.Name == "stdlib");
+        var stdlibClass = response.Class!;
         stdlibClass.Methods.Should().Contain(m => m.Name == "mkdate");
         stdlibClass.Methods.Should().Contain(m => m.Name == "nowlocal");
         stdlibClass.Methods.Should().Contain(m => m.Name == "year");
@@ -126,38 +167,38 @@ public class LuaXStdLibToolTest
     }
 
     [Fact]
-    public void GetStandardLibrary_Methods_ShouldHaveDescriptions()
+    public void GetStdLibClass_Methods_ShouldHaveDescriptions()
     {
         // Act
-        var response = LuaXStdLibTool.GetStandardLibrary();
+        var response = LuaXStdLibTool.GetStdLibClass("stdlib");
 
         // Assert
-        var stdlibClass = response.StandardLibrary!.Classes.First(c => c.Name == "stdlib");
+        var stdlibClass = response.Class!;
         var lenMethod = stdlibClass.Methods.First(m => m.Name == "len");
         lenMethod.Description.Should().NotBeNullOrEmpty();
         lenMethod.Description.Should().Contain("length");
     }
 
     [Fact]
-    public void GetStandardLibrary_Methods_ShouldHaveReturnTypes()
+    public void GetStdLibClass_Methods_ShouldHaveReturnTypes()
     {
         // Act
-        var response = LuaXStdLibTool.GetStandardLibrary();
+        var response = LuaXStdLibTool.GetStdLibClass("stdlib");
 
         // Assert
-        var stdlibClass = response.StandardLibrary!.Classes.First(c => c.Name == "stdlib");
+        var stdlibClass = response.Class!;
         var lenMethod = stdlibClass.Methods.First(m => m.Name == "len");
         lenMethod.ReturnType.Should().Contain("int");
     }
 
     [Fact]
-    public void GetStandardLibrary_Methods_ShouldHaveParameters()
+    public void GetStdLibClass_Methods_ShouldHaveParameters()
     {
         // Act
-        var response = LuaXStdLibTool.GetStandardLibrary();
+        var response = LuaXStdLibTool.GetStdLibClass("stdlib");
 
         // Assert
-        var stdlibClass = response.StandardLibrary!.Classes.First(c => c.Name == "stdlib");
+        var stdlibClass = response.Class!;
         var indexOfMethod = stdlibClass.Methods.First(m => m.Name == "indexOf");
         indexOfMethod.Parameters.Should().HaveCount(3);
         indexOfMethod.Parameters.Should().Contain(p => p.Name == "s" && p.Type.Contains("string"));
@@ -166,27 +207,41 @@ public class LuaXStdLibToolTest
     }
 
     [Fact]
-    public void GetStandardLibrary_Methods_ShouldIndicateStatic()
+    public void GetStdLibClass_Methods_ShouldIndicateStatic()
     {
         // Act
-        var response = LuaXStdLibTool.GetStandardLibrary();
+        var response = LuaXStdLibTool.GetStdLibClass("stdlib");
 
         // Assert
-        var stdlibClass = response.StandardLibrary!.Classes.First(c => c.Name == "stdlib");
+        var stdlibClass = response.Class!;
         var lenMethod = stdlibClass.Methods.First(m => m.Name == "len");
         lenMethod.IsStatic.Should().BeTrue();
     }
 
     [Fact]
-    public void GetStandardLibrary_Methods_ShouldIndicateExtern()
+    public void GetStdLibClass_Methods_ShouldIndicateExtern()
     {
         // Act
-        var response = LuaXStdLibTool.GetStandardLibrary();
+        var response = LuaXStdLibTool.GetStdLibClass("stdlib");
 
         // Assert
-        var stdlibClass = response.StandardLibrary!.Classes.First(c => c.Name == "stdlib");
+        var stdlibClass = response.Class!;
         var lenMethod = stdlibClass.Methods.First(m => m.Name == "len");
         lenMethod.IsExtern.Should().BeTrue();
+    }
+
+    [Fact]
+    public void GetStdLibClass_ShouldBeCaseInsensitive()
+    {
+        // Act
+        var response1 = LuaXStdLibTool.GetStdLibClass("stdlib");
+        var response2 = LuaXStdLibTool.GetStdLibClass("STDLIB");
+        var response3 = LuaXStdLibTool.GetStdLibClass("StdLib");
+
+        // Assert
+        response1.Success.Should().BeTrue();
+        response2.Success.Should().BeTrue();
+        response3.Success.Should().BeTrue();
     }
 
     [Fact]
@@ -221,8 +276,9 @@ public class LuaXStdLibToolTest
         var response1 = LuaXStdLibTool.GetStandardLibrary();
         var response2 = LuaXStdLibTool.GetStandardLibrary();
 
-        // Assert - Should return same instance (cached)
-        response1.StandardLibrary.Should().BeSameAs(response2.StandardLibrary);
+        // Assert - Should return equivalent data (underlying data is cached)
+        response1.StandardLibrary.Should().BeEquivalentTo(response2.StandardLibrary);
+        response1.StandardLibrary!.Classes.Length.Should().Be(response2.StandardLibrary!.Classes.Length);
     }
 
     [Fact]

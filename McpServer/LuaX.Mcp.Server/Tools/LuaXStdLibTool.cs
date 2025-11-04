@@ -14,7 +14,7 @@ public static class LuaXStdLibTool
     private static StdLibInfo? _cachedStdLibInfo;
     private static readonly object _lock = new object();
 
-    [McpServerTool, Description("Get comprehensive information about the LuaX standard library, including all classes, methods, and their documentation")]
+    [McpServerTool, Description("Get an overview of the LuaX standard library with class names, descriptions, and categories. For detailed method information on a specific class, use get_stdlib_class tool.")]
     public static StdLibResponse GetStandardLibrary()
     {
         try
@@ -31,11 +31,15 @@ public static class LuaXStdLibTool
                 }
             }
 
+            // Return summary version (without detailed methods)
+            var summary = CreateSummary(_cachedStdLibInfo);
+
             return new StdLibResponse
             {
                 Success = true,
-                StandardLibrary = _cachedStdLibInfo,
-                Error = null
+                StandardLibrary = summary,
+                Error = null,
+                Hint = "Use get_stdlib_class(className) to get detailed method information for a specific class"
             };
         }
         catch (Exception ex)
@@ -47,6 +51,84 @@ public static class LuaXStdLibTool
                 StandardLibrary = null
             };
         }
+    }
+
+    [McpServerTool, Description("Get detailed information about a specific standard library class, including all methods, parameters, and documentation")]
+    public static StdLibClassResponse GetStdLibClass([Description("Name of the standard library class (e.g., 'stdlib', 'file', 'string_map')"), System.ComponentModel.DataAnnotations.Required] string className)
+    {
+        try
+        {
+            // Use cached info if available
+            if (_cachedStdLibInfo == null)
+            {
+                lock (_lock)
+                {
+                    if (_cachedStdLibInfo == null)
+                    {
+                        _cachedStdLibInfo = LoadStandardLibrary();
+                    }
+                }
+            }
+
+            var classInfo = _cachedStdLibInfo.Classes.FirstOrDefault(c =>
+                c.Name.Equals(className, StringComparison.OrdinalIgnoreCase));
+
+            if (classInfo == null)
+            {
+                var availableClasses = string.Join(", ", _cachedStdLibInfo.Classes.Select(c => c.Name).OrderBy(n => n));
+                return new StdLibClassResponse
+                {
+                    Success = false,
+                    Error = $"Class '{className}' not found in standard library. Available classes: {availableClasses}",
+                    Class = null
+                };
+            }
+
+            return new StdLibClassResponse
+            {
+                Success = true,
+                Class = classInfo,
+                Error = null
+            };
+        }
+        catch (Exception ex)
+        {
+            return new StdLibClassResponse
+            {
+                Success = false,
+                Error = $"Failed to get class information: {ex.Message}",
+                Class = null
+            };
+        }
+    }
+
+    private static StdLibInfo CreateSummary(StdLibInfo fullInfo)
+    {
+        // Create summary with class count but without detailed methods
+        var summaryClasses = fullInfo.Classes.Select(cls => new StdLibClassInfo
+        {
+            Name = cls.Name,
+            Description = cls.Description,
+            Category = cls.Category,
+            Methods = Array.Empty<StdLibMethodInfo>(), // Empty - details available via get_stdlib_class
+            Constants = cls.Constants.Select(c => new StdLibConstantInfo
+            {
+                Name = c.Name,
+                Value = c.Value,
+                Description = "" // Keep constants but without descriptions to save space
+            }).ToArray(),
+            MethodCount = cls.Methods.Length,
+            ConstantCount = cls.Constants.Length
+        }).ToArray();
+
+        return new StdLibInfo
+        {
+            PackageName = fullInfo.PackageName,
+            Description = fullInfo.Description,
+            Classes = summaryClasses,
+            Categories = fullInfo.Categories,
+            TotalClasses = fullInfo.Classes.Length
+        };
     }
 
     private static StdLibInfo LoadStandardLibrary()
@@ -175,6 +257,17 @@ public record StdLibResponse
     public bool Success { get; init; }
     public StdLibInfo? StandardLibrary { get; init; }
     public string? Error { get; init; }
+    public string? Hint { get; init; }
+}
+
+/// <summary>
+/// Response from the GetStdLibClass tool.
+/// </summary>
+public record StdLibClassResponse
+{
+    public bool Success { get; init; }
+    public StdLibClassInfo? Class { get; init; }
+    public string? Error { get; init; }
 }
 
 /// <summary>
@@ -186,6 +279,7 @@ public record StdLibInfo
     public string Description { get; init; } = string.Empty;
     public StdLibClassInfo[] Classes { get; init; } = Array.Empty<StdLibClassInfo>();
     public CategoryInfo[] Categories { get; init; } = Array.Empty<CategoryInfo>();
+    public int TotalClasses { get; init; }
 }
 
 /// <summary>
@@ -208,6 +302,8 @@ public record StdLibClassInfo
     public string Category { get; init; } = string.Empty;
     public StdLibMethodInfo[] Methods { get; init; } = Array.Empty<StdLibMethodInfo>();
     public StdLibConstantInfo[] Constants { get; init; } = Array.Empty<StdLibConstantInfo>();
+    public int MethodCount { get; init; }
+    public int ConstantCount { get; init; }
 }
 
 /// <summary>

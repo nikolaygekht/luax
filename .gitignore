@@ -6,6 +6,8 @@ TestResults/
 *.csproj.user
 *.nupkg
 *.log
+logs/
+Logs/
 *.~*
 sonarqube.bat
 sonarqube.sh

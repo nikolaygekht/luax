@@ -12,7 +12,7 @@ namespace LuaX.Mcp.Server.Tools;
 [McpServerToolType]
 public static class LuaXParseTool
 {
-    [McpServerTool, Description("Parse LuaX source code and return a simplified AST structure with classes, packages, methods, and properties")]
+    [McpServerTool, Description("Parse and validate LuaX source code, returning AST with classes, packages, methods, and properties. IMPORTANT: Always use this tool FIRST before suggesting any changes to .luax files to validate syntax and understand the existing code structure.")]
     public static ParseResponse Parse([Description("LuaX source code to parse"), Required] string sourceCode, [Description("Optional name for the source (e.g., filename)")] string? sourceName = null)
     {
         if (string.IsNullOrWhiteSpace(sourceCode))

@@ -1,0 +1,56 @@
+@DocBrief("A simple calculator class demonstrating LuaX syntax")
+@DocInclude()
+class Calculator
+    -- Properties
+    private var lastResult: real;
+
+    -- Constructor
+    public function Calculator()
+        lastResult = 0.0;
+    end
+
+    @DocBrief("Adds two numbers and returns the result")
+    @DocParameter("a", "First number")
+    @DocParameter("b", "Second number")
+    @DocReturn("The sum of a and b")
+    public function add(a: real, b: real): real
+        lastResult = a + b;
+        return lastResult;
+    end
+
+    @DocBrief("Subtracts b from a")
+    public function subtract(a: real, b: real): real
+        lastResult = a - b;
+        return lastResult;
+    end
+
+    @DocBrief("Multiplies two numbers")
+    public function multiply(a: real, b: real): real
+        lastResult = a * b;
+        return lastResult;
+    end
+
+    @DocBrief("Divides a by b")
+    public function divide(a: real, b: real): real
+        if b == 0.0 then
+            throw "Division by zero";
+        end
+        lastResult = a / b;
+        return lastResult;
+    end
+
+    @DocBrief("Returns the last calculated result")
+    public function getLastResult(): real
+        return lastResult;
+    end
+
+    @DocBrief("Clears the last result")
+    public function clear(): void
+        lastResult = 0.0;
+    end
+
+    @DocBrief("Calculates the square root using stdlib")
+    public static function squareRoot(x: real): real
+        return stdlib.sqrt(x);
+    end
+end
