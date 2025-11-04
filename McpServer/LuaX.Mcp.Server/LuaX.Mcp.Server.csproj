@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>LuaX.Mcp.Server</RootNamespace>
+    <AssemblyName>LuaX.Mcp.Server</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <NoWarn>$(NoWarn);CS8032</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Model Context Protocol SDK -->
+    <PackageReference Include="ModelContextProtocol" Version="0.4.0-preview.3" />
+
+    <!-- JSON serialization -->
+    <PackageReference Include="System.Text.Json" Version="9.0.10" />
+
+    <!-- Dependency Injection and Hosting -->
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+
+    <!-- Logging with Serilog -->
+    <PackageReference Include="Serilog" Version="4.2.0" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="9.0.0" />
+    <PackageReference Include="Serilog.Extensions.Hosting" Version="9.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Reference existing LuaX projects -->
+    <ProjectReference Include="..\..\Luax.Parser\Luax.Parser.csproj" />
+    <ProjectReference Include="..\..\Luax.Interpreter\Luax.Interpreter.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Embed resources for luax:// URI support -->
+    <EmbeddedResource Include="Resources\**\*" />
+
+    <!-- Embed grammar file from its original location -->
+    <EmbeddedResource Include="..\..\grammar\luax.gram">
+      <LogicalName>LuaX.Mcp.Server.Resources.luax.gram</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

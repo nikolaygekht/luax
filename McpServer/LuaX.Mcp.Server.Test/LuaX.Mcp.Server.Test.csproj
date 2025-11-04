@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>LuaX.Mcp.Server.Test</RootNamespace>
+    <AssemblyName>LuaX.Mcp.Server.Test</AssemblyName>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- xUnit Framework -->
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+
+    <!-- Assertion Libraries - Using FluentAssertions 7.x as requested -->
+    <PackageReference Include="FluentAssertions" Version="[7.2.0, 8)" />
+
+    <!-- Mocking Framework -->
+    <PackageReference Include="Moq" Version="4.20.70" />
+
+    <!-- Code Coverage -->
+    <PackageReference Include="coverlet.collector" Version="6.0.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="LiquidTestReports.Markdown" Version="1.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Reference main project -->
+    <ProjectReference Include="..\LuaX.Mcp.Server\LuaX.Mcp.Server.csproj" />
+
+    <!-- Reference LuaX projects for test utilities -->
+    <ProjectReference Include="..\..\Luax.Parser\Luax.Parser.csproj" />
+    <ProjectReference Include="..\..\Luax.Interpreter\Luax.Interpreter.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Embed test .luax files as resources -->
+    <EmbeddedResource Include="TestSources\**\*.luax" />
+  </ItemGroup>
+
+</Project>
