@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net60</TargetFramework>
+   <TargetFrameworks>net80</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>

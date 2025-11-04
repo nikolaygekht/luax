@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-	<NoWarn>$(NoWarn);CS8032</NoWarn>
+    <TargetFrameworks>net80</TargetFrameworks>
+    <NoWarn>$(NoWarn);CS8032</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
