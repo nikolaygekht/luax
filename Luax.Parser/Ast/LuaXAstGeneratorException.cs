@@ -12,7 +12,6 @@ namespace Luax.Parser.Ast
     ///
     /// See [clink=LuaXAstGenerator.Create]LuaXAstGenerator.Create[/clink] for details.
     /// </summary>
-    [Serializable]
     public class LuaXAstGeneratorException : Exception
     {
         public LuaXAstGeneratorErrorCollection Errors { get; } = new LuaXAstGeneratorErrorCollection();
@@ -46,13 +45,6 @@ namespace Luax.Parser.Ast
             SourceName = name;
         }
 
-        protected LuaXAstGeneratorException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            SourceName = info.GetString("sourcename");
-            Errors = (LuaXAstGeneratorErrorCollection)info.GetValue("parsererrors", typeof(LuaXAstGeneratorErrorCollection));
-        }
-
         private static IEnumerable<LuaXParserError> ToLuaXErrors(IEnumerable<ParseError> errors)
         {
             foreach (var error in errors)
@@ -74,13 +66,6 @@ namespace Luax.Parser.Ast
                     .AppendLine(error.Message);
             }
             return sb.ToString();
-        }
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            base.GetObjectData(info, context);
-            info.AddValue("sourcename", SourceName);
-            info.AddValue("parsererrors", Errors);
         }
     }
 }

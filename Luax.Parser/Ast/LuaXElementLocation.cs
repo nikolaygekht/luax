@@ -9,8 +9,7 @@ using Luax.Parser.Ast.Builder;
 
 namespace Luax.Parser.Ast
 {
-    [Serializable]
-    public class LuaXElementLocation : ISerializable, IEqualityComparer<LuaXElementLocation>
+    public class LuaXElementLocation : IEqualityComparer<LuaXElementLocation>
     {
         public string Source { get; }
         public int Line { get; }
@@ -44,20 +43,6 @@ namespace Luax.Parser.Ast
                 if (FindPosition(node.Children[i], out line, out column))
                     return true;
             return false;
-        }
-
-        protected LuaXElementLocation(SerializationInfo info, StreamingContext context)
-        {
-            Source = info.GetString("source");
-            Line = info.GetInt32("line");
-            Column = info.GetInt32("column");
-        }
-
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("source", Source);
-            info.AddValue("line", Line);
-            info.AddValue("column", Column);
         }
 
         public bool IsTheSame(LuaXElementLocation otherLocation) => Source == otherLocation.Source &&

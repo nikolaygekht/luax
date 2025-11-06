@@ -5,8 +5,8 @@ class Calculator
     private var lastResult: real;
 
     -- Constructor
-    public function Calculator(): void
-        this.lastResult = 0.0;
+    public function Calculator()
+        lastResult = 0.0;
     end
 
     @DocBrief("Adds two numbers and returns the result")
@@ -14,20 +14,20 @@ class Calculator
     @DocParameter("b", "Second number")
     @DocReturn("The sum of a and b")
     public function add(a: real, b: real): real
-        this.lastResult = a + b;
-        return this.lastResult;
+        lastResult = a + b;
+        return lastResult;
     end
 
     @DocBrief("Subtracts b from a")
     public function subtract(a: real, b: real): real
-        this.lastResult = a - b;
-        return this.lastResult;
+        lastResult = a - b;
+        return lastResult;
     end
 
     @DocBrief("Multiplies two numbers")
     public function multiply(a: real, b: real): real
-        this.lastResult = a * b;
-        return this.lastResult;
+        lastResult = a * b;
+        return lastResult;
     end
 
     @DocBrief("Divides a by b")
@@ -35,18 +35,18 @@ class Calculator
         if b == 0.0 then
             throw "Division by zero";
         end
-        this.lastResult = a / b;
-        return this.lastResult;
+        lastResult = a / b;
+        return lastResult;
     end
 
     @DocBrief("Returns the last calculated result")
     public function getLastResult(): real
-        return this.lastResult;
+        return lastResult;
     end
 
     @DocBrief("Clears the last result")
     public function clear(): void
-        this.lastResult = 0.0;
+        lastResult = 0.0;
     end
 
     @DocBrief("Calculates the square root using stdlib")

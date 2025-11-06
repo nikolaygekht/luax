@@ -10,7 +10,7 @@ namespace LuaX.Mcp.Server.Tools;
 [McpServerToolType]
 public static class LuaXLanguageInfoTool
 {
-    [McpServerTool, Description("Get comprehensive information about the LuaX language, its purpose, design goals, and cross-compilation capabilities")]
+    [McpServerTool, Description("Get comprehensive information about the LuaX language, its purpose, design goals, and cross-compilation capabilities. IMPORTANT: Call this FIRST when working with .luax files to understand critical syntax like 'this', 'super', operators, and scoping rules - prevents common mistakes like using 'self' instead of 'this'.")]
     public static LanguageInfoResponse GetLanguageInfo()
     {
         return new LanguageInfoResponse

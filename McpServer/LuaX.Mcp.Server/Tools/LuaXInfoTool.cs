@@ -24,7 +24,8 @@ public static class LuaXInfoTool
                 "get_info - Get server information and capabilities",
                 "get_grammar - Get the complete LuaX grammar definition in Hime format",
                 "get_language_info - Get comprehensive information about LuaX language design and features",
-                "parse - Parse LuaX source code and return simplified AST structure",
+                "parse_file - Parse a .luax file by path and return simplified AST structure (preferred - avoids permission dialogs)",
+                "parse - Parse LuaX source code from string and return simplified AST structure",
                 "get_standard_library - Get overview of all standard library classes with names, descriptions, and categories",
                 "get_stdlib_class - Get detailed method information for a specific standard library class"
             },
@@ -43,15 +44,16 @@ public static class LuaXInfoTool
             StandardLibraryClasses = 26,
             RecommendedWorkflow = new[]
             {
-                "1. When working with .luax files, ALWAYS use 'parse' tool first to validate syntax and understand structure",
-                "2. Use 'get_language_info' to understand LuaX syntax, especially 'this', 'super', operators, and scoping rules",
-                "3. Use 'get_standard_library' to see available stdlib classes, then 'get_stdlib_class' for detailed method info",
-                "4. Use 'parse' again after making changes to verify correctness",
-                "5. Consult 'get_grammar' for detailed syntax rules if needed"
+                "1. FIRST TIME: Call 'get_language_info' to learn LuaX syntax ('this' not 'self', 'super', operators, scoping)",
+                "2. BEFORE CHANGES: Always use 'parse_file' to validate syntax and understand current structure",
+                "3. FOR STDLIB: Use 'get_standard_library' for overview, then 'get_stdlib_class(name)' for method details",
+                "4. AFTER CHANGES: Use 'parse_file' again to verify your modifications are syntactically correct",
+                "5. IF STUCK: Consult 'get_grammar' for detailed syntax rules or use prompts for guidance"
             },
             BestPractices = new[]
             {
-                "Always validate existing .luax code with 'parse' before suggesting modifications",
+                "Always validate existing .luax code with 'parse_file' before suggesting modifications",
+                "Use 'parse_file' instead of 'parse' for existing files to avoid large permission dialogs",
                 "Use 'this' keyword to reference current instance properties (not 'self')",
                 "Use 'super' keyword for parent class references",
                 "Check SyntaxDetails in 'get_language_info' for operator precedence and scoping rules",

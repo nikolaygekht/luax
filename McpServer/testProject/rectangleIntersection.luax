@@ -1,0 +1,96 @@
+@DocBrief("Utility class for calculating rectangle intersections")
+@DocInclude()
+class RectangleIntersection
+    @DocBrief("Calculates the intersection of two rectangles")
+    @DocDescription("Returns a new rectangle representing the intersection area, or throws an error if rectangles don't intersect")
+    public static function intersect(rect1: Rectangle, rect2: Rectangle): Rectangle
+        var x1: real;
+        var y1: real;
+        var x2: real;
+        var y2: real;
+        var interLeft: real;
+        var interTop: real;
+        var interRight: real;
+        var interBottom: real;
+        var interWidth: real;
+        var interHeight: real;
+        var result: Rectangle;
+
+        -- Calculate boundaries of rect1
+        x1 = rect1.topLeft.x;
+        y1 = rect1.topLeft.y;
+        x2 = rect1.topLeft.x + rect1.width;
+        y2 = rect1.topLeft.y + rect1.height;
+
+        -- Calculate intersection boundaries
+        interLeft = stdlib.max(x1, rect2.topLeft.x);
+        interTop = stdlib.max(y1, rect2.topLeft.y);
+        interRight = stdlib.min(x2, rect2.topLeft.x + rect2.width);
+        interBottom = stdlib.min(y2, rect2.topLeft.y + rect2.height);
+
+        -- Calculate intersection dimensions
+        interWidth = interRight - interLeft;
+        interHeight = interBottom - interTop;
+
+        -- Check if there is a valid intersection
+        if interWidth <= 0.0 or interHeight <= 0.0 then
+            throw "Rectangles do not intersect";
+        end
+
+        -- Create intersection rectangle
+        result = new Rectangle();
+        result.topLeft.x = interLeft;
+        result.topLeft.y = interTop;
+        result.width = interWidth;
+        result.height = interHeight;
+
+        return result;
+    end
+
+    @DocBrief("Checks if two rectangles intersect")
+    @DocDescription("Returns true if the rectangles overlap, false otherwise")
+    public static function doIntersect(rect1: Rectangle, rect2: Rectangle): boolean
+        var x1: real;
+        var y1: real;
+        var x2: real;
+        var y2: real;
+        var interLeft: real;
+        var interTop: real;
+        var interRight: real;
+        var interBottom: real;
+
+        -- Calculate boundaries of rect1
+        x1 = rect1.topLeft.x;
+        y1 = rect1.topLeft.y;
+        x2 = rect1.topLeft.x + rect1.width;
+        y2 = rect1.topLeft.y + rect1.height;
+
+        -- Calculate intersection boundaries
+        interLeft = stdlib.max(x1, rect2.topLeft.x);
+        interTop = stdlib.max(y1, rect2.topLeft.y);
+        interRight = stdlib.min(x2, rect2.topLeft.x + rect2.width);
+        interBottom = stdlib.min(y2, rect2.topLeft.y + rect2.height);
+
+        -- Check if there is a valid intersection
+        return (interRight > interLeft) and (interBottom > interTop);
+    end
+
+    @DocBrief("Calculates the area of intersection between two rectangles")
+    @DocDescription("Returns the area of the overlapping region, or 0.0 if rectangles don't intersect")
+    public static function intersectionArea(rect1: Rectangle, rect2: Rectangle): real
+        var hasIntersection: boolean;
+        var intersection: Rectangle;
+        var area: real;
+
+        hasIntersection = RectangleIntersection.doIntersect(rect1, rect2);
+
+        if not hasIntersection then
+            return 0.0;
+        end
+
+        intersection = RectangleIntersection.intersect(rect1, rect2);
+        area = intersection.getArea();
+
+        return area;
+    end
+end

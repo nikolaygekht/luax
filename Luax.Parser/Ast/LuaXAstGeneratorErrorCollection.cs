@@ -12,28 +12,10 @@ namespace Luax.Parser.Ast
     ///
     /// The parser error is a Hime object.
     /// </summary>
-    [Serializable]
-    public class LuaXAstGeneratorErrorCollection : LuaXAstCollection<LuaXParserError>, ISerializable
+    public class LuaXAstGeneratorErrorCollection : LuaXAstCollection<LuaXParserError> 
     {
         internal LuaXAstGeneratorErrorCollection()
         {
-        }
-
-        protected LuaXAstGeneratorErrorCollection(SerializationInfo info, StreamingContext context)
-        {
-            int count = info.GetInt32("count");
-            for (int i = 0; i < count; i++)
-                Add((LuaXParserError)info.GetValue($"item{i}", typeof(LuaXParserError)));
-        }
-
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-               => GetObjectData(info, context);
-
-        protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("count", this.Count);
-            for (int i = 0; i < Count; i++)
-                info.AddValue($"item{i}", this[i]);
         }
 
         internal void AddRange(IEnumerable<ParseError> errors)

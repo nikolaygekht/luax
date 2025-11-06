@@ -12,7 +12,56 @@ namespace LuaX.Mcp.Server.Tools;
 [McpServerToolType]
 public static class LuaXParseTool
 {
-    [McpServerTool, Description("Parse and validate LuaX source code, returning AST with classes, packages, methods, and properties. IMPORTANT: Always use this tool FIRST before suggesting any changes to .luax files to validate syntax and understand the existing code structure.")]
+    [McpServerTool, Description("Parse and validate a LuaX file by path, returning AST with classes, packages, methods, and properties. IMPORTANT: Always use this tool FIRST before suggesting any changes to .luax files to validate syntax and understand the existing code structure. Use this instead of 'parse' to avoid permission dialogs with large file content.")]
+    public static ParseResponse ParseFile([Description("Absolute path to the .luax file to parse"), Required] string filePath)
+    {
+        if (string.IsNullOrWhiteSpace(filePath))
+        {
+            return new ParseResponse
+            {
+                Success = false,
+                Error = "File path cannot be empty",
+                Ast = null
+            };
+        }
+
+        if (!File.Exists(filePath))
+        {
+            return new ParseResponse
+            {
+                Success = false,
+                Error = $"File not found: {filePath}",
+                Ast = null
+            };
+        }
+
+        try
+        {
+            var sourceCode = File.ReadAllText(filePath);
+            var fileName = Path.GetFileName(filePath);
+            return ParseInternal(sourceCode, fileName);
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return new ParseResponse
+            {
+                Success = false,
+                Error = $"Access denied to file: {filePath}",
+                Ast = null
+            };
+        }
+        catch (IOException ex)
+        {
+            return new ParseResponse
+            {
+                Success = false,
+                Error = $"Error reading file: {ex.Message}",
+                Ast = null
+            };
+        }
+    }
+
+    [McpServerTool, Description("Parse and validate LuaX source code (provided as string), returning AST with classes, packages, methods, and properties. For existing .luax files, prefer using 'parse_file' instead to avoid showing large file content in permission dialogs.")]
     public static ParseResponse Parse([Description("LuaX source code to parse"), Required] string sourceCode, [Description("Optional name for the source (e.g., filename)")] string? sourceName = null)
     {
         if (string.IsNullOrWhiteSpace(sourceCode))
@@ -26,11 +75,15 @@ public static class LuaXParseTool
         }
 
         var name = sourceName ?? "inline";
+        return ParseInternal(sourceCode, name);
+    }
 
+    private static ParseResponse ParseInternal(string sourceCode, string sourceName)
+    {
         try
         {
             var parser = new LuaXAstGenerator();
-            var body = parser.Compile(name, sourceCode);
+            var body = parser.Compile(sourceName, sourceCode);
 
             var ast = new AstResult
             {

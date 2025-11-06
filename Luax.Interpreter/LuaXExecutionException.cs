@@ -3,11 +3,8 @@ using System.Runtime.Serialization;
 using Luax.Interpreter.Infrastructure;
 using Luax.Parser.Ast;
 
-#pragma warning disable S3925 // TBD: "ISerializable" should be implemented correctly
-
 namespace Luax.Interpreter
 {
-    [Serializable]
     public class LuaXExecutionException : Exception
     {
         public LuaXStackTrace LuaXStackTrace { get; } = new LuaXStackTrace();
@@ -32,19 +29,6 @@ namespace Luax.Interpreter
         public LuaXExecutionException(LuaXElementLocation location, string message, Exception innerException) : base(message, innerException)
         {
             LuaXStackTrace.Add(null, location);
-        }
-
-        protected LuaXExecutionException(SerializationInfo info, StreamingContext context)
-            : base(info, context)
-        {
-            LuaXStackTrace = (LuaXStackTrace)info.GetValue("luaStackTrace", typeof(LuaXStackTrace));
-            Properties = (LuaXVariableInstanceSet)info.GetValue("properties", typeof(LuaXVariableInstanceSet));
-        }
-
-        public override void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("luaStackTrace", LuaXStackTrace);
-            info.AddValue("properties", Properties);
         }
     }
 }

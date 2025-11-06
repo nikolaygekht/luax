@@ -42,22 +42,6 @@ namespace Luax.Parser.Test
         }
 
         [Fact]
-        public void Error_Serialization()
-        {
-            AstNodeWrapper w = new AstNodeWrapper(1, 2, "", "");
-            var error = new LuaXParserError(w, "message");
-            using var stream = new MemoryStream();
-            var formatter = new BinaryFormatter();
-            formatter.Serialize(stream, error);
-            stream.Position = 0;
-
-            var error1 = (LuaXParserError)formatter.Deserialize(stream);
-            error1.Line.Should().Be(1);
-            error1.Column.Should().Be(2);
-            error1.Message.Should().Be("message");
-        }
-
-        [Fact]
         public void ErrorCollection_Add()
         {
             var collection = new LuaXAstGeneratorErrorCollection();
@@ -70,24 +54,6 @@ namespace Luax.Parser.Test
             collection.Count.Should().Be(1);
             collection.Should().HaveCount(1);
             collection[0].Should().BeSameAs(o);
-        }
-
-        [Fact]
-        public void ErrorCollection_Serialize()
-        {
-            var collection = new LuaXAstGeneratorErrorCollection();
-            AstNodeWrapper w = new AstNodeWrapper(1, 2, "", "");
-            var o = new LuaXParserError(w, "message");
-            collection.Add(o);
-
-            using var stream = new MemoryStream();
-            var formatter = new BinaryFormatter();
-            formatter.Serialize(stream, collection);
-            stream.Position = 0;
-            var collection1 = (LuaXAstGeneratorErrorCollection)formatter.Deserialize(stream);
-
-            collection1.Count.Should().Be(1);
-            collection[0].Should().Match<LuaXParserError>(o => o.Line == 1 && o.Column == 2 && o.Message == "message");
         }
 
         [Fact]
@@ -113,24 +79,6 @@ namespace Luax.Parser.Test
             exception.Errors[1].Should().Match<LuaXParserError>(o => o.Line == 3 && o.Column == 4 && o.Message == himeError2.Message);
             exception.Message.Should().Be("sourceName(1,2) : " + himeError1.Message + Environment.NewLine +
                                           "sourceName(3,4) : " + himeError2.Message + Environment.NewLine);
-        }
-
-        [Fact]
-        public void Exception_Serialization()
-        {
-            var himeError = new UnexpectedEndOfInput(new TextPosition(1, 2));
-            var exception = new LuaXAstGeneratorException("sourceName", new ParseError[] { himeError });
-
-            using var stream = new MemoryStream();
-            var formatter = new BinaryFormatter();
-            formatter.Serialize(stream, exception);
-            stream.Position = 0;
-            var exception1 = (LuaXAstGeneratorException)formatter.Deserialize(stream);
-
-            exception1.SourceName.Should().Be("sourceName");
-            exception1.Errors.Should().HaveCount(1);
-            exception1.Errors[0].Should().Match<LuaXParserError>(o => o.Line == 1 && o.Column == 2 && o.Message == himeError.Message);
-            exception1.Message.Should().Be("sourceName(1,2) : " + himeError.Message + Environment.NewLine);
         }
     }
 }

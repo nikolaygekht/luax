@@ -7,8 +7,7 @@ namespace Luax.Parser.Ast
     /// <summary>
     /// The information about LuaXParser error
     /// </summary>
-    [Serializable]
-    public class LuaXParserError : ISerializable
+    public class LuaXParserError 
     {
         /// <summary>
         /// The line
@@ -43,23 +42,6 @@ namespace Luax.Parser.Ast
             Line = location.Line;
             Column = location.Column;
             Message = message;
-        }
-
-        protected LuaXParserError(SerializationInfo info, StreamingContext context)
-        {
-            Line = info.GetInt32("line");
-            Column = info.GetInt32("column");
-            Message = info.GetString("message");
-        }
-
-        void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
-            => GetObjectData(info, context);
-
-        protected virtual void GetObjectData(SerializationInfo info, StreamingContext context)
-        {
-            info.AddValue("line", Line);
-            info.AddValue("column", Column);
-            info.AddValue("message", Message);
         }
     }
 }

@@ -40,7 +40,8 @@ public class Program
             builder.Services
                 .AddMcpServer()
                 .WithStdioServerTransport()
-                .WithToolsFromAssembly(); // Auto-discover tools with [McpServerTool] attribute
+                .WithToolsFromAssembly() // Auto-discover tools with [McpServerTool] attribute
+                .WithPromptsFromAssembly(); // Auto-discover prompts with [McpServerPrompt] attribute
 
             // TODO: Register additional services
             // builder.Services.AddSingleton<ILuaXParserService, LuaXParserService>();
